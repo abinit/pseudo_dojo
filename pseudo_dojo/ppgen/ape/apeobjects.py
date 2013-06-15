@@ -13,8 +13,8 @@ import numpy as np
 from pprint import pprint
 from subprocess import Popen, PIPE
 
-from dftatom.core.qatom import QState, AtomicConfiguration, plot_waves, plot_logders
-from dftatom.ape.apeio import (ape_read_waves, ape_read_potentials, ape_read_densities, 
+from pseudo_dojo.ppgen.core.qatom import QState, AtomicConfiguration, plot_waves, plot_logders
+from pseudo_dojo.ppgen.ape.apeio import (ape_read_waves, ape_read_potentials, ape_read_densities, 
                                ape_read_logders, ape_read_dipoles, ape_check_ppeigen, ape_check_ghosts)
 
 __version__ = "0.1"

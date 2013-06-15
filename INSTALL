@@ -11,9 +11,9 @@ Installing
 Build requirements
 ==================
 
-These are external packages which you will need to install before installing dftatom. 
+These are external packages which you will need to install before installing pseudo_dojo. 
 
-:term:`python` 2.6 (or later but not python3)
+:term:`python` 2.7 (or later but not python3)
 
 :term:`numpy` 1.1 (or later)
     array support for python 
@@ -28,9 +28,9 @@ These are external packages which you will need to install before installing dft
 Installing from source
 ======================
 
-Once you have satisfied the requirements detailed above, you can build dftatom::
+Once you have satisfied the requirements detailed above, you can build pseudo_dojo::
 
-  cd dftatom
+  cd pseudo_dojo
   python setup.py build
   python setup.py install
 
