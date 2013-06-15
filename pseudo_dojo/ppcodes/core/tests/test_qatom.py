@@ -5,8 +5,8 @@ import collections
 import os
 
 from pseudo_dojo.core import *
-from pseudo_dojo.ppgen.core.qatom import *
-from pseudo_dojo.ppgen.nist import nist_database
+from pseudo_dojo.ppcodes.core.qatom import *
+from pseudo_dojo.ppcodes.nist import nist_database
 
 ##########################################################################################
 

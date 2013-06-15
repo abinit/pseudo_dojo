@@ -4,7 +4,7 @@ import os
 import collections
 import numpy as np
 
-from pseudo_dojo.ppgen.nist import nist_database
+from pseudo_dojo.ppcodes.nist import nist_database
 
 from scipy.interpolate import UnivariateSpline
 

@@ -9,8 +9,8 @@ from subprocess import Popen, PIPE
 
 import numpy as np
 
-from pseudo_dojo.ppgen.core.qatom import plot_aepp, plot_logders
-from pseudo_dojo.ppgen.ape.apeio import (ape_read_waves, ape_read_potentials, ape_read_densities,
+from pseudo_dojo.ppcodes.core.qatom import plot_aepp, plot_logders
+from pseudo_dojo.ppcodes.ape.apeio import (ape_read_waves, ape_read_potentials, ape_read_densities,
                                ape_read_logders, ape_read_dipoles, ape_check_ppeigen, ape_check_ghosts)
 
 __version__ = "0.1"

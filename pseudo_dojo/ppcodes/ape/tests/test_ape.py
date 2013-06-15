@@ -5,7 +5,7 @@ import os.path
 import unittest
 
 from pseudo_dojo.core import *
-from pseudo_dojo.ppgen.ape import *
+from pseudo_dojo.ppcodes.ape import *
 
 ##########################################################################################
 
