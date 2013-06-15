@@ -4,9 +4,9 @@ from __future__ import division, print_function
 import collections
 import os
 
-from dftatom.tests import *
-from dftatom.core import *
-from dftatom.nist import nist_database
+from pseudo_dojo.core import *
+from pseudo_dojo.ppgen.core.qatom import *
+from pseudo_dojo.ppgen.nist import nist_database
 
 ##########################################################################################
 

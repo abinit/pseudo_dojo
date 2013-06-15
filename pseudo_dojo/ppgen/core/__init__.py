@@ -1,1 +1,1 @@
-from qatom import *
+from .qatom import *

@@ -4,8 +4,8 @@ from __future__ import division, print_function
 import os.path
 import unittest
 
-from dftatom.tests import *
-from dftatom.ape import *
+from pseudo_dojo.core import *
+from pseudo_dojo.ppgen.ape import *
 
 ##########################################################################################
 
