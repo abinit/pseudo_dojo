@@ -1,0 +1,28 @@
+title =  "Silicum" 
+calculationmode = ae 
+verbose =  40 
+waveequation =  scalar_rel 
+spinmode =  unpolarized 
+xcfunctional =  lda_x + lda_c_pw 
+nuclearcharge =  14 
+ppoutputfileformat =  abinit6 
+pptests =  ld 
+logderivativeradius =  3.0 
+logderivativeenergymax =  1.5 
+logderivativeenergymin =  -1.5 
+%orbitals
+"Ne"
+3  |  0  |  2
+3  |  1  |  2
+3  |  2  |  0
+4  |  3  |  0
+%
+%ppcomponents
+3  |  0  |  1.2  | tm
+3  |  1  |  1.27 | tm
+3  |  2  |  1.5  | tm
+4  |  3  |  1.9  | tm
+%
+ppcalculationtolerance =  1e-6 
+eigensolvertolerance =  1e-8 
+odeinttolerance =  1e-12 

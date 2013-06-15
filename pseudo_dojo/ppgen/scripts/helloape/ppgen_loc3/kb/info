@@ -1,0 +1,28 @@
+
+Kleinman & Bylander Atom
+  l-component used as local: l = 3
+  Non-local components:
+    State   KB Energy [H ]   KB Cosine
+      3s        6.7477         0.1974
+      3p       18.1302         0.0588
+      3d       -2.7657        -0.0000
+
+  Ghost state analysis:
+    State: 3s
+      KB energy > 0; E0 < Eref < E1  =>  No ghost states
+      Local potential eigenvalues:   -1.8364 (E0)    -0.1484 (E1)
+      Reference energy:              -0.3998 (Eref)
+    State: 3p
+      KB energy > 0; E0 < Eref < E1  =>  No ghost states
+      Local potential eigenvalues:   -0.4844 (E0)    -0.0038 (E1)
+      Reference energy:              -0.1530 (Eref)
+    State: 3d
+      KB energy < 0; Eref = E0 = 0   =>  Unable to determine
+      Local potential eigenvalues:    0.0000 (E0)     0.0000 (E1)
+      Reference energy:               0.0000 (Eref)
+
+  Localization radii [b]:
+    Local:  2.04
+    l = 0:  1.76
+    l = 1:  1.76
+    l = 2:  1.80

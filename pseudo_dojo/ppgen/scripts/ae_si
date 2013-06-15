@@ -1,0 +1,45 @@
+# Generalities
+Title = "Silicum"
+CalculationMode = ae + pp
+Verbose = 40
+
+# Hamiltonian
+#WaveEquation = schrodinger
+WaveEquation = scalar_rel
+SpinMode = unpolarized
+
+XCFunctional = lda_x + lda_c_pw 
+
+# Specie
+NuclearCharge = 14
+
+PPOutputFileFormat = abinit6
+
+#PPTestSCF = true
+PPTests = ld
+LogDerivativeRadius = 3.0
+LogDerivativeEnergyMax = 1.5
+LogDerivativeEnergyMin = -1.5
+
+
+%Orbitals
+"Ne"
+  3  |  0  |  2
+  3  |  1  |  2
+  3  |  2  |  0
+  4  |  3  |  0
+%
+
+# PseudoPotentials
+%PPComponents
+  3  |  0  |  1.2  | tm 
+  3  |  1  |  1.27 | tm 
+  3  |  2  |  1.5  | tm 
+  4  |  3  |  1.9  | tm 
+%
+
+PPCalculationTolerance = 1e-6
+
+# Wave-equations solver
+EigenSolverTolerance = 1e-8
+ODEIntTolerance = 1e-12

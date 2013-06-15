@@ -1,0 +1,62 @@
+
+General Information about the atom:
+  Symbol: Si
+  Theory Level: DFT
+  Wave-equation: scalar-relativistic
+  Spin mode: unpolarized
+  Nuclear charge:  14.00
+  Total charge:     0.00
+  Configuration    : State   Occupation
+                       1s       2.00
+                       2s       2.00
+                       2p       6.00
+                       3s       2.00
+                       3p       2.00
+                       3d       0.00
+                       4f       0.00
+
+Exchange-Correlation model:
+  Correlation: Perdew & Wang (LDA)
+  Exchange:    Slater exchange (LDA)
+
+Mesh information:
+  Type: logarithmic [ri = b*exp(a*i)]
+  Mesh starting point:   3.74E-05 b
+  Mesh outmost point:    112.250 b
+  Mesh parameters (a, b):  2.48984E-02,  3.64965E-05
+  Mesh number of points:    600
+  Derivatives Method: Cubic slines
+
+SCF cycle information:
+  Number of iterations:  19
+  Convergence: 
+    ConvAbsDens   = 7.95E-08 ( 0.00E+00)
+    ConvRelDens   = 5.68E-09 ( 1.00E-08)
+    ConvAbsEnergy = 1.47E-06 ( 0.00E+00)
+    ConvRelEnergy = 5.09E-09 ( 0.00E+00)
+
+Density Moments
+  <r^-2> =      864.523
+  <r^-1> =       49.321
+  <r^ 1> =       14.500
+  <r^ 2> =       32.714
+  <r^ 3> =      108.565
+  <r^ 4> =      450.725
+  <r^ 5> =     2221.687
+
+Energies [H]
+  Total energy:                            -288.821572
+  Kinetic energy:                           289.249182
+  Electron-electron interaction energy:     132.018457
+  Electron-nucleus interaction energy:     -690.493220
+  Exchange-correlation energy:              -19.595990
+
+    Eigenvalues [H]
+     State   Occupation   Eigenvalue
+       1s       2.00       -65.35727
+       2s       2.00        -5.09873
+       2p       6.00        -3.51357
+       3s       2.00        -0.39980
+       3p       2.00        -0.15298
+       3d       0.00         0.00000
+       4f       0.00         0.00000
