@@ -33,6 +33,13 @@ def file_doesnt_end_with(test, endings):
 # Basic project information
 #---------------------------------------------------------------------------
 
+#with open("README.rst") as f:
+#    long_desc = f.read()
+#    ind = long_desc.find("\n")
+#    long_desc = long_desc[ind + 1:]
+
+
+
 # release.py contains version, authors, license, url, keywords, etc.
 release_file = pjoin('pseudo_dojo','core','release.py')
 

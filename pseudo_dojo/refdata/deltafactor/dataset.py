@@ -1,15 +1,15 @@
-#!/usr/bin/env python
 from __future__ import division, print_function
 
 import sys
 import os
 import os.path
 import collections
+import numpy as np
 
 ##########################################################################################
 
-class Record(collections.namedtuple("Record", "symbol v0 b0 bp")):
-    "Record with the volume, bulk-modulus and Bp for given symbol (a.u.)"
+class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 bp")):
+    "Namedtuple storing the volume, the bulk-modulus and Bp for given symbol (a.u.)"
 
     def __new__(cls, *args):
         "Extends the base class adding type conversion of arguments."
@@ -20,12 +20,12 @@ class Record(collections.namedtuple("Record", "symbol v0 b0 bp")):
             if i == 0: converter = str
             new_args[i] = converter(arg)
 
-        return super(cls, Record).__new__(cls, *new_args)
+        return super(cls, DeltaFactorEntry).__new__(cls, *new_args)
 
 def read_data_from_filename(filename):
     """
-    Reads data (v0, b0, bp) from file filename
-    Returns a dict of record objects indexed by element symbol.
+    Reads (v0, b0, bp) from file filename
+    Returns a dict of `DeltaFactorEntry` objects indexed by element symbol.
     """
     data = collections.OrderedDict()
 
@@ -36,39 +36,40 @@ def read_data_from_filename(filename):
                 continue
             tokens = line.split()
             symbol = tokens[0]
-            data[symbol] = Record(*tokens)
+            data[symbol] = DeltaFactorEntry(*tokens)
     return data
 
-##########################################################################################
 
 def singleton(cls):
-    """
-    This decorator can be used to create a singleton out of a class.
-    """
+    """This decorator can be used to create a singleton out of a class."""
     instances = {}
-
     def getinstance():
         if cls not in instances:
             instances[cls] = cls()
         return instances[cls]
     return getinstance
 
+##########################################################################################
+
 @singleton
 class DeltaFactorDataset(object):
-    #_refcode = "WIEN2K"
+    """This object stores the deltafactor results."""
+    # Reference code.
+    _REF_CODE = "WIEN2k"
 
     def __init__(self):
         self.dirpath = os.path.abspath(os.path.dirname(__file__))
+        self.dirpath = os.path.join(self.dirpath, "data")
 
         self._data = d = {}
         for entry in os.listdir(self.dirpath):
            file_path = os.path.join(self.dirpath, entry)
            if os.path.isfile(file_path) and file_path.endswith(".txt"):
-                codename, ext = os.path.splitext(entry)
-                if codename == "README": 
+                code, ext = os.path.splitext(entry)
+                if code == "README": 
                     continue
                 #print(codename)
-                d[codename] = read_data_from_filename(file_path)
+                d[code] = read_data_from_filename(file_path)
 
         self.cif_paths = d = {}
 
@@ -78,11 +79,31 @@ class DeltaFactorDataset(object):
                 symbol, ext = os.path.splitext(entry)
                 d[symbol] = os.path.join(cif_dirpath, entry)
 
-    #def compare(self, data)
+    def get_entry(self, symbol, code=None):
+        """
+        Return the `DeltaFactorEntry` for the given chemical symbol.
 
-    def plot(self, codename_or_data, ref_code="WIEN2k"):
-        import numpy as np
+        Args:
+            symbol:
+                Chemical symbol
+            code:
+                String identifying the code used to compute the entry. 
+                Default is self._REF_CODE (Wien2K)
+        """
+        if code is None:
+            code = self._REF_CODE 
+        return self._data[code][symbol]
+
+    def plot_error_of_code(self, codename_or_data, values=("v0", "b0", "bp"), ref_code=None, **kwargs):
         import matplotlib.pyplot as plt
+
+        # Extract keyword arguments.
+        show = kwargs.pop("show", True)
+        savefig = kwargs.pop("savefig",None)
+        title = kwargs.pop("title", None)
+
+        if ref_code is None:
+            ref_code = self._REF_CODE 
 
         ref_data = self._data[ref_code]
 
@@ -90,20 +111,22 @@ class DeltaFactorDataset(object):
         if isinstance(codename_or_data, str):
             data = self._data[codename_or_data]
 
-        records = ref_data.values()
-        print (records)
+        entries = ref_data.values()
+        #print(entries)
 
-        attr_names = ["b0",]
+        # Build grid of plots.
+        fig, ax_list = plt.subplots(nrows=len(values), ncols=1, sharex=True, squeeze=False)
+        ax_list = ax_list.ravel()
 
-        fig = plt.figure()
-        ax = fig.add_subplot(1,1,1)
+        if title:
+            fig.suptitle(title)
 
-        for aname in attr_names:
-            # Sort records according to the value of the attribute aname.
-            records.sort(key = lambda t: getattr(t, aname))
-            #print(records)
+        for (aname, ax) in zip(values, ax_list):
+            # Sort entries according to the value of the attribute aname.
+            entries.sort(key = lambda t: getattr(t, aname))
+            #print(entries)
 
-            ord_symbols = [r.symbol for r in records]
+            ord_symbols = [r.symbol for r in entries]
             xticks = []
 
             for (i, osym) in enumerate(ord_symbols):
@@ -115,16 +138,25 @@ class DeltaFactorDataset(object):
                 ax.plot(i, err, "ro")
                 xticks.append(i)
 
+            # Set xticks and labels.
             ax.plot(xticks, np.zeros(len(xticks)), "b-")
-
             ax.set_xticks(xticks)
             ax.set_xticklabels(ord_symbols, rotation="vertical")
 
-        # Set xticks and labels.
-        #ax.grid(True)
-        #ax.set_xlabel("Ecut [Ha]")
-        #ax.set_ylabel("$\Delta$ Etotal [meV]")
+            #ax.grid(True)
+            ax.set_ylabel("Relative error %s" % aname)
+            #ax.set_xlabel("Ecut [Ha]")
 
-        plt.show()
+        if show:
+            plt.show()
+
+        if savefig is not None:
+            fig.savefig(savefig)
+                         
+        return fig
 
 ##########################################################################################
+
+if __name__ == "__main__":
+    delta = DeltaFactorDataset()
+    delta.plot_error_of_code("VASP")

@@ -10,7 +10,7 @@ from pseudo_dojo.ppcodes.nist import nist_database
 
 ##########################################################################################
 
-class AtomicConfigurationTest(DftAtomTest):
+class AtomicConfigurationTest(PPDojoTest):
 
     def test_neutrals(self):
         """Neutral configurations."""
@@ -62,7 +62,7 @@ class AtomicConfigurationTest(DftAtomTest):
 ##########################################################################################
 
 
-class RadialFunctionTest(DftAtomTest):
+class RadialFunctionTest(PPDojoTest):
 
     def test_base(self):
         """Basic tests for RadialFunction."""
