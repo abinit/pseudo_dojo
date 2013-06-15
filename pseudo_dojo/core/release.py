@@ -1,15 +1,14 @@
-"""Release data for the dftatom project."""
+"""Release data for the pseudo_dojo project."""
 
 # Name of the package for release purposes.  This is the name which labels
 # the tarballs and RPMs made by distutils, so it's best to lowercase it.
-name = 'dftatom'
+name = 'pseudo_dojo'
 
 # version information.  An empty _version_extra corresponds to a full
 # release.  'dev' as a _version_extra string means this is a development version
 _version_major = 0
 _version_minor = 1
 _version_micro = '0'  # use '' for first of series, number for 1 and above
-_version_extra = 'dev'
 #_version_extra = ''  # Uncomment this for full releases
 
 # Construct full version string from these.
@@ -25,9 +24,9 @@ description = "Set of python modules and scripts to automate pseudopotential gen
 
 long_description = \
 """
-The goal of dftatom is to create a environment for interactive and exploratory generation of
-pseudopotetials.  
-To support this goal, dftatom provides:
+The goal of pseudo_dojo is to create a environment for interactive and exploratory 
+generation of pseudopotetianls.  
+To support this goal, pseudo_dojo provides:
 
 * A set of pythons objects that automates the creation of input files.
 
@@ -47,10 +46,9 @@ author = 'Matteo Giantomass'
 
 author_email = 'gmatteo at gmail com'
 
-url = 'http://abinit.org'
-
+#url = 'http://abinit.org'
 #download_url = 'http://abinit.org/abipy'
 
 platforms = ['Linux','darwin']
 
-keywords = [ "APE", "DFT", "ab-initio", "first principles"]
+keywords = ["pseudopotentials", "DFT", "ab-initio", "first principles"]

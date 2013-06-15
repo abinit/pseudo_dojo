@@ -5,8 +5,8 @@ import os
 import sys
 import argparse
 
-from dftatom.nist import nist_database 
-from dftatom.ape import *
+from pseudo_dojo.ppcodes.nist import nist_database 
+from pseudo_dojo.ppcodes.ape import *
 
 #import periodictable
 

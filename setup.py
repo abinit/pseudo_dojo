@@ -81,17 +81,13 @@ def cleanup():
 
 # List of external packages we rely on.
 # Note setup install will download them from Pypi if they are not available.
-mandatory_packages = [
+install_requires = [
 "numpy",
 "scipy",
-"matplotlib",
-"periodictable",
+#"pymatgen",
+#"matplotlib",
+#"periodictable",
 ]
-
-optional_packages = [
-]
-
-install_requires = mandatory_packages + optional_packages
 
 #---------------------------------------------------------------------------
 # Find all the packages, package data, and data_files

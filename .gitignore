@@ -18,6 +18,12 @@ develop-eggs
 lib
 lib64
 
+# Mac OS
+.DS_Store
+
+# Shinx docs
+_build
+
 # Vim files
 *.swp
 
