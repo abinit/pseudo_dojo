@@ -156,7 +156,3 @@ class DeltaFactorDataset(object):
         return fig
 
 ##########################################################################################
-
-if __name__ == "__main__":
-    delta = DeltaFactorDataset()
-    delta.plot_error_of_code("VASP")

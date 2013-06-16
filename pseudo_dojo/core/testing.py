@@ -10,7 +10,7 @@ from unittest import TestCase
 
 import numpy.testing.utils as nptu
 
-class PPDojoTest(TestCase):
+class PseudoDojoTest(TestCase):
     """Extend TestCase with functions from numpy.testing.utils that support ndarrays."""
 
     @staticmethod

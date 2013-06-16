@@ -10,7 +10,7 @@ from pseudo_dojo.ppcodes.ape import *
 ##########################################################################################
 
 
-class ApeInputGeneratorTest(PPDojoTest):
+class ApeInputGeneratorTest(PseudoDojoTest):
 
     def test_base(self):
         """Basic tests for ApeInputGenerator."""
