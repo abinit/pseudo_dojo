@@ -5,7 +5,7 @@ import os.path
 import unittest
 
 from pseudo_dojo.core import *
-from pseudo_dojo.pseudos.database import pseudodojo_database, XC_FAMILIES
+from pseudo_dojo.pseudos.database import pseudodojo_database, XC_FAMILIES, compare_checksums
 
 ##########################################################################################
 

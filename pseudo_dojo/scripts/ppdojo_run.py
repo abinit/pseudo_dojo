@@ -19,7 +19,6 @@ __date__ = "$Feb 21, 2013M$"
 ################################################################################
 
 def main():
-
     parser = ArgumentParser()
 
     parser.add_argument('-m', '--max_ncpus', type=int, default=1,

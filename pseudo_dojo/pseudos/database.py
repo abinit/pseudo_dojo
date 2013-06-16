@@ -24,7 +24,6 @@ __maintainer__ = "Matteo Giantomassi"
 
 _TOP = os.path.abspath(os.path.dirname(__file__))
 
-
 # Path to the database with hash values.
 _PICKLE_FILEPATH = os.path.join(_TOP, "md5.pickle")
 
@@ -43,23 +42,23 @@ def nested_dict_items(nested):
 
 PP_TYPES = ["NC", "PAW"]
                               
-XC_FAMILIES = ["LDA", "GGA"]
+XC_TYPES = ["LDA", "GGA"]
                               
 XC_FLAVORS  = ["PBE", "PW91"]
 
 class DojoTable(PseudoTable):
-    "Extends PseudoTable adding metatada on the generation of the table."""
+    """Extends PseudoTable adding metatada on the generation of the table."""
 
-    def __init__(self, pseudos, table_name, pp_type, xc_family, xc_flavor, description, keywords):
+    def __init__(self, pseudos, table_name, pp_type, xc_type, xc_flavor, description, keywords):
         super(DojoTable, self).__init__(pseudos)
 
         assert (pp_type in PP_TYPES and 
-                xc_family in XC_FAMILIES and 
+                xc_type in XC_TYPES and 
                 xc_flavor in XC_FLAVORS)
 
         self.name = table_name
         self.pp_type = pp_type
-        self.xc_family = xc_family
+        self.xc_type = xc_type
         self.xc_flavor = xc_flavor
         self.description = description
         self.keywords = keywords
@@ -75,14 +74,14 @@ class DojoTable(PseudoTable):
             module_name = os.path.join(dirpath, "__init__.py")
             m = imp.load_source(module_name, module_name)
 
-        return cls(pseudos, m.table_name, m.pp_type, m.xc_family, m.xc_flavor, m.description, m.keywords)
+        return cls(pseudos, m.table_name, m.pp_type, m.xc_type, m.xc_flavor, m.description, m.keywords)
 
     def __str__(self):
         lines = []
         app = lines.append
         app("name: %s" % self.name)
         app("pp_type: %s" % self.pp_type)
-        app("xc_family: %s" % self.xc_family)
+        app("xc_type: %s" % self.xc_type)
         app("xc_flavor: %s" % self.xc_flavor)
         app("description: %s" % self.description)
         app("keywords: %s" % self.keywords)
@@ -102,7 +101,7 @@ class _PseudoDojoDatabase(dict):
     #"GGA"   "USPP"
     #        "USERS"
 
-    # xc_type = xc_family-[xc_flavor]
+    # xc_type = xc_type-[xc_flavor]
     # dirname = pp_type _ xc_type _ table_name
     #_SAVE_FILE = "pseudodojo_database.pickle"
 
@@ -113,7 +112,7 @@ class _PseudoDojoDatabase(dict):
             self[key] = None
                                                                         
         for pp_type in self:
-            self[pp_type] = {k: [] for k in XC_FAMILIES}
+            self[pp_type] = {k: [] for k in XC_TYPES}
 
         if top is None: top = _TOP
         for root, dirs, files in os.walk(_TOP):
@@ -128,26 +127,7 @@ class _PseudoDojoDatabase(dict):
                 table = DojoTable.from_directory(root, metadata=m)
 
                 # Add table to the list
-                self[m.pp_type][m.xc_family].append(table) 
-
-    #@classmethod
-    #def pickle_load(cls, filename=None):
-    #    """Reads the database from the cpickle file."""
-    #    if filename is None: 
-    #        filename = cls._SAVE_FILE
-    #    print("Loading database from: %s" % filename)
-
-    #    with open(filename, "r") as fh:
-    #        return pickle.load(fh)
-
-    #def pickle_dump(self, filename=None, protocol=-1):
-    #    """Save the database to a cpickle file."""
-    #    if filename is None: 
-    #        filename = self._SAVE_FILE
-    #    print("Saving database to file %s" % filename)
-
-    #    with open(filename, "w") as fh:
-    #        pickle.dump(self, fh, protocol=protocol)
+                self[m.pp_type][m.xc_type].append(table) 
 
     @property
     def PBE_HGHK_TABLE(self):
@@ -160,7 +140,7 @@ class _PseudoDojoDatabase(dict):
     def nc_findall_pseudos(self):
         "Return a list with all the NC pseudopotentials in the database"
         pseudos = []
-        for xc_family, tables in self["NC"].items():
+        for xc_type, tables in self["NC"].items():
             for table in tables:
                 pseudos.extend([p for p in table])
         return PseudoTable(pseudos)
@@ -200,9 +180,17 @@ class _PseudoDojoDatabase(dict):
             relative_path = tail2(pseudo.path)
             fh.write("%s %s %s\n" % (relative_path, checksum[0], checksum[1]))
 
+    def show(self, verbose):
+        """Print basic information on the database."""
+        print(self)
+
+
+
+# Global variable storing the database of pseudopotentials.
 _OFFICIAL_DATABASE = _PseudoDojoDatabase()
 
-def _reload_pseudodojo_database():
+def reload_pseudodojo_database():
+    """Reload the Database at runtime."""
     _OFFICIAL_DATABASE = _PseudoDojoDatabase()
 
 # Official API.
@@ -271,7 +259,7 @@ class ChecksumDatabase(collections.OrderedDict):
                 return True 
 
             # Skip files with extension in skip_exts.
-            skip_exts = ["py", "sh", "txt"]
+            skip_exts = ["py", "pyc", "sh", "txt"]
             if "." in file and file.split(".")[-1] in skip_exts: 
                 return True
                                                        
@@ -302,7 +290,7 @@ class ChecksumDatabase(collections.OrderedDict):
             return pickle.load(fh)
 
 
-def replace_reference_checksums(new_db):
+def _replace_reference_checksums(new_db):
     """Replace the reference hash table with new_db."""
     import shutil
     shutil.copy(_PICKLE_FILEPATH, _PICKLE_FILEPATH + ".old")
@@ -311,12 +299,9 @@ def replace_reference_checksums(new_db):
 
 def get_reference_checksums():
     """Return the database of reference hash values."""
-    #return ChecksumDatabase.pickle_load(_PICKLE_FILEPATH)
-    with open(_PICKLE_FILEPATH, "r") as fh:
-        return pickle.load(fh)
+    return ChecksumDatabase.pickle_load(_PICKLE_FILEPATH)
 
-
-def generate_new_checksums():
+def get_new_checksums():
     """Genererate a new database of hash values from the pseudopotential files."""
     return ChecksumDatabase.generate()
 
@@ -325,13 +310,12 @@ def compare_checksums():
     """
     Validate the reference hash table with the one generated from the pseudopotential files.
 
-    Returns:
-        namedtuple with the list of files that have been (removed, added, modified).
+    Returns: (changed, hask_check) where
+        changed is the number of files that are changed.
+        hash_check is a namedtuple with the list of files that have been (removed, added, modified).
     """
-    new_checks = generate_new_checksums()
-    #print("new",new_checks)
+    new_checks = get_new_checksums()
     ref_checks = get_reference_checksums()
-    #print("ref",ref_checks)
 
     removed, added, modified = [], [], []
 
@@ -350,25 +334,22 @@ def compare_checksums():
     changed = sum(map(len, hash_check))
     return changed, hash_check
 
-
-#def test_checksums():
-#    """Validating checksum table."""
-#    changed, hash_check = compare_checksums()
-#
-#    if not changed:
-#        return 
-#    err = 0
-#    #if hash_check.removed:
-#    #if hash_check.added:
-#    #if hash_check.modified:
-#    assert err == 0
-
 ##########################################################################################
 
 
-#if __name__ == "__main__":
-#    new_checks = generate_new_checksums()
-#    new_checks.pickle_dump(_PICKLE_FILEPATH)
-#    #print(new_checks)
-#    changed, hash_check = compare_checksums()
-#    print(changed, hash_check)
+if __name__ == "__main__":
+
+    def test_checksums():
+        """Validating checksum table."""
+        changed, hash_check = compare_checksums()
+        if not changed:
+            return 
+        err = 0
+        #if hash_check.removed:
+        #if hash_check.added:
+        if len(hash_check.modified):
+            print(hash_check.modified)
+            err = 1
+        assert err == 0
+
+    assert test_checksums() == 0
