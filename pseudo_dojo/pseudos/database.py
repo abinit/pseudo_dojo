@@ -47,9 +47,25 @@ XC_TYPES = ["LDA", "GGA"]
 XC_FLAVORS  = ["PBE", "PW91"]
 
 class DojoTable(PseudoTable):
-    """Extends PseudoTable adding metatada on the generation of the table."""
+    """
+    A DojoTable is essentially a list of pseudopotential objects. 
 
+    attributes::
+        name:
+            Name of the table.
+        pp_type:
+            Type of pseudopotential containe in the table e.g NC, PAW.
+        xc_type:
+            Type of XC functional e.g. LDA, GGA, MGGA.
+        xc_flavor:
+            String specifying the particular parametrization e.g. PW91, PBE.
+        description:
+            String with basic information on the table. e.g list of references.
+        keywords:
+            Tags associated to the table.
+    """
     def __init__(self, pseudos, table_name, pp_type, xc_type, xc_flavor, description, keywords):
+        """Extends PseudoTable adding metatada on the generation of the table."""
         super(DojoTable, self).__init__(pseudos)
 
         assert (pp_type in PP_TYPES and 
@@ -100,10 +116,6 @@ class _PseudoDojoDatabase(dict):
     #"LDA"   "ATOMPAW"
     #"GGA"   "USPP"
     #        "USERS"
-
-    # xc_type = xc_type-[xc_flavor]
-    # dirname = pp_type _ xc_type _ table_name
-    #_SAVE_FILE = "pseudodojo_database.pickle"
 
     def __init__(self, top=None):
         super(_PseudoDojoDatabase, self).__init__()

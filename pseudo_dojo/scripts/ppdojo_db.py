@@ -6,13 +6,11 @@ import sys
 
 from argparse import ArgumentParser
 
-from pseudo_dojo.pseudos.database import pseudodojo_database
+from pseudo_dojo import pseudodojo_database
 
 __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
 __maintainer__ = "Matteo Giantomassi"
-
-################################################################################
 
 ##########################################################################################
 # Helper functions.
