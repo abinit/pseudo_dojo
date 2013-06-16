@@ -12,17 +12,13 @@ if sys.version[0:3] < '2.7':
     sys.stderr.write("ERROR: pseudo_dojo requires Python Version 2.7 or above. Exiting.")
     sys.exit(1)
 
-# A few handy globals
-isfile = os.path.isfile
-pjoin = os.path.join
-
 # A little utility we'll need below, since glob() does NOT allow you to do exclusion on multiple endings!
 def file_doesnt_end_with(test, endings):
     """
     Return true if test is a file and its name does NOT end with any
     of the strings listed in endings.
     """
-    if not isfile(test):
+    if not os.path.isfile(test):
         return False
     for e in endings:
         if test.endswith(e):
@@ -39,7 +35,7 @@ def file_doesnt_end_with(test, endings):
 #    long_desc = long_desc[ind + 1:]
 
 # release.py contains version, authors, license, url, keywords, etc.
-release_file = pjoin('pseudo_dojo','core','release.py')
+release_file = os.path.join('pseudo_dojo','core','release.py')
 
 with open(release_file) as f:
     code = compile(f.read(), release_file, 'exec')
@@ -63,10 +59,10 @@ def find_package_data():
 
 def find_scripts():
     """Find pseudo_dojo scripts."""
-    scripts = list()
+    scripts = []
     #
     # All python files in abipy/scripts
-    pyfiles = glob( pjoin('pseudo_dojo','scripts',"*.py") )
+    pyfiles = glob(os.path.join('pseudo_dojo','scripts',"*.py") )
     scripts.extend(pyfiles)
     return scripts
 
@@ -87,11 +83,10 @@ def cleanup():
 # List of external packages we rely on.
 # Note setup install will download them from Pypi if they are not available.
 install_requires = [
-"numpy",
-"scipy",
-#"pymatgen",
-#"matplotlib",
-#"periodictable",
+"numpy>=1.5",
+"scipy>=0.10",
+"matplotlib>=1.1",
+"pymatgen>=2.7.3",
 ]
 
 #---------------------------------------------------------------------------

@@ -8,7 +8,6 @@ import numpy as np
 
 from pymatgen.io.abinitio.workflow import DeltaTest
 
-from pseudo_dojo.refdata.deltafactor import DeltaFactorDataset
 
 ##########################################################################################
 
@@ -25,12 +24,13 @@ class DeltaFactory(object):
     Error = DeltaFactoryError
 
     def __init__(self):
+        from pseudo_dojo.refdata.deltafactor import DeltaFactorDataset
         self._delta_data = DeltaFactorDataset()
 
     def get_cif_path(self, symbol):
         """Returns the path to the CIF file associated to the given symbol."""
         try:
-            return self._delta_data.cif_paths[symbol]
+            return self._delta_data.get_cif_path(symbol)
         except KeyError:
             raise CIFNotFoundError("%s: cannot find CIF file for symbol" % symbol)
 
@@ -42,9 +42,9 @@ class DeltaFactory(object):
         :Note: 0.001 Rydberg is the value used with WIEN2K
         """
         try:
-            cif_path = self.get_cif_path[pseudo.symbol]
-        except CIFNotFoundError:
-            raise 
+            cif_path = self.get_cif_path(pseudo.symbol)
+        except Exception as exc:
+            raise CIFNotFoundError(str(exc))
 
         # Include spin polarization for O, Cr and Mn (antiferromagnetic) 
         # and Fe, Co, and Ni (ferromagnetic). 

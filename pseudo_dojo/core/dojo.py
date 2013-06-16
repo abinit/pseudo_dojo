@@ -53,6 +53,7 @@ class Dojo(object):
         classes.sort(key=lambda cls : cls.dojo_level)
 
         self.master_classes = classes
+
         if max_level is not None:
             self.master_classes = classes[:max_level+1]
 
@@ -61,7 +62,7 @@ class Dojo(object):
     def __str__(self):
         return repr_dojo_levels()
 
-    def challenge_pseudo(self, pseudo):
+    def challenge_pseudo(self, pseudo, **kwargs):
         """
         This method represents the main entry point for client code.
         The Dojo receives a pseudo-like object and delegate the execution
@@ -78,9 +79,8 @@ class Dojo(object):
         masters = [cls(runmode=self.runmode, max_ncpus=self.max_ncpus,
                        verbose=self.verbose) for cls in self.master_classes]
 
-        kwargs = {}
         for master in masters:
-            if master.accept_pseudo(pseudo):
+            if master.accept_pseudo(pseudo, **kwargs):
                 master.start_training(workdir, **kwargs)
 
 ################################################################################
@@ -123,7 +123,7 @@ class DojoMaster(object):
 
         return classes[0]
 
-    def accept_pseudo(self, pseudo):
+    def accept_pseudo(self, pseudo, **kwargs):
         """
         Returns True if the mast can train the pseudo.
         This method is called before testing the pseudo.
@@ -135,10 +135,22 @@ class DojoMaster(object):
 
         ready = False
         if pseudo.dojo_level is None:
-            # hints are missing
+            # Hints are missing
             ready = (self.dojo_level == 0)
         else:
-            ready = (pseudo.dojo_level == self.dojo_level - 1)
+            if pseudo.dojo_level == self.dojo_level:
+                # pseudo has already a test associated to this level.
+                # check if it has the same accuracy.
+                accuracy = kwargs.get("accuracy", "normal")
+                if accuracy not in pseudo.dojo_report[self.dojo_key]:
+                    ready = True
+                else:
+                    print("pseudo has already an entry for accuracy %s" % accuracy) 
+                    ready = False
+
+            else:
+                # Pseudo level must be one less than the level of the master.
+                ready = (pseudo.dojo_level == self.dojo_level - 1)
 
         if not ready:
             msg = "%s: Sorry, %s-san, I cannot train you" % (self.__class__.__name__, pseudo.name)
@@ -171,17 +183,23 @@ class DojoMaster(object):
         #if self.errors and not ignore_errors:
         #    pprint(self.errors)
         #    raise self.Error("Cannot update dojo data since self.errors is not empty")
+
+        dojo_key = self.dojo_key
         pseudo = self.pseudo
 
         # Read old_report from pseudo.
         old_report = pseudo.read_dojo_report()
 
-        for okey in old_report:
-            if okey in report and not overwrite:
-                raise self.Error("%k already exists in the old pseudo. Cannot overwrite data" % okey)
+        if dojo_key not in old_report:
+            # Create new entry
+            old_report[dojo_key] = {}
+        else:
+            # Check that we are not going to overwrite data.
+            if self.accuracy in old_report[dojo_key] and not overwrite_data:
+                raise self.Error("%s already exists in the old pseudo. Cannot overwrite data" % dojo_key)
 
         # Update the report card with the input report
-        old_report.update(report)
+        old_report[dojo_key].update(report[dojo_key])
 
         # Write new report
         pseudo.write_dojo_report(old_report)
@@ -228,8 +246,9 @@ class HintsMaster(DojoMaster):
         if os.path.exists(w.workdir):
             shutil.rmtree(w.workdir)
 
-        print("Converging %s in iterative mode with eslice %s, ncpus = 1" %
+        print("Converging %s in iterative mode with ecut_slice %s, ncpus = 1" %
               (pseudo.name, eslice))
+
         w.start()
         w.wait()
 
@@ -248,7 +267,7 @@ class HintsMaster(DojoMaster):
                                        runmode=self.runmode,
                                        atols_mev=atols_mev)
 
-        print("Finding optimal values for ecut in the interval %.1f %.1f %1.f,"
+        print("Finding optimal values for ecut in the interval %.1f %.1f %1.f, "
               "ncpus = %d" % (estart, estop, estep, self.max_ncpus))
 
         SimpleResourceManager(work, self.max_ncpus).run()
@@ -270,7 +289,6 @@ class HintsMaster(DojoMaster):
         isok = True
         #isok = not work_results.has_warnings
         #d["_strange"] =
-
         return {self.dojo_key: d}, isok
 
 ################################################################################
@@ -284,50 +302,53 @@ class DeltaFactorMaster(DojoMaster):
     dojo_key = "delta_factor"
 
     def challenge(self, workdir, **kwargs):
+        self.accuracy = kwargs.pop("accuracy", "normal")
+
         factory = DeltaFactory()
 
         workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level))
 
-        # FIXME  this is the value used in the deltafactor code.
-        #kppa = kwargs.get("kppa", 6750)
-        kppa = kwargs.get("kppa", 10)
+        # 6750 is the value used in the deltafactor code.
+        kppa = kwargs.get("kppa", 6750)
+        kppa = 1
 
         if self.verbose:
-            print("using kppa %d " % kppa)
-            print("Running delta_factor calculation with %d threads" %
-                  self.max_ncpus)
-            pprint(self.runmode)
+            print("Running delta_factor calculation with %d python threads" % self.max_ncpus)
+            print("Will use kppa = %d " % kppa)
+            print("Runmode",self.runmode)
 
-        work = factory.work_for_pseudo(workdir, self.runmode, self.pseudo, kppa=kppa)
+        work = factory.work_for_pseudo(workdir, self.runmode, self.pseudo, 
+            accuracy=self.accuracy, kppa=kppa, ecut=None)
 
-        retcodes = SimpleResourceManager(w, self.max_ncpus).run()
+        retcodes = SimpleResourceManager(work, self.max_ncpus).run()
 
         if self.verbose:
-            print("returncodes %s" % retcodes)
+            print("Returncodes %s" % retcodes)
 
         wf_results = work.get_results()
 
-        wf_results.json.dump(work.path_in_workdir("dojo_results.json"))
+        wf_results.json_dump(work.path_in_workdir("dojo_results.json"))
         return wf_results
 
     def make_report(self, results, **kwargs):
+        #print("results in makereport")
+        #pprint(results)
         isok = True
-        d = {
-            #"delta_factor" : ,
-            #"e0" :
-            #"v0" :
-            #"b"  :
-            #"bp" :
-            #"perr_v0" :
-            #"perr_b"  :
-            #"perr_bp" :
-        }
 
-        #for key in keys:
-        #    try:
-        #        d[key] = results[key]
-        #    except KeyError:
-        #        raise KeyError("%s is missing in input results" % key)
+        from pseudo_dojo.refdata.deltafactor import DeltaFactorDataset
+        wien2k = DeltaFactorDataset().get_entry(self.pseudo.symbol)
+
+        v0, b0, bp = results["v0"], results["b0"], results["bp"]
+
+        d = {self.accuracy: dict(
+                v0=v0,
+                b0=b0,
+                bp=bp,
+                rdelta_v0= 100 * (v0 - wien2k.v0) / wien2k.v0,
+                rdelta_b= 100 * (b0 - wien2k.b0) / wien2k.b0,
+                rdelta_bp= 100 * (bp - wien2k.bp) / wien2k.bp,
+            )
+        }
 
         return {self.dojo_key: d}, isok
 

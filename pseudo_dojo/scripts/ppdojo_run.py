@@ -7,14 +7,11 @@ import sys
 from argparse import ArgumentParser
 from pprint import pprint
 
-from pymatgen.io.abinitio.pseudo_dojo import Dojo
-from pymatgen.io.abinitio.task import RunMode
+from pseudo_dojo.core import RunMode, Dojo
 
 __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
 __maintainer__ = "Matteo Giantomassi"
-__status__ = "Development"
-__date__ = "$Feb 21, 2013M$"
 
 ################################################################################
 
@@ -29,28 +26,35 @@ def main():
 
     parser.add_argument('-l', '--max-level', type=int, default=0, help="Maximum DOJO level).")
 
-    #parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
-    #                     help='verbose, can be supplied multiple times to increase verbosity')
+    parser.add_argument('-a', '--accuracy', type=str, default="normal", help="Accuracy of the calculation.")
+
+
+    parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
+                         help='verbose, can be supplied multiple times to increase verbosity')
 
     parser.add_argument('pseudos', nargs='+', help='List of pseudopotential files')
 
     options = parser.parse_args()
 
+    pseudos = options.pseudos
     max_ncpus = options.max_ncpus
     mpi_ncpus = options.mpi_ncpus
 
     if mpi_ncpus > max_ncpus:
         raise ValueError("mpi_cpus %(mpi_ncpus)s > max_ncpus %(max_ncpus)s" % locals())
 
-    #runmode = RunMode.sequential()
     #runmode = RunMode.load_user_configuration()
     runmode = RunMode.mpi_parallel(mpi_ncpus=mpi_ncpus)
     pprint(runmode)
 
-    dojo = Dojo(runmode=runmode, max_ncpus=max_ncpus, max_level=options.max_level)
+    dojo = Dojo(runmode=runmode, 
+                max_ncpus=max_ncpus, 
+                max_level=options.max_level, 
+                verbose=options.verbose,
+                )
 
-    for pseudo in options.pseudos:
-        dojo.challenge_pseudo(pseudo)
+    for pseudo in pseudos:
+        dojo.challenge_pseudo(pseudo, accuracy=options.accuracy)
 
 ################################################################################
 

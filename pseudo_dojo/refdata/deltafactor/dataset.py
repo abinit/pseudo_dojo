@@ -79,6 +79,9 @@ class DeltaFactorDataset(object):
                 symbol, ext = os.path.splitext(entry)
                 d[symbol] = os.path.join(cif_dirpath, entry)
 
+    def get_cif_path(self, symbol):
+        return self.cif_paths[symbol]
+
     def get_entry(self, symbol, code=None):
         """
         Return the `DeltaFactorEntry` for the given chemical symbol.
