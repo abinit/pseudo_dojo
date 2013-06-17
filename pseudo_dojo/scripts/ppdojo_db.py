@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Search engine for the pseudodojo databases."""
+"""Simple search engine for the pseudodojo databases."""
 from __future__ import division, print_function
 
 import sys

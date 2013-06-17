@@ -50,14 +50,12 @@ class Dojo(object):
         # List of master classes that will be instanciated afterwards.
         # They are ordered according to the master level.
         classes = [m for m in DojoMaster.__subclasses__()]
-        classes.sort(key=lambda cls : cls.dojo_level)
+        classes.sort(key=lambda cls: cls.dojo_level)
 
         self.master_classes = classes
 
         if max_level is not None:
             self.master_classes = classes[:max_level+1]
-
-        #self.masters_of_pseudo = {}
 
     def __str__(self):
         return repr_dojo_levels()
@@ -108,8 +106,7 @@ class DojoMaster(object):
         self.max_ncpus = max_ncpus
         self.verbose = verbose
 
-        self.reports = []
-        self.errors = []
+        self.reports, self.errors = [], []
 
     @staticmethod
     def subclass_from_dojo_level(dojo_level):
@@ -180,10 +177,6 @@ class DojoMaster(object):
         """
         Write/update the DOJO_REPORT section of the pseudopotential.
         """
-        #if self.errors and not ignore_errors:
-        #    pprint(self.errors)
-        #    raise self.Error("Cannot update dojo data since self.errors is not empty")
-
         dojo_key = self.dojo_key
         pseudo = self.pseudo
 
@@ -198,7 +191,7 @@ class DojoMaster(object):
             if self.accuracy in old_report[dojo_key] and not overwrite_data:
                 raise self.Error("%s already exists in the old pseudo. Cannot overwrite data" % dojo_key)
 
-        # Update the report card with the input report
+        # Update old report card with the new one.
         old_report[dojo_key].update(report[dojo_key])
 
         # Write new report
@@ -281,14 +274,12 @@ class HintsMaster(DojoMaster):
     def make_report(self, results, **kwargs):
         d = {}
         for key in ["low", "normal", "high"]:
-            try:
-                d[key] = results[key]
-            except KeyError:
-                raise KeyError("%s is missing in input results" % key)
+            d[key] = results[key]
 
-        isok = True
-        #isok = not work_results.has_warnings
-        #d["_strange"] =
+        isok = not results.exceptions
+        if not isok:
+            d["_exceptions"] = str(results.exceptions)
+
         return {self.dojo_key: d}, isok
 
 ################################################################################
@@ -318,7 +309,7 @@ class DeltaFactorMaster(DojoMaster):
             print("Runmode",self.runmode)
 
         work = factory.work_for_pseudo(workdir, self.runmode, self.pseudo, 
-            accuracy=self.accuracy, kppa=kppa, ecut=None)
+                                       accuracy=self.accuracy, kppa=kppa, ecut=None)
 
         retcodes = SimpleResourceManager(work, self.max_ncpus).run()
 
@@ -331,25 +322,27 @@ class DeltaFactorMaster(DojoMaster):
         return wf_results
 
     def make_report(self, results, **kwargs):
-        #print("results in makereport")
-        #pprint(results)
-        isok = True
+        # Our results.
+        v0, b0, bp = results["v0"], results["b0"], results["bp"]
 
+        # Reference results (Wien2K).
         from pseudo_dojo.refdata.deltafactor import DeltaFactorDataset
         wien2k = DeltaFactorDataset().get_entry(self.pseudo.symbol)
 
-        v0, b0, bp = results["v0"], results["b0"], results["bp"]
-
-        d = {self.accuracy: dict(
+        d = dict(
                 v0=v0,
                 b0=b0,
                 bp=bp,
-                rdelta_v0= 100 * (v0 - wien2k.v0) / wien2k.v0,
-                rdelta_b= 100 * (b0 - wien2k.b0) / wien2k.b0,
-                rdelta_bp= 100 * (bp - wien2k.bp) / wien2k.bp,
+                rdelta_v0=100 * (v0 - wien2k.v0) / wien2k.v0,
+                rdelta_b=100 * (b0 - wien2k.b0) / wien2k.b0,
+                rdelta_bp=100 * (bp - wien2k.bp) / wien2k.bp,
             )
-        }
 
+        isok = not results.exceptions 
+        if not isok:
+            d["_exceptions"] = str(results.exceptions)
+
+        d = {self.accuracy: d}
         return {self.dojo_key: d}, isok
 
 ################################################################################
@@ -367,6 +360,7 @@ def dojo_key2level(key):
 def repr_dojo_levels():
     """String representation of the different levels of the Dojo."""
     level2key = {v: k for k,v in _key2level.items()}
+
     lines = ["Dojo level --> Challenge"]
     for k in sorted(level2key):
         lines.append("level %d --> %s" % (k, level2key[k]))

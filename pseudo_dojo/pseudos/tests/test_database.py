@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 from __future__ import division, print_function
 
-import os.path
+import os
 import unittest
 
 from pseudo_dojo.core import *
-from pseudo_dojo.pseudos.database import pseudodojo_database, XC_TYPES, compare_checksums
+from pseudo_dojo.pseudos.database import pseudodojo_database, XC_TYPES, ChecksumsDatabase
 
 ##########################################################################################
 
@@ -33,6 +33,37 @@ class PseudoDojoDatabaseTest(PseudoDojoTest):
         self.assertTrue(HGHK.name == "HGHK")
         self.assertTrue(len(HGHK) == 86)
         self.assertTrue(len(HGHK.Si) == 1)
+
+
+
+class ChecksumsDatabaseTest(PseudoDojoTest):
+
+    def setUp(self):
+        """Initialize the checksums database."""
+        self.checks_db = ChecksumsDatabase().generate()
+
+    def test_json(self):
+        """Test JSON coding-encoding."""
+        from tempfile import mkstemp
+        tmp_fh, tmp_filename = mkstemp()
+
+        checks_db = self.checks_db
+        checks_db.json_dump(tmp_filename)
+
+        same_db = ChecksumsDatabase.json_load(tmp_filename)
+        os.remove(tmp_filename)
+
+        self.assertTrue(type(same_db) == type(checks_db))
+        self.assertTrue(set(same_db.keys()) == set(checks_db.keys()))
+
+        err = 0
+        for k,v in same_db.items():
+            if same_db[k] != checks_db[k]:
+                err += 1
+                print(same_db[k], checks_db[k])
+
+        self.assertTrue(err==0)
+
 
 ##########################################################################################
 

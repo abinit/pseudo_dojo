@@ -43,8 +43,8 @@ def main():
     if mpi_ncpus > max_ncpus:
         raise ValueError("mpi_cpus %(mpi_ncpus)s > max_ncpus %(max_ncpus)s" % locals())
 
-    #runmode = RunMode.load_user_configuration()
     runmode = RunMode.mpi_parallel(mpi_ncpus=mpi_ncpus)
+    #runmode = RunMode.load_user_configuration()
     pprint(runmode)
 
     dojo = Dojo(runmode=runmode, 

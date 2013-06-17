@@ -7,6 +7,7 @@ import sys
 import os
 import imp
 import collections
+import json
 import hashlib
 import cPickle as pickle
 
@@ -24,8 +25,8 @@ __maintainer__ = "Matteo Giantomassi"
 
 _TOP = os.path.abspath(os.path.dirname(__file__))
 
-# Path to the database with hash values.
-_PICKLE_FILEPATH = os.path.join(_TOP, "md5.pickle")
+# Path to the database with hash values in JSON format
+_MD5CHECKS_PATH = os.path.join(_TOP, "md5checksums.json")
 
 # Tools and helper functions.
 def nested_dict_items(nested):
@@ -120,15 +121,18 @@ class _PseudoDojoDatabase(dict):
     def __init__(self, top=None):
         super(_PseudoDojoDatabase, self).__init__()
 
+        # Initialize the database with empty lists. 
         for key in PP_TYPES:
             self[key] = None
                                                                         
         for pp_type in self:
             self[pp_type] = {k: [] for k in XC_TYPES}
 
+        # Scan all direction starting from top, parse the pseudopotential 
+        # files and create the DojoTable.
         if top is None: top = _TOP
-        for root, dirs, files in os.walk(_TOP):
-            if root == _TOP or "__init__.py" not in files: 
+        for root, dirs, files in os.walk(top):
+            if root == top or "__init__.py" not in files: 
                 continue
 
             # Check metadata from __init__.py.
@@ -138,7 +142,7 @@ class _PseudoDojoDatabase(dict):
             if hasattr(m, "table_name"):
                 table = DojoTable.from_directory(root, metadata=m)
 
-                # Add table to the list
+                # Add the table to the list
                 self[m.pp_type][m.xc_type].append(table) 
 
     @property
@@ -158,6 +162,7 @@ class _PseudoDojoDatabase(dict):
         return PseudoTable(pseudos)
 
     def get_tables(self, pp_type, xc_type):
+        """Returns all the tables with the given xc_type."""
         return self[pp_type][xc_type]
 
     def nc_tables(self, xc_type):
@@ -252,12 +257,20 @@ class PseudoChecksums(collections.namedtuple("PseudoChecksums", "md5 ppdata_md5 
 
         return cls(md5=md5, ppdata_md5=ppdata_md5, dojo_md5=dojo_md5)
 
+    @classmethod
+    def from_dict(cls, d):
+        return cls(**d)
 
-class ChecksumDatabase(collections.OrderedDict):
+    @property
+    def to_dict(self):
+        return self._asdict()
+
+
+class ChecksumsDatabase(collections.OrderedDict):
     """OrderedDict with the hash values of the pseudopotentials."""
 
     def __init__(self, *args, **kwargs):
-        super(ChecksumDatabase, self).__init__(*args, **kwargs)
+        super(ChecksumsDatabase, self).__init__(*args, **kwargs)
 
     @classmethod
     def generate(cls):
@@ -267,7 +280,7 @@ class ChecksumDatabase(collections.OrderedDict):
         """
         def skip(file):
             # Skip private files 
-            if file[0] in [".", "_"] or file == os.path.basename(_PICKLE_FILEPATH):
+            if file[0] in [".", "_"] or file == os.path.basename(_MD5CHECKS_PATH):
                 return True 
 
             # Skip files with extension in skip_exts.
@@ -290,32 +303,42 @@ class ChecksumDatabase(collections.OrderedDict):
 
         return new
 
-    def pickle_dump(self, path):
-        """Save self in cpickle format in the given file."""
-        with open(path, "w") as fh:
-            pickle.dump(self, fh)
+    @classmethod
+    def from_dict(cls, d):
+        d = {k: PseudoChecksums(**d[k]) for k in d}
+        return cls(**d)
+                              
+    @property
+    def to_dict(self):
+        return {k:v.to_dict for k,v in self.items()}
 
-    @staticmethod
-    def pickle_load(path):
-        """Reconstruct an instance from a cpickle file."""
-        with open(path, "r") as fh:
-            return pickle.load(fh)
+    @classmethod
+    def json_load(cls, filename):
+        print(type(cls))
+        with open(filename, "r") as fp:
+            d = json.load(fp)
+            return cls.from_dict(d)
 
+    def json_dump(self, filename):
+        with open(filename, "w") as fp:
+            json.dump(self.to_dict, fp, indent=4)
 
 def _replace_reference_checksums(new_db):
     """Replace the reference hash table with new_db."""
+    # Keep a backup copy.
     import shutil
-    shutil.copy(_PICKLE_FILEPATH, _PICKLE_FILEPATH + ".old")
-    new_db.pickle_dump(_PICKLE_FILEPATH)
+    shutil.copy(_MD5CHECKS_PATH, _MD5CHECKS_PATH + ".old")
+    # Dump new file.
+    new_db.json_dump(_MD5CHECKS_PATH)
 
 
 def get_reference_checksums():
     """Return the database of reference hash values."""
-    return ChecksumDatabase.pickle_load(_PICKLE_FILEPATH)
+    return ChecksumsDatabase.json_load(_MD5CHECKS_PATH)
 
 def get_new_checksums():
     """Genererate a new database of hash values from the pseudopotential files."""
-    return ChecksumDatabase.generate()
+    return ChecksumsDatabase.generate()
 
 
 def compare_checksums():
@@ -326,8 +349,8 @@ def compare_checksums():
         changed is the number of files that are changed.
         hash_check is a namedtuple with the list of files that have been (removed, added, modified).
     """
-    new_checks = get_new_checksums()
     ref_checks = get_reference_checksums()
+    new_checks = get_new_checksums()
 
     removed, added, modified = [], [], []
 
@@ -348,20 +371,20 @@ def compare_checksums():
 
 ##########################################################################################
 
+def test_checksums():
+    """Validating checksum table."""
+    err = 0
+    changed, hash_check = compare_checksums()
+    if not changed:
+        return err
+
+    #if hash_check.removed:
+    #if hash_check.added:
+    if len(hash_check.modified):
+        print(hash_check.modified)
+        err = 1
+    assert err == 0
 
 if __name__ == "__main__":
-
-    def test_checksums():
-        """Validating checksum table."""
-        changed, hash_check = compare_checksums()
-        if not changed:
-            return 
-        err = 0
-        #if hash_check.removed:
-        #if hash_check.added:
-        if len(hash_check.modified):
-            print(hash_check.modified)
-            err = 1
-        assert err == 0
-
-    assert test_checksums() == 0
+    import unittest
+    unittest.main()
