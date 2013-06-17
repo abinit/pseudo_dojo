@@ -24,13 +24,13 @@ class DeltaFactory(object):
     Error = DeltaFactoryError
 
     def __init__(self):
-        from pseudo_dojo.refdata.deltafactor import DeltaFactorDataset
-        self._delta_data = DeltaFactorDataset()
+        from pseudo_dojo.refdata.deltafactor import df_database
+        self._dfdb = df_database()
 
     def get_cif_path(self, symbol):
         """Returns the path to the CIF file associated to the given symbol."""
         try:
-            return self._delta_data.get_cif_path(symbol)
+            return self._dfdb.get_cif_path(symbol)
         except KeyError:
             raise CIFNotFoundError("%s: cannot find CIF file for symbol" % symbol)
 

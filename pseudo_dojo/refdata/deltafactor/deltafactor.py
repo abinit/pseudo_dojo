@@ -6,13 +6,19 @@ import os.path
 import collections
 import numpy as np
 
+import pseudo_dojo.core.constants as const
+
 ##########################################################################################
 
-class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 bp")):
-    "Namedtuple storing the volume, the bulk-modulus and Bp for given symbol (a.u.)"
+class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 b1")):
+    """
+    Namedtuple storing the volume, the bulk-modulus and the pressure derivative b1.
+
+    v0 is in A**3/natom, b0 is in eV /A**3, b1 is dimensionless.
+    """
 
     def __new__(cls, *args):
-        "Extends the base class adding type conversion of arguments."
+        """Extends the base class adding type conversion of arguments."""
         new_args = len(args) * [None]
 
         for (i, arg) in enumerate(args):
@@ -22,9 +28,14 @@ class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 
 
         return super(cls, DeltaFactorEntry).__new__(cls, *new_args)
 
+    @property
+    def b0_GPa(self):
+        """b0 in GPa units."""
+        return self.b0 * const.eVA3_GPa
+
 def read_data_from_filename(filename):
     """
-    Reads (v0, b0, bp) from file filename
+    Reads (v0, b0, b1) from file filename
     Returns a dict of `DeltaFactorEntry` objects indexed by element symbol.
     """
     data = collections.OrderedDict()
@@ -35,24 +46,16 @@ def read_data_from_filename(filename):
             if line.startswith("#") or not line: 
                 continue
             tokens = line.split()
-            symbol = tokens[0]
+            symbol = tokens[0] 
+            # Conversion GPa --> eV / A**3
+            tokens[2] = float(tokens[2]) / const.eVA3_GPa
             data[symbol] = DeltaFactorEntry(*tokens)
     return data
 
 
-def singleton(cls):
-    """This decorator can be used to create a singleton out of a class."""
-    instances = {}
-    def getinstance():
-        if cls not in instances:
-            instances[cls] = cls()
-        return instances[cls]
-    return getinstance
-
 ##########################################################################################
 
-@singleton
-class DeltaFactorDataset(object):
+class DeltaFactorDatabase(object):
     """This object stores the deltafactor results."""
     # Reference code.
     _REF_CODE = "WIEN2k"
@@ -68,10 +71,9 @@ class DeltaFactorDataset(object):
                 code, ext = os.path.splitext(entry)
                 if code == "README": 
                     continue
-                #print(codename)
                 d[code] = read_data_from_filename(file_path)
 
-        self.cif_paths = d = {}
+        self._cif_paths = d = {}
 
         cif_dirpath = os.path.join(self.dirpath, "CIFs")
         for entry in os.listdir(cif_dirpath):
@@ -80,7 +82,8 @@ class DeltaFactorDataset(object):
                 d[symbol] = os.path.join(cif_dirpath, entry)
 
     def get_cif_path(self, symbol):
-        return self.cif_paths[symbol]
+        """Returns the path to the CIF file used for the given symbol."""
+        return self._cif_paths[symbol]
 
     def get_entry(self, symbol, code=None):
         """
@@ -97,7 +100,7 @@ class DeltaFactorDataset(object):
             code = self._REF_CODE 
         return self._data[code][symbol]
 
-    def plot_error_of_code(self, codename_or_data, values=("v0", "b0", "bp"), ref_code=None, **kwargs):
+    def plot_error_of_code(self, codename_or_data, values=("v0", "b0", "b1"), ref_code=None, **kwargs):
         import matplotlib.pyplot as plt
 
         # Extract keyword arguments.
@@ -115,7 +118,6 @@ class DeltaFactorDataset(object):
             data = self._data[codename_or_data]
 
         entries = ref_data.values()
-        #print(entries)
 
         # Build grid of plots.
         fig, ax_list = plt.subplots(nrows=len(values), ncols=1, sharex=True, squeeze=False)
@@ -159,11 +161,32 @@ class DeltaFactorDataset(object):
         return fig
 
 ##########################################################################################
+# Official API.
+##########################################################################################
 
-def compute_deltaf(v0w, b0w, b1w, v0f, b0f, b1f):
-    # GPa --> SI
-    b0w *= 10.**9. / 1.602176565e-19 / 10.**30.
-    b0f *= 10.**9. / 1.602176565e-19 / 10.**30.
+_DELTAF_DATABASE = DeltaFactorDatabase()
+
+def df_database():
+    """Returns the deltafactor database with the reference results."""
+    return _DELTAF_DATABASE
+
+def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False):
+    """
+    Compute the deltafactor. Based on the code of the offical calcDelta.py script.
+
+    Args:
+        v0w, b0w, b1w: 
+            Volume, bulk-modulus and pressure derivative of b0w (reference values).
+        v0f, b0f, b1f:
+            Volume, bulk-modulus and pressure derivative of b0w (computed values).
+
+    .. note:
+
+        v0 is A**3/natom, by default b0 is in eV/A**3, GPa units are used if b0_GPa is True.
+    """
+    if b0_GPa: # Conversion GPa --> eV/A**3
+        b0w /= const.eVA3_GPa
+        b0f /= const.eVA3_GPa
 
     Vi = 0.94 * v0w
     Vf = 1.06 * v0w
@@ -195,5 +218,5 @@ def compute_deltaf(v0w, b0w, b1w, v0f, b0f, b1f):
         Fi = Fi + x[n] * Vi**(-(2.*n-3.)/3.)
         Ff = Ff + x[n] * Vf**(-(2.*n-3.)/3.)
 
-    Delta1 = 1000. * np.sqrt((Ff - Fi) / (0.12 * v0w))
-    return Delta1
+    return 1000. * np.sqrt((Ff - Fi) / (0.12 * v0w))
+

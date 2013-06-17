@@ -8,7 +8,6 @@ import numpy as np
 from pprint import pprint
 from .deltaworks import DeltaFactory
 
-from pymatgen.util.num_utils import sort_dict
 from pymatgen.serializers.json_coders import json_pretty_dump
 from pymatgen.io.abinitio.task import RunMode
 from pymatgen.io.abinitio.pseudos import Pseudo
@@ -300,8 +299,8 @@ class DeltaFactorMaster(DojoMaster):
         workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level))
 
         # 6750 is the value used in the deltafactor code.
-        kppa = kwargs.get("kppa", 6750)
-        kppa = 1
+        #kppa = kwargs.get("kppa", 6750)
+        kppa = 100
 
         if self.verbose:
             print("Running delta_factor calculation with %d python threads" % self.max_ncpus)
@@ -322,21 +321,21 @@ class DeltaFactorMaster(DojoMaster):
         return wf_results
 
     def make_report(self, results, **kwargs):
-        # Our results.
-        v0, b0, bp = results["v0"], results["b0"], results["bp"]
+        # Get reference results (Wien2K).
+        from pseudo_dojo.refdata.deltafactor import df_database, df_compute
+        wien2k = df_database().get_entry(self.pseudo.symbol)
 
-        # Reference results (Wien2K).
-        from pseudo_dojo.refdata.deltafactor import DeltaFactorDataset
-        wien2k = DeltaFactorDataset().get_entry(self.pseudo.symbol)
+        # Get our results and compute deltafactor estimator.
+        v0, b0_GPa, b1 = results["v0"], results["b0_GPa"], results["b1"]
 
-        d = dict(
-                v0=v0,
-                b0=b0,
-                bp=bp,
-                rdelta_v0=100 * (v0 - wien2k.v0) / wien2k.v0,
-                rdelta_b=100 * (b0 - wien2k.b0) / wien2k.b0,
-                rdelta_bp=100 * (bp - wien2k.bp) / wien2k.bp,
-            )
+        dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1, v0, b0_GPa, b1, b0_GPa=True)
+        print("Deltafactor = %.3f meV" % dfact)
+
+        d = dict(v0=v0,
+                 b0_GPa=b0_GPa,
+                 b1=b1,
+                 dfact=dfact
+                )
 
         isok = not results.exceptions 
         if not isok:
