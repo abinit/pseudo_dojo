@@ -181,22 +181,6 @@ class _PseudoDojoDatabase(dict):
             pseudos.extend(table.pseudos_with_symbol(symbol))
         return PseudoTable(pseudos)
 
-    def write_hash_table(self, filename):
-        #with open(filename, "w") as fh
-        fh = sys.stdout
-                                                                               
-        def tail2(path):
-            head, tail0 = os.path.split(path)
-            head, tail1 = os.path.split(head)
-            return os.path.join(tail1, tail0)
-                                                                               
-        fh.write("# relative_path, md5 num_line\n")
-        for pseudo in self.all_pseudos():
-            #print type(pseudo), pseudo
-            checksum = pseudo.checksum()
-            relative_path = tail2(pseudo.path)
-            fh.write("%s %s %s\n" % (relative_path, checksum[0], checksum[1]))
-
     def show(self, verbose):
         """Print basic information on the database."""
         print(self)
@@ -216,6 +200,7 @@ def pseudodojo_database():
     return _OFFICIAL_DATABASE
 
 ##########################################################################################
+
 
 class PseudoChecksums(collections.namedtuple("PseudoChecksums", "md5 ppdata_md5 dojo_md5")):
     """
@@ -323,6 +308,10 @@ class ChecksumsDatabase(collections.OrderedDict):
         with open(filename, "w") as fp:
             json.dump(self.to_dict, fp, indent=4)
 
+#############################################
+# API for manipulating the checksum database.
+#############################################
+
 def _replace_reference_checksums(new_db):
     """Replace the reference hash table with new_db."""
     # Keep a backup copy.
@@ -339,7 +328,6 @@ def get_reference_checksums():
 def get_new_checksums():
     """Genererate a new database of hash values from the pseudopotential files."""
     return ChecksumsDatabase.generate()
-
 
 def compare_checksums():
     """
@@ -369,8 +357,6 @@ def compare_checksums():
     changed = sum(map(len, hash_check))
     return changed, hash_check
 
-##########################################################################################
-
 def test_checksums():
     """Validating checksum table."""
     err = 0
@@ -384,6 +370,8 @@ def test_checksums():
         print(hash_check.modified)
         err = 1
     assert err == 0
+
+##########################################################################################
 
 if __name__ == "__main__":
     import unittest

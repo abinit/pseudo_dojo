@@ -1,1 +1,1 @@
-from .dataset import DeltaFactorDataset
+from .dataset import DeltaFactorDataset, compute_deltaf
