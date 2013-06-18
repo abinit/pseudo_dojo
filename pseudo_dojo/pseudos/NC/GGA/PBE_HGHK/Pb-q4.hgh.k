@@ -15,6 +15,14 @@ Goedecker pseudopotential for Pb
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 40.668889993706337, 
+            "b1": 4.7738901148876121, 
+            "dfact": 3.8515975691958322, 
+            "v0": 31.582677045549801
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 

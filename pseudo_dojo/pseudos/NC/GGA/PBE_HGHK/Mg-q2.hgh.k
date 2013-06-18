@@ -10,6 +10,14 @@ Goedecker pseudopotential for Mg
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 34.734283244199901, 
+            "b1": 3.9125154890012359, 
+            "dfact": 2.8349680189826296, 
+            "v0": 23.293153911766066
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 

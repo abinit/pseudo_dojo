@@ -15,6 +15,14 @@ Goedecker pseudopotential for Po
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 45.507832449786463, 
+            "b1": 4.8745182948215309, 
+            "dfact": 0.70819216469619095, 
+            "v0": 37.644573260786657
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 
