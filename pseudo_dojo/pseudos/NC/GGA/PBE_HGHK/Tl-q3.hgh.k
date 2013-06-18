@@ -12,3 +12,22 @@ Goedecker pseudopotential for Tl
                                         0.01090389                                             kp22
      1.09379194    1     0.22764152                                                 rd nd hd11
                          0.01256903                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 31.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 8.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 13.0
+        }
+    }
+}
+</DOJO_REPORT>

@@ -14,3 +14,22 @@ Goedecker pseudopotential for Ag
                                         0.49159781                                             hd22
                         -0.04679548     0.08682477                                        kd11 kd12
                                        -0.09845003                                             kd22
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 90.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 45.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 55.0
+        }
+    }
+}
+</DOJO_REPORT>

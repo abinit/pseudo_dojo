@@ -6,3 +6,22 @@ Goedecker pseudopotential for B
      0.37132046    1     6.29728018                                                 rs ns hs11
      0.36456308    1     0.00000000                                                 rp np hp11
                          0.00085498                                                       kp11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 62.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 35.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 48.0
+        }
+    }
+}
+</DOJO_REPORT>

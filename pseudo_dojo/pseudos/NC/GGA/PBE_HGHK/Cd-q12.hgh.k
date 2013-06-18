@@ -14,3 +14,22 @@ Goedecker pseudopotential for Cd
                                        -1.74133209                                             hd22
                         -0.06128372     0.11410996                                        kd11 kd12
                                        -0.12938854                                             kd22
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 97.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 46.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 73.0
+        }
+    }
+}
+</DOJO_REPORT>

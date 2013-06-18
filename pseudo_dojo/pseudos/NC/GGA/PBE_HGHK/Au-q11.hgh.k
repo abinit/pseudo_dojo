@@ -13,3 +13,22 @@ Goedecker pseudopotential for Au
                                        -3.41323811                                             hd22
                         -0.12113041     0.26246301                                        kd11 kd12
                                        -0.29760507                                             kd22
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 61.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 32.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 51.0
+        }
+    }
+}
+</DOJO_REPORT>

@@ -3,6 +3,7 @@ from __future__ import division, print_function
 import os
 import abc
 import shutil
+import time
 import numpy as np
 
 from pprint import pprint
@@ -208,6 +209,7 @@ class DojoMaster(object):
 
     def start_training(self, workdir, **kwargs):
         """Start the tests in the working directory workdir."""
+        start_time = time.time()
         results = self.challenge(workdir, **kwargs)
 
         report, isok = self.make_report(results, **kwargs)
@@ -218,6 +220,8 @@ class DojoMaster(object):
             self.write_dojo_report(report)
         else:
             raise self.Error("isok: %s" % isok)
+
+        print("Elapsed time %.2f [s]" % (time.time() - start_time))
 
 ################################################################################
 
@@ -248,7 +252,7 @@ class HintsMaster(DojoMaster):
         if os.path.exists(w.workdir):
             shutil.rmtree(w.workdir)
 
-        print("Converging %s in iterative mode with ecut_slice %s, ncpus = 1" %
+        print("Converging %s in iterative mode with ecut_slice %s, ncpus = 1 ..." %
               (pseudo.name, eslice))
 
         w.start()
@@ -270,7 +274,7 @@ class HintsMaster(DojoMaster):
                                        atols_mev=atols_mev)
 
         print("Finding optimal values for ecut in the interval %.1f %.1f %1.f, "
-              "ncpus = %d" % (estart, estop, estep, self.max_ncpus))
+              "ncpus = %d ..." % (estart, estop, estep, self.max_ncpus))
 
         SimpleResourceManager(work, self.max_ncpus).run()
 
@@ -300,6 +304,14 @@ class DeltaFactorMaster(DojoMaster):
     """
     dojo_level = 1
     dojo_key = "delta_factor"
+
+    def accept_pseudo(self, pseudo, **kwargs):
+        """Returns True if the master can train the pseudo."""
+        ready = super(DeltaFactorMaster, self).accept_pseudo(pseudo, **kwargs)
+
+        # Do we have this element in the deltafactor database?
+        from pseudo_dojo.refdata.deltafactor import df_database
+        return (ready and df_database().has_symbol(self.pseudo.symbol))
 
     def challenge(self, workdir, **kwargs):
         self.accuracy = kwargs.pop("accuracy", "normal")

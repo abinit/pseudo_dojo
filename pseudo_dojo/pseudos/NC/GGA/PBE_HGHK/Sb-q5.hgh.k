@@ -12,3 +12,22 @@ Goedecker pseudopotential for Sb
                                         0.12905847                                             kp22
      0.88948576    1     0.27086864                                                 rd nd hd11
                          0.00696671                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 41.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 18.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 24.0
+        }
+    }
+}
+</DOJO_REPORT>

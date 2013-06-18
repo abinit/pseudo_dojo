@@ -9,3 +9,22 @@ Goedecker pseudopotential for Cl
                                         0.00000000                                             hp22
                          0.04528923    -0.03257832                                        kp11 kp12
                                         0.03854719                                             kp22
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 68.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 42.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 56.0
+        }
+    }
+}
+</DOJO_REPORT>

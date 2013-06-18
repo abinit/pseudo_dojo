@@ -15,3 +15,22 @@ Goedecker pseudopotential for Ba
                          0.01663250                                                       kd11
      0.30049773    1   -19.65379452                                                 rf nf hf11
                          0.00607912                                                       kf11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 74.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 36.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 54.0
+        }
+    }
+}
+</DOJO_REPORT>

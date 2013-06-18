@@ -12,3 +12,22 @@ Goedecker pseudopotential for Sn
                                         0.13255986                                             kp22
      0.99087302    1     0.19876639                                                 rd nd hd11
                          0.00451584                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 34.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 17.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 22.0
+        }
+    }
+}
+</DOJO_REPORT>

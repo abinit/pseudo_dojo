@@ -12,3 +12,22 @@ Goedecker pseudopotential for Xe
                                         0.10785815                                             kp22
      0.68554509    1     0.56018900                                                 rd nd hd11
                          0.01674755                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 60.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 23.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 35.0
+        }
+    }
+}
+</DOJO_REPORT>

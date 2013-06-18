@@ -12,3 +12,22 @@ Goedecker pseudopotential for Se
                                         0.11250945                                             kp22
      0.62560034    1     0.43979948                                                 rd nd hd11
                          0.00489231                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 44.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 29.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 38.0
+        }
+    }
+}
+</DOJO_REPORT>

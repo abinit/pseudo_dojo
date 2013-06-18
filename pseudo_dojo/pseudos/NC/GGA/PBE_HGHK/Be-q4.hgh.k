@@ -3,3 +3,22 @@ Goedecker pseudopotential for Be
 10 11 -1 6 2001 0  pspcod,pspxc,lmax,lloc,mmax,r2well
      0.32500000    4   -24.06746684    17.27902186    -3.33910629     0.16554912    rloc nloc c1 c2 c3 c4
     0                                                                               nnonloc
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 251.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 176.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 219.0
+        }
+    }
+}
+</DOJO_REPORT>
