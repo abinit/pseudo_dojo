@@ -11,3 +11,22 @@ Goedecker pseudopotential for Ca
                                         0.23626331                                             kp22
      0.67961713    1     0.05806826                                                 rd nd hd11
                          0.00046474                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 123.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 70.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 94.0
+        }
+    }
+}
+</DOJO_REPORT>

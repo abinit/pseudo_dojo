@@ -12,3 +12,22 @@ Goedecker pseudopotential for Rn
                                         0.06990310                                             kp22
      0.80634271    1     0.51103874                                                 rd nd hd11
                          0.03732898                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 53.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 24.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 33.0
+        }
+    }
+}
+</DOJO_REPORT>

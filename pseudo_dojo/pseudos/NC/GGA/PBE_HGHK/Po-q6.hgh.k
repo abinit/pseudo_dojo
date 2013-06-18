@@ -12,3 +12,22 @@ Goedecker pseudopotential for Po
                                        -0.02971692                                             kp22
      0.89014943    1     0.46253238                                                 rd nd hd11
                          0.02706723                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 43.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 17.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 25.0
+        }
+    }
+}
+</DOJO_REPORT>

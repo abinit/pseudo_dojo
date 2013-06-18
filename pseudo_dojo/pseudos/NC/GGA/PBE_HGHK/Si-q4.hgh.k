@@ -9,3 +9,22 @@ Goedecker pseudopotential for Si
                                         0.00000000                                             hp22
                          0.01877687    -0.01639758                                        kp11 kp12
                                         0.01940188                                             kp22
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 31.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 13.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 17.0
+        }
+    }
+}
+</DOJO_REPORT>

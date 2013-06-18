@@ -12,3 +12,22 @@ Goedecker pseudopotential for Kr
                                         0.13022759                                             kp22
      0.52469073    1     0.63559472                                                 rd nd hd11
                          0.00829734                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 55.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 34.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 43.0
+        }
+    }
+}
+</DOJO_REPORT>

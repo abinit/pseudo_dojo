@@ -9,3 +9,22 @@ Goedecker pseudopotential for Ar
                                         0.00000000                                             hp22
                          0.05709588    -0.03927810                                        kp11 kp12
                                         0.04647447                                             kp22
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 81.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 51.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 66.0
+        }
+    }
+}
+</DOJO_REPORT>

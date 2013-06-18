@@ -55,10 +55,16 @@ def read_data_from_filename(filename):
 
 ##########################################################################################
 
+class DeltaFactorDatabaseError(Exception):
+    """Exceptions raised by the database."""
+
+
 class DeltaFactorDatabase(object):
     """This object stores the deltafactor results."""
     # Reference code.
     _REF_CODE = "WIEN2k"
+
+    Error = DeltaFactorDatabaseError
 
     def __init__(self):
         self.dirpath = os.path.abspath(os.path.dirname(__file__))
@@ -81,6 +87,10 @@ class DeltaFactorDatabase(object):
                 symbol, ext = os.path.splitext(entry)
                 d[symbol] = os.path.join(cif_dirpath, entry)
 
+    def has_symbol(self, symbol):
+        """True if we have an entry for this symbol"""
+        return symbol in self._data[self._REF_CODE]
+
     def get_cif_path(self, symbol):
         """Returns the path to the CIF file used for the given symbol."""
         return self._cif_paths[symbol]
@@ -98,7 +108,10 @@ class DeltaFactorDatabase(object):
         """
         if code is None:
             code = self._REF_CODE 
-        return self._data[code][symbol]
+        try:
+            return self._data[code][symbol]
+        except KeyError:
+            raise self.Error("No entry found for code %s, symbol %s" % (code, symbol))
 
     def plot_error_of_code(self, codename_or_data, values=("v0", "b0", "b1"), ref_code=None, **kwargs):
         import matplotlib.pyplot as plt

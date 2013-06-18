@@ -12,3 +12,22 @@ Goedecker pseudopotential for Br
                                         0.11781131                                             kp22
      0.56771383    1     0.55926645                                                 rd nd hd11
                          0.00654644                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 52.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 30.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 38.0
+        }
+    }
+}
+</DOJO_REPORT>

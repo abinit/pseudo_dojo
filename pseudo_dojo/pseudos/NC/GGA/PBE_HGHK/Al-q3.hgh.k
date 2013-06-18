@@ -9,3 +9,22 @@ Goedecker pseudopotential for Al
                                         0.00000000                                             hp22
                          0.01323750    -0.01265070                                        kp11 kp12
                                         0.01496851                                             kp22
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 41.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 10.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 25.0
+        }
+    }
+}
+</DOJO_REPORT>

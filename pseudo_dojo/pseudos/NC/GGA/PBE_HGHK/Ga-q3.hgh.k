@@ -12,3 +12,22 @@ Goedecker pseudopotential for Ga
                                         0.01375235                                             kp22
      0.99942484    1     0.08951951                                                 rd nd hd11
                          0.00090534                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 28.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 11.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 18.0
+        }
+    }
+}
+</DOJO_REPORT>

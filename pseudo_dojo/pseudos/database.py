@@ -359,19 +359,28 @@ def compare_checksums():
 def test_checksums():
     """Validating checksum table."""
     err = 0
+
     changed, hash_check = compare_checksums()
     if not changed:
         return err
 
-    #if hash_check.removed:
-    #if hash_check.added:
+    if hash_check.removed:
+        err = -2
+        print("Warning: removed pseudos: %s" % hash_check.removed)
+
+    if hash_check.added:
+        err = -1
+        print("Comment: added pseudos: %s" % hash_check.added)
+
     if len(hash_check.modified):
-        print(hash_check.modified)
         err = 1
-    assert err == 0
+        print("Warning: modified pseudos %s" % hash_check.modified)
+
+    return err
 
 ##########################################################################################
 
 if __name__ == "__main__":
+    assert test_checksums() == 0
     import unittest
     unittest.main()

@@ -12,3 +12,22 @@ Goedecker pseudopotential for At
                                         0.14102275                                             kp22
      0.85406059    1     0.45259467                                                 rd nd hd11
                          0.03023997                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 51.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 22.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 30.0
+        }
+    }
+}
+</DOJO_REPORT>

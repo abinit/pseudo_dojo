@@ -12,3 +12,22 @@ Goedecker pseudopotential for Bi
                                         0.02494923                                             kp22
      0.96565479    1     0.34729822                                                 rd nd hd11
                          0.02035678                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 41.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 18.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 23.0
+        }
+    }
+}
+</DOJO_REPORT>

@@ -9,3 +9,22 @@ Goedecker pseudopotential for K
                                         2.91182945                                             hp22
                          0.08936707    -0.06986008                                        kp11 kp12
                                         0.08265956                                             kp22
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 111.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 56.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 82.0
+        }
+    }
+}
+</DOJO_REPORT>

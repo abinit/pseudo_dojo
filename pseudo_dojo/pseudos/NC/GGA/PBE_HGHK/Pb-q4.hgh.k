@@ -12,3 +12,22 @@ Goedecker pseudopotential for Pb
                                         0.02728312                                             kp22
      1.02501525    1     0.30170206                                                 rd nd hd11
                          0.01870296                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 39.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 16.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 20.0
+        }
+    }
+}
+</DOJO_REPORT>

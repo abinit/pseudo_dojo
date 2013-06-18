@@ -12,3 +12,22 @@ Goedecker pseudopotential for Ge
                                         0.04053983                                             kp22
      0.81391394    1     0.19717731                                                 rd nd hd11
                          0.00209896                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 42.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 29.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 36.0
+        }
+    }
+}
+</DOJO_REPORT>
