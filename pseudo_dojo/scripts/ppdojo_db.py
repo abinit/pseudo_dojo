@@ -34,7 +34,7 @@ def show_examples_and_exit(err_msg=None, error_code=0):
 ##########################################################################################
 
 def main():
-    parser = ArgumentParser(epilon=str_examples())
+    parser = ArgumentParser(epilog=str_examples())
 
     #parser.add_argument('--version', action='version', version="ppdojo_db.py " + __version__)
 
@@ -91,7 +91,6 @@ def main():
             # Sort attrs, then shuffle pseudos.
             attrs = sorted(attrs, key=lambda t:t[1])
             pseudos = [pseudos[a[0]] for a in attrs]
-
 
         for p in pseudos:
             print()

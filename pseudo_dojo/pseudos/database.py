@@ -358,7 +358,7 @@ def compare_checksums():
     changed = sum(map(len, hash_check))
     return changed, hash_check
 
-def test_checksums():
+def validate_checksums():
     """Validating checksum table."""
     err = 0
 
@@ -384,5 +384,5 @@ def test_checksums():
 
 if __name__ == "__main__":
     assert test_checksums() == 0
-    import unittest
-    unittest.main()
+    #import unittest
+    #unittest.main()

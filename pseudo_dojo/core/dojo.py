@@ -158,7 +158,7 @@ class DojoMaster(object):
                 if accuracy not in pseudo.dojo_report[self.dojo_key]:
                     ready = True
                 else:
-                    print("%s: pseudo has already an entry for accuracy %s" % (self.name, accuracy))
+                    print("%s: %s has already an entry for accuracy %s" % (self.name, pseudo.name, accuracy))
                     ready = False
 
             else:
@@ -329,7 +329,7 @@ class DeltaFactorMaster(DojoMaster):
 
         # 6750 is the value used in the deltafactor code.
         kppa = kwargs.get("kppa", 6750)
-        #kppa = 100
+        #kppa = 1
 
         if self.verbose:
             print("Running delta_factor calculation with %d python threads" % self.max_ncpus)
