@@ -51,7 +51,11 @@ def find_package_data():
     # We need to muck with the MANIFEST to get this to work
     package_data = {
         'pseudo_dojo.refdata.deltafactor.data' : ['*.txt', '*.gz', 'CIFs/*'],
-        'pseudo_dojo.pseudos' : ['*.json', 'NC/GGA/PBE_HGHK/*'],
+        'pseudo_dojo.pseudos' : [
+            "*.json", 
+            "NC/GGA/PBE_HGHK/*",
+            "NC/GGA/PBE_FHI/*",
+            ],
     }
     return package_data
 
