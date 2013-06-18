@@ -3,6 +3,7 @@
 from __future__ import division, print_function
 
 import sys
+import numpy as np
 
 from argparse import ArgumentParser
 
@@ -53,6 +54,8 @@ def main():
 
     p_find.add_argument('-t', '--table-name', default=None, help="Table name (default None).")  
 
+    p_find.add_argument('-s', '--sort', default=None, help="Sort pseudos according to this attribute.")  
+
     p_find.add_argument('symbol', nargs='?', help='Chemical symbol')
 
 
@@ -75,9 +78,26 @@ def main():
 
         pseudos = ppdb.nc_pseudos(symbol, xc_type, table_name=options.table_name)
 
+        # Sort pseudos.
+        if options.sort:
+            attrs = []
+            for i, p in pseudos:
+                try:
+                    a = getattr(p, options.sort)
+                except AttributeError:
+                    a = np.inf
+                attrs.append((i,a))
+
+            # Sort attrs, then shuffle pseudos.
+            attrs = sorted(attrs, key=lambda t:t[1])
+            pseudos = [pseudos[a[0]] for a in attrs]
+
+
         for p in pseudos:
             print()
             print(p)
+            if p.has_dojo_report: 
+                print(p.dojo_report)
             print()
 
     return 0

@@ -108,6 +108,11 @@ class DojoMaster(object):
 
         self.reports, self.errors = [], []
 
+    @property
+    def name(self):
+        """Name of the subclass."""
+        return self.__class__.__name__
+
     @staticmethod
     def subclass_from_dojo_level(dojo_level):
         """Returns a subclass of `DojoMaster` given the dojo_level."""
@@ -135,6 +140,7 @@ class DojoMaster(object):
 
         A master can train the pseudo if his level == pseudo.dojo_level + 1
         """
+
         if not isinstance(pseudo, Pseudo):
             pseudo = Pseudo.from_filename(pseudo)
 
@@ -152,7 +158,7 @@ class DojoMaster(object):
                 if accuracy not in pseudo.dojo_report[self.dojo_key]:
                     ready = True
                 else:
-                    print("pseudo has already an entry for accuracy %s" % accuracy) 
+                    print("%s: pseudo has already an entry for accuracy %s" % (self.name, accuracy))
                     ready = False
 
             else:
@@ -160,10 +166,10 @@ class DojoMaster(object):
                 ready = (pseudo_dojo_level == self.dojo_level - 1)
 
         if not ready:
-            msg = "%s: Sorry, %s-san, I cannot train you" % (self.__class__.__name__, pseudo.name)
+            msg = "%s: Sorry, %s-san, I cannot train you" % (self.name, pseudo.name)
             print(msg)
         else:
-            print("%s: Welcome %s-san, I'm your level-%d trainer" % (self.__class__.__name__, pseudo.name, self.dojo_level))
+            print("%s: Welcome %s-san, I'm your level-%d trainer" % (self.name, pseudo.name, self.dojo_level))
             self.pseudo = pseudo
 
         return ready

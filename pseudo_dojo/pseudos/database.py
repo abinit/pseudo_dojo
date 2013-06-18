@@ -201,6 +201,7 @@ def pseudodojo_database():
 ##########################################################################################
 
 
+#TODO this object can be moved to abinitio.
 class PseudoChecksums(collections.namedtuple("PseudoChecksums", "md5 ppdata_md5 dojo_md5")):
     """
     This object stores the checksums associated to the pseudopotential file. 
@@ -250,6 +251,7 @@ class PseudoChecksums(collections.namedtuple("PseudoChecksums", "md5 ppdata_md5 
         return self._asdict()
 
 
+
 class ChecksumsDatabase(collections.OrderedDict):
     """OrderedDict with the hash values of the pseudopotentials."""
 
@@ -259,8 +261,8 @@ class ChecksumsDatabase(collections.OrderedDict):
     @classmethod
     def generate(cls):
         """
-        Generate a new instance by computing the hash values of the pseudopotential
-        files stored in this subpackage.
+        Generate a new instance by computing the hash values 
+        of the pseudopotential files stored in this subpackage.
         """
         def skip(file):
             # Skip private files 
