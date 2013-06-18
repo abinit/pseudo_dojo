@@ -11,3 +11,22 @@ Goedecker pseudopotential for Rb
                                         3.09355639                                             kp22
      0.54179651    1     0.34566626                                                 rd nd hd11
                          0.00696032                                                       kd11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 101.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 76.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 90.0
+        }
+    }
+}
+</DOJO_REPORT>

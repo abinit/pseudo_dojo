@@ -15,3 +15,22 @@ Goedecker pseudopotential for Cs
                          0.01060475                                                       kd11
      0.59701503    1    -1.55056693                                                 rf nf hf11
                          0.00322244                                                       kf11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 68.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 31.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 52.0
+        }
+    }
+}
+</DOJO_REPORT>

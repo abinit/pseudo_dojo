@@ -12,6 +12,14 @@ Goedecker pseudopotential for Si
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 88.255182018349586, 
+            "b1": 4.2924156743729176, 
+            "dfact": 3.5667309934528402, 
+            "v0": 20.362809388151675
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 
