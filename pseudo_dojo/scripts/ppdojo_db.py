@@ -33,7 +33,7 @@ def show_examples_and_exit(err_msg=None, error_code=0):
 ##########################################################################################
 
 def main():
-    parser = ArgumentParser()
+    parser = ArgumentParser(epilon=str_examples())
 
     #parser.add_argument('--version', action='version', version="ppdojo_db.py " + __version__)
 

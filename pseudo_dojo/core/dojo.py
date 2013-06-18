@@ -307,7 +307,7 @@ class DeltaFactorMaster(DojoMaster):
         factory = DeltaFactory()
 
         # Will work in this directory.
-        workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level) + "ACC_" + self.accuracy)
+        workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level) + "_ACC_" + self.accuracy)
 
         # 6750 is the value used in the deltafactor code.
         kppa = kwargs.get("kppa", 6750)
@@ -316,8 +316,8 @@ class DeltaFactorMaster(DojoMaster):
         if self.verbose:
             print("Running delta_factor calculation with %d python threads" % self.max_ncpus)
             print("Will use kppa = %d " % kppa)
-            print("Accuracy = %s", self.accuracy)
-            print("Runmode",self.runmode)
+            print("Accuracy = %s" % self.accuracy)
+            print("Runmode = ",self.runmode)
 
         work = factory.work_for_pseudo(workdir, self.runmode, self.pseudo, 
                                        accuracy=self.accuracy, kppa=kppa, ecut=None)

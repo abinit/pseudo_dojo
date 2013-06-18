@@ -15,14 +15,31 @@ __maintainer__ = "Matteo Giantomassi"
 
 ################################################################################
 
+def str_examples():
+    examples = """
+      Example usage:
+      \n
+      ppdojo_run.py Si.fhi -m10           => Cutoff converge test for Si.fhi using up to 10 CPUs.
+      ppdojo_run.py Si.fhi -l1 -n10 -m20  => Deltafactor test using up to 20 CPUs, each task uses 10 MPI nodes.
+    """
+    return examples
+
+def show_examples_and_exit(err_msg=None, error_code=1):
+    "Display the usage of the script."
+    sys.stderr.write(str_examples())
+    if err_msg: 
+        sys.stderr.write("Fatal Error\n" + err_msg + "\n")
+    sys.exit(error_code)
+
+
 def main():
-    parser = ArgumentParser()
+    parser = ArgumentParser(epilog=str_examples())
 
     parser.add_argument('-m', '--max_ncpus', type=int, default=1,
-                        help="Maximum number of CPUs used by the DOJO.")
+                        help="Maximum number of CPUs employed for the DOJO trials.")
 
     parser.add_argument('-n', '--mpi-ncpus', type=int, default=1,
-                        help="Number of MPI Cpus per run).")
+                        help="Number of MPI CPUs per task).")
 
     parser.add_argument('-l', '--max-level', type=int, default=0, help="Maximum DOJO level).")
 
@@ -41,7 +58,8 @@ def main():
     mpi_ncpus = options.mpi_ncpus
 
     if mpi_ncpus > max_ncpus:
-        raise ValueError("mpi_cpus %(mpi_ncpus)s > max_ncpus %(max_ncpus)s" % locals())
+        err_msg = "mpi_cpus %(mpi_ncpus)s > max_ncpus %(max_ncpus)s" % locals()
+        show_examples_and_exit(err_msg=err_msg)
 
     runmode = RunMode.mpi_parallel(mpi_ncpus=mpi_ncpus)
     #runmode = RunMode.load_user_configuration()
