@@ -1,5 +1,6 @@
 from pymatgen.io.abinitio.task import RunMode
 from pymatgen.io.abinitio.pseudos import PseudoParser, PseudoTable
+
 #from pymatgen.core.lattice import Lattice
 #from pymatgen.core.structure import Structure
 #from pymatgen.core.design_patterns import Enum, AttrDict
@@ -12,7 +13,7 @@ from pymatgen.io.abinitio.pseudos import PseudoParser, PseudoTable
 #from .utils import abinit_output_iscomplete, File
 #from .netcdf import GSR_Reader
 #from .abiobjects import Smearing, AbiStructure, KSampling, Electrons
-#from .pseudos import Pseudo, PseudoTable, get_abinit_psp_dir
+#from .pseudos import Pseudo, PseudoTable
 #from .strategies import ScfStrategy
 #from .task import RunMode
 #from .eos import EOS

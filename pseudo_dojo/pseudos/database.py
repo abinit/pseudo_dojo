@@ -9,7 +9,6 @@ import imp
 import collections
 import json
 import hashlib
-import cPickle as pickle
 
 from pseudo_dojo.core import PseudoParser, PseudoTable
 
@@ -30,7 +29,7 @@ _MD5CHECKS_PATH = os.path.join(_TOP, "md5checksums.json")
 
 # Tools and helper functions.
 def nested_dict_items(nested):
-    "Iterate over the items of a nested Mapping (e.g. a dictionary)."
+    """Iterate over the items of a nested Mapping (e.g. a dictionary)."""
 
     for (key, value) in nested.items():
         if isinstance(value, collections.Mapping):
@@ -82,7 +81,7 @@ class DojoTable(PseudoTable):
 
     @classmethod
     def from_directory(cls, dirpath, metadata=None):
-        exclude_exts = [".py", ".pyc", ".ini", ".sh", ".gz", ".pl", ".txt", ".swp", ".data", "pickle",]
+        exclude_exts = [".py", ".pyc", ".ini", ".sh", ".gz", ".pl", ".txt", ".swp", ".data"]
         pseudos = PseudoParser().scan_directory(dirpath, exclude_exts=exclude_exts)
 
         m = metadata

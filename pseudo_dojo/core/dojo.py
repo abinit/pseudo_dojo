@@ -119,6 +119,14 @@ class DojoMaster(object):
 
         return classes[0]
 
+    def inspect_pseudo(self, pseudo):
+        "Returns the maximum level of the DOJO trials passed by the pseudo."
+        if not pseudo.dojo_report:
+            return None
+        else:
+            levels = [dojo_key2level(key) for key in pseudo.dojo_report]
+            return max(levels)
+
     def accept_pseudo(self, pseudo, **kwargs):
         """
         Returns True if the mast can train the pseudo.
@@ -130,11 +138,13 @@ class DojoMaster(object):
             pseudo = Pseudo.from_filename(pseudo)
 
         ready = False
-        if pseudo.dojo_level is None:
+        pseudo_dojo_level = self.inspect_pseudo(pseudo)
+        
+        if pseudo_dojo_level is None:
             # Hints are missing
             ready = (self.dojo_level == 0)
         else:
-            if pseudo.dojo_level == self.dojo_level:
+            if pseudo_dojo_level == self.dojo_level:
                 # pseudo has already a test associated to this level.
                 # check if it has the same accuracy.
                 accuracy = kwargs.get("accuracy", "normal")
@@ -146,7 +156,7 @@ class DojoMaster(object):
 
             else:
                 # Pseudo level must be one less than the level of the master.
-                ready = (pseudo.dojo_level == self.dojo_level - 1)
+                ready = (pseudo_dojo_level == self.dojo_level - 1)
 
         if not ready:
             msg = "%s: Sorry, %s-san, I cannot train you" % (self.__class__.__name__, pseudo.name)
@@ -299,8 +309,8 @@ class DeltaFactorMaster(DojoMaster):
         workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level))
 
         # 6750 is the value used in the deltafactor code.
-        #kppa = kwargs.get("kppa", 6750)
-        kppa = 100
+        kppa = kwargs.get("kppa", 6750)
+        #kppa = 100
 
         if self.verbose:
             print("Running delta_factor calculation with %d python threads" % self.max_ncpus)
