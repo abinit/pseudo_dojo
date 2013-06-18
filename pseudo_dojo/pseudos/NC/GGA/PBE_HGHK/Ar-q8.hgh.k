@@ -12,6 +12,14 @@ Goedecker pseudopotential for Ar
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 0.75796230673763021, 
+            "b1": 7.3520324739320237, 
+            "dfact": 0.014233819373198937, 
+            "v0": 52.174462315043101
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 

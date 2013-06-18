@@ -12,6 +12,14 @@ Goedecker pseudopotential for Al
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 77.521915683973319, 
+            "b1": 4.1706594562432171, 
+            "dfact": 0.33415688580619035, 
+            "v0": 16.486249676050761
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 

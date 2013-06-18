@@ -7,3 +7,22 @@ Goedecker pseudopotential for Mg
                                         0.92534825                                             hs22
      0.70715728    1     0.83115848                                                 rp np hp11
                          0.00414275                                                       kp11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 14.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 7.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 10.0
+        }
+    }
+}
+</DOJO_REPORT>

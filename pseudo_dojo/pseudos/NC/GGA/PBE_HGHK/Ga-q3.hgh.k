@@ -15,6 +15,14 @@ Goedecker pseudopotential for Ga
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 47.438163166893233, 
+            "b1": 5.3074653231341005, 
+            "dfact": 0.4833602703815762, 
+            "v0": 20.336711185895066
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 
