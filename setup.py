@@ -49,11 +49,9 @@ def find_package_data():
     """Find pseudo_dojo's package_data."""
     # This is not enough for these things to appear in an sdist.
     # We need to muck with the MANIFEST to get this to work
-    #package_data = {
-    #    'pseudo_dojo.testing' : ['*.txt'],
-    #    'pseudo_dojo.tests' : ['data/*'],
-    #}
-    package_data = {}
+    package_data = {
+        'pseudo_dojo.refdata.deltafactor.data' : ['*.txt', '*.gz', 'CIFs/*'],
+    }
     return package_data
 
 
@@ -94,14 +92,13 @@ install_requires = [
 #---------------------------------------------------------------------------
 
 # Get the set of packages to be included.
-#all_packages = find_packages(exclude=())
 my_packages = find_packages(exclude=())
 
 my_scripts = find_scripts()
 
 my_package_data = find_package_data()
-#data_files = find_data_files()
 
+#data_files = find_data_files()
 
 # Create a dict with the basic information
 # This dict is eventually passed to setup after additional keys are added.
