@@ -5,7 +5,7 @@ import os
 import unittest
 
 from pseudo_dojo.core import *
-from pseudo_dojo.pseudos.database import pseudodojo_database, XC_TYPES, ChecksumsDatabase
+from pseudo_dojo.pseudos.database import pseudodojo_database, ChecksumsDatabase
 
 ##########################################################################################
 
@@ -20,20 +20,38 @@ class PseudoDojoDatabaseTest(PseudoDojoTest):
         """Basic tests for PseudoDojoDatabase."""
         pp_db = self.pp_db
 
-        nc_pseudos = pp_db.nc_findall_pseudos()
+        nc_pseudos = pp_db.nc_findall()
         self.assertTrue(nc_pseudos.allnc)
 
-        for xc_type in XC_TYPES:
+        for xc_type in pp_db.XC_TYPES:
             nc_tables = pp_db.nc_tables(xc_type)
             for table in nc_tables:
                 print(table)
                 self.assertTrue(table.xc_type == xc_type)
 
-        HGHK = pp_db.PBE_HGHK_TABLE
+        HGHK = pp_db.GGA_PBE_HGHK
         self.assertTrue(HGHK.name == "HGHK")
         self.assertTrue(len(HGHK) == 86)
         self.assertTrue(len(HGHK.Si) == 1)
 
+    def test_findall(self):
+        pp_db = self.pp_db
+        HGHK = pp_db.GGA_PBE_HGHK
+
+        query = {"Z": 81}
+        res = pp_db.findall("NC", query)
+        self.assertTrue(all(p.Z == 81 for p in res))
+
+        query = {"Z": 81, "Z_val": 3}
+        pseudos = pp_db.findall("NC", query)
+        for p in pseudos: 
+            #print(p)
+            print(p.Z, p.Z_val)
+            #print(p)
+
+        self.assertTrue(len(pp_db.findall("NC", query)) == 1)
+        #assert 0
+        #query = {"l_max": 2}, {"zval": { ".in.": [1:3]}}
 
 
 class ChecksumsDatabaseTest(PseudoDojoTest):

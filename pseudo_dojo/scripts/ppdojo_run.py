@@ -36,20 +36,22 @@ def main():
     parser = ArgumentParser(epilog=str_examples())
 
     parser.add_argument('-m', '--max_ncpus', type=int, default=1,
-                        help="Maximum number of CPUs employed for the DOJO trials.")
+                        help="Maximum number of CPUs that can be used by the DOJO.")
 
     parser.add_argument('-n', '--mpi-ncpus', type=int, default=1,
-                        help="Number of MPI CPUs per task).")
+                        help="Number of MPI processes per task).")
 
-    parser.add_argument('-l', '--max-level', type=int, default=0, help="Maximum DOJO level).")
+    parser.add_argument('-l', '--max-level', type=int, default=0, 
+                        help="Maximum DOJO level (default 0 i.e. ecut hints).")
 
-    parser.add_argument('-a', '--accuracy', type=str, default="normal", help="Accuracy of the calculation.")
+    parser.add_argument('-a', '--accuracy', type=str, default="normal", 
+                        help="Accuracy of the calculation (low-normal-high). Default: normal.")
 
 
     parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
-                         help='verbose, can be supplied multiple times to increase verbosity')
+                         help='Verbose, can be supplied multiple times to increase verbosity')
 
-    parser.add_argument('pseudos', nargs='+', help='List of pseudopotential files')
+    parser.add_argument('pseudos', nargs='+', help='List of pseudopotential files.')
 
     options = parser.parse_args()
 
@@ -58,7 +60,7 @@ def main():
     mpi_ncpus = options.mpi_ncpus
 
     if mpi_ncpus > max_ncpus:
-        err_msg = "mpi_cpus %(mpi_ncpus)s > max_ncpus %(max_ncpus)s" % locals()
+        err_msg = "mpi_cpus %(mpi_ncpus)s cannot be greater than max_ncpus %(max_ncpus)s" % locals()
         show_examples_and_exit(err_msg=err_msg)
 
     runmode = RunMode.mpi_parallel(mpi_ncpus=mpi_ncpus)
@@ -73,6 +75,8 @@ def main():
 
     for pseudo in pseudos:
         dojo.challenge_pseudo(pseudo, accuracy=options.accuracy)
+
+    return 0
 
 ################################################################################
 

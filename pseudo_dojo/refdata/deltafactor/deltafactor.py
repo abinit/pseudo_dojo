@@ -16,7 +16,6 @@ class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 
 
     v0 is in A**3/natom, b0 is in eV /A**3, b1 is dimensionless.
     """
-
     def __new__(cls, *args):
         """Extends the base class adding type conversion of arguments."""
         new_args = len(args) * [None]
@@ -35,7 +34,7 @@ class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 
 
 def read_data_from_filename(filename):
     """
-    Reads (v0, b0, b1) from file filename
+    Reads (v0, b0, b1) from file filename. b0 is in GPa.
     Returns a dict of `DeltaFactorEntry` objects indexed by element symbol.
     """
     data = collections.OrderedDict()
@@ -60,7 +59,10 @@ class DeltaFactorDatabaseError(Exception):
 
 
 class DeltaFactorDatabase(object):
-    """This object stores the deltafactor results."""
+    """
+    This object stores the deltafactor results and 
+    provides methods to access the data.
+    """
     # Reference code.
     _REF_CODE = "WIEN2k"
 
@@ -174,7 +176,7 @@ class DeltaFactorDatabase(object):
         return fig
 
 ##########################################################################################
-# Official API.
+# Official API to access the database.
 ##########################################################################################
 
 _DELTAF_DATABASE = DeltaFactorDatabase()

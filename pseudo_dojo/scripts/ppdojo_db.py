@@ -14,8 +14,6 @@ __version__ = "0.1"
 __maintainer__ = "Matteo Giantomassi"
 
 ##########################################################################################
-# Helper functions.
-
 
 def str_examples():
     examples = """Example usage:\n
@@ -47,7 +45,7 @@ def main():
     # Subparser for show command.
     p_show = subparsers.add_parser('show', help='Show info on the database.')
 
-    # Subparser for show command.
+    # Subparser for nc_find command.
     p_find = subparsers.add_parser('nc_find', help='Find pseudopotentials in the database.')
 
     p_find.add_argument('-xc', '--xc-type', default="GGA", help="XC functional type. (default GGA).")  
@@ -70,7 +68,11 @@ def main():
     ppdb = pseudodojo_database()
 
     if options.command == "show":
-        ppdb.show(verbose)
+        #pp_type = options.pp_type
+        #xc_type = options.xc_type
+        pp_type = "NC"
+        xc_type = "GGA"
+        ppdb.show(pp_type, xc_type, verbose=verbose)
 
     if options.command == "nc_find":
         symbol = options.symbol

@@ -76,10 +76,15 @@ class Dojo(object):
         # Build master instances.
         masters = [cls(runmode=self.runmode, max_ncpus=self.max_ncpus,
                        verbose=self.verbose) for cls in self.master_classes]
-
+        isok = False
         for master in masters:
             if master.accept_pseudo(pseudo, **kwargs):
-                master.start_training(workdir, **kwargs)
+                isok = master.start_training(workdir, **kwargs)
+                if not isok:
+                    print("master: %s returned isok %s.\n Skipping next trials!" % (master.name, isok))
+                    break
+
+        return isok
 
 ################################################################################
 
@@ -106,8 +111,6 @@ class DojoMaster(object):
         self.max_ncpus = max_ncpus
         self.verbose = verbose
 
-        self.reports, self.errors = [], []
-
     @property
     def name(self):
         """Name of the subclass."""
@@ -120,6 +123,7 @@ class DojoMaster(object):
         for cls in DojoMaster.__subclasses__():
             if cls.dojo_level == dojo_level:
                 classes.append(cls)
+
         if len(classes) != 1:
             raise self.Error("Found %d masters with dojo_level %d" % (len(classes), dojo_level))
 
@@ -222,12 +226,10 @@ class DojoMaster(object):
 
         json_pretty_dump(results, os.path.join(workdir, "report.json"))
 
-        if isok:
-            self.write_dojo_report(report)
-        else:
-            raise self.Error("isok: %s" % isok)
+        self.write_dojo_report(report)
 
         print("Elapsed time %.2f [s]" % (time.time() - start_time))
+        return isok
 
 ################################################################################
 
@@ -240,10 +242,12 @@ class HintsMaster(DojoMaster):
     dojo_level = 0
     dojo_key = "hints"
 
+    # Absolute tolerance for low,normal,high accuracy.
+    _ATOLS_MEV = (10, 1, 0.1)
+
     def challenge(self, workdir, **kwargs):
         pseudo = self.pseudo
 
-        atols_mev = (10, 1, 0.1)
         factory = PPConvergenceFactory()
 
         workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level))
@@ -253,7 +257,7 @@ class HintsMaster(DojoMaster):
         eslice = slice(5, None, estep)
 
         w = factory.work_for_pseudo(workdir, pseudo, eslice,
-                                    runmode=self.runmode, atols_mev=atols_mev)
+                                    runmode=self.runmode, atols_mev=self._ATOLS_MEV)
 
         if os.path.exists(w.workdir):
             shutil.rmtree(w.workdir)
@@ -277,7 +281,7 @@ class HintsMaster(DojoMaster):
 
         work = factory.work_for_pseudo(workdir, pseudo, erange,
                                        runmode=self.runmode,
-                                       atols_mev=atols_mev)
+                                       atols_mev=self._ATOLS_MEV)
 
         print("Finding optimal values for ecut in the interval %.1f %.1f %1.f, "
               "ncpus = %d ..." % (estart, estop, estep, self.max_ncpus))

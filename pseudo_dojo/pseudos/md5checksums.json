@@ -1,8 +1,8 @@
 {
     "NC/GGA/PBE_HGHK/Au-q11.hgh.k": {
-        "md5": "f95c1aa5f4623ba03948d9758b7ceb64", 
+        "md5": "6c68336773cac5fc302d82c10c5a107e", 
         "ppdata_md5": "f95c1aa5f4623ba03948d9758b7ceb64", 
-        "dojo_md5": null
+        "dojo_md5": "b73294384e9a3572eefc0fd4ef1fbd31"
     }, 
     "NC/GGA/PBE_HGHK/Pt-q18.hgh.k": {
         "md5": "60cde1e7c44e5795cfbefe2776d13717", 
@@ -25,9 +25,9 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Be-q4.hgh.k": {
-        "md5": "85fdf22203b18dd0ac7f14e52a8a83ff", 
+        "md5": "c108ab616b74a0f0b8d9a585926b0576", 
         "ppdata_md5": "85fdf22203b18dd0ac7f14e52a8a83ff", 
-        "dojo_md5": null
+        "dojo_md5": "ebc9820a8e0725cc58772c494cd1d83a"
     }, 
     "NC/GGA/PBE_HGHK/Rh-q9.hgh.k": {
         "md5": "164a2418f5b27987c7f4f7f1ffc76f31", 
@@ -40,18 +40,23 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/I-q7.hgh.k": {
-        "md5": "1492e94f786cceb561bacd856c101562", 
+        "md5": "df2349da52cdb49e85326e4b9637e62d", 
         "ppdata_md5": "1492e94f786cceb561bacd856c101562", 
-        "dojo_md5": null
+        "dojo_md5": "c9c84e7488e672d8e0532262d37dd95f"
     }, 
     "NC/GGA/PBE_HGHK/Sb-q5.hgh.k": {
-        "md5": "a8caac76521296927a9b0f6acbbb9ecc", 
+        "md5": "f19e194e68bf835f8fa40455ccca7648", 
         "ppdata_md5": "a8caac76521296927a9b0f6acbbb9ecc", 
-        "dojo_md5": null
+        "dojo_md5": "647f0e115beb19f36ea7665b7a8136fd"
     }, 
     "NC/GGA/PBE_HGHK/Pd-q10.hgh.k": {
         "md5": "85e2787792e91b92b3294fa5f55da194", 
         "ppdata_md5": "85e2787792e91b92b3294fa5f55da194", 
+        "dojo_md5": null
+    }, 
+    "NC/GGA/PBE_HGHK/Ta-q5.hgh.k": {
+        "md5": "089888642ef07d4fc01ce6b2c073dad1", 
+        "ppdata_md5": "089888642ef07d4fc01ce6b2c073dad1", 
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Pd-q18.hgh.k": {
@@ -65,14 +70,14 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/B-q3.hgh.k": {
-        "md5": "bee9565d3f50379ab829822fab7ff645", 
+        "md5": "b80bf2a603ffced063b719f39e065485", 
         "ppdata_md5": "bee9565d3f50379ab829822fab7ff645", 
-        "dojo_md5": null
+        "dojo_md5": "956af8f8dccfe2669db71408f0741df9"
     }, 
     "NC/GGA/PBE_HGHK/Ar-q8.hgh.k": {
-        "md5": "1dce97b79498ec961f43cf5f49f63e21", 
+        "md5": "11f67e24aa7052aba99ef566ae59856e", 
         "ppdata_md5": "1dce97b79498ec961f43cf5f49f63e21", 
-        "dojo_md5": null
+        "dojo_md5": "5282852e20459fedb3ea018bffe37ed8"
     }, 
     "NC/GGA/PBE_HGHK/Na-q9.hgh.k": {
         "md5": "351773946ef77d1fc407bada23a52d65", 
@@ -90,19 +95,19 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Cd-q12.hgh.k": {
-        "md5": "31214b544230291f10d3c0cffea4b603", 
+        "md5": "5256c4c03c3a0774568e42ef6b4668ef", 
         "ppdata_md5": "31214b544230291f10d3c0cffea4b603", 
-        "dojo_md5": null
+        "dojo_md5": "c1ad2629d9486eb14d658f88debbaff5"
     }, 
     "NC/GGA/PBE_HGHK/Se-q6.hgh.k": {
-        "md5": "2e1504df6549d539f9684535c1f50704", 
+        "md5": "cf478070929625e1a469748b29b651fd", 
         "ppdata_md5": "2e1504df6549d539f9684535c1f50704", 
-        "dojo_md5": null
+        "dojo_md5": "a893c878e9f56a1cd84f3d61fd993720"
     }, 
     "NC/GGA/PBE_HGHK/Rn-q8.hgh.k": {
-        "md5": "d61c35c70c4abbd40104877692603d48", 
+        "md5": "af06d8a95c7a1f2a747bc79a5b623d2f", 
         "ppdata_md5": "d61c35c70c4abbd40104877692603d48", 
-        "dojo_md5": null
+        "dojo_md5": "4e96af2e59140239880f5166164fbefb"
     }, 
     "NC/GGA/PBE_HGHK/Pt-q10.hgh.k": {
         "md5": "4808d2fdf0bb9dea09c82b30b24919b6", 
@@ -110,9 +115,9 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Au-q19.hgh.k": {
-        "md5": "fa0f17d314906c08e716b359a1f2bea1", 
+        "md5": "6248193571cf552fb20f57c2d633605a", 
         "ppdata_md5": "fa0f17d314906c08e716b359a1f2bea1", 
-        "dojo_md5": null
+        "dojo_md5": "ee6a41d4f1dd46f199c6d4e4191f5edc"
     }, 
     "NC/GGA/PBE_HGHK/Te-q6.hgh.k": {
         "md5": "b8e39cf16392ad63dd48fb69b64bc015", 
@@ -135,14 +140,14 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Si-q4.hgh.k": {
-        "md5": "d39ddb20c05fe568ee2ff376111fe2b4", 
+        "md5": "31cad100f70dc9603261f00c0fbbf296", 
         "ppdata_md5": "d39ddb20c05fe568ee2ff376111fe2b4", 
-        "dojo_md5": null
+        "dojo_md5": "445ec382bbd658869e3379390b3fb7c7"
     }, 
     "NC/GGA/PBE_HGHK/Sn-q4.hgh.k": {
-        "md5": "1a98bd88bd4ae69f5295e4d244267d0b", 
+        "md5": "0e81fc41f8d4c7f57861160d10afbcc0", 
         "ppdata_md5": "1a98bd88bd4ae69f5295e4d244267d0b", 
-        "dojo_md5": null
+        "dojo_md5": "123a17c28294e8f61ccad5d56ee7c3f5"
     }, 
     "NC/GGA/PBE_HGHK/Cr-q14.hgh.k": {
         "md5": "eaf3d655225c88e152724864b60c2052", 
@@ -170,14 +175,14 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Ga-q3.hgh.k": {
-        "md5": "196eab0b38cf822ec385a100f605a7ca", 
+        "md5": "f8e676c7e00ff74d88c6b0bf40e7d097", 
         "ppdata_md5": "196eab0b38cf822ec385a100f605a7ca", 
-        "dojo_md5": null
+        "dojo_md5": "28c5a19e30846853e6eb5c5a28a164bd"
     }, 
     "NC/GGA/PBE_HGHK/Pb-q4.hgh.k": {
-        "md5": "05a3c457ea981d957d34231d5a53bda2", 
+        "md5": "e4f3bad23e7a845cab0bd9d81ce54946", 
         "ppdata_md5": "05a3c457ea981d957d34231d5a53bda2", 
-        "dojo_md5": null
+        "dojo_md5": "2a8f304f463fd282f2bfff21100dfb22"
     }, 
     "NC/GGA/PBE_HGHK/Ir-q17.hgh.k": {
         "md5": "f821be569a13ce2d9e9427d0a377ce4c", 
@@ -195,9 +200,9 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/K-q9.hgh.k": {
-        "md5": "7c52eeeb46a6bc36b0bdc35d6a11735d", 
+        "md5": "2d475de4c327a02a99d458ca2074580b", 
         "ppdata_md5": "7c52eeeb46a6bc36b0bdc35d6a11735d", 
-        "dojo_md5": null
+        "dojo_md5": "8dbc97cfa60d8fa868481ce711cc1225"
     }, 
     "NC/GGA/PBE_HGHK/Mo-q14.hgh.k": {
         "md5": "8fd59ed3eb01b6a0182ea492bd2caa23", 
@@ -205,19 +210,14 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/In-q3.hgh.k": {
-        "md5": "559601421332d8e26b573374bcadced3", 
+        "md5": "489f83f58ee6648c0907101ed94d30bb", 
         "ppdata_md5": "559601421332d8e26b573374bcadced3", 
-        "dojo_md5": null
+        "dojo_md5": "bf176d099fef301a1a26bfc6048c719d"
     }, 
     "NC/GGA/PBE_HGHK/Ag-q11.hgh.k": {
-        "md5": "962cabf4e2379ceb5b7c8950fb06cbc7", 
+        "md5": "9af41d6da8a0e599f01ed9359dfbd03c", 
         "ppdata_md5": "962cabf4e2379ceb5b7c8950fb06cbc7", 
-        "dojo_md5": null
-    }, 
-    "NC/GGA/PBE_HGHK/Ta-q5.hgh.k": {
-        "md5": "089888642ef07d4fc01ce6b2c073dad1", 
-        "ppdata_md5": "089888642ef07d4fc01ce6b2c073dad1", 
-        "dojo_md5": null
+        "dojo_md5": "da9e6b59fe0d6b09a405b6eab0e088d1"
     }, 
     "NC/GGA/PBE_HGHK/Ne-q8.hgh.k": {
         "md5": "251344fa63540d745fc5fcf56334d1ca", 
@@ -225,9 +225,9 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/H-q1.hgh.k": {
-        "md5": "060107ab4097541f391efcf28714ebdc", 
+        "md5": "d31466e20181ed77a337b3e682645ef2", 
         "ppdata_md5": "060107ab4097541f391efcf28714ebdc", 
-        "dojo_md5": null
+        "dojo_md5": "20671492c84ebbcec748af30b99bfd87"
     }, 
     "NC/GGA/PBE_HGHK/Nb-q13.hgh.k": {
         "md5": "2093e861d4b5cc7c671f4317230a3f7b", 
@@ -235,14 +235,14 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Al-q3.hgh.k": {
-        "md5": "4488d53abed9a9ec10c80e40865c285e", 
+        "md5": "8137aae12a8f9126fe25c285673a305e", 
         "ppdata_md5": "4488d53abed9a9ec10c80e40865c285e", 
-        "dojo_md5": null
+        "dojo_md5": "1d3ada95cb8e3ecc4f2a88554d4caa84"
     }, 
     "NC/GGA/PBE_HGHK/Cs-q9.hgh.k": {
-        "md5": "79b88a6bb9a14d0b5dc506bc3b47b580", 
+        "md5": "936db3b7590fa5f81a6d352a3e4ab1c9", 
         "ppdata_md5": "79b88a6bb9a14d0b5dc506bc3b47b580", 
-        "dojo_md5": null
+        "dojo_md5": "f6b28a7d6a733de0c414174ff953e24c"
     }, 
     "NC/GGA/PBE_HGHK/Os-q16.hgh.k": {
         "md5": "f8730789c4343ba5ca136a6099bba8b8", 
@@ -260,9 +260,9 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Mg-q2.hgh.k": {
-        "md5": "4d32c4548d3cf50fb69d99694d45dcb6", 
+        "md5": "13b3a61d6ec48f6697075edaebafa890", 
         "ppdata_md5": "4d32c4548d3cf50fb69d99694d45dcb6", 
-        "dojo_md5": null
+        "dojo_md5": "14f54920dce6d2259c3cc0fe4d6455f6"
     }, 
     "NC/GGA/PBE_HGHK/Co-q17.hgh.k": {
         "md5": "a6bca585098ec1bdbbb3c66da29996c9", 
@@ -275,9 +275,9 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Xe-q8.hgh.k": {
-        "md5": "5a1e16b04f89aaaf4272145db5036432", 
+        "md5": "6db83bdb81635703bbd995a10e91bc06", 
         "ppdata_md5": "5a1e16b04f89aaaf4272145db5036432", 
-        "dojo_md5": null
+        "dojo_md5": "d66cee6409b484e9067e7e0b5bdfac83"
     }, 
     "NC/GGA/PBE_HGHK/Ti-q12.hgh.k": {
         "md5": "c977e9eb7f2e76c11aaccc3673e3781b", 
@@ -295,14 +295,14 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Ba-q10.hgh.k": {
-        "md5": "835fb55584dd963e35683c7c85546801", 
+        "md5": "139e8556d58a2c7bb118098e5f085211", 
         "ppdata_md5": "835fb55584dd963e35683c7c85546801", 
-        "dojo_md5": null
+        "dojo_md5": "75f15c4cde3846665a2e06c8a687f302"
     }, 
     "NC/GGA/PBE_HGHK/Rb-q9.hgh.k": {
-        "md5": "5d48b8be9aa6164f033a35c4944298ae", 
+        "md5": "c814da552975f645c6182ab0a105942c", 
         "ppdata_md5": "5d48b8be9aa6164f033a35c4944298ae", 
-        "dojo_md5": null
+        "dojo_md5": "b1591ff2d62301f3ebed8daeb0a94501"
     }, 
     "NC/GGA/PBE_HGHK/Fe-q16.hgh.k": {
         "md5": "412eed1f0d41df7478b69f86a519d977", 
@@ -315,9 +315,9 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Br-q7.hgh.k": {
-        "md5": "63e6d710b43683abda285028eaa09245", 
+        "md5": "fb1eee64432cfd20791549fb4ca84572", 
         "ppdata_md5": "63e6d710b43683abda285028eaa09245", 
-        "dojo_md5": null
+        "dojo_md5": "c43bc1744127477194c640b28cb7700b"
     }, 
     "NC/GGA/PBE_HGHK/Li-q3.hgh.k": {
         "md5": "fcbaad55627c4fc11c47affca88e83f0", 
@@ -330,14 +330,14 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/S-q6.hgh.k": {
-        "md5": "f99e92983408790972503205cc8528fe", 
+        "md5": "e995b3392bbd7bc23424adef5b1bba7b", 
         "ppdata_md5": "f99e92983408790972503205cc8528fe", 
-        "dojo_md5": null
+        "dojo_md5": "48380798a11fcfe1bf626c06d04b6ce5"
     }, 
     "NC/GGA/PBE_HGHK/Tl-q3.hgh.k": {
-        "md5": "3ff7d0c3fc41d36df4d346e1aa25541b", 
+        "md5": "61248507eb4a733cf5055486ade2a45b", 
         "ppdata_md5": "3ff7d0c3fc41d36df4d346e1aa25541b", 
-        "dojo_md5": null
+        "dojo_md5": "607c0e9391adcdfe29157f6991b018a9"
     }, 
     "NC/GGA/PBE_HGHK/Os-q8.hgh.k": {
         "md5": "51993ccec780c5f44467dbfdb573a3b5", 
@@ -345,14 +345,14 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Bi-q5.hgh.k": {
-        "md5": "002eab70033d06029919a0d74bf7317a", 
+        "md5": "05819dfa7ffd988ddf0541e9258fb452", 
         "ppdata_md5": "002eab70033d06029919a0d74bf7317a", 
-        "dojo_md5": null
+        "dojo_md5": "12c9570f346b3775060bb423b3aabe1e"
     }, 
     "NC/GGA/PBE_HGHK/P-q5.hgh.k": {
-        "md5": "5b3aa578ac12a72a16ac33ca3c6a21d4", 
+        "md5": "f2e7d126e81da3cbde89bafbd724ddbd", 
         "ppdata_md5": "5b3aa578ac12a72a16ac33ca3c6a21d4", 
-        "dojo_md5": null
+        "dojo_md5": "6ba936733c5d83cf230290d6b4dbd785"
     }, 
     "NC/GGA/PBE_HGHK/W-q14.hgh.k": {
         "md5": "0135600eddd12d6230858e6b681d661b", 
@@ -370,19 +370,19 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Po-q6.hgh.k": {
-        "md5": "c852b11e8c6433b848a07a74b4d6b9b3", 
+        "md5": "e0165144bd44c44042c8deebd7a68f95", 
         "ppdata_md5": "c852b11e8c6433b848a07a74b4d6b9b3", 
-        "dojo_md5": null
+        "dojo_md5": "5bc8f8183ff3acda29e37d8f79235b4c"
     }, 
     "NC/GGA/PBE_HGHK/Kr-q8.hgh.k": {
-        "md5": "53493ee1b8ac5458343fc605d9190df5", 
+        "md5": "df181e2c13da70af757ab74aca680ead", 
         "ppdata_md5": "53493ee1b8ac5458343fc605d9190df5", 
-        "dojo_md5": null
+        "dojo_md5": "4dcb5d38076b7873798781de369d140f"
     }, 
     "NC/GGA/PBE_HGHK/Ca-q10.hgh.k": {
-        "md5": "7c809a5b43706355881175d9a8b3ce92", 
+        "md5": "701541fdfce1525b3e8c065bcd1ff334", 
         "ppdata_md5": "7c809a5b43706355881175d9a8b3ce92", 
-        "dojo_md5": null
+        "dojo_md5": "c4c207f5608c77b8e13ec91c68348ccc"
     }, 
     "NC/GGA/PBE_HGHK/Zr-q12.hgh.k": {
         "md5": "d242180aa126f62ebc75ee1dbcb2303a", 
@@ -390,14 +390,14 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/At-q7.hgh.k": {
-        "md5": "7f54492ba98d4ade2f78ddb5c1265967", 
+        "md5": "899edd8c5281709e7516729789c72171", 
         "ppdata_md5": "7f54492ba98d4ade2f78ddb5c1265967", 
-        "dojo_md5": null
+        "dojo_md5": "892464fd588445c03885ebe88a2b109f"
     }, 
     "NC/GGA/PBE_HGHK/Cl-q7.hgh.k": {
-        "md5": "1460eea00ba4d8d845defb1631db93ee", 
+        "md5": "4b6189f5f884f11dd6393e29a6c3dd85", 
         "ppdata_md5": "1460eea00ba4d8d845defb1631db93ee", 
-        "dojo_md5": null
+        "dojo_md5": "495dbfbad0991ab025d4f321077265b5"
     }, 
     "NC/GGA/PBE_HGHK/Ni-q18.hgh.k": {
         "md5": "83cef74e0e47dfbf4bbd13a9a8f5a136", 
@@ -405,9 +405,9 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/Ge-q4.hgh.k": {
-        "md5": "3f568674d3e0e69a7e1f52e9ca492525", 
+        "md5": "5d316ca5880c5f84c53185577e07c1c7", 
         "ppdata_md5": "3f568674d3e0e69a7e1f52e9ca492525", 
-        "dojo_md5": null
+        "dojo_md5": "8b24d98b71d7cefeead17530b700aa20"
     }, 
     "NC/GGA/PBE_HGHK/La-q11.hgh.k": {
         "md5": "7a41c3ced6bc9714dc86d90348e95738", 
@@ -425,8 +425,8 @@
         "dojo_md5": null
     }, 
     "NC/GGA/PBE_HGHK/As-q5.hgh.k": {
-        "md5": "b1e71121cc82279fa885d68f3683d437", 
+        "md5": "2c204b498b53e18b163b9e974a1bc086", 
         "ppdata_md5": "b1e71121cc82279fa885d68f3683d437", 
-        "dojo_md5": null
+        "dojo_md5": "8fcdf4574324a670fa2fd21652dc8e9c"
     }
 }

@@ -30,7 +30,6 @@ _MD5CHECKS_PATH = os.path.join(_TOP, "md5checksums.json")
 # Tools and helper functions.
 def nested_dict_items(nested):
     """Iterate over the items of a nested Mapping (e.g. a dictionary)."""
-
     for (key, value) in nested.items():
         if isinstance(value, collections.Mapping):
             for (inner_key, inner_value) in nested_dict_items(value):
@@ -39,26 +38,30 @@ def nested_dict_items(nested):
             yield key, value
 
 ##########################################################################################
-
-PP_TYPES = ["NC", "PAW"]
+#
+# These are the keywords used to index the tables and to query data.
+# -------------------------------------------------------------------
+#
+_PP_TYPES = ("NC", "PAW")
                               
-XC_TYPES = ["LDA", "GGA"]
+_XC_TYPES = ("LDA", "GGA")
                               
-XC_FLAVORS  = ["PBE", "PW91"]
+_XC_FLAVORS  = ("PBE", "PW91")
 
 class DojoTable(PseudoTable):
     """
-    A DojoTable is essentially a list of pseudopotential objects. 
+    A DojoTable is essentially a list of pseudopotential objects with some 
+    handy methods inherited from `PseudoTable`.
 
     attributes::
         name:
             Name of the table.
         pp_type:
-            Type of pseudopotential containe in the table e.g NC, PAW.
+            Type of pseudopotential contained in the table e.g NC, PAW.
         xc_type:
             Type of XC functional e.g. LDA, GGA, MGGA.
         xc_flavor:
-            String specifying the particular parametrization e.g. PW91, PBE.
+            String specifying the particular parametrization of for of Exc e.g. PW91, PBE.
         description:
             String with basic information on the table. e.g list of references.
         keywords:
@@ -68,9 +71,9 @@ class DojoTable(PseudoTable):
         """Extends PseudoTable adding metatada on the generation of the table."""
         super(DojoTable, self).__init__(pseudos)
 
-        assert (pp_type in PP_TYPES and 
-                xc_type in XC_TYPES and 
-                xc_flavor in XC_FLAVORS)
+        assert (pp_type in _PP_TYPES and 
+                xc_type in _XC_TYPES and 
+                xc_flavor in _XC_FLAVORS)
 
         self.name = table_name
         self.pp_type = pp_type
@@ -79,16 +82,29 @@ class DojoTable(PseudoTable):
         self.description = description
         self.keywords = keywords
 
+    def __repr__(self):
+        return "<%s at %s, name = %s>" % (self.__class__.__name__, id(self), self.name)
+
     @classmethod
     def from_directory(cls, dirpath, metadata=None):
-        exclude_exts = [".py", ".pyc", ".ini", ".sh", ".gz", ".pl", ".txt", ".swp", ".data"]
-        pseudos = PseudoParser().scan_directory(dirpath, exclude_exts=exclude_exts)
-
+        """
+        Initialize the object from the pseudos in directory dirpath
+        if metadata is None, metada are read from the __init__.py file in dirpath.
+        """
         m = metadata
         if m is None:
             # Read metadata from __init__.py.
             module_name = os.path.join(dirpath, "__init__.py")
             m = imp.load_source(module_name, module_name)
+
+        try:
+            exclude_fnames = m.exclude_fnames
+        except AttributeError:
+            exclude_fnames = []
+
+        exclude_exts = [".py", ".pyc", ".ini", ".sh", ".gz", ".pl", ".txt", ".swp", ".data"]
+        pseudos = PseudoParser().scan_directory(dirpath, 
+                                                exclude_exts=exclude_exts, exclude_fnames=exclude_fnames)
 
         return cls(pseudos, m.table_name, m.pp_type, m.xc_type, m.xc_flavor, m.description, m.keywords)
 
@@ -107,25 +123,31 @@ class DojoTable(PseudoTable):
 
 
 class _PseudoDojoDatabase(dict):
-    #        "TM"
-    #"LDA"   "HGH"
-    #"GGA"   "HGK"
-    #        "FHI"
-    #        "USERS"
+    """
+    Database of the official pseudopotentials of the DOJO
+    We use a nested dict [pp_type][xc_type] whose entries
+    are list of DojoTable instances, e.g.
 
-    #"LDA"   "ATOMPAW"
-    #"GGA"   "USPP"
-    #        "USERS"
+    d["NC"]["GGA"] = [PBE_HGHK, PBE_FHI ...]
+
+    To have acces to the database use the function `pseudodojo_database`.
+    """
+    PP_TYPES = _PP_TYPES
+    XC_TYPES = _XC_TYPES
+    XC_FLAVORS = _XC_FLAVORS
 
     def __init__(self, top=None):
+        """
+        Initialize the database by traversing all the directories starting from top.
+        """
         super(_PseudoDojoDatabase, self).__init__()
 
         # Initialize the database with empty lists. 
-        for key in PP_TYPES:
+        for key in _PP_TYPES:
             self[key] = None
                                                                         
         for pp_type in self:
-            self[pp_type] = {k: [] for k in XC_TYPES}
+            self[pp_type] = {k: [] for k in _XC_TYPES}
 
         # Scan all direction starting from top, parse the pseudopotential 
         # files and create the DojoTable.
@@ -139,61 +161,107 @@ class _PseudoDojoDatabase(dict):
             m = imp.load_source(module_name, module_name)
 
             if hasattr(m, "table_name"):
+                # Hack used to disable the table
+                if getattr(m, "disabled", None) == True: continue
                 table = DojoTable.from_directory(root, metadata=m)
 
                 # Add the table to the list
                 self[m.pp_type][m.xc_type].append(table) 
 
-    @property
-    def PBE_HGHK_TABLE(self):
-        for table in self.get_tables("NC", "GGA"):
-            if table.name == "HGHK":
-                return table
-        else:
-            return None
+    def _lazy_table(self, pp_type, xc_type, table_name):
+        """Lazy build of table attributes."""
+        hidden = "_" + table_name
+        try:
+            return getattr(self, hidden)
+        except AttributeError:
+            setattr(self, hidden, None)
+            for table in self.get_tables(pp_type, xc_type):
+                if table.name == table_name:
+                    setattr(self, hidden, table)
+                    return table
 
-    def nc_findall_pseudos(self):
-        "Return a list with all the NC pseudopotentials in the database"
-        pseudos = []
-        for xc_type, tables in self["NC"].items():
-            for table in tables:
-                pseudos.extend([p for p in table])
-        return PseudoTable(pseudos)
+    @property
+    def GGA_PBE_HGHK(self):
+        return self._lazy_table("NC", "GGA", "HGHK")
 
     def get_tables(self, pp_type, xc_type):
-        """Returns all the tables with the given xc_type."""
+        """Returns the list of tables with the given xc_type."""
         return self[pp_type][xc_type]
 
     def nc_tables(self, xc_type):
-        "Iterate over the norm-conserving tables with XC type xc_type."
+        """Iterate over the norm-conserving tables with XC type xc_type."""
         return self.get_tables("NC", xc_type)
 
     def paw_tables(self, xc_type):
-        "Iterate over the PAW tables with XC type xc_type."
+        """Iterate over the PAW tables with XC type xc_type."""
         return self.get_tables("PAW", xc_type)
 
     def nc_pseudos(self, symbol, xc_type, table_name=None, **kwargs):
-        "Return a list of :class:`Pseudo` instances."
+        """Return a `PseudoTable of NC pseudos."""
         pseudos = []
         for table in self.nc_tables(xc_type):
             if table_name is not None and table_name != table.name: continue
             pseudos.extend(table.pseudos_with_symbol(symbol))
         return PseudoTable(pseudos)
 
-    def show(self, verbose):
+    def show(self, pp_type, xc_type=None, verbose=0):
         """Print basic information on the database."""
-        print(self)
+        pp_type = "NC"
+        for xc, table in nested_dict_items(self[pp_type]):
+            if xc_type is not None and xc == xc_type: 
+                print(xc, table)
+
+    def nc_findall(self, query=None):
+        """Return a `PseudoTable` with all the NC pseudopotentials in the database."""
+        return self.findall("NC")
+
+    def findall(self, pp_type, query=None):
+        pseudos = []
+        for xc_type, tables in self[pp_type].items():
+            for table in tables:
+                pseudos.extend([p for p in table])
+
+        if query is not None:
+            # Build select function from query object and apply it to pseudo.
+            pseudos = [p for p in pseudos if self.select(query, p)]
+
+        return PseudoTable(pseudos)
+
+    @staticmethod
+    def select(query, pseudo):
+        """
+        Example::
+            {"l_max": 2}, {"zval": { ".in.": [1:3]}}
+        """
+        for k, v in query.items():
+
+            if isinstance(v, dict):
+                raise NotImplementedError("")
+
+            else:
+                try:
+                    gotit = (getattr(pseudo, k) == v)
+
+                except AttributeError:
+                    return False
+
+            if not gotit:
+                return False
+
+        return gotit
 
 
+########################################################
+# Official API.
+########################################################
 
-# Global variable storing the database of pseudopotentials.
+# Singleton-like instance.
 _OFFICIAL_DATABASE = _PseudoDojoDatabase()
 
 def reload_pseudodojo_database():
     """Reload the Database at runtime."""
     _OFFICIAL_DATABASE = _PseudoDojoDatabase()
 
-# Official API.
 def pseudodojo_database():
     """Returns an instance of `PseudoDojoDatabase`."""
     return _OFFICIAL_DATABASE
@@ -255,8 +323,8 @@ class PseudoChecksums(collections.namedtuple("PseudoChecksums", "md5 ppdata_md5 
 class ChecksumsDatabase(collections.OrderedDict):
     """OrderedDict with the hash values of the pseudopotentials."""
 
-    def __init__(self, *args, **kwargs):
-        super(ChecksumsDatabase, self).__init__(*args, **kwargs)
+    #def __init__(self, *args, **kwargs):
+    #    super(ChecksumsDatabase, self).__init__(*args, **kwargs)
 
     @classmethod
     def generate(cls):
@@ -270,7 +338,7 @@ class ChecksumsDatabase(collections.OrderedDict):
                 return True 
 
             # Skip files with extension in skip_exts.
-            skip_exts = ["py", "pyc", "sh", "txt"]
+            skip_exts = ["py", "pyc", "sh", "txt", "old"]
             if "." in file and file.split(".")[-1] in skip_exts: 
                 return True
                                                        
@@ -291,21 +359,24 @@ class ChecksumsDatabase(collections.OrderedDict):
 
     @classmethod
     def from_dict(cls, d):
+        """Init an instance from a dictionary."""
         d = {k: PseudoChecksums(**d[k]) for k in d}
         return cls(**d)
                               
     @property
     def to_dict(self):
+        """JSON reprensentation."""
         return {k:v.to_dict for k,v in self.items()}
 
     @classmethod
     def json_load(cls, filename):
-        print(type(cls))
+        """Initialize an instance from the JSON data stored in filename."""
         with open(filename, "r") as fp:
             d = json.load(fp)
             return cls.from_dict(d)
 
     def json_dump(self, filename):
+        """Save the object in JSON format."""
         with open(filename, "w") as fp:
             json.dump(self.to_dict, fp, indent=4)
 
@@ -313,14 +384,13 @@ class ChecksumsDatabase(collections.OrderedDict):
 # API for manipulating the checksum database.
 #############################################
 
-def _replace_reference_checksums(new_db):
+def replace_reference_checksums(new_db):
     """Replace the reference hash table with new_db."""
     # Keep a backup copy.
     import shutil
     shutil.copy(_MD5CHECKS_PATH, _MD5CHECKS_PATH + ".old")
     # Dump new file.
     new_db.json_dump(_MD5CHECKS_PATH)
-
 
 def get_reference_checksums():
     """Return the database of reference hash values."""
@@ -329,6 +399,11 @@ def get_reference_checksums():
 def get_new_checksums():
     """Genererate a new database of hash values from the pseudopotential files."""
     return ChecksumsDatabase.generate()
+
+def regenerate_checksums(verbose=0):
+    print("Regenerating checksums")
+    new_checks = get_new_checksums()
+    replace_reference_checksums(new_checks)
 
 def compare_checksums():
     """
@@ -358,7 +433,7 @@ def compare_checksums():
     changed = sum(map(len, hash_check))
     return changed, hash_check
 
-def validate_checksums():
+def validate_checksums(verbose=0):
     """Validating checksum table."""
     err = 0
 
@@ -381,8 +456,3 @@ def validate_checksums():
     return err
 
 ##########################################################################################
-
-if __name__ == "__main__":
-    assert test_checksums() == 0
-    #import unittest
-    #unittest.main()
