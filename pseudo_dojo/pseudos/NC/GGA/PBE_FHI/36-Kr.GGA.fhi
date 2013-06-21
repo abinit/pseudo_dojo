@@ -2160,3 +2160,22 @@ krypton, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l=
  533 0.75342699794503E+02 0.00000000000000E+00 -.10618148834353E+00
  534 0.77203664479427E+02 0.00000000000000E+00 -.10362202434227E+00
  535 0.79110594992069E+02 0.00000000000000E+00 -.10112425523790E+00
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 67.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 28.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 46.0
+        }
+    }
+}
+</DOJO_REPORT>

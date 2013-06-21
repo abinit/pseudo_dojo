@@ -2032,3 +2032,22 @@ chlorine, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l
  501 0.73080111152405E+02 0.00000000000000E+00 -.95785294926571E-01
  502 0.74885189897869E+02 0.00000000000000E+00 -.93476427175340E-01
  503 0.76734854088347E+02 0.00000000000000E+00 -.91223213794613E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 74.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 31.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 52.0
+        }
+    }
+}
+</DOJO_REPORT>

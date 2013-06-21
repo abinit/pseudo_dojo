@@ -2152,3 +2152,22 @@ selenium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l
  531 0.75975101641001E+02 0.00000000000000E+00 -.78973240843442E-01
  532 0.77851686651534E+02 0.00000000000000E+00 -.77069621199807E-01
  533 0.79774623311827E+02 0.00000000000000E+00 -.75211887576663E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 55.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 23.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 38.0
+        }
+    }
+}
+</DOJO_REPORT>

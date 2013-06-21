@@ -2024,3 +2024,22 @@ sulphur, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l=
  499 0.73949401857110E+02 0.00000000000000E+00 -.81136558908123E-01
  500 0.75775952082981E+02 0.00000000000000E+00 -.79180793313285E-01
  501 0.77647618099430E+02 0.00000000000000E+00 -.77272170697068E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 55.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 28.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 48.0
+        }
+    }
+}
+</DOJO_REPORT>

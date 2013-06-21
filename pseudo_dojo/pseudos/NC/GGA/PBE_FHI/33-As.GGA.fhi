@@ -2144,3 +2144,22 @@ arsenic, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l=
  529 0.74549166902105E+02 0.00000000000000E+00 -.67069830660426E-01
  530 0.76390531324587E+02 0.00000000000000E+00 -.65453138148166E-01
  531 0.78277377448304E+02 0.00000000000000E+00 -.63875415388081E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 50.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 20.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 33.0
+        }
+    }
+}
+</DOJO_REPORT>

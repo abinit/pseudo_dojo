@@ -2136,3 +2136,22 @@ gallium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l=
  527 0.75579074266999E+02 0.00000000000000E+00 -.39693526668531E-01
  528 0.77445877401394E+02 0.00000000000000E+00 -.38736729451089E-01
  529 0.79358790573208E+02 0.00000000000000E+00 -.37802995463149E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 40.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 15.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 27.0
+        }
+    }
+}
+</DOJO_REPORT>
