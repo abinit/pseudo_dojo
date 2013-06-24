@@ -1888,3 +1888,22 @@ nitrogen, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l
  465 0.73733963081443E+02 0.00000000000000E+00 -.67811355731372E-01
  466 0.75555191969554E+02 0.00000000000000E+00 -.66176789042034E-01
  467 0.77421405211202E+02 0.00000000000000E+00 -.64581622955044E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 70.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 44.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 61.0
+        }
+    }
+}
+</DOJO_REPORT>

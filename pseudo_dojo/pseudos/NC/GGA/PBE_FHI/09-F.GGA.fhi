@@ -1928,3 +1928,22 @@ fluorine, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l
  475 0.73196526070338E+02 0.00000000000000E+00 -.95632953854578E-01
  476 0.75004480264275E+02 0.00000000000000E+00 -.93327758226387E-01
  477 0.76857090926803E+02 0.00000000000000E+00 -.91078128453583E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 118.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 66.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 90.0
+        }
+    }
+}
+</DOJO_REPORT>

@@ -1864,3 +1864,22 @@ carbon, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l= 
  459 0.74307722325496E+02 0.00000000000000E+00 -.53830205997681E-01
  460 0.76143123066936E+02 0.00000000000000E+00 -.52532649553705E-01
  461 0.78023858206689E+02 0.00000000000000E+00 -.51266370209529E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 60.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 32.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 51.0
+        }
+    }
+}
+</DOJO_REPORT>

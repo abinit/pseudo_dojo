@@ -2216,3 +2216,22 @@ tellurium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), 
  547 0.73399760438532E+02 0.00000000000000E+00 -.81744136004704E-01
  548 0.75212734521363E+02 0.00000000000000E+00 -.79773724997271E-01
  549 0.77070489064041E+02 0.00000000000000E+00 -.77850809990506E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 41.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 19.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 28.0
+        }
+    }
+}
+</DOJO_REPORT>
