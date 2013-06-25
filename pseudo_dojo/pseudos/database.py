@@ -9,6 +9,7 @@ import imp
 import collections
 import json
 import hashlib
+import numpy as np
 
 from pseudo_dojo.core import PseudoParser, PseudoTable
 
@@ -36,6 +37,33 @@ def nested_dict_items(nested):
                 yield inner_key, inner_value
         else:
             yield key, value
+
+def compute_stats(values, labels=None):
+    min_val, max_val = 2 * [values[0]]
+    min_pos, max_pos = 2 * [0]
+
+    mean, mean2 = 0.0, 0.0
+    for idx, value in enumerate(values):
+        mean  += value
+        mean2 += value * value
+
+        if value > max_val:
+            max_val = value
+            max_pos = idx
+
+        if value < min_val:
+            min_val = value
+            min_pos = idx
+
+    mean = mean / len(values)
+    stdev = np.sqrt(mean2/len(values) - mean)
+
+    stats = collections.namedtuple("stats", "mean stdev max_val max_pos min_val min_pos")
+    if labels is not None:
+        max_pos = labels[max_pos]
+        min_pos = labels[min_pos]
+
+    return stats(mean, stdev, max_val, max_pos, min_val, min_pos)
 
 ##########################################################################################
 #
@@ -119,6 +147,37 @@ class DojoTable(PseudoTable):
         app("keywords: %s" % self.keywords)
         return "\n".join(lines)
 
+    def compare_delta_factor(self, accuracy="normal", exclude_na=True):
+        """Returns a table (list of lists) comparing the deltafactor results."""
+        from pseudo_dojo.refdata.deltafactor import df_database
+        dfdb = df_database()
+
+        def fmt(float):
+            return "%.3f" % float
+
+        table = []; app = table.append
+        app(["pseudo", "V0", "B0", "B1", "%V0", "%B0", "%B1", "Delta"])
+        deltas, names = [], []
+        for pseudo in self:
+            if not pseudo.has_dojo_report or "delta_factor" not in pseudo.dojo_report:
+                if not exclude_na: app([pseudo.name] + 7 * ["N/A"])
+                continue
+
+            ref = dfdb.get_entry(pseudo.symbol)
+            vals = pseudo.dojo_report["delta_factor"][accuracy]
+            v0, b0_GPa, b1, dfact = vals["v0"], vals["b0_GPa"], vals["b1"], vals["dfact"]
+            rerr_v0  = 100 * (v0 - ref.v0) / ref.v0
+            rerr_b0  = 100 * (b0_GPa - ref.b0_GPa) / ref.b0_GPa
+            rerr_b1  = 100 * (b1 - ref.b1) / ref.b1
+            app([pseudo.name] + map(fmt, [v0, b0_GPa, b1, rerr_v0, rerr_b0, rerr_b1, dfact]))
+
+            deltas.append(dfact)
+            names.append(pseudo.name)
+
+        stats = compute_stats(deltas, labels=names)
+        print(stats)
+        return table
+
 ##########################################################################################
 
 
@@ -196,7 +255,7 @@ class _PseudoDojoDatabase(dict):
         """Iterate over the PAW tables with XC type xc_type."""
         return self.get_tables("PAW", xc_type)
 
-    def nc_pseudos(self, symbol, xc_type, table_name=None, **kwargs):
+    def nc_pseudos(self, symbol, xc_type, table_name=None, query=None):
         """Return a `PseudoTable of NC pseudos."""
         pseudos = []
         for table in self.nc_tables(xc_type):
@@ -213,7 +272,7 @@ class _PseudoDojoDatabase(dict):
 
     def nc_findall(self, query=None):
         """Return a `PseudoTable` with all the NC pseudopotentials in the database."""
-        return self.findall("NC")
+        return self.findall("NC", query=query)
 
     def findall(self, pp_type, query=None):
         pseudos = []
@@ -236,7 +295,10 @@ class _PseudoDojoDatabase(dict):
         for k, v in query.items():
 
             if isinstance(v, dict):
-                raise NotImplementedError("")
+                if v:
+                    raise NotImplementedError("")
+                else:
+                    gotit = hasattr(pseudo, k)
 
             else:
                 try:
@@ -249,7 +311,6 @@ class _PseudoDojoDatabase(dict):
                 return False
 
         return gotit
-
 
 ########################################################
 # Official API.

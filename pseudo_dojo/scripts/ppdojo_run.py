@@ -73,10 +73,12 @@ def main():
                 verbose=options.verbose,
                 )
 
+    stats = []
     for pseudo in pseudos:
-        dojo.challenge_pseudo(pseudo, accuracy=options.accuracy)
+        isok = dojo.challenge_pseudo(pseudo, accuracy=options.accuracy)
+        stats.append(isok)
 
-    return 0
+    return stats.count(True)
 
 ################################################################################
 

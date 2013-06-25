@@ -130,7 +130,7 @@ class DojoMaster(object):
         return classes[0]
 
     def inspect_pseudo(self, pseudo):
-        "Returns the maximum level of the DOJO trials passed by the pseudo."
+        """Returns the maximum level of the DOJO trials passed by the pseudo."""
         if not pseudo.dojo_report:
             return None
         else:
@@ -144,7 +144,6 @@ class DojoMaster(object):
 
         A master can train the pseudo if his level == pseudo.dojo_level + 1
         """
-
         if not isinstance(pseudo, Pseudo):
             pseudo = Pseudo.from_filename(pseudo)
 
@@ -186,11 +185,9 @@ class DojoMaster(object):
     def make_report(self, **kwargs):
         """
         Abstract method.
-        Returns report, isok.
+        Returns: 
             report:
                 Dictionary with the results of the trial.
-            isok:
-                True if results are valid.
         """
 
     def write_dojo_report(self, report, overwrite_data=False, ignore_errors=False):
@@ -222,13 +219,15 @@ class DojoMaster(object):
         start_time = time.time()
         results = self.challenge(workdir, **kwargs)
 
-        report, isok = self.make_report(results, **kwargs)
+        report = self.make_report(results, **kwargs)
 
         json_pretty_dump(results, os.path.join(workdir, "report.json"))
 
         self.write_dojo_report(report)
 
         print("Elapsed time %.2f [s]" % (time.time() - start_time))
+
+        isok = ("_exceptions" in report)
         return isok
 
 ################################################################################
@@ -262,8 +261,8 @@ class HintsMaster(DojoMaster):
         if os.path.exists(w.workdir):
             shutil.rmtree(w.workdir)
 
-        print("Converging %s in iterative mode with ecut_slice %s, ncpus = 1 ..." %
-              (pseudo.name, eslice))
+        print("Converging %s in iterative mode with ecut_slice %s, max_ncpus = %d ..." %
+              (pseudo.name, eslice, self.max_ncpus))
 
         w.start()
         w.wait()
@@ -284,7 +283,7 @@ class HintsMaster(DojoMaster):
                                        atols_mev=self._ATOLS_MEV)
 
         print("Finding optimal values for ecut in the interval %.1f %.1f %1.f, "
-              "ncpus = %d ..." % (estart, estop, estep, self.max_ncpus))
+              "max_ncpus = %d ..." % (estart, estop, estep, self.max_ncpus))
 
         SimpleResourceManager(work, self.max_ncpus).run()
 
@@ -299,11 +298,10 @@ class HintsMaster(DojoMaster):
         for key in ["low", "normal", "high"]:
             d[key] = results[key]
 
-        isok = not results.exceptions
-        if not isok:
+        if results.exceptions
             d["_exceptions"] = str(results.exceptions)
 
-        return {self.dojo_key: d}, isok
+        return {self.dojo_key: d}
 
 ################################################################################
 
@@ -328,7 +326,7 @@ class DeltaFactorMaster(DojoMaster):
 
         factory = DeltaFactory()
 
-        # Will work in this directory.
+        # Calculations will be executed in this directory.
         workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level) + "_ACC_" + self.accuracy)
 
         # 6750 is the value used in the deltafactor code.
@@ -371,12 +369,11 @@ class DeltaFactorMaster(DojoMaster):
                  dfact=dfact
                 )
 
-        isok = not results.exceptions 
-        if not isok:
+        if results.exceptions:
             d["_exceptions"] = str(results.exceptions)
 
         d = {self.accuracy: d}
-        return {self.dojo_key: d}, isok
+        return {self.dojo_key: d}
 
 ################################################################################
 

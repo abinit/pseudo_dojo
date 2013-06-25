@@ -7,6 +7,8 @@ import numpy as np
 
 from argparse import ArgumentParser
 
+from pymatgen.util.string_utils import pprint_table
+
 from pseudo_dojo import pseudodojo_database
 
 __author__ = "Matteo Giantomassi"
@@ -54,8 +56,9 @@ def main():
 
     p_find.add_argument('-s', '--sort', default=None, help="Sort pseudos according to this attribute.")  
 
-    p_find.add_argument('symbol', nargs='?', help='Chemical symbol')
+    #p_find.add_argument('-q', '--query', default=None, help="Query options.")  
 
+    p_find.add_argument('symbol', nargs='?', help='Chemical symbol')
 
     ###################################
     # Parse command line and dispatch #
@@ -72,7 +75,9 @@ def main():
         #xc_type = options.xc_type
         pp_type = "NC"
         xc_type = "GGA"
-        ppdb.show(pp_type, xc_type, verbose=verbose)
+        #ppdb.show(pp_type, xc_type, verbose=verbose)
+        table = ppdb.GGA_PBE_HGHK.compare_delta_factor(accuracy="normal")
+        pprint_table(table)
 
     if options.command == "nc_find":
         symbol = options.symbol
@@ -80,19 +85,9 @@ def main():
 
         pseudos = ppdb.nc_pseudos(symbol, xc_type, table_name=options.table_name)
 
-        # Sort pseudos.
         if options.sort:
-            attrs = []
-            for i, p in pseudos:
-                try:
-                    a = getattr(p, options.sort)
-                except AttributeError:
-                    a = np.inf
-                attrs.append((i,a))
-
-            # Sort attrs, then shuffle pseudos.
-            attrs = sorted(attrs, key=lambda t:t[1])
-            pseudos = [pseudos[a[0]] for a in attrs]
+            # Sort pseudos.
+            pseudos = pseudos.sorted(options.sort, reverse=False)
 
         for p in pseudos:
             print()
