@@ -2285,3 +2285,23 @@ boron, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l= 2
 0.73356956721667E+02 0.00000000000000E+00 0.00000000000000E+00 0.00000000000000E+00
 0.75168873552692E+02 0.00000000000000E+00 0.00000000000000E+00 0.00000000000000E+00
 0.77025544729444E+02 0.00000000000000E+00 0.00000000000000E+00 0.00000000000000E+00
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "_exceptions": "['E(ecut) is not decreasing']", 
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": null
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": null
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": null
+        }
+    }
+}
+</DOJO_REPORT>

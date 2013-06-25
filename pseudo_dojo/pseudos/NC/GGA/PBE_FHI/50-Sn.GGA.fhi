@@ -2208,3 +2208,22 @@ tin, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l= 0 l
  545 0.72700016488482E+02 0.00000000000000E+00 -.55020620258508E-01
  546 0.74495706895748E+02 0.00000000000000E+00 -.53694369335911E-01
  547 0.76335750856073E+02 0.00000000000000E+00 -.52400087182503E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 35.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 14.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 23.0
+        }
+    }
+}
+</DOJO_REPORT>

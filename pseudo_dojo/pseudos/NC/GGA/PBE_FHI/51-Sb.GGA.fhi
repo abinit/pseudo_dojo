@@ -2216,3 +2216,22 @@ antimony, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l
  547 0.74838971427523E+02 0.00000000000000E+00 -.66810111157691E-01
  548 0.76687494021782E+02 0.00000000000000E+00 -.65199679084309E-01
  549 0.78581675124120E+02 0.00000000000000E+00 -.63628065857625E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 40.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 17.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 27.0
+        }
+    }
+}
+</DOJO_REPORT>

@@ -2168,3 +2168,23 @@ yttrium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l=
  535 0.73025164608064E+02 0.00000000000000E+00 -.41081728690398E-01
  536 0.74828886173883E+02 0.00000000000000E+00 -.40091469396309E-01
  537 0.76677159662378E+02 0.00000000000000E+00 -.39125079922230E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "_exceptions": "['E(ecut) is not decreasing']", 
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 53.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 53.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 53.0
+        }
+    }
+}
+</DOJO_REPORT>

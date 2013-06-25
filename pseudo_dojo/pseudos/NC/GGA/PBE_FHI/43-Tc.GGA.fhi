@@ -2184,3 +2184,23 @@ technetium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996),
  539 0.73022322358220E+02 0.00000000000000E+00 -.95861098003165E-01
  540 0.74825973720468E+02 0.00000000000000E+00 -.93550403047882E-01
  541 0.76674175271364E+02 0.00000000000000E+00 -.91295406507155E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "_exceptions": "['E(ecut) is not decreasing']", 
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 82.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 82.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 82.0
+        }
+    }
+}
+</DOJO_REPORT>

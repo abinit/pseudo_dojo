@@ -2184,3 +2184,23 @@ molybdenum, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996),
  539 0.74760949081035E+02 0.00000000000000E+00 -.80255802979393E-01
  540 0.76607544523336E+02 0.00000000000000E+00 -.78321267667994E-01
  541 0.78499750873063E+02 0.00000000000000E+00 -.76433363587386E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "_exceptions": "['E(ecut) is not decreasing']", 
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": null
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": null
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": null
+        }
+    }
+}
+</DOJO_REPORT>

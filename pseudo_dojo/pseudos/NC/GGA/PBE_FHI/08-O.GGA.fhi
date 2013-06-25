@@ -1912,3 +1912,22 @@ oxygen, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l= 
  471 0.74688897268464E+02 0.00000000000000E+00 -.80333225143671E-01
  472 0.76533713030995E+02 0.00000000000000E+00 -.78396823600733E-01
  473 0.78424095742861E+02 0.00000000000000E+00 -.76507098273380E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 94.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 54.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 70.0
+        }
+    }
+}
+</DOJO_REPORT>

@@ -1992,3 +1992,22 @@ aluminium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), 
  491 0.74875098415857E+02 0.00000000000000E+00 -.40066725299484E-01
  492 0.76724513346729E+02 0.00000000000000E+00 -.39100932272357E-01
  493 0.78619608826393E+02 0.00000000000000E+00 -.38158419315270E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 31.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 14.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 24.0
+        }
+    }
+}
+</DOJO_REPORT>

@@ -2176,3 +2176,23 @@ zirconium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), 
  537 0.74760230670818E+02 0.00000000000000E+00 -.53504382799662E-01
  538 0.76606808368387E+02 0.00000000000000E+00 -.52214680198753E-01
  539 0.78498996535087E+02 0.00000000000000E+00 -.50956065383774E-01
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "_exceptions": "['E(ecut) is not decreasing']", 
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 53.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 53.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 53.0
+        }
+    }
+}
+</DOJO_REPORT>

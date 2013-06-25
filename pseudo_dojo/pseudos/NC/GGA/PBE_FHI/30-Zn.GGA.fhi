@@ -2128,3 +2128,22 @@ zinc, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l= 0 
  525 0.74378691677682E+02 0.00000000000000E+00 -.16133652971474E+00
  526 0.76215845362121E+02 0.00000000000000E+00 -.15744757462159E+00
  527 0.78098376742566E+02 0.00000000000000E+00 -.15365236129754E+00
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 96.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 69.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 82.0
+        }
+    }
+}
+</DOJO_REPORT>

@@ -2895,3 +2895,23 @@ berkelium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), 
 0.74206405157484E+02 0.00000000000000E+00 0.00000000000000E+00 0.00000000000000E+00
 0.76039303364874E+02 0.00000000000000E+00 0.00000000000000E+00 0.00000000000000E+00
 0.77917474157987E+02 0.00000000000000E+00 0.00000000000000E+00 0.00000000000000E+00
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "_exceptions": "['E(ecut) is not decreasing']", 
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": null
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": null
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": null
+        }
+    }
+}
+</DOJO_REPORT>

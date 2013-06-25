@@ -227,8 +227,13 @@ class DojoMaster(object):
 
         print("Elapsed time %.2f [s]" % (time.time() - start_time))
 
-        isok = ("_exceptions" in report)
+        isok = True
+        if "_exceptions" in report:
+            isok = False
+            print("got exceptions: ",report["_exceptions"])
+
         return isok
+
 
 ################################################################################
 
@@ -298,7 +303,7 @@ class HintsMaster(DojoMaster):
         for key in ["low", "normal", "high"]:
             d[key] = results[key]
 
-        if results.exceptions
+        if results.exceptions:
             d["_exceptions"] = str(results.exceptions)
 
         return {self.dojo_key: d}

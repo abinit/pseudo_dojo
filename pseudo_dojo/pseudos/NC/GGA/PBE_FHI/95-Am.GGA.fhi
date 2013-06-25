@@ -2895,3 +2895,23 @@ americium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), 
 0.75768645266063E+02 0.00000000000000E+00 0.00000000000000E+00 0.00000000000000E+00
 0.77640130804135E+02 0.00000000000000E+00 0.00000000000000E+00 0.00000000000000E+00
 0.79557842034997E+02 0.00000000000000E+00 0.00000000000000E+00 0.00000000000000E+00
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "_exceptions": "['E(ecut) is not decreasing']", 
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 70.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 58.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 58.0
+        }
+    }
+}
+</DOJO_REPORT>
