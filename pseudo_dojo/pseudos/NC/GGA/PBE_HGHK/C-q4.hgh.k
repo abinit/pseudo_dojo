@@ -6,3 +6,22 @@ Goedecker pseudopotential for C
      0.30257575    1     9.62248665                                                 rs ns hs11
      0.29150694    1     0.00000000                                                 rp np hp11
                          0.00207319                                                       kp11
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 98.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 61.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 80.0
+        }
+    }
+}
+</DOJO_REPORT>

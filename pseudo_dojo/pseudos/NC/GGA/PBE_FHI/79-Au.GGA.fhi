@@ -2288,3 +2288,22 @@ gold, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l= 1 
  565 0.74956991379075E+02 0.00000000000000E+00 -.14675082067222E+00
  566 0.76808429066138E+02 0.00000000000000E+00 -.14321344849441E+00
  567 0.78705597264072E+02 0.00000000000000E+00 -.13976134331454E+00
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 43.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 28.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 38.0
+        }
+    }
+}
+</DOJO_REPORT>

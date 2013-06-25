@@ -6,6 +6,14 @@ Goedecker pseudopotential for H
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 10.24562832764169, 
+            "b1": 2.7035179755004806, 
+            "dfact": 0.27091024633270966, 
+            "v0": 17.425095798586653
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 

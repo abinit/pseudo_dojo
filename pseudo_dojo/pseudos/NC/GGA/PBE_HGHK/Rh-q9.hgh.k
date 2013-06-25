@@ -13,3 +13,22 @@ Goedecker pseudopotential for Rh
                                       -16.68888922                                             hd22
                         -0.03265865     0.10951165                                        kd11 kd12
                                        -0.12417454                                             kd22
+
+<DOJO_REPORT>
+{
+    "hints": {
+        "high": {
+            "aug_ratio": 1, 
+            "ecut": 74.0
+        }, 
+        "low": {
+            "aug_ratio": 1, 
+            "ecut": 60.0
+        }, 
+        "normal": {
+            "aug_ratio": 1, 
+            "ecut": 69.0
+        }
+    }
+}
+</DOJO_REPORT>
