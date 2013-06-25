@@ -15,6 +15,14 @@ Goedecker pseudopotential for Tl
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 31.095680048237249, 
+            "b1": 5.0892468655929415, 
+            "dfact": 29.202642289879087, 
+            "v0": 28.41020036463172
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 
