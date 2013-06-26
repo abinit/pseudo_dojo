@@ -2139,6 +2139,14 @@ germanium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), 
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 57.768044796467912, 
+            "b1": 4.7364420460382757, 
+            "dfact": 0.62599780700570418, 
+            "v0": 24.053350336378074
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 
