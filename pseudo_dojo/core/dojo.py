@@ -251,6 +251,7 @@ class HintsMaster(DojoMaster):
 
     def challenge(self, workdir, **kwargs):
         pseudo = self.pseudo
+        toldfe = 1.e-8
 
         factory = PPConvergenceFactory()
 
@@ -261,7 +262,7 @@ class HintsMaster(DojoMaster):
         eslice = slice(5, None, estep)
 
         w = factory.work_for_pseudo(workdir, pseudo, eslice,
-                                    runmode=self.runmode, atols_mev=self._ATOLS_MEV)
+                                    runmode=self.runmode, toldfe=toldfe, atols_mev=self._ATOLS_MEV)
 
         if os.path.exists(w.workdir):
             shutil.rmtree(w.workdir)
@@ -284,7 +285,7 @@ class HintsMaster(DojoMaster):
         erange = list(np.arange(estart, estop, estep))
 
         work = factory.work_for_pseudo(workdir, pseudo, erange,
-                                       runmode=self.runmode,
+                                       runmode=self.runmode, toldfe=toldfe,
                                        atols_mev=self._ATOLS_MEV)
 
         print("Finding optimal values for ecut in the interval %.1f %.1f %1.f, "

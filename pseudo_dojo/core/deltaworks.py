@@ -33,7 +33,7 @@ class DeltaFactory(object):
             raise CIFNotFoundError("%s: cannot find CIF file for symbol" % symbol)
 
     def work_for_pseudo(self, workdir, runmode, pseudo, accuracy="normal", kppa=6750, 
-        ecut=None, smearing="fermi_dirac:0.0005"):
+        ecut=None, toldfe=1.e-8, smearing="fermi_dirac:0.0005"):
         """
         Returns a Work object from the given pseudopotential.
 
@@ -53,7 +53,8 @@ class DeltaFactory(object):
         if pseudo.symbol in ["O", "Cr", "Mn"]: spin_mode = "afm"
 
         work = DeltaTest(workdir, runmode, cif_path, pseudo, kppa,
-                         spin_mode=spin_mode, smearing=smearing, accuracy=accuracy, ecut=ecut, ecutsm=0.05,
+                         spin_mode=spin_mode, toldfe=toldfe, smearing=smearing, 
+                         accuracy=accuracy, ecut=ecut, ecutsm=0.05,
                         )
         return work
 
