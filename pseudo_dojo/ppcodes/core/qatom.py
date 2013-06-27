@@ -425,7 +425,7 @@ class RadialWaveFunction(RadialFunction):
 
 ##########################################################################################
 
-def plot_aepp(ae_funcs, pp_funcs=None, rmax=None, title=None, show=True, savefig=None, **kwargs): 
+def plot_aepp(ae_funcs, pp_funcs=None, rmax=None, **kwargs): 
     """
     Uses Matplotlib to plot the radial wavefunction (AE only or AE vs PP)
 
@@ -436,15 +436,23 @@ def plot_aepp(ae_funcs, pp_funcs=None, rmax=None, title=None, show=True, savefig
             Pseudo radial functions.
         rmax:
             float or dictionary {state: rmax} where rmax is the maximum r (Bohr) that will be be plotted. 
-        title: 
-            string with the title of the plot.
-        show:
-            True to show the figure
-        savefig:
-            'abc.png' or 'abc.eps'* to save the figure to a file.
-        **kwargs:
-            keywords arguments passed to matplotlib.
+
+    ==============  ==============================================================
+    kwargs          Meaning
+    ==============  ==============================================================
+    title           Title of the plot (Default: None).
+    show            True to show the figure (Default: True).
+    savefig:        'abc.png' or 'abc.eps'* to save the figure to a file.
+    ==============  ==============================================================
+
+    Returns:
+        `matplotlib` figure.
+
     """
+    title = kwargs.pop("title", None)
+    show = kwargs.pop("show", True)
+    savefig = kwargs.pop("savefig", None):
+
     import matplotlib.pyplot as plt
     fig = plt.figure()
 
@@ -501,11 +509,13 @@ def plot_aepp(ae_funcs, pp_funcs=None, rmax=None, title=None, show=True, savefig
         plt.show()
                              
     if savefig is not None:
-        fig.savefig(os.path.abspath(savefig))
+        fig.savefig(savefig)
+
+    return fig
 
 ##########################################################################################
 
-def plot_logders(ae_logders, pp_logders, show=True, savefig=None): 
+def plot_logders(ae_logders, pp_logders, **kwargs): 
     """
     Uses matplotlib to plot the logarithmic derivatives.
                                                                                          
@@ -514,11 +524,22 @@ def plot_logders(ae_logders, pp_logders, show=True, savefig=None):
             AE logarithmic derivatives.
         pp_logders:
             PP logarithmic derivatives.
-        show:
-            True to show the figure
-        savefig:
-            'abc.png' or 'abc.eps'* to save the figure to a file.
+
+    ==============  ==============================================================
+    kwargs          Meaning
+    ==============  ==============================================================
+    title           Title of the plot (Default: None).
+    show            True to show the figure (Default: True).
+    savefig:        'abc.png' or 'abc.eps'* to save the figure to a file.
+    ==============  ==============================================================
+
+    Returns:
+        `matplotlib` figure.
     """
+    title = kwargs.pop("title", None)
+    show = kwargs.pop("show", True)
+    savefig = kwargs.pop("savefig", None):
+
     import matplotlib.pyplot as plt
     assert len(ae_logders) == len(pp_logders) 
     fig = plt.figure()
@@ -552,7 +573,9 @@ def plot_logders(ae_logders, pp_logders, show=True, savefig=None):
         plt.show()
                              
     if savefig is not None:
-        fig.savefig(os.path.abspath(savefig))
+        fig.savefig(savefig)
+
+    return fig
 
 ##########################################################################################
 

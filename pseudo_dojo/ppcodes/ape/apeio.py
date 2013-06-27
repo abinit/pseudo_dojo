@@ -75,7 +75,7 @@ class Comment(ApeEvent):
 
 
 class Error(ApeEvent):
-    "Base class for Error events"
+    """Base class for Error events."""
 
     @property
     def iscritical(self):
@@ -83,7 +83,7 @@ class Error(ApeEvent):
 
 
 class Bug(ApeEvent):
-    "Base class for Bug events"
+    """Base class for Bug events."""
 
     @property
     def iscritical(self):
@@ -278,7 +278,7 @@ def ape_read_waves(dirpath):
     return waves
 
 
-def ape_plot_waves(dirpath, rmax=None, show=True, savefig=None): 
+def ape_plot_waves(dirpath, rmax=None, **kwargs): 
     """
     Uses Matplotlib to plot the radial wavefunction (AE vs PP)
 
@@ -286,11 +286,22 @@ def ape_plot_waves(dirpath, rmax=None, show=True, savefig=None):
         dirpath:
         rmax:
             float or dictionary {state: rmax} where rmax is the maximum r (Bohr) that will be be plotted. 
-        show:
-            True to show the figure
-        savefig:
-            'abc.png' or 'abc.eps'* to save the figure to a file.
+
+    ==============  ==============================================================
+    kwargs          Meaning
+    ==============  ==============================================================
+    title           Title of the plot (Default: None).
+    show            True to show the figure (Default: True).
+    savefig:        'abc.png' or 'abc.eps'* to save the figure to a file.
+    ==============  ==============================================================
+
+    Returns:
+        `matplotlib` figure.
     """
+    title = kwargs.pop("title", "Wavefunctions")
+    show = kwargs.pop("show", True)
+    savefig = kwargs.pop("savefig", None):
+
     dirs = os.listdir(os.path.abspath(dirpath))
 
     ae_waves, pp_waves = None, None
@@ -302,9 +313,12 @@ def ape_plot_waves(dirpath, rmax=None, show=True, savefig=None):
         pp_waves = ape_read_waves(os.path.join(dirpath, "pp"))
 
     if ae_waves is not None:
-        plot_aepp(ae_waves, pp_funcs=pp_waves, rmax=rmax, title="Wavefunctions", show=show, savefig=savefig)
+        fig = plot_aepp(ae_waves, pp_funcs=pp_waves, rmax=rmax, title=title, show=show, savefig=savefig)
     else:
+        fig = None
         print("Cannot find AE waves in dirpath %s" % dirpath)
+
+    return fig
 
 ##########################################################################################
 
@@ -325,20 +339,32 @@ def ape_read_potentials(dirpath):
     return pots
 
 
-def ape_plot_potentials(dirpath, rmax=None, show=True, savefig=None): 
+def ape_plot_potentials(dirpath, rmax=None, **kwargs): 
     """
     Uses Matplotlib to plot the potentials (AE vs PP)
 
     Args:
         dirpath:
+
         rmax:
             float or dictionary {state: rmax} where rmax is the maximum r (Bohr) that will be be plotted. 
-        show:
-            True to show the figure
-        savefig:
-            'abc.png' or 'abc.eps'* to save the figure to a file.
+
+    ==============  ==============================================================
+    kwargs          Meaning
+    ==============  ==============================================================
+    title           Title of the plot (Default: None).
+    show            True to show the figure (Default: True).
+    savefig:        'abc.png' or 'abc.eps'* to save the figure to a file.
+    ==============  ==============================================================
+
+    Returns:
+        `matplotlib` figure.
     """
     #raise NotImplementedError("")
+    title = kwargs.pop("title", "Potentials")
+    show = kwargs.pop("show", True)
+    savefig = kwargs.pop("savefig", None):
+
     dirs = os.listdir(os.path.abspath(dirpath))
 
     ae_pots, pp_pots = None, None
@@ -350,9 +376,12 @@ def ape_plot_potentials(dirpath, rmax=None, show=True, savefig=None):
         pp_pots = ape_read_potentials(os.path.join(dirpath, "pp"))
 
     if ae_pots is not None:
-        plot_aepp(ae_pots, pp_funcs=pp_pots, rmax=rmax, title="Potentials", show=show, savefig=savefig)
+        fig = plot_aepp(ae_pots, pp_funcs=pp_pots, rmax=rmax, title=title, show=show, savefig=savefig)
     else:
+        fig = None
         print("Cannot find potentials in dirpath %s" % dirpath)
+
+    return fig
 
 ##########################################################################################
 
@@ -373,7 +402,7 @@ def ape_read_densities(dirpath):
     return dens
 
 
-def ape_plot_densities(dirpath, rmax=None, show=True, savefig=None): 
+def ape_plot_densities(dirpath, rmax=None, **kwargs): 
     """
     Uses Matplotlib to plot the densities (AE vs PP)
 
@@ -382,11 +411,22 @@ def ape_plot_densities(dirpath, rmax=None, show=True, savefig=None):
             Directory path.
         rmax:
             float or dictionary {state: rmax} where rmax is the maximum r (Bohr) that will be be plotted. 
-        show:
-            True to show the figure
-        savefig:
-            'abc.png' or 'abc.eps'* to save the figure to a file.
+
+    ==============  ==============================================================
+    kwargs          Meaning
+    ==============  ==============================================================
+    title           Title of the plot (Default: None).
+    show            True to show the figure (Default: True).
+    savefig:        'abc.png' or 'abc.eps'* to save the figure to a file.
+    ==============  ==============================================================
+
+    Returns:
+        `matplotlib` figure.
     """
+    title = kwargs.pop("title", "Densities")
+    show = kwargs.pop("show", True)
+    savefig = kwargs.pop("savefig", None):
+
     dirs = os.listdir(os.path.abspath(dirpath))
 
     ae_dens, pp_dens = None, None
@@ -398,9 +438,12 @@ def ape_plot_densities(dirpath, rmax=None, show=True, savefig=None):
         pp_dens = ape_read_densities(os.path.join(dirpath, "pp"))
 
     if ae_dens is not None:
-        plot_aepp(ae_dens, pp_funcs=pp_dens, rmax=rmax, title="Densities", show=show, savefig=savefig)
+        fig = plot_aepp(ae_dens, pp_funcs=pp_dens, rmax=rmax, title=title, show=show, savefig=savefig)
     else:
+        fig = None
         print("Cannot find densities in dirpath %s" % dirpath)
+
+    return fig
 
 ##########################################################################################
 
@@ -425,25 +468,38 @@ def ape_read_logders(dirpath):
     return ae_logders, pp_logders
 
 
-def ape_plot_logders(dirpath, show=True, savefig=None): 
+def ape_plot_logders(dirpath, **kwargs): 
     """
     Uses Matplotlib to plot the radial wavefunction (AE vs PP)
 
     Args:
         dirpath:
             Directory path.
-        show:
-            True to show the figure
-        savefig:
-            'abc.png' or 'abc.eps'* to save the figure to a file.
+
+    ==============  ==============================================================
+    kwargs          Meaning
+    ==============  ==============================================================
+    title           Title of the plot (Default: None).
+    show            True to show the figure (Default: True).
+    savefig:        'abc.png' or 'abc.eps'* to save the figure to a file.
+    ==============  ==============================================================
+
+    Returns:
+        `matplotlib` figure.
     """
+    title = kwargs.pop("title", "Logders")
+    show = kwargs.pop("show", True)
+    savefig = kwargs.pop("savefig", None):
+
     dirpath = os.path.abspath(dirpath)
     if "tests" in os.listdir(dirpath):
         dirpath = os.path.join(dirpath, "tests")
 
     ae_logders, pp_logders = ape_read_logders(dirpath)
 
-    plot_logders(ae_logders, pp_logders, show=show, savefig=savefig)
+    fig = plot_logders(ae_logders, pp_logders, show=show, title=title, savefig=savefig)
+
+    return fig
 
 ##########################################################################################
 
@@ -552,7 +608,7 @@ def ape_read_dipoles(out_lines):
     Returns:
         List of Dipole objects.
     """
-    #Dipole Matrix Elements:
+    # Dipole Matrix Elements:
     #      States           AE         PS
     #     3s -- 3p        2.2998     2.3074
     #     3s -- 3d        0.0003     0.0003
@@ -584,3 +640,4 @@ def ape_read_dipoles(out_lines):
         #Dipole(istate, ostate, aeres, ppres):
 
     return dipoles
+
