@@ -2698,6 +2698,14 @@ rubidium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 3.0728277833226909, 
+            "b1": 4.1526489012789822, 
+            "dfact": 5.833599533781026, 
+            "v0": 84.399587968576043
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 

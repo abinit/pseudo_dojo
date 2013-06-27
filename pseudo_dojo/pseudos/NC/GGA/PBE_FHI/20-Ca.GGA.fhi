@@ -2578,6 +2578,20 @@ calcium, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l=
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "high": {
+            "b0_GPa": 17.958974166370155, 
+            "b1": 3.4090544760267107, 
+            "dfact": 2.6157577341111984, 
+            "v0": 42.829792279342847
+        }, 
+        "normal": {
+            "b0_GPa": 18.64176306979124, 
+            "b1": 0.5486274268799305, 
+            "dfact": 3.336151946378781, 
+            "v0": 43.027825108472946
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 

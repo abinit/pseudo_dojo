@@ -1947,6 +1947,14 @@ neon, fhi98PP : Trouiller-Martins-type, GGA Perdew/Burke/Ernzerhof (1996), l= 2 
 
 <DOJO_REPORT>
 {
+    "delta_factor": {
+        "normal": {
+            "b0_GPa": 1.2665425469503133, 
+            "b1": 7.2388385581153969, 
+            "dfact": 0.021298200721622369, 
+            "v0": 24.282850127160643
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 
