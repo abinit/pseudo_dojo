@@ -82,7 +82,7 @@ def make_nist_configurations(path):
     print("")
 
 def parse_nist_configurations(path):
-    "Read and parse the file with the configurations."
+    """Read and parse the file with the configurations."""
     # Z    Symbol     Neutral                    Positive ion
     # 1      H       1s^1                           -
     # 2      He      1s^2                        1s^1

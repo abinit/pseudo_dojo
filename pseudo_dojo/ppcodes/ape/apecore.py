@@ -1,21 +1,19 @@
-#!/usr/bin/env python
 from __future__ import division, print_function
+
 import os
 import sys
 import time
 import collections
 import shutil
-from subprocess import Popen, PIPE
-
 import numpy as np
+
+from subprocess import Popen, PIPE
 
 from pseudo_dojo.ppcodes.core.qatom import plot_aepp, plot_logders
 from pseudo_dojo.ppcodes.ape.apeio import (ape_read_waves, ape_read_potentials, ape_read_densities,
-                               ape_read_logders, ape_read_dipoles, ape_check_ppeigen, ape_check_ghosts)
+                                           ape_read_logders, ape_read_dipoles, ape_check_ppeigen, ape_check_ghosts)
 
 __version__ = "0.1"
-__status__ = "Development"
-__date__ = "$April 26, 2013M$"
 
 ##########################################################################################
 
@@ -51,6 +49,11 @@ class ApeAeSolver(object):
         self.verbose = verbose
 
         self.inpgen.set_calculationmode("ae")
+
+    #@classmethod
+    #def from_aeconf(cls, workdir, aeconf, verbose=0):
+    #    inpgen = None
+    #    return cls(workdir, inpgen, verbose=verbose)
 
     @classmethod
     def from_template(cls, template, workdir, verbose=0):
@@ -164,30 +167,6 @@ class ApeAeSolver(object):
     def plot_waves(self, show=True, savefig=None): 
         plot_aepp(self.ae_waves, show=show, savefig=savefig)
 
-    #def json_dump(self):
-    #    json_fname = "__ApeAeSolver__.json"
-    #    path = os.path.join(self.workdir, json_fname)
-    #    json_pretty_dump(self.to_dict, path)
-
-    #@property
-    #def to_dict(self):
-    #    "Json-serializable dict representation"
-    #    return {
-    #        "ae_conf"      : self.ae_conf.to_dict, 
-    #        "workdir"      : self.workdir,
-    #        "xcfunctional" : self.xcfunctional,
-    #        "wave_equation": self.wave_equation,
-    #        "radmesh"      : self.radmesh.to_dict,
-    #        "control"      : self.control.to_dict,
-    #        "@class"       : self.__class__.__name__,
-    #        "@module"      : self.__class__.__name__,
-    #    }
-
-    #@classmethod
-    #def from_dict(cls, d):
-    #    "Reconstitute the object from a dict representation  created using to_dict."
-    #    #return cls(**{k:v for k,v in d if not k.startswith("@")})
-
 ##########################################################################################
 
 
@@ -299,7 +278,7 @@ class ApePseudoGenerator(object):
 
     @property
     def ghosts(self):
-        """Ghost states. Evaluates to True if ghost states are found."""
+        """Evaluates to True if ghost states are found."""
         try:
             return self._ghosts
         except AttributeError:
@@ -385,7 +364,7 @@ class ApePseudoGenerator(object):
 
         return exit_code
 
-    #def jsone_dump(self, protocol=0):
+    #def json_dump(self, protocol=0):
     #    path = os.path.join(self.workdir, self.json_fname)
     #    with open(path, "w") as fh:
     #        json.dump(self, fh, protocol=protocol)
@@ -506,6 +485,10 @@ class ApeInputGenerator(object):
     def __str__(self):
         return "\n".join(self.get_strlist())
 
+    #@classmethod
+    #def ae_inpgen(cls, ae_conf):
+    #    return cls(template=None, newvars=None)
+
     @classmethod
     def from_template(cls, template):
         """Initialize the object from a template (string or list of strings)."""
@@ -513,13 +496,6 @@ class ApeInputGenerator(object):
             with open(os.path.abspath(template), "r") as fh:
                 template = ape_parse_input(fh.readlines())
         return cls(template=template)
-
-    #@classmethod
-    #def from_objects(cls, *objs)
-    #    template = collections.OrderedDict()
-    #    for o in objs:
-    #        template.update(o.to_vars())
-    #    return cls(template=template)
 
     @property
     def varnames(self):
@@ -595,80 +571,3 @@ class ApeInputGenerator(object):
                     lines += ["%s" % l]
                 lines += ["%"]
         return lines
-
-    #@abc.abstractproperty
-    #def Z(self):
-    #    "The atomic number of the atom."
-
-    #@abc.abstractproperty
-    #def Z_val(self):
-    #    "Valence charge"
-
-    #@property
-    #def element(self):
-    #    "Pymatgen Element"
-    #    return _periodic_table[self.Z]
-
-    #@property
-    #def symbol(self):
-    #    "Element symbol."
-    #    return self.element.symbol
-
-    #@abc.abstractproperty
-    #def l_max(self):
-    #    "Maximum angular momentum"
-
-    #@abc.abstractproperty
-    #def l_local(self):
-    #    "Angular momentum used for the local part"
-
-    #@abc.abstractproperty
-    #def xc_family(self):
-    #    "XC family e.g LDA, GGA, MGGA."
-
-    #@abc.abstractproperty
-    #def xc_flavor(self):
-    #    "XC flavor e.g PW, PW91, PBE."
-
-    #@property
-    #def xc_type(self):
-    #    "XC identifier e.g LDA-PW, GGA-PBE, GGA-revPBE"
-    #    return "-".join([self.xc_family, self.xc_flavor])
-
-    #@property
-    #def isnc(self):
-    #    "True if norm-conserving pseudopotential"
-    #    return isinstance(self, NcPseudo)
-
-    #@property
-    #def ispaw(self):
-    #    "True if PAW pseudopotential"
-    #    return isinstance(self, PawPseudo)
-
-    #@abc.abstractproperty
-    #def has_soc(self):
-    #    "True if pseudo contains spin-orbit coupling."
-
-    #@abc.abstractmethod
-    #def num_of_projectors(self, l='s'):
-    #    "Number of projectors for the angular channel l"
-
-    #@abc.abstractmethod
-    #def generation_mode
-    #    "scalar scalar-relativistic, relativistic"
-
-    #@abc.abstractproperty
-    #def nlcc_radius(self):
-    #    """
-    #    Radius at which the core charge vanish (i.e. cut-off in a.u.).
-    #    Returns 0.0 if nlcc is not used.
-    #    """
-
-    #@property
-    #def has_nlcc(self):
-    #    "True if the pseudo is generated with non-linear core correction."
-    #    return self.nlcc_radius > 0.0
-
-    #@abc.abstractproperty
-    #def paw_radius(self):
-    #    "Radius of the PAW sphere in a.u."

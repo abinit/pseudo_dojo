@@ -137,7 +137,6 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
 
 class AtomicConfiguration(object):
     """Atomic configuration defining the AE atom."""
-
     def __init__(self, Z, states):
         """
         Args:
@@ -451,7 +450,7 @@ def plot_aepp(ae_funcs, pp_funcs=None, rmax=None, **kwargs):
     """
     title = kwargs.pop("title", None)
     show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None):
+    savefig = kwargs.pop("savefig", None)
 
     import matplotlib.pyplot as plt
     fig = plt.figure()
@@ -538,7 +537,7 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
     """
     title = kwargs.pop("title", None)
     show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None):
+    savefig = kwargs.pop("savefig", None)
 
     import matplotlib.pyplot as plt
     assert len(ae_logders) == len(pp_logders) 

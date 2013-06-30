@@ -1,4 +1,4 @@
-"Data taken from  http://www.physics.nist.gov/PhysRefData/DFTdata/"
+"""Data taken from  http://www.physics.nist.gov/PhysRefData/DFTdata/"""
 from collections import namedtuple
 
 # Computer generated code
@@ -94,7 +94,8 @@ _neutral = {
  'Y': '[Kr] 4d1 5s2',
  'Yb': '[Xe] 4f14 6s2',
  'Zn': '[Ar] 3d10 4s2',
- 'Zr': '[Kr] 4d2 5s2'}
+ 'Zr': '[Kr] 4d2 5s2'
+}
 
 # Computer generated code
 _cations = {
@@ -189,7 +190,8 @@ _cations = {
  'Y': '[Kr] 5s2',
  'Yb': '[Xe] 4f14 6s1',
  'Zn': '[Ar] 3d10 4s1',
- 'Zr': '[Kr] 4d2 5s1'}
+ 'Zr': '[Kr] 4d2 5s1'
+}
 
 # Computer generated code: nist_xctype = LDA, iontype = neutrals
 # format:
@@ -1661,17 +1663,17 @@ allsymbols = [k for k in _symb2Z]
 
 
 def Z_from_symbol(symbol):
-    "Returns the atomic number from the element symbol"
+    """Returns the atomic number from the element symbol."""
     return _symb2Z[symbol]
 
 
 def symbol_from_Z(Z):
-    "Returns the element symbol from atomic number"
+    """Returns the element symbol from atomic number."""
     return _Z2symb[Z]
 
 
 class NistState(namedtuple("NistState", "n, l, occ, eig")):
-    "Named tuple with info on the orbital"
+    """Named tuple with info on the orbital"""
 
 
 class NistEntry(namedtuple("NistEntry", "Z, states, energies")):
@@ -1696,7 +1698,7 @@ class NistEntry(namedtuple("NistEntry", "Z, states, energies")):
 
 
 def get_neutral_entry(symbol):
-    "Retrieve an entry of the data from the element symbol (neutral atoms)"
+    """Retrieve an entry of the data from the element symbol (neutral atoms)."""
     entry = _neutral_entries[symbol]
     states = [NistState(n=s[0], l=s[1], occ=s[2], eig=s[3]) for s in entry[1]]
     return NistEntry(Z=entry[0], states=states, energies=entry[2])

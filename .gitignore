@@ -26,6 +26,7 @@ _build
 
 # Vim files
 *.swp
+*.swo
 
 # Installer logs
 pip-log.txt

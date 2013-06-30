@@ -1,2 +1,3 @@
-from apecore import *
-from apeio import *
+from .apecore import *
+from .apeobjects import *
+from .apeio import *

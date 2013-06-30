@@ -8,8 +8,6 @@ import argparse
 from pseudo_dojo.ppcodes.nist import nist_database 
 from pseudo_dojo.ppcodes.ape import *
 
-#import periodictable
-
 __version__ = "0.1"
 __status__ = "Development"
 __date__ = "$April 26, 2013M$"
@@ -183,7 +181,7 @@ def main():
             ae_solver.solve(remove_wd=remove_wd)
 
             # Define the parameters for the pseudization.
-            #For each possible local L:
+            # For each possible local L:
             #    1) Pseudize.
             #    2) Check ghosts
             #    3) Plot wfs and logders

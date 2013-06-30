@@ -115,7 +115,7 @@ _BASE_CLASSES = [
 
 
 class EventList(collections.Iterable):
-    "Iterable storing the events produced by APE."
+    """Iterable storing the events produced by APE."""
 
     def __init__(self, filename, events=None):
         """
@@ -146,7 +146,7 @@ class EventList(collections.Iterable):
         return "\n".join(l for l in lines)
 
     def append(self, event):
-        "Add an event to the list."
+        """Add an event to the list."""
         self._events.append(event)
         self._events_by_baseclass[event.baseclass].append(event)
 
@@ -300,7 +300,7 @@ def ape_plot_waves(dirpath, rmax=None, **kwargs):
     """
     title = kwargs.pop("title", "Wavefunctions")
     show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None):
+    savefig = kwargs.pop("savefig", None)
 
     dirs = os.listdir(os.path.abspath(dirpath))
 
@@ -363,7 +363,7 @@ def ape_plot_potentials(dirpath, rmax=None, **kwargs):
     #raise NotImplementedError("")
     title = kwargs.pop("title", "Potentials")
     show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None):
+    savefig = kwargs.pop("savefig", None)
 
     dirs = os.listdir(os.path.abspath(dirpath))
 
@@ -425,7 +425,7 @@ def ape_plot_densities(dirpath, rmax=None, **kwargs):
     """
     title = kwargs.pop("title", "Densities")
     show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None):
+    savefig = kwargs.pop("savefig", None)
 
     dirs = os.listdir(os.path.abspath(dirpath))
 
@@ -489,7 +489,7 @@ def ape_plot_logders(dirpath, **kwargs):
     """
     title = kwargs.pop("title", "Logders")
     show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None):
+    savefig = kwargs.pop("savefig", None)
 
     dirpath = os.path.abspath(dirpath)
     if "tests" in os.listdir(dirpath):

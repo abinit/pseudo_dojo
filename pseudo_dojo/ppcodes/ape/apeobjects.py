@@ -1,8 +1,6 @@
-#!/usr/bin/env python
 from __future__ import division, print_function
 
 import os
-import os.path
 import sys
 import time
 import collections
@@ -15,11 +13,9 @@ from subprocess import Popen, PIPE
 
 from pseudo_dojo.ppcodes.core.qatom import QState, AtomicConfiguration, plot_logders
 from pseudo_dojo.ppcodes.ape.apeio import (ape_read_waves, ape_read_potentials, ape_read_densities, 
-                               ape_read_logders, ape_read_dipoles, ape_check_ppeigen, ape_check_ghosts)
+                                           ape_read_logders, ape_read_dipoles, ape_check_ppeigen, ape_check_ghosts)
 
 __version__ = "0.1"
-__status__ = "Development"
-__date__ = "$April 26, 2013M$"
 
 ##########################################################################################
 
@@ -79,15 +75,12 @@ class ApeAtomicConfiguration(AtomicConfiguration):
 
         return cls(Z, states)
 
-    #@property
-    #def ape_title(self):
-    #    return self.symbol
-
 ##########################################################################################
 
 class ApeRadialMesh(dict):
     """
-    APE uses a mesh to store functions. In order to change the mesh parameters you can use the following options:
+    APE uses a mesh to store functions. 
+    In order to change the mesh parameters you can use the following options:
     """
     # Supported variables
     _KEYS = [
@@ -111,12 +104,12 @@ class ApeRadialMesh(dict):
 
     @property
     def to_dict(self):
-        "Json-serializable dict representation"
+        """Json-serializable dict representation."""
         return self.copy()
 
     @classmethod
     def from_dict(cls, d):
-        "Reconstitute the object from a dict representation  created using to_dict."
+        """Reconstitute the object from a dict representation  created using to_dict."""
         return cls(**{k:v for k,v in d if not k.startswith("@")})
 
 class ApeControl(dict):
@@ -159,12 +152,12 @@ class ApeControl(dict):
 
     @property
     def to_dict(self):
-        "Json-serializable dict representation"
+        """Json-serializable dict representation."""
         return self.copy()
 
     @classmethod
     def from_dict(cls, d):
-        "Reconstitute the object from a dict representation  created using to_dict."
+        """Reconstitute the object from a dict representation  created using to_dict."""
         return cls(**{k:v for k,v in d if not k.startswith("@")})
 
 ##########################################################################################
@@ -207,8 +200,8 @@ class ApePPComponents(object):
 
     def to_input(self):
         lines = ["%PPComponents"]
-        for (state, rcore, scheme) in zip(self.states, self.core_radii, self.schemes):
-            lines += [" %s | %s | %s | %s " % (state.n, state.l, rcore, scheme)]
+        for (state, rcut, scheme) in zip(self.states, self.core_radii, self.schemes):
+            lines += [" %s | %s | %s | %s " % (state.n, state.l, rcut, scheme)]
         lines += ["%"]
         return lines
 
@@ -221,47 +214,11 @@ class ApePPSetup(object):
         self.core_correction = core_correction 
         self.llocal = llocal
 
-    #def from_template(cls, filename):
-
     def to_input(self):
         lines =  ["# PseudoPotentials"]
         lines += ["CoreCorrection = %s" % self.core_correction]
         lines += ["Llocal = %s" % self.llocal]
         lines += self.pp_components.to_input()
         return lines
-
-##########################################################################################
-
-class PseudoCandidate(object):
-
-    def __init__(self, pp_generator):
-        self.pp_generator = pp_generator
-
-    # Rich comparison support.
-    # This part is not trivial since we want to order pseudos
-    # according to their quality factor. Pseudos with ghosts are obviously 
-    # very bad but then we have to compare the error in the logder and in 
-    # the eigvalues and we have to assign some priority. 
-    # For the time-being, we give precedence to logder since a good logder
-    # implies good eigens
-    def __eq__(self, other):
-        return self.quality == other.quality
-
-    def __ne__(self, other):
-        return not self == other
-
-    #def __ge__(self, other):
-    #    return self.quality >= other.quality
-    #def __gt__(self, other):
-    #    return self.quality > other.quality
-    #def __le__(self, other):
-    #    return self.quality <= other.quality
-    #def __lt__(self, other):
-    #    return self.quality < other.quality
-
-    @property
-    def quality(self):
-        if self.ghosts:
-            return -np.inf
 
 ##########################################################################################
