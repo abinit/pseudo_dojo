@@ -4,8 +4,6 @@ import os.path
 import collections
 import numpy as np
 
-#from pprint import pprint
-
 from pseudo_dojo.ppcodes.core.qatom import RadialFunction, RadialWaveFunction, plot_aepp, plot_logders
 
 __version__ = "0.1"
@@ -33,7 +31,7 @@ class ApeEvent(object):
     """
     @staticmethod
     def from_string(string, lineno):
-        "Constructs an APE event given a string and the line number."
+        """Constructs an APE event given a string and the line number."""
         d = json.loads(string)
         cls = d.pop["class"]
         assert "lineno" not in d
@@ -116,7 +114,6 @@ _BASE_CLASSES = [
 
 class EventList(collections.Iterable):
     """Iterable storing the events produced by APE."""
-
     def __init__(self, filename, events=None):
         """
         Args:
@@ -152,7 +149,7 @@ class EventList(collections.Iterable):
 
     @property
     def critical_events(self):
-        "List of critical events"
+        """List of critical events."""
         return [e for e in self if e.iscritical]
 
     @property
@@ -219,7 +216,7 @@ class ApeOutputParser(object):
 
 def ape_parse_events(out_lines):
     """
-    Read and parse the main output file of APE
+    Read and parse the main output file of APE.
 
     Args:
         out_lines:

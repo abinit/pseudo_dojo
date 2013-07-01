@@ -15,17 +15,10 @@ from pseudo_dojo.ppcodes.ape.apeio import (ape_read_waves, ape_read_potentials, 
 
 __version__ = "0.1"
 
-##########################################################################################
-
 
 class ApeError(Exception):
     """Base class for APE Exceptions."""
 
-
-class ApeWorkDirExists(ApeError):
-    """Working directory already exists"""
-
-##########################################################################################
 
 class ApeAeSolver(object):
     """
@@ -33,6 +26,8 @@ class ApeAeSolver(object):
     parameters passed via the input generator inpgen.
     """
     _exe = "ape"
+
+    Error = ApeError
 
     def __init__(self, workdir, inpgen, verbose=0):
         """
@@ -52,8 +47,8 @@ class ApeAeSolver(object):
 
     #@classmethod
     #def from_aeconf(cls, workdir, aeconf, verbose=0):
-    #    inpgen = None
-    #    return cls(workdir, inpgen, verbose=verbose)
+        #inpgen = ApeInputGenerator.aeconf.to_input()
+        #return cls(workdir, inpgen, verbose=verbose)
 
     @classmethod
     def from_template(cls, template, workdir, verbose=0):
@@ -92,6 +87,7 @@ class ApeAeSolver(object):
     # Lazy properties.
     @property
     def ae_waves(self):
+        """Returns the all-electron wavefunctions."""
         try:
             return self._ae_waves
         except AttributeError:
@@ -100,6 +96,7 @@ class ApeAeSolver(object):
 
     @property
     def ae_potentials(self):
+        """Returns the all-electron potentials."""
         try:
             return self._ae_potentials
         except AttributeError:
@@ -108,6 +105,7 @@ class ApeAeSolver(object):
 
     @property
     def ae_densities(self):
+        """Returns the all-electron densities."""
         try:
             return self._ae_densities
         except AttributeError:
@@ -124,7 +122,12 @@ class ApeAeSolver(object):
         return self.inpgen.get_strlist()
 
     def solve(self, **kwargs):
-        """Solves the all-electron problem by calling APE in a subprocess."""
+        """
+        Solves the all-electron problem by calling APE in a subprocess.
+
+        Returns:
+            The exist status of the subprocess.
+        """
         print("Solving the all-electron problem...")
         start = time.time()
 
@@ -134,7 +137,7 @@ class ApeAeSolver(object):
                 if self.verbose: print("Will remove %s" % self.workdir)
                 shutil.rmtree(self.workdir)
             else:
-                raise ApeWorkDirExists(str(self.workdir))
+                raise self.Error("%s aleady exists" % self.workdir)
 
         os.makedirs(self.workdir)
         with open(self.input_path, "w") as fh:
@@ -164,8 +167,20 @@ class ApeAeSolver(object):
 
         return exit_code
 
-    def plot_waves(self, show=True, savefig=None): 
-        plot_aepp(self.ae_waves, show=show, savefig=savefig)
+    def plot_waves(self, **kwargs):
+        """
+        ==============  ==============================================================
+        kwargs          Meaning
+        ==============  ==============================================================
+        title           Title of the plot (Default: None).
+        show            True to show the figure (Default: True).
+        savefig:        'abc.png' or 'abc.eps'* to save the figure to a file.
+        ==============  ==============================================================
+
+        Returns:
+            `matplotlib` figure.
+        """
+        return plot_aepp(self.ae_waves, **kwargs)
 
 ##########################################################################################
 
@@ -177,6 +192,8 @@ class ApePseudoGenerator(object):
     via the input generator inpgen.
     """
     _exe = "ape"
+
+    Error = ApeError
 
     def __init__(self, workdir, inpgen, ae_solver, verbose=0):
         """
@@ -203,14 +220,17 @@ class ApePseudoGenerator(object):
 
     @property
     def input_path(self):
+        """Path to the APE input file."""
         return os.path.join(self.workdir, "ape.in")
 
     @property
     def output_path(self):
+        """Path to the APE output file."""
         return os.path.join(self.workdir, "ape.out")
                                                         
     @property
     def stderr_path(self):
+        """Path to the APE stderr file."""
         return os.path.join(self.workdir, "ape.stderr")
 
     @property
@@ -233,11 +253,13 @@ class ApePseudoGenerator(object):
 
     @property
     def ae_waves(self):
+        """Returns the all-electron wavefunctions."""
         return self.ae_solver.ae_waves
 
     # Lazy properties.
     @property
     def pp_waves(self):
+        """Returns the pseudo wavefunctions."""
         try:
             return self._pp_waves
         except AttributeError:
@@ -246,6 +268,7 @@ class ApePseudoGenerator(object):
                                                        
     @property
     def pp_potentials(self):
+        """Returns the pseudized pseudopotentials."""
         try:
             return self._pp_potentials
         except AttributeError:
@@ -254,6 +277,7 @@ class ApePseudoGenerator(object):
                                                        
     @property
     def pp_densities(self):
+        """Returns the pseudized densities."""
         try:
             return self._pp_densities
         except AttributeError:
@@ -262,6 +286,7 @@ class ApePseudoGenerator(object):
 
     @property
     def ae_logders(self):
+        """Returns the all-electron logarithmic derivatives."""
         try:
             return self._ae_logders
         except AttributeError:
@@ -270,6 +295,7 @@ class ApePseudoGenerator(object):
 
     @property
     def pp_logders(self):
+        """Returns the logarithmic derivatives of the pseudo atom."""
         try:
             return self._pp_logders
         except AttributeError:
@@ -287,7 +313,7 @@ class ApePseudoGenerator(object):
 
     @property
     def dipoles(self):
-        """Dipole matrix elements."""
+        """Returns the dipole matrix elements."""
         try:
             return self._dipoles
         except AttributeError:
@@ -309,8 +335,13 @@ class ApePseudoGenerator(object):
         return self.inpgen.get_strlist()
 
     def pseudize(self, **kwargs):
-        """Performs the pseudization by calling APE in a subprocess."""
-        print("Starting pseudization...")
+        """
+        Performs the pseudization by calling APE in a subprocess.
+
+        Returns:
+            The exist status of the subprocess.
+        """
+        if self.verbose: print("Starting pseudization...")
         start = time.time()
 
         # Write the input file.
@@ -319,7 +350,7 @@ class ApePseudoGenerator(object):
                 if self.verbose: print("Will remove %s" % self.workdir)
                 shutil.rmtree(self.workdir)
             else:
-                raise ApeWorkDirExists(str(self.workdir))
+                raise self.Error("%s already exists" % self.workdir)
         os.makedirs(self.workdir)
 
         # FIXME: Have to copy data dir
@@ -358,10 +389,6 @@ class ApePseudoGenerator(object):
 
         # Check logarithmic derivative.
 
-        # Dump quality control file.
-        #with open(self.path_in_workdir("quality.json"), "w") as fh:
-        #    json.dump(self.quality_control(), fh, indent=4, sort_keys=4)
-
         return exit_code
 
     #def json_dump(self, protocol=0):
@@ -389,31 +416,24 @@ class ApePseudoGenerator(object):
 
         return merits
 
-    #def quality_control(self):
-    #    return {
-    #        "ghosts"        : self.ghosts,
-    #        "ppeig_quality" : self._check_ppeigen,
-    #        "logder_quality": self.check_logders(),
-    #    }
+    def plot_waves(self, **kwargs):
+        return plot_aepp(self.ae_waves, pp_funcs=self.pp_waves, **kwargs)
 
-    def plot_waves(self, show=True, savefig=None): 
-        plot_aepp(self.ae_waves, pp_funcs=self.pp_waves, show=show, savefig=savefig)
+    def plot_logders(self, **kwargs): 
+        return plot_logders(self.ae_logders, self.pp_logders, **kwargs)
 
-    def plot_logders(self, show=True, savefig=None): 
-        plot_logders(self.ae_logders, self.pp_logders, show=show, savefig=savefig)
+    #def plot_potentials(self, vname, **kwargs):
+    #    return plot_potentials(self.ae_pots, pp_pots=self.pp_pots, **kwargs)
 
-    #def plot_potentials(self, vname):
-    #    plot_potentials(self.ae_pots, pp_pots=self.pp_pots, show=show, savefig=savefig)
+    #def plot_densities(self, **kwargs):
+    #    return plot_densities(self.ae_densities, pp_dens=self.pp_densities, **kwargs)
 
-    #def plot_densities(self):
-    #    plot_densities(self.ae_densities, pp_dens=self.pp_densities, show=show, savefig=savefig)
-
-    #def plot_core_correction(self):
+    #def plot_core_correction(self, **kwargs):
 
 ##########################################################################################
 
 
-def ape_parse_input(input): 
+def ape_parse_input(input, verbose=0): 
     """
     Parses an APE input file, returns an ordered dictionary {varname: varvalue}
 
@@ -422,7 +442,7 @@ def ape_parse_input(input):
             filename of list of lines.
     
     .. note: varnames are all lower case, the name of variables corresponding
-             to APE blocks starts with the character %
+             to APE blocks starts with the character %.
     """
     if isinstance(input, str):
         with open(input, "r") as fh:
@@ -436,7 +456,12 @@ def ape_parse_input(input):
         l = line.strip() 
         if l and not l.startswith("#"): 
             lines.append(l)
-                                                                         
+
+    vrb_print = print
+    if not verbose:
+        def vrb_print(*args, **kwargs):
+            """NOP"""
+
     # Parse the file: treat blocks and scalar variables separately.
     while True:
         try:
@@ -447,7 +472,7 @@ def ape_parse_input(input):
         if line.startswith("%"):
             # Not that varname contains the char "%" so that
             # we can separate scalar variables from blocks.
-            # print("Begin block: %s" % line)
+            vrb_print("Begin block: %s" % line)
             var_name = line.lower().strip()
             assert var_name not in ovars
             ovars[var_name] = []
@@ -460,7 +485,7 @@ def ape_parse_input(input):
                 else:
                     ovars[var_name].append(l)
         else:
-            #print("Got scalar: %s" % line)
+            vrb_print("Received scalar: %s" % line)
             var_name, var_value = line.split("=")
             var_name = var_name.lower().strip()
             assert var_name not in ovars

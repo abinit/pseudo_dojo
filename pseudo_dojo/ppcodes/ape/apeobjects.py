@@ -26,7 +26,7 @@ class ApeAtomicConfiguration(AtomicConfiguration):
         lines += ["SpinMode = %s" % self.spin_mode]
         lines += ["%Orbitals"]
         for state in self:
-            lines += state.to_input()
+            lines += state.to_apeinput()
         lines += ["%"]
         return lines
 
@@ -79,8 +79,7 @@ class ApeAtomicConfiguration(AtomicConfiguration):
 
 class ApeRadialMesh(dict):
     """
-    APE uses a mesh to store functions. 
-    In order to change the mesh parameters you can use the following options:
+    The radial mesh used by APE to represent radial functions. 
     """
     # Supported variables
     _KEYS = [

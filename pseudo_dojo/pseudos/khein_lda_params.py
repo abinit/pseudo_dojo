@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+#
 # Parameteres used to generate the periodic table (A. Khein and D.C. Allan).
 # See http://www.abinit.org/downloads/psp-links/psp-links/lda_tm
-from __future__ import print_function
+from __future__ import print_function, division
 
 _PARAMS = {\
 
@@ -1222,22 +1224,111 @@ _PARAMS = {\
 ,
 }
 
+#########################################################################################
+# Official API
+
 def get_params(symbol):
+    """
+    Retrieve the pseudization parameters from the chemical symbol.
+    Returns None if symbol in not found
+    """
     try:
-        return _PARAMS[symbol]
+        dict_params =  _PARAMS[symbol]
     except KeyError:
         return None
+
+    return dict_params
+    #return NcParams.from_dict(dict_params)
+
+from collections import namedtuple
+
+class NcProjector(namedtuple("NCPROJ", "n l rcut scheme")):
+    """
+    Descriptor for norm-conserving projectors.
+
+    .. attributes:
+
+        n:
+            Principal quantum number (the one associated to the 
+            AE wavefunction that has been pseudized.
+        l:
+            Angular momentum.
+        rcut:
+            Cutoff radius in Bohr.
+        scheme:
+            String defining the pseudization scheme. 
+    """
+    @classmethod
+    def asprojector(cls, obj):
+        if isinstance(obj, cls):
+            return obj
+        else:
+            return cls(**obj)
+
+#class NLCC(dict):
+
+class NcParams(object):
+    """
+    This object gathers the parameters used to generate a norm-conserving pseudo.
+
+    .. attributes:
+
+        reference_conf:
+            String defining the reference configuration.
+        Z:
+            Nuclear Charge.
+        Z_val:
+            Number of valence electrons.
+        l_max:
+            Maximum angular momentum used in the pseudization procedures.
+        l_local:
+            Angular momemtum used for the local part.
+        projectors:
+            List of `NcProjector` instances.
+        nlcc:
+            Defines the treatment of the non-linear core-correction.
+        wave_equation:
+            String defining the type of Hamiltonian. Possible values:
+            (schrodinger, scalar-relativistic, relativistic).
+        xc_functional
+            String defining the exchange-correlation functional.
+    """
+    def __init__(self, reference_conf, Z, Z_val, l_max, l_local, projectors, 
+                 nlcc, wave_equation=None, xc_functional=None, **extra_kwargs):
+
+        self.reference_conf = reference_conf
+        self.Z = Z
+        self.Z_val = Z_val
+        self.l_max = l_max
+        self.l_local = l_local
+        self.projectors = projectors
+        self.nlcc = nlcc
+        self.wave_equation = wave_equation
+        self.xc_functional = xc_functional
+        self._extra_kwargs = extra_kwargs
+
+    @property
+    def has_nlcc(self):
+        return bool(self.nlcc)
+
+    #def set_wave_equation(self, wave_equation):
+    #    self.wave_equation = wave_equation
+
+    #def set_xc_functional(self, xc_functional):
+    #    self.xc_functional = xc_functional
+
+    #@classmethod
+    #def from_dict(cls, d):
+
+    #@property
+    #def to_dict(self):
+
 
 def ape_pseudize(symbol, wave_equation, xc_functional):
     from pseudo_dojo.ppcodes.ape import ApeAtomicConfiguration, ApeAeSolver
     params = get_params(symbol)
     ae_conf = ApeAtomicConfiguration.from_string(params["Z"], params["reference_conf"])
     print(ae_conf.to_input())
-    #ae_solver = ApeAeSolver.from_aeconf("hello_ape", ae_conf, verbose=1)
-    #ae_solver.solve()
-    #inpgen = ApeInputGenerator(template=None, newvars=None)
-    #pp_components = ApePPComponents.from_string()
-    #setup = ApePPSetup(pp_components, core_correction=0, llocal=-1)
 
 if __name__ == "__main__":
     ape_pseudize("Si", "None", "None")

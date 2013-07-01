@@ -42,15 +42,14 @@ class PseudoDojoDatabaseTest(PseudoDojoTest):
         res = pp_db.findall("NC", query)
         self.assertTrue(all(p.Z == 81 for p in res))
 
-        query = {"Z": 81, "Z_val": 3}
+        query = {"Z": 81, "Z_val": 13}
         pseudos = pp_db.findall("NC", query)
         for p in pseudos: 
             #print(p)
             print(p.Z, p.Z_val)
-            #print(p)
 
+        print(len(pp_db.findall("NC", query)))
         self.assertTrue(len(pp_db.findall("NC", query)) == 1)
-        #assert 0
         #query = {"l_max": 2}, {"zval": { ".in.": [1:3]}}
 
 

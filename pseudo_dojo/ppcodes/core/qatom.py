@@ -9,8 +9,8 @@ from pseudo_dojo.ppcodes.nist import nist_database
 from scipy.interpolate import UnivariateSpline
 
 __version__ = "0.1"
-__status__ = "Development"
-__date__ = "$April 26, 2013M$"
+__author__ = "Matteo Giantomassi"
+__maintainer__ = "Matteo Giantomassi"
 
 __all__ = [
     "QState",
@@ -44,6 +44,9 @@ def _asl(obj):
 
 
 def states_from_string(confstr):
+    """
+    Parse a string with an atomic configuration and buil a list of `QState` instance.
+    """
     states = []
     tokens = confstr.split()
 
@@ -67,27 +70,35 @@ def parse_orbtoken(orbtoken):
 
 
 class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
-    "Quantum numbers, occupancies and eigenvalue of the atomic orbital."
+    """
+    This object collects the set of quantum numbers and the physical properties
+    associated to a single electron in a spherically symmetric atom.
+
+    .. attributes:
+        n:
+            Principal quantum number.
+        l:
+            Angular momentum.
+        occ:
+            Occupancy of the atomic orbital.
+        eig:
+            Eigenvalue of the atomic orbital.
+        j:
+            J quantum number. None if spin is a good quantum number.
+        s:
+            Spin polarization. None if spin is not taken into account.
+    """
     # TODO
     #Spin +1, -1 or 1,2 or 0,1?
-
     def __new__(cls, n, l, occ, eig=None, j=None, s=None):
-        "Intercepts super.__new__ adding type conversion and default values"
+        """Intercepts super.__new__ adding type conversion and default values."""
         eig = float(eig) if eig is not None else eig
         j = int(j) if j is not None else j
         s = int(s) if s is not None else s
         return super(QState, cls).__new__(cls, int(n), _asl(l), float(occ), eig=eig, j=j, s=s)
 
-    #@classmethod
-    #def asqstate(cls, obj):
-    #    if isinstance(obj, cls):
-    #        return obj
-    #    #if isinstance(obj, str):
-    #    raise ValueError("Dont' know how to cast %s: %s" % (obj.__class__.__name__, obj))
-
     # Rich comparison support. 
     # Note that the ordering is based on the quantum numbers and not on energies!
-
     #def __gt__(self, other):
     #    if self.has_j:
     #        raise NotImplementedError("")
@@ -101,13 +112,13 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
 
     #def __lt__(self, other):
 
-    #@property
-    #def has_j(self):
-    #    return self.j is not None
+    @property
+    def has_j(self):
+        return self.j is not None
 
-    #@property
-    #def has_s(self):
-    #    return self.s is not None
+    @property
+    def has_s(self):
+        return self.s is not None
 
     @property
     def to_dict(self):
@@ -121,6 +132,7 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
         return cls(**d)
 
     def to_apeinput(self):
+        """Returns a string with the quantum numbers in the APE format."""
         if self.s is None:
             string = "%s | %s | %s " % (self.n, self.l, self.occ)
         elif self.s == 2:
@@ -136,14 +148,14 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
 
 
 class AtomicConfiguration(object):
-    """Atomic configuration defining the AE atom."""
+    """Atomic configuration defining the all-electron atom."""
     def __init__(self, Z, states):
         """
         Args:
             Z:
                 Atomic number.
             states:
-                List of QState instances.
+                List of `QState` instances.
         """
         self.Z = Z
         self.states = states
@@ -208,16 +220,16 @@ class AtomicConfiguration(object):
 
     @property
     def echarge(self):
-        """Electronic charge (float <0)"""
+        """Electronic charge (float <0)."""
         return -sum(state.occ for state in self)
 
     @property
     def isneutral(self):
-        """True if neutral configuration."""
+        """True if self is a neutral configuration."""
         return abs(self.echarge + self.Z) < 1.e-8
 
     def add_state(self, **qnumbers):
-        """Add a quantum state to self."""
+        """Add a list of `QState` instances to self."""
         self._push(QState(**qnumbers))
 
     def remove_state(self, **qnumbers):
@@ -236,10 +248,6 @@ class AtomicConfiguration(object):
         except ValueError:
             raise
 
-    #@property
-    #def num_nodes(self):
-    #    "Exact number of nodes computed from the quantum numbers."
-
     @property
     def to_dict(self):
         """Json-serializable dict representation."""
@@ -255,15 +263,11 @@ class AtomicConfiguration(object):
         """Reconstitute the object from a dict representation  created using to_dict."""
         return cls(d["Z"], d["states"])
 
-#class SpinPolarizedConfiguration(AeAtom):
-#class DiracConfiguration(AeAtom):
-
 ##########################################################################################
 
 
 class RadialFunction(object):
     """A RadialFunction has a name, a radial mesh and values defined on this mesh."""
-
     def __init__(self, name, rmesh, values):
         """
         Args:
@@ -277,14 +281,13 @@ class RadialFunction(object):
         self.name = name 
         self.rmesh = np.ascontiguousarray(rmesh)
         self.values = np.ascontiguousarray(values)
-
         assert len(self.rmesh) == len(self.values)
 
     def __len__(self):
         return len(self.values)
 
     def __iter__(self):
-        "Iterate over (rpoint, value)"
+        """Iterate over (rpoint, value)."""
         return iter(zip(self.rmesh, self.values))
 
     def __getitem__(self, rslice):
@@ -375,9 +378,6 @@ class RadialFunction(object):
         r2v2_spline = UnivariateSpline(self.rmesh, (self.rmesh * self.values) ** 2, s=0)
         return r2v2_spline.integral(a, b)
 
-    #@property
-    #def peaks(self):
-
     def ifromr(self, rpoint):
         """The index of the point."""
         for (i, r) in enumerate(self.rmesh):
@@ -398,6 +398,7 @@ class RadialFunction(object):
                 Absolute tolerance.
 
         .. warning:
+
             Assumes that self.values are tending to zero for r --> infinity.
         """
         for i in range(len(self.rmesh)-1, -1, -1):
@@ -420,7 +421,6 @@ class RadialWaveFunction(RadialFunction):
         back = min(10, len(self))
         return all(abs(self.values[-back:]) < self.TOL_BOUND)
 
-#class DiracWaveFunction(RadialFunction):
 
 ##########################################################################################
 
@@ -459,7 +459,6 @@ def plot_aepp(ae_funcs, pp_funcs=None, rmax=None, **kwargs):
 
     spl_idx = 0
     for (state, ae_phi) in ae_funcs.items():
-
         if pp_funcs is not None and state not in pp_funcs:
             continue
         
@@ -560,7 +559,7 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
         line, = ax.plot(pp_logd.rmesh, pp_logd.values, "^r", linewidth=2.0, markersize=4)
         lines.append(line)
         legends.append("PP logder %s" % state)
-                                                                                         
+
         ax.legend(lines, legends, 'lower left', shadow=True)
 
         if spl_idx == num_logds:
