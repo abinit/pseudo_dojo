@@ -1,3 +1,13 @@
+"""
+This module provides a databased for accessing the deltafactor results,
+and tools to compute the deltafactor of a pseudopotential.
+Client code should use the official API df_database() to access the database.
+
+Example::
+    db = df_database()
+    wien2k = db.get_entry("Si")
+    print(wien2k.v0, wien2k.b0, wien2k.b1)
+"""
 from __future__ import division, print_function
 
 import sys

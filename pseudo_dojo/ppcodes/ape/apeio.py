@@ -4,7 +4,7 @@ import os.path
 import collections
 import numpy as np
 
-from pseudo_dojo.ppcodes.core.qatom import RadialFunction, RadialWaveFunction, plot_aepp, plot_logders
+from pseudo_dojo.core import RadialFunction, RadialWaveFunction, plot_aepp, plot_logders
 
 __version__ = "0.1"
 __status__ = "Development"

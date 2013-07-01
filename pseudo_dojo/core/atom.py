@@ -4,7 +4,7 @@ import os
 import collections
 import numpy as np
 
-from pseudo_dojo.ppcodes.nist import nist_database
+from pseudo_dojo.refdata.nist import nist_database
 
 from scipy.interpolate import UnivariateSpline
 
@@ -204,6 +204,7 @@ class AtomicConfiguration(object):
 
     @property
     def symbol(self):
+        """Chemical symbol"""
         return nist_database.symbol_from_Z(self.Z)
 
     @property
@@ -339,6 +340,7 @@ class RadialFunction(object):
 
     @property
     def inodes(self):
+        """"List with the index of the nodes of the radial function."""
         inodes = []
         for i in range(len(self.values)-1):
             if self.values[i] * self.values[i+1] <= 0:
@@ -409,6 +411,10 @@ class RadialFunction(object):
 ##########################################################################################
 
 class RadialWaveFunction(RadialFunction):
+    """
+    Extends RadialFunction adding info on the set of quantum numbers.
+    and special methods for elecronic wavefunctions.
+    """
     TOL_BOUND = 1.e-10
 
     def __init__(self, state, name, rmesh, values):

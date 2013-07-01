@@ -51,4 +51,4 @@ author_email = 'gmatteo at gmail com'
 
 platforms = ['Linux','darwin']
 
-keywords = ["pseudopotentials", "DFT", "ab-initio", "first principles"]
+keywords = ["pseudopotentials", "DFT", "ab-initio", "first principles", "ABINIT"]

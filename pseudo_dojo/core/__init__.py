@@ -18,5 +18,6 @@ from pymatgen.io.abinitio.pseudos import PseudoParser, PseudoTable
 #from .task import RunMode
 #from .eos import EOS
 
-from .dojo import Dojo
 from .testing import *
+from .atom import *
+

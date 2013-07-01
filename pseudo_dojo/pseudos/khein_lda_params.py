@@ -1291,7 +1291,7 @@ class NcParams(object):
             String defining the type of Hamiltonian. Possible values:
             (schrodinger, scalar-relativistic, relativistic).
         xc_functional
-            String defining the exchange-correlation functional.
+            String defining the exchange-correlation functional (APE notation).
     """
     def __init__(self, reference_conf, Z, Z_val, l_max, l_local, projectors, 
                  nlcc, wave_equation=None, xc_functional=None, **extra_kwargs):
@@ -1311,11 +1311,11 @@ class NcParams(object):
     def has_nlcc(self):
         return bool(self.nlcc)
 
-    #def set_wave_equation(self, wave_equation):
-    #    self.wave_equation = wave_equation
+    def set_wave_equation(self, wave_equation):
+        self.wave_equation = wave_equation
 
-    #def set_xc_functional(self, xc_functional):
-    #    self.xc_functional = xc_functional
+    def set_xc_functional(self, xc_functional):
+        self.xc_functional = xc_functional
 
     #@classmethod
     #def from_dict(cls, d):
