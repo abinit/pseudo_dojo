@@ -10,12 +10,10 @@ from pprint import pprint
 from .deltaworks import DeltaFactory
 
 from pymatgen.serializers.json_coders import json_pretty_dump
-from pymatgen.io.abinitio.task import RunMode
 from pymatgen.io.abinitio.pseudos import Pseudo
-from pymatgen.io.abinitio.launcher import SimpleResourceManager
+from pymatgen.io.abinitio.launcher import PyResourceManager
 from pymatgen.io.abinitio.calculations import PPConvergenceFactory
 
-################################################################################
 
 
 class DojoError(Exception):
@@ -31,11 +29,12 @@ class Dojo(object):
     """
     Error = DojoError
 
-    def __init__(self, runmode=None, max_ncpus=1, max_level=None, verbose=0):
+    def __init__(self, manager, max_ncpus=1, max_level=None, verbose=0):
         """
         Args:
-            runmode:
-                `RunMode` instance specifying the options for parallel execution.
+            manager:
+                `TaskManager` object that will handle the sumbmission of the job 
+                and the parallel execution.
             max_ncpus:
                 Max number of CPUs to use
             max_level:
@@ -43,7 +42,7 @@ class Dojo(object):
             verbose:
                 Verbosity level (int).
         """
-        self.runmode = runmode if runmode else RunMode.sequential()
+        self.manager = manager
         self.max_ncpus = max_ncpus
         self.verbose = verbose
 
@@ -74,7 +73,7 @@ class Dojo(object):
         workdir = "DOJO_" + pseudo.name
 
         # Build master instances.
-        masters = [cls(runmode=self.runmode, max_ncpus=self.max_ncpus,
+        masters = [cls(manager=self.manager, max_ncpus=self.max_ncpus,
                        verbose=self.verbose) for cls in self.master_classes]
         isok = False
         for master in masters:
@@ -97,17 +96,17 @@ class DojoMaster(object):
 
     Error = DojoError
 
-    def __init__(self, runmode=None, max_ncpus=1, verbose=0):
+    def __init__(self, manager, max_ncpus=1, verbose=0):
         """
         Args:
-            runmode:
-                `RunMode` instance specifying the options for parallel execution.
+            manager:
+                `TaskManager` object 
             max_ncpus:
                 Max number of CPUs to use
             verbose:
                 Verbosity level (int).
         """
-        self.runmode = runmode if runmode else RunMode.sequential()
+        self.manager = manager
         self.max_ncpus = max_ncpus
         self.verbose = verbose
 
@@ -262,7 +261,7 @@ class HintsMaster(DojoMaster):
         eslice = slice(5, None, estep)
 
         w = factory.work_for_pseudo(workdir, pseudo, eslice,
-                                    runmode=self.runmode, toldfe=toldfe, atols_mev=self._ATOLS_MEV)
+                                    manager=self.manager, toldfe=toldfe, atols_mev=self._ATOLS_MEV)
 
         if os.path.exists(w.workdir):
             shutil.rmtree(w.workdir)
@@ -285,7 +284,7 @@ class HintsMaster(DojoMaster):
         erange = list(np.arange(estart, estop, estep))
 
         work = factory.work_for_pseudo(workdir, pseudo, erange,
-                                       runmode=self.runmode, toldfe=toldfe,
+                                       manager=self.manager, toldfe=toldfe,
                                        atols_mev=self._ATOLS_MEV)
 
         print("Finding optimal values for ecut in the interval %.1f %.1f %1.f, "
@@ -343,9 +342,9 @@ class DeltaFactorMaster(DojoMaster):
             print("Running delta_factor calculation with %d python threads" % self.max_ncpus)
             print("Will use kppa = %d " % kppa)
             print("Accuracy = %s" % self.accuracy)
-            print("Runmode = ",self.runmode)
+            print("Manager = ",self.manager)
 
-        work = factory.work_for_pseudo(workdir, self.runmode, self.pseudo, 
+        work = factory.work_for_pseudo(workdir, self.manager, self.pseudo, 
                                        accuracy=self.accuracy, kppa=kppa, ecut=None)
 
         retcodes = SimpleResourceManager(work, self.max_ncpus).run()

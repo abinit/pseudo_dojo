@@ -16,7 +16,7 @@ import os.path
 import collections
 import numpy as np
 
-import pseudo_dojo.core.constants as const
+from pymatgen.core.units import FloatWithUnit
 
 ##########################################################################################
 
@@ -35,12 +35,16 @@ class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 
             if i == 0: converter = str
             new_args[i] = converter(arg)
 
-        return super(cls, DeltaFactorEntry).__new__(cls, *new_args)
+        v0 = FloatWithUnit(new_args[1], "ang^3")
+        b0 = FloatWithUnit(new_args[2], "eV ang^-3")
+
+        new = super(cls, DeltaFactorEntry).__new__(cls, symbol=new_args[0], v0=v0, b0=b0, b1=new_args[3])
+        return new
 
     @property
     def b0_GPa(self):
         """b0 in GPa units."""
-        return self.b0 * const.eVA3_GPa
+        return self.b0.to("GPa") 
 
 def read_data_from_filename(filename):
     """
@@ -57,7 +61,7 @@ def read_data_from_filename(filename):
             tokens = line.split()
             symbol = tokens[0] 
             # Conversion GPa --> eV / A**3
-            tokens[2] = float(tokens[2]) / const.eVA3_GPa
+            tokens[2] = FloatWithUnit(tokens[2], "GPa").to("eV ang^-3") 
             data[symbol] = DeltaFactorEntry(*tokens)
     return data
 
@@ -209,9 +213,10 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False):
 
         v0 is A**3/natom, by default b0 is in eV/A**3, GPa units are used if b0_GPa is True.
     """
-    if b0_GPa: # Conversion GPa --> eV/A**3
-        b0w /= const.eVA3_GPa
-        b0f /= const.eVA3_GPa
+    if b0_GPa: 
+        # Conversion GPa --> eV/A**3
+        b0w = FloatWithUnit(b0w, "GPa").to("eV Ang^-3")
+        b0f = FloatWithUnit(b0f, "GPa").to("eV Ang^-3")
 
     Vi = 0.94 * v0w
     Vf = 1.06 * v0w
