@@ -140,7 +140,7 @@ class EventList(collections.Iterable):
         lines = [self.filename+":",]
         for event in self:
             lines.append(str(event))
-        return "\n".join(l for l in lines)
+        return "\n".join(lines)
 
     def append(self, event):
         """Add an event to the list."""
@@ -257,6 +257,33 @@ def ape_parse_events(out_lines):
 
 ##########################################################################################
 
+#class ApePlotter(object):
+#
+#    def build_figs(self, dirpath, **kwargs):
+#        """
+#        Args:
+#
+#        ==============  ==============================================================
+#        kwargs          Meaning
+#        ==============  ==============================================================
+#        show            True to show the figure (Default).
+#        ==============  ==============================================================
+#        """
+#        if "show" not in kwargs:
+#            kwargs["show"] = False
+#
+#        self.figs = figs = {}
+#
+#        figs["wave"] = ape_plot_waves(dirpath, **kwargs) 
+#
+#        figs["logd"] = ape_plot_logders(dirpath, **kwargs)
+#
+#        figs["pot"] = ape_plot_potentials(dirpath, **kwargs)
+#
+#        figs["den"] = ape_plot_densities(dirpath, **kwargs)
+
+##########################################################################################
+
 def ape_read_waves(dirpath):
     """Read the APE radial wavefunctions located in directory dirpath."""
     waves = {}
@@ -275,14 +302,12 @@ def ape_read_waves(dirpath):
     return waves
 
 
-def ape_plot_waves(dirpath, rmax=None, **kwargs): 
+def ape_plot_waves(dirpath, **kwargs): 
     """
     Uses Matplotlib to plot the radial wavefunction (AE vs PP)
 
     Args:
         dirpath:
-        rmax:
-            float or dictionary {state: rmax} where rmax is the maximum r (Bohr) that will be be plotted. 
 
     ==============  ==============================================================
     kwargs          Meaning
@@ -295,10 +320,6 @@ def ape_plot_waves(dirpath, rmax=None, **kwargs):
     Returns:
         `matplotlib` figure.
     """
-    title = kwargs.pop("title", "Wavefunctions")
-    show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None)
-
     dirs = os.listdir(os.path.abspath(dirpath))
 
     ae_waves, pp_waves = None, None
@@ -310,10 +331,10 @@ def ape_plot_waves(dirpath, rmax=None, **kwargs):
         pp_waves = ape_read_waves(os.path.join(dirpath, "pp"))
 
     if ae_waves is not None:
-        fig = plot_aepp(ae_waves, pp_funcs=pp_waves, rmax=rmax, title=title, show=show, savefig=savefig)
+        fig = plot_aepp(ae_waves, pp_funcs=pp_waves, **kwargs)
     else:
-        fig = None
         print("Cannot find AE waves in dirpath %s" % dirpath)
+        fig = None
 
     return fig
 
@@ -336,15 +357,12 @@ def ape_read_potentials(dirpath):
     return pots
 
 
-def ape_plot_potentials(dirpath, rmax=None, **kwargs): 
+def ape_plot_potentials(dirpath, **kwargs): 
     """
     Uses Matplotlib to plot the potentials (AE vs PP)
 
     Args:
         dirpath:
-
-        rmax:
-            float or dictionary {state: rmax} where rmax is the maximum r (Bohr) that will be be plotted. 
 
     ==============  ==============================================================
     kwargs          Meaning
@@ -358,10 +376,6 @@ def ape_plot_potentials(dirpath, rmax=None, **kwargs):
         `matplotlib` figure.
     """
     #raise NotImplementedError("")
-    title = kwargs.pop("title", "Potentials")
-    show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None)
-
     dirs = os.listdir(os.path.abspath(dirpath))
 
     ae_pots, pp_pots = None, None
@@ -373,10 +387,10 @@ def ape_plot_potentials(dirpath, rmax=None, **kwargs):
         pp_pots = ape_read_potentials(os.path.join(dirpath, "pp"))
 
     if ae_pots is not None:
-        fig = plot_aepp(ae_pots, pp_funcs=pp_pots, rmax=rmax, title=title, show=show, savefig=savefig)
+        fig = plot_aepp(ae_pots, pp_funcs=pp_pots, **kwargs)
     else:
-        fig = None
         print("Cannot find potentials in dirpath %s" % dirpath)
+        fig = None
 
     return fig
 
@@ -399,15 +413,13 @@ def ape_read_densities(dirpath):
     return dens
 
 
-def ape_plot_densities(dirpath, rmax=None, **kwargs): 
+def ape_plot_densities(dirpath, **kwargs): 
     """
     Uses Matplotlib to plot the densities (AE vs PP)
 
     Args:
         dirpath:
             Directory path.
-        rmax:
-            float or dictionary {state: rmax} where rmax is the maximum r (Bohr) that will be be plotted. 
 
     ==============  ==============================================================
     kwargs          Meaning
@@ -420,10 +432,6 @@ def ape_plot_densities(dirpath, rmax=None, **kwargs):
     Returns:
         `matplotlib` figure.
     """
-    title = kwargs.pop("title", "Densities")
-    show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None)
-
     dirs = os.listdir(os.path.abspath(dirpath))
 
     ae_dens, pp_dens = None, None
@@ -435,10 +443,10 @@ def ape_plot_densities(dirpath, rmax=None, **kwargs):
         pp_dens = ape_read_densities(os.path.join(dirpath, "pp"))
 
     if ae_dens is not None:
-        fig = plot_aepp(ae_dens, pp_funcs=pp_dens, rmax=rmax, title=title, show=show, savefig=savefig)
+        fig = plot_aepp(ae_dens, pp_funcs=pp_dens, **kwargs)
     else:
-        fig = None
         print("Cannot find densities in dirpath %s" % dirpath)
+        fig = None
 
     return fig
 
@@ -462,6 +470,7 @@ def ape_read_logders(dirpath):
         data = np.loadtxt(path)
         ae_logders[l_name] = RadialFunction(l_name, data[:,0], data[:,1])
         pp_logders[l_name] = RadialFunction(l_name, data[:,0], data[:,2])
+
     return ae_logders, pp_logders
 
 
@@ -484,18 +493,13 @@ def ape_plot_logders(dirpath, **kwargs):
     Returns:
         `matplotlib` figure.
     """
-    title = kwargs.pop("title", "Logders")
-    show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None)
-
     dirpath = os.path.abspath(dirpath)
     if "tests" in os.listdir(dirpath):
         dirpath = os.path.join(dirpath, "tests")
 
     ae_logders, pp_logders = ape_read_logders(dirpath)
 
-    fig = plot_logders(ae_logders, pp_logders, show=show, title=title, savefig=savefig)
-
+    fig = plot_logders(ae_logders, pp_logders, **kwargs)
     return fig
 
 ##########################################################################################

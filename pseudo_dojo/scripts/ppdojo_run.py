@@ -17,7 +17,7 @@ __maintainer__ = "Matteo Giantomassi"
 
 def str_examples():
     examples = """
-      Example usage:
+      Usage Example:
       \n
       ppdojo_run.py Si.fhi -m10           => Cutoff converge test for Si.fhi using up to 10 CPUs.
       ppdojo_run.py Si.fhi -l1 -n10 -m20  => Deltafactor test using up to 20 CPUs, each task uses 10 MPI nodes.

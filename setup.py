@@ -90,7 +90,8 @@ install_requires = [
 "scipy>=0.10",
 "matplotlib>=1.1",
 "pymatgen>=2.7.3",
-#"periodictable",
+"periodictable",
+#"django",
 ]
 
 #---------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+"""This module provides objects and helper functions for atomic calculations."""
 from __future__ import division, print_function
 
 import os
@@ -7,6 +8,7 @@ import numpy as np
 from pseudo_dojo.refdata.nist import nist_database
 
 from scipy.interpolate import UnivariateSpline
+from scipy.integrate import cumtrapz
 
 __version__ = "0.1"
 __author__ = "Matteo Giantomassi"
@@ -45,7 +47,7 @@ def _asl(obj):
 
 def states_from_string(confstr):
     """
-    Parse a string with an atomic configuration and buil a list of `QState` instance.
+    Parse a string with an atomic configuration and build a list of `QState` instance.
     """
     states = []
     tokens = confstr.split()
@@ -261,7 +263,7 @@ class AtomicConfiguration(object):
 
     @classmethod
     def from_dict(cls, d):
-        """Reconstitute the object from a dict representation  created using to_dict."""
+        """Initialize the object from a dict generated with to_dict."""
         return cls(d["Z"], d["states"])
 
 ##########################################################################################
@@ -294,17 +296,20 @@ class RadialFunction(object):
     def __getitem__(self, rslice):
         return self.rmesh[rslice], self.values[rslice]
 
-    def __str__(self):
+    def __repr__(self):
         return "<%s, name = %s>" % (self.__class__.__name__, self.name)
 
-    #def __add__(self):
-    #def __sub__(self):
-    #def __mul__(self):
+    def __str__(self):
+        return str(self)
+
+    #def __add__(self, other):
+    #def __sub__(self, other):
+    #def __mul__(self, other):
 
     @classmethod
     def from_filename(cls, filename, rfunc_name=None, cols=(0,1)):
         """
-        Initialize the object by reading data from filename (txt format)
+        Initialize the object reading data from filename (txt format).
 
         Args:
             filename:
@@ -368,7 +373,6 @@ class RadialFunction(object):
     def integral(self, a=None, b=None):
         """
         Return definite integral of the spline of (r**2 values**2) between two given points a and b
-
         Args:
             a:
                 First point. rmesh[0] if a is None
@@ -413,7 +417,7 @@ class RadialFunction(object):
 class RadialWaveFunction(RadialFunction):
     """
     Extends RadialFunction adding info on the set of quantum numbers.
-    and special methods for elecronic wavefunctions.
+    and methods specialized for electronic wavefunctions.
     """
     TOL_BOUND = 1.e-10
 
@@ -425,12 +429,20 @@ class RadialWaveFunction(RadialFunction):
     def isbound(self):
         """True if self is a bound state."""
         back = min(10, len(self))
-        return all(abs(self.values[-back:]) < self.TOL_BOUND)
+        return np.all(np.abs(self.values[-back:]) < self.TOL_BOUND)
 
+    def r2f2_integral(self):
+        """
+        Cumulatively integrate r**2 f**2(r) using the composite trapezoidal rule.
+        """
+        integ = cumtrapz(self.rmesh**2 * self.values**2, x=self.rmesh)
+        pad_intg = np.zeros(len(self))
+        pad_intg[1:] = integ
+        return pad_intg
 
 ##########################################################################################
 
-def plot_aepp(ae_funcs, pp_funcs=None, rmax=None, **kwargs): 
+def plot_aepp(ae_funcs, pp_funcs=None, **kwargs): 
     """
     Uses Matplotlib to plot the radial wavefunction (AE only or AE vs PP)
 
@@ -439,15 +451,13 @@ def plot_aepp(ae_funcs, pp_funcs=None, rmax=None, **kwargs):
             All-electron radial functions.
         pp_funcs:
             Pseudo radial functions.
-        rmax:
-            float or dictionary {state: rmax} where rmax is the maximum r (Bohr) that will be be plotted. 
 
     ==============  ==============================================================
     kwargs          Meaning
     ==============  ==============================================================
     title           Title of the plot (Default: None).
     show            True to show the figure (Default: True).
-    savefig:        'abc.png' or 'abc.eps'* to save the figure to a file.
+    savefig         'abc.png' or 'abc.eps'* to save the figure to a file.
     ==============  ==============================================================
 
     Returns:
@@ -471,20 +481,19 @@ def plot_aepp(ae_funcs, pp_funcs=None, rmax=None, **kwargs):
         spl_idx += 1
         ax = fig.add_subplot(num_funcs, 1, spl_idx)
 
-        if spl_idx==1 and title: 
+        if spl_idx == 1 and title: 
             ax.set_title(title)
 
         lines, legends = [], []
 
-        if rmax is None:
-            ir = len(ae_phi) + 1 
-        else:
-            try:
-                rm = rmax[state] 
-            except TypeError:
-                rm = float(rmax)
-
-            ir = ae_phi.ifromr(rm)
+        ir = len(ae_phi) + 1 
+        # TODO
+        #if ae_phi.isbound:
+        #    norm = ae_phi.r2f2_integral()
+        #    for ir, v in enumerate(norm):
+        #        if v > 0.95: break
+        #    else:
+        #        raise ValueError("AE wavefunction is not normalized")
 
         line, = ax.plot(ae_phi.rmesh[:ir], ae_phi.values[:ir], "-b", linewidth=2.0, markersize=1)
 
@@ -497,7 +506,7 @@ def plot_aepp(ae_funcs, pp_funcs=None, rmax=None, **kwargs):
             lines.append(line)
             legends.append("PP: %s" % state)
 
-        ax.legend(lines, legends, 'lower right', shadow=True)
+        ax.legend(lines, legends, loc="best", shadow=True)
 
         # Set yticks and labels.
         ylabel = kwargs.get("ylabel", None)
@@ -534,18 +543,18 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
     ==============  ==============================================================
     title           Title of the plot (Default: None).
     show            True to show the figure (Default: True).
-    savefig:        'abc.png' or 'abc.eps'* to save the figure to a file.
+    savefig         'abc.png' or 'abc.eps'* to save the figure to a file.
     ==============  ==============================================================
 
     Returns:
         `matplotlib` figure.
     """
+    assert len(ae_logders) == len(pp_logders) 
     title = kwargs.pop("title", None)
     show = kwargs.pop("show", True)
     savefig = kwargs.pop("savefig", None)
 
     import matplotlib.pyplot as plt
-    assert len(ae_logders) == len(pp_logders) 
     fig = plt.figure()
                                                                                          
     num_logds, spl_idx = len(ae_logders), 0
@@ -553,6 +562,9 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
     for (state, pp_logd) in pp_logders.items():
         spl_idx += 1
         ax = fig.add_subplot(num_logds, 1, spl_idx)
+
+        if spl_idx == 1 and title: 
+            ax.set_title(title)
                                                                                          
         lines, legends = [], []
                                                                                          
@@ -566,7 +578,7 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
         lines.append(line)
         legends.append("PP logder %s" % state)
 
-        ax.legend(lines, legends, 'lower left', shadow=True)
+        ax.legend(lines, legends, loc="best", shadow=True)
 
         if spl_idx == num_logds:
             ax.set_xlabel("Energy [Ha]")
@@ -588,12 +600,12 @@ class Dipole(object):
     """This object stores the dipole matrix elements."""
     TOL_LRULE = 0.002
 
-    def __init__(self, istate, ostate, aeres, ppres):
+    def __init__(self, istate, ostate, ae_res, pp_res):
         self.istate = istate
         self.ostate = ostate
-        self.aeres = float(aeres)
-        self.ppres = float(ppres)
-        self.aempp = self.aeres - self.ppres
+        self.ae_res = float(ae_res)
+        self.pp_res = float(pp_res)
+        self.aempp = self.ae_res - self.pp_res
 
     @property
     def fulfills_lrule(self):

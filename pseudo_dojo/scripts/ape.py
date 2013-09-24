@@ -3,18 +3,15 @@ from __future__ import division, print_function
 
 import os
 import sys
+import glob
 import argparse
 
-from pseudo_dojo.ppcodes.nist import nist_database 
+from pseudo_dojo.refdata.nist import nist_database 
 from pseudo_dojo.ppcodes.ape import *
 
 __version__ = "0.1"
-__status__ = "Development"
-__date__ = "$April 26, 2013M$"
 
 ##########################################################################################
-# Helper functions.
-
 
 def str_examples():
     examples = """Example usage:\n
@@ -24,7 +21,7 @@ def str_examples():
 
 
 def show_examples_and_exit(err_msg=None, error_code=0):
-    "Display the usage of the script."
+    """Display the usage of the script."""
     sys.stderr.write(str_examples())
     if err_msg: 
         sys.stderr.write("Fatal Error\n" + err_msg + "\n")
@@ -32,13 +29,12 @@ def show_examples_and_exit(err_msg=None, error_code=0):
 
 
 def issymbol(string):
-    "True if string is a known element symbol"
+    """True if string is a known element symbol."""
     return string in nist_database.allsymbols
 
 
 def show_nistdata(options):
-    "Handle nist command"
-
+    """Handle nist command."""
     for symbol in options.symbols:
         if symbol.endswith("+"):
             iontype = "Cation"
@@ -56,19 +52,61 @@ def plot(options):
     "Handle plot command"
     dirpath = options.dirpath
 
-    rmax = options.rmax
-                                                
     if "w" in options.plots:
-        ape_plot_waves(dirpath, rmax=rmax, savefig=None)
+        ape_plot_waves(dirpath, savefig=None)
                                                 
     if "l" in options.plots:
         ape_plot_logders(dirpath, savefig=None)
 
     if "p" in options.plots:
-        ape_plot_potentials(dirpath, rmax=rmax, savefig=None)
+        ape_plot_potentials(dirpath, savefig=None)
 
     if "d" in options.plots:
-        ape_plot_densities(dirpath, rmax=rmax, savefig=None)
+        ape_plot_densities(dirpath, savefig=None)
+
+
+def analyze_llocal(options):
+    """Handle llocal command."""
+    # Create an InputGenerator to facilitate the modification of the input file.
+    inpgen = ApeInputGenerator.from_template(options.template)
+
+    # Init the AE solver from the template
+    ae_solver = ApeAeSolver(workdir, inpgen, verbose=verbose)
+                                                                        
+    if verbose: 
+        ae_solver.show_input()
+                               
+    if not dry_run:
+        ae_solver.solve(remove_wd=remove_wd)
+
+        # Define the parameters for the pseudization.
+        # For each possible local L:
+        #    1) Pseudize.
+        #    2) Check ghosts
+        #    3) Plot wfs and logders
+
+        pp_generators = []
+        #for llocal in range(-1, 5, 1):
+        for llocal in range(0, 1, 1):
+            inpgen.reset()
+            inpgen.set_llocal(llocal)
+            #inpgen.set_ppcomponents()
+            #inpgen.set_correction()
+
+            #pp_components = ApePPComponents.from_strings("3s|1.2|tm", "3p|1.27|tm", "3d|1.5|tm", "4f|1.9|tm")
+            #pp_setup = ApePPSetup(pp_components, core_correction=0, llocal=llocal)
+
+            pp_workdir = os.path.join(workdir, "ppgen_loc%d" % llocal)
+
+            pp_gen = ApePseudoGenerator(pp_workdir, inpgen, ae_solver, verbose=verbose)
+
+            pp_generators.append(pp_gen)
+
+        for pp_gen in pp_generators:
+            pp_gen.pseudize(remove_wd=remove_wd)
+            #if pp_gen.ghosts:
+            #    print("Detected ghosts for states %s" % pp_gen.ghosts.keys())
+
 
 ##########################################################################################
 
@@ -113,11 +151,14 @@ def main():
     p_plot.add_argument('-p', '--plots', metavar='STRING', default= "w", help="Quantities to plot: " + 
                         "w for wavefunctions, l for logarithmic derivatives, p for potentials, d for densities (DEFAULT: w)")
 
-    p_plot.add_argument('-r', '--rmax', type=float, default=None, help="Max radius [Bohr] for plots.")  
-
     p_plot.add_argument('dirpath', metavar='DIRPATH', default = ".", help="Path to the directory containing APE output file") 
 
-    # Access to the NIST database
+    # Analysis of LLocal option.
+    #p_llocal = subparsers.add_parser('llocal', help='Analyze the choice of the angular momentum for the local part')
+
+    #p_llocal.add_argument('template', metavar='STRING', default= "", help="Path to the template file")
+
+    # Access the NIST database
     p_nist = subparsers.add_parser('nist', help='Retrieve AE results from the NIST database')
 
     p_nist.add_argument('symbols', nargs="+", help="List of element symbols")
@@ -131,7 +172,7 @@ def main():
     dry_run  = options.dry_run
     remove_wd = options.remove_wd
                                   
-    workdir = "helloape"
+
 
     #if options.command == "autogen":
     #    aconf_str = options.aconf_str
@@ -171,12 +212,15 @@ def main():
         # Create an InputGenerator to facilitate the modification of the input file.
         inpgen = ApeInputGenerator.from_template(options.template)
 
+        # Construct the name of the working directory. Ex: APERUN_1, APERUN_2 ...
+        prefix = "APERUN_"
+        nums = [int(dirname[len(prefix):]) for dirname in glob.glob(prefix + "*")]
+        max_num = max(nums) if nums else 0
+        workdir = prefix + str(max_num+1)
+
         # Init the AE solver from the template
         ae_solver = ApeAeSolver(workdir, inpgen, verbose=verbose)
-                                                                            
-        if verbose: 
-            ae_solver.show_input()
-                                   
+
         if not dry_run:
             ae_solver.solve(remove_wd=remove_wd)
 
@@ -187,7 +231,8 @@ def main():
             #    3) Plot wfs and logders
 
             pp_generators = []
-            for llocal in range(-1, 5, 1):
+            #for llocal in range(-1, 5, 1):
+            for llocal in range(0, 1, 1):
 
                 inpgen.reset()
                 inpgen.set_llocal(llocal)
@@ -204,19 +249,11 @@ def main():
                 pp_generators.append(pp_gen)
 
             for pp_gen in pp_generators:
-                if verbose: pp_gen.show_input()
-
                 pp_gen.pseudize(remove_wd=remove_wd)
 
-                if pp_gen.ghosts:
-                    print("Detected ghosts for states %s" % pp_gen.ghosts.keys())
 
-                #print("LOGDER merit factors:")
-                #pprint(pp_gen.check_logders())
-                #pprint(pp_gen.dipoles)
-
-                #pp_gen.plot_waves(savefig=)
-                #pp_gen.plot_logders(savefig=)
+    if options.command == "llocal":
+        analyze_llocal(options)
 
     if options.command == "plot":
         plot(options)

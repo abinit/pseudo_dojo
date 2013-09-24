@@ -19,9 +19,62 @@ __version__ = "0.1"
 
 ##########################################################################################
 
+class ApeVariable(object):
+
+    def __init__(self, name, type, doc, allowed_values=None):
+        self.name = name
+        self.type = type
+        self.doc = doc
+        self.allowed_values = allowed_values if allowed_values is not None else []
+
+    def set_value(self, value):
+        self._value = value
+
+    @property
+    def value(self):
+        try:
+            return self._value
+        except AttributeError:
+            return None
+
+    def isvalid(self):
+        if self.allowed_values:
+            return self.value in self.allowed_values
+        else:
+            return True
+
+    def to_apeinput(self):
+        return "%s = %s" % (self.name, self.value)
+
+
+class ApeBlock(object):
+
+    def __init__(self, name, types, doc, allowed_values=None):
+        self.name = name
+        self.types = types
+        self.doc = doc
+        self.allowed_values = allowed_values if allowed_values is not None else []
+
+        self._table = []
+
+    def add_entry(self, entry):
+        row = []
+        for i, item in enumerate(entry):
+            row.append(self.types[i](item))
+        self._table.append(row)
+
+    def to_apeinput(self):
+        lines = ["\%%s" % self.name]
+        for (state, rcut, scheme) in zip(self.states, self.core_radii, self.schemes):
+            lines += ["%s | %s | %s | %s" % (state.n, state.l, rcut, scheme)]
+        lines += ["%"]
+        return "\n".join(lines)
+
+##########################################################################################
+
 class ApeAtomicConfiguration(AtomicConfiguration):
 
-    def to_input(self):
+    def to_apeinput(self):
         lines  = ["NuclearCharge = %s " % self.Z]
         lines += ["SpinMode = %s" % self.spin_mode]
         lines += ["%Orbitals"]
@@ -31,11 +84,11 @@ class ApeAtomicConfiguration(AtomicConfiguration):
         return lines
 
     @classmethod
-    def from_input(cls, lines):
+    def from_apeinput(cls, lines):
+
         if isinstance(lines, str):
             with open(lines, "r") as fh:
                 lines = fh.readlines()
-
         # TODO
         # Example (spin unpolarized, no spinor)
         #%Orbitals
@@ -62,7 +115,7 @@ class ApeAtomicConfiguration(AtomicConfiguration):
             print("s:",s)
 
             if "|" not in s:
-                # Handle noble configuration
+                # Handle noble gas.
                 assert i == 0
                 s = s.translate(None, "'\"")
                 noble_gas = ApeAtomicConfiguration.neutral_from_symbol(s)
@@ -82,7 +135,7 @@ class ApeRadialMesh(dict):
     The radial mesh used by APE to represent radial functions. 
     """
     # Supported variables
-    _KEYS = [
+    _VARS = [
         "MeshType",
         "MeshStartingPoint",
         "MeshOutmostPoint",
@@ -95,11 +148,11 @@ class ApeRadialMesh(dict):
         super(ApeRadialMesh, self).__init__(*args, **kwargs)
 
         for k in self:
-            if k not in self._KEYS:
+            if k not in self._VARS:
                 raise ValueError("%s is not a registered key" % k)
 
-    def to_input(self):
-        return["%s = %s" % kv for kv in self.items()]
+    def to_apeinput(self):
+        return ["%s = %s" % kv for kv in self.items()]
 
     @property
     def to_dict(self):
@@ -117,7 +170,7 @@ class ApeControl(dict):
     At each iteration the new guess potential is built mixing the input and output potentials.
     """
     # Supported variables
-    _KEYS = [
+    _VARS = [
         # SCF
         "MaximumIter", 
         "ConvAbsDens",
@@ -143,11 +196,11 @@ class ApeControl(dict):
         super(ApeControl, self).__init__(**kwargs)
                                                                    
         for k in self:
-            if k not in self._KEYS:
+            if k not in self._VARS:
                 raise ValueError("%s is not a registered key" % k)
                                                                    
-    def to_input(self):
-        return["%s = %s" % kv for kv in self.items()]
+    def to_apeinput(self):
+        return ["%s = %s" % kv for kv in self.items()]
 
     @property
     def to_dict(self):
@@ -197,10 +250,10 @@ class ApePPComponents(object):
         self.core_radii = core_radii
         self.schemes = schemes
 
-    def to_input(self):
+    def to_apeinput(self):
         lines = ["%PPComponents"]
         for (state, rcut, scheme) in zip(self.states, self.core_radii, self.schemes):
-            lines += [" %s | %s | %s | %s " % (state.n, state.l, rcut, scheme)]
+            lines += ["%s | %s | %s | %s" % (state.n, state.l, rcut, scheme)]
         lines += ["%"]
         return lines
 
@@ -213,8 +266,8 @@ class ApePPSetup(object):
         self.core_correction = core_correction 
         self.llocal = llocal
 
-    def to_input(self):
-        lines =  ["# PseudoPotentials"]
+    def to_apeinput(self):
+        lines =  ["# PseudoPotential Setup"]
         lines += ["CoreCorrection = %s" % self.core_correction]
         lines += ["Llocal = %s" % self.llocal]
         lines += self.pp_components.to_input()

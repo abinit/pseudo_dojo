@@ -11,7 +11,8 @@ from subprocess import Popen, PIPE
 
 from pseudo_dojo.core import plot_aepp, plot_logders
 from pseudo_dojo.ppcodes.ape.apeio import (ape_read_waves, ape_read_potentials, ape_read_densities,
-                                           ape_read_logders, ape_read_dipoles, ape_check_ppeigen, ape_check_ghosts)
+                                           ape_read_logders, ape_read_dipoles, ape_check_ppeigen, ape_check_ghosts
+                                          )
 
 __version__ = "0.1"
 
@@ -47,7 +48,7 @@ class ApeAeSolver(object):
 
     #@classmethod
     #def from_aeconf(cls, workdir, aeconf, verbose=0):
-        #inpgen = ApeInputGenerator.aeconf.to_input()
+        #inpgen = ApeInputGenerator.aeconf.to_apeinput()
         #return cls(workdir, inpgen, verbose=verbose)
 
     @classmethod
@@ -112,13 +113,13 @@ class ApeAeSolver(object):
             self._ae_densities = ape_read_densities(self.aedir)
             return self._ae_densities
 
-    def show_input(self, stream=sys.stdout):
+    def show_apeinput(self, stream=sys.stdout):
         lines  = ["AE INPUT".center(80,"*")]
-        lines += self.to_input()
+        lines += self.to_apeinput()
         lines += ["END AE INPUT".center(80,"*")]
         stream.writelines("\n".join(lines)+"\n")
 
-    def to_input(self):
+    def to_apeinput(self):
         return self.inpgen.get_strlist()
 
     def solve(self, **kwargs):
@@ -129,6 +130,9 @@ class ApeAeSolver(object):
             The exist status of the subprocess.
         """
         print("Solving the all-electron problem...")
+        if self.verbose: 
+            self.show_apeinput()
+
         start = time.time()
 
         # Write the input file.
@@ -141,7 +145,7 @@ class ApeAeSolver(object):
 
         os.makedirs(self.workdir)
         with open(self.input_path, "w") as fh:
-            fh.writelines("\n".join(self.to_input()))
+            fh.writelines("\n".join(self.to_apeinput()))
 
         # Launch APE in a subprocess.
         command = "%s < %s > %s 2> %s" % (self.exe, self.input_path, self.output_path, self.stderr_path)
@@ -324,13 +328,13 @@ class ApePseudoGenerator(object):
         """Generates the absolute path in the working directory."""
         return os.path.join(self.workdir, filename)
 
-    def show_input(self, stream=sys.stdout):
+    def show_apeinput(self, stream=sys.stdout):
         lines  = ["PP INPUT".center(80,"*")]
-        lines += self.to_input()
+        lines += self.to_apeinput()
         lines += ["END PP INPUT".center(80,"*")]
         stream.writelines("\n".join(lines)+"\n")
 
-    def to_input(self):
+    def to_apeinput(self):
         """Returns the APE input (list of strings)"""
         return self.inpgen.get_strlist()
 
@@ -341,7 +345,10 @@ class ApePseudoGenerator(object):
         Returns:
             The exist status of the subprocess.
         """
-        if self.verbose: print("Starting pseudization...")
+        print("Starting pseudization...")
+        if self.verbose: 
+            self.show_apeinput()
+
         start = time.time()
 
         # Write the input file.
@@ -358,7 +365,7 @@ class ApePseudoGenerator(object):
         shutil.copytree(self.ae_solver.aedir, os.path.join(self.workdir, "ae"))
 
         with open(self.input_path, "w") as fh:
-            fh.writelines("\n".join(self.to_input()))
+            fh.writelines("\n".join(self.to_apeinput()))
 
         # Launch APE in a subprocess.
         command = "%s < %s > %s 2> %s" % (self.exe, self.input_path, self.output_path, self.stderr_path)
@@ -383,18 +390,22 @@ class ApePseudoGenerator(object):
 
         # Check ghost-states 
         self._check_ghosts()
+        if self.ghosts:
+            print("Detected ghosts for states %s" % self.ghosts.keys())
 
         # Check PP eigenvalues
         self._check_ppeigen()                                                
 
         # Check logarithmic derivative.
 
-        return exit_code
+        # Generate pdf files.
+        #ape_plot_waves(dirpath, rmax=None, savefig=None)
+        #ape_plot_logders(dirpath, savefig=None)
+        #ape_plot_potentials(dirpath, rmax=rmax, savefig=None)
 
-    #def json_dump(self, protocol=0):
-    #    path = os.path.join(self.workdir, self.json_fname)
-    #    with open(path, "w") as fh:
-    #        json.dump(self, fh, protocol=protocol)
+        # Generate final HTML report.
+
+        return exit_code
 
     def _check_ppeigen(self):
         return ape_check_ppeigen(self.output)
@@ -596,3 +607,17 @@ class ApeInputGenerator(object):
                     lines += ["%s" % l]
                 lines += ["%"]
         return lines
+
+
+#def ape_pseudo_build(workdir, verbose=0):
+#    ae_solver = ApeAeSolver(workdir, inpgen, verbose=verbose)
+#
+#    retcode = ae.solver(solve)
+#    if retcode != 0:
+#        raise ApeError("ae_solver returned %s" % retcode)
+#
+#    pp_gen = ApePseudoGenerator(workdir, inpgen, ae_solver, verbose=verbose)
+#
+#    retcode = pp_gen.pseudize()
+#    if retcode != 0:
+#        raise ApeError("pp_generator returned %s" % retcode)
