@@ -6,14 +6,16 @@ import collections
 import numpy as np
 
 from pymatgen.io.abinitio.workflow import DeltaTest
+from pseudo_dojo.refdata.deltafactor import df_database
 
-##########################################################################################
 
 class DeltaFactoryError(Exception):
     """Base Error class."""
 
+
 class CIFNotFoundError(DeltaFactoryError):
     """CIF file not found in CIFs directory"""
+
 
 class DeltaFactory(object):
     """
@@ -22,7 +24,6 @@ class DeltaFactory(object):
     Error = DeltaFactoryError
 
     def __init__(self):
-        from pseudo_dojo.refdata.deltafactor import df_database
         self._dfdb = df_database()
 
     def get_cif_path(self, symbol):
@@ -32,7 +33,7 @@ class DeltaFactory(object):
         except KeyError:
             raise CIFNotFoundError("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, workdir, runmode, pseudo, accuracy="normal", kppa=6750, 
+    def work_for_pseudo(self, workdir, manager, pseudo, accuracy="normal", kppa=6750, 
         ecut=None, toldfe=1.e-8, smearing="fermi_dirac:0.0005"):
         """
         Returns a Work object from the given pseudopotential.
@@ -52,10 +53,9 @@ class DeltaFactory(object):
         if pseudo.symbol in ["Fe", "Co", "Ni"]: spin_mode = "polarized"
         if pseudo.symbol in ["O", "Cr", "Mn"]: spin_mode = "afm"
 
-        work = DeltaTest(workdir, runmode, cif_path, pseudo, kppa,
+        work = DeltaTest(workdir, manager, cif_path, pseudo, kppa,
                          spin_mode=spin_mode, toldfe=toldfe, smearing=smearing, 
                          accuracy=accuracy, ecut=ecut, ecutsm=0.05,
                         )
         return work
 
-##########################################################################################

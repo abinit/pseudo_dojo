@@ -7,7 +7,7 @@ import sys
 from argparse import ArgumentParser
 from pprint import pprint
 
-from pseudo_dojo.core import RunMode, Dojo
+from pseudo_dojo import Dojo, TaskManager
 
 __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
@@ -51,9 +51,20 @@ def main():
     parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
                          help='Verbose, can be supplied multiple times to increase verbosity')
 
+    parser.add_argument('--loglevel', default="ERROR", type=str,
+                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
+
     parser.add_argument('pseudos', nargs='+', help='List of pseudopotential files.')
 
     options = parser.parse_args()
+
+    # loglevel is bound to the string value obtained from the command line argument. 
+    # Convert to upper case to allow the user to specify --loglevel=DEBUG or --loglevel=debug
+    import logging
+    numeric_level = getattr(logging, options.loglevel.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError('Invalid log level: %s' % options.loglevel)
+    logging.basicConfig(level=numeric_level)
 
     pseudos = options.pseudos
     max_ncpus = options.max_ncpus
@@ -63,11 +74,9 @@ def main():
         err_msg = "mpi_cpus %(mpi_ncpus)s cannot be greater than max_ncpus %(max_ncpus)s" % locals()
         show_examples_and_exit(err_msg=err_msg)
 
-    runmode = RunMode.mpi_parallel(mpi_ncpus=mpi_ncpus)
-    #runmode = RunMode.load_user_configuration()
-    pprint(runmode)
+    manager = TaskManager.simple_mpi(mpi_ncpus=1)
 
-    dojo = Dojo(runmode=runmode, 
+    dojo = Dojo(manager=manager,
                 max_ncpus=max_ncpus, 
                 max_level=options.max_level, 
                 verbose=options.verbose,
@@ -80,7 +89,6 @@ def main():
 
     return stats.count(True)
 
-################################################################################
 
 if __name__ == "__main__":
     sys.exit(main())

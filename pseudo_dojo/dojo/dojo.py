@@ -7,13 +7,11 @@ import time
 import numpy as np
 
 from pprint import pprint
-from .deltaworks import DeltaFactory
-
 from pymatgen.serializers.json_coders import json_pretty_dump
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.io.abinitio.launcher import PyResourceManager
 from pymatgen.io.abinitio.calculations import PPConvergenceFactory
-
+from pseudo_dojo.dojo.deltaworks import DeltaFactory
 
 
 class DojoError(Exception):
@@ -25,7 +23,7 @@ class Dojo(object):
     This object drives the execution of the tests for the pseudopotential.
 
     A Dojo has a set of masters, each master is associated to a particular trial
-    and is responsilble for the validation/rating of the results of the tests.
+    and is responsible for the validation/rating of the results of the tests.
     """
     Error = DojoError
 
@@ -85,7 +83,6 @@ class Dojo(object):
 
         return isok
 
-################################################################################
 
 class DojoMaster(object):
     """"
@@ -168,8 +165,7 @@ class DojoMaster(object):
                 ready = (pseudo_dojo_level == self.dojo_level - 1)
 
         if not ready:
-            msg = "%s: Sorry, %s-san, I cannot train you" % (self.name, pseudo.name)
-            print(msg)
+            print("%s: Sorry, %s-san, I cannot train you" % (self.name, pseudo.name))
         else:
             print("%s: Welcome %s-san, I'm your level-%d trainer" % (self.name, pseudo.name, self.dojo_level))
             self.pseudo = pseudo
@@ -234,9 +230,6 @@ class DojoMaster(object):
         return isok
 
 
-################################################################################
-
-
 class HintsMaster(DojoMaster):
     """
     Level 0 master that analyzes the convergence of the total energy versus
@@ -260,8 +253,8 @@ class HintsMaster(DojoMaster):
 
         eslice = slice(5, None, estep)
 
-        w = factory.work_for_pseudo(workdir, pseudo, eslice,
-                                    manager=self.manager, toldfe=toldfe, atols_mev=self._ATOLS_MEV)
+        w = factory.work_for_pseudo(workdir, self.manager, pseudo, eslice,
+                                    toldfe=toldfe, atols_mev=self._ATOLS_MEV)
 
         if os.path.exists(w.workdir):
             shutil.rmtree(w.workdir)
@@ -283,18 +276,17 @@ class HintsMaster(DojoMaster):
 
         erange = list(np.arange(estart, estop, estep))
 
-        work = factory.work_for_pseudo(workdir, pseudo, erange,
-                                       manager=self.manager, toldfe=toldfe,
-                                       atols_mev=self._ATOLS_MEV)
+        work = factory.work_for_pseudo(workdir, self.manager, pseudo, erange,
+                                       toldfe=toldfe, atols_mev=self._ATOLS_MEV)
 
-        print("Finding optimal values for ecut in the interval %.1f %.1f %1.f, "
+        print("Finding optimal values for ecut in the range [%.1f, %.1f, %1.f,] Hartree, "
               "max_ncpus = %d ..." % (estart, estop, estep, self.max_ncpus))
 
-        SimpleResourceManager(work, self.max_ncpus).run()
+        PyResourceManager(work, self.max_ncpus).run()
 
         wf_results = work.get_results()
 
-        wf_results.json_dump(work.path_in_workdir("dojo_results.json"))
+        #wf_results.json_dump(work.path_in_workdir("dojo_results.json"))
 
         return wf_results
 
@@ -307,8 +299,6 @@ class HintsMaster(DojoMaster):
             d["_exceptions"] = str(results.exceptions)
 
         return {self.dojo_key: d}
-
-################################################################################
 
 
 class DeltaFactorMaster(DojoMaster):
@@ -347,7 +337,7 @@ class DeltaFactorMaster(DojoMaster):
         work = factory.work_for_pseudo(workdir, self.manager, self.pseudo, 
                                        accuracy=self.accuracy, kppa=kppa, ecut=None)
 
-        retcodes = SimpleResourceManager(work, self.max_ncpus).run()
+        retcodes = PyResourceManager(work, self.max_ncpus).run()
 
         if self.verbose:
             print("Returncodes %s" % retcodes)
@@ -400,6 +390,4 @@ def repr_dojo_levels():
     for k in sorted(level2key):
         lines.append("level %d --> %s" % (k, level2key[k]))
     return "\n".join(lines)
-
-################################################################################
 
