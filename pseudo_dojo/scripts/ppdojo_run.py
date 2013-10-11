@@ -13,7 +13,6 @@ __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
 __maintainer__ = "Matteo Giantomassi"
 
-################################################################################
 
 def str_examples():
     examples = """

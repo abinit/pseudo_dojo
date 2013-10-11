@@ -5,7 +5,8 @@ import os
 import collections
 import numpy as np
 
-from pymatgen.io.abinitio.workflow import DeltaTest
+from pymatgen.io.abinitio.pseudos import Pseudo
+from pymatgen.io.abinitio.workflows import DeltaFactorWorkflow
 from pseudo_dojo.refdata.deltafactor import df_database
 
 
@@ -33,14 +34,16 @@ class DeltaFactory(object):
         except KeyError:
             raise CIFNotFoundError("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, workdir, manager, pseudo, accuracy="normal", kppa=6750, 
-        ecut=None, toldfe=1.e-8, smearing="fermi_dirac:0.0005"):
+    def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, 
+        ecut=None, toldfe=1.e-8, smearing="fermi_dirac:0.0005", workdir=None, manager=None):
         """
-        Returns a Work object from the given pseudopotential.
+        Returns a `Work` object from the given pseudopotential.
 
         .. note: 
             0.001 Rydberg is the value used with WIEN2K
         """
+        pseudo = Pseudo.aspseudo(pseudo)
+
         try:
             cif_path = self.get_cif_path(pseudo.symbol)
         except Exception as exc:
@@ -53,9 +56,9 @@ class DeltaFactory(object):
         if pseudo.symbol in ["Fe", "Co", "Ni"]: spin_mode = "polarized"
         if pseudo.symbol in ["O", "Cr", "Mn"]: spin_mode = "afm"
 
-        work = DeltaTest(workdir, manager, cif_path, pseudo, kppa,
+        work = DeltaFactorWorkflow(cif_path, pseudo, kppa,
                          spin_mode=spin_mode, toldfe=toldfe, smearing=smearing, 
-                         accuracy=accuracy, ecut=ecut, ecutsm=0.05,
+                         accuracy=accuracy, ecut=ecut, ecutsm=0.05, workdir=workdir, manager=manager 
                         )
         return work
 
