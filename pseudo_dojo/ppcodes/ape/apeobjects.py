@@ -154,15 +154,6 @@ class ApeRadialMesh(dict):
     def to_apeinput(self):
         return ["%s = %s" % kv for kv in self.items()]
 
-    @property
-    def to_dict(self):
-        """Json-serializable dict representation."""
-        return self.copy()
-
-    @classmethod
-    def from_dict(cls, d):
-        """Reconstitute the object from a dict representation  created using to_dict."""
-        return cls(**{k:v for k,v in d if not k.startswith("@")})
 
 class ApeControl(dict):
     """
@@ -202,17 +193,7 @@ class ApeControl(dict):
     def to_apeinput(self):
         return ["%s = %s" % kv for kv in self.items()]
 
-    @property
-    def to_dict(self):
-        """Json-serializable dict representation."""
-        return self.copy()
 
-    @classmethod
-    def from_dict(cls, d):
-        """Reconstitute the object from a dict representation  created using to_dict."""
-        return cls(**{k:v for k,v in d if not k.startswith("@")})
-
-##########################################################################################
 
 class ApePPComponents(object):
 

@@ -186,8 +186,6 @@ class ApeAeSolver(object):
         """
         return plot_aepp(self.ae_waves, **kwargs)
 
-##########################################################################################
-
 
 class ApePseudoGenerator(object):
     """
@@ -440,8 +438,6 @@ class ApePseudoGenerator(object):
     #    return plot_densities(self.ae_densities, pp_dens=self.pp_densities, **kwargs)
 
     #def plot_core_correction(self, **kwargs):
-
-##########################################################################################
 
 
 def ape_parse_input(input, verbose=0): 

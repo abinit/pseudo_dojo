@@ -122,17 +122,6 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
     def has_s(self):
         return self.s is not None
 
-    @property
-    def to_dict(self):
-        d = {k: v for (k,v) in self._asdict().items() if v is not None}
-        d["@module"] = self.__class__.__module__
-        d["@class"] = self.__class__.__name__
-        return d
-
-    @classmethod
-    def from_dict(cls, d):
-        return cls(**d)
-
     def to_apeinput(self):
         """Returns a string with the quantum numbers in the APE format."""
         if self.s is None:
@@ -250,23 +239,6 @@ class AtomicConfiguration(object):
             self.states.remove(state)
         except ValueError:
             raise
-
-    @property
-    def to_dict(self):
-        """Json-serializable dict representation."""
-        return {
-            "Z"      : self.Z,
-            "states" : self.states,
-            "@class" : self.__class__.__name__,
-            "@module": self.__class__.__name__,
-        }
-
-    @classmethod
-    def from_dict(cls, d):
-        """Initialize the object from a dict generated with to_dict."""
-        return cls(d["Z"], d["states"])
-
-##########################################################################################
 
 
 class RadialFunction(object):

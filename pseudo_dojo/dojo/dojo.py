@@ -9,7 +9,6 @@ import numpy as np
 from pprint import pprint
 from pymatgen.serializers.json_coders import json_pretty_dump
 from pymatgen.io.abinitio.pseudos import Pseudo
-from pymatgen.io.abinitio.launcher import PyResourceManager
 from pymatgen.io.abinitio.calculations import PPConvergenceFactory
 from pseudo_dojo.dojo.deltaworks import DeltaFactory
 
@@ -282,6 +281,7 @@ class HintsMaster(DojoMaster):
         print("Finding optimal values for ecut in the range [%.1f, %.1f, %1.f,] Hartree, "
               "max_ncpus = %d ..." % (estart, estop, estep, self.max_ncpus))
 
+        from pymatgen.io.abinitio.launcher import PyResourceManager
         PyResourceManager(work, self.max_ncpus).run()
 
         wf_results = work.get_results()
