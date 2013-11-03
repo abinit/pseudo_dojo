@@ -24,7 +24,6 @@ __all__ = [
     "Dipole",
 ]
 
-##########################################################################################
 # Helper functions
 
 _char2l = {
@@ -68,7 +67,6 @@ def parse_orbtoken(orbtoken):
 
     raise ValueError("Don't know how to interpret %s" % str(orbtoken))
 
-##########################################################################################
 
 
 class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
@@ -135,7 +133,6 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
 
         return [string,]
 
-##########################################################################################
 
 
 class AtomicConfiguration(object):
@@ -165,6 +162,9 @@ class AtomicConfiguration(object):
         lines = ["%s: " % self.Z]
         lines += [str(state) for state in self]
         return "\n".join(lines)
+
+    def __len__(self):
+        return len(self.states)
                                                 
     def __iter__(self):
         return self.states.__iter__()
@@ -354,6 +354,7 @@ class RadialFunction(object):
         a = self.rmesh[0] if a is None else a
         b = self.rmesh[-1] if b is None else b
         r2v2_spline = UnivariateSpline(self.rmesh, (self.rmesh * self.values) ** 2, s=0)
+
         return r2v2_spline.integral(a, b)
 
     def ifromr(self, rpoint):
@@ -384,11 +385,20 @@ class RadialFunction(object):
                 break
         return i
 
-##########################################################################################
+    def r2f2_integral(self):
+        """
+        Cumulatively integrate r**2 f**2(r) using the composite trapezoidal rule.
+        """
+        integ = cumtrapz(self.rmesh**2 * self.values**2, x=self.rmesh)
+        pad_intg = np.zeros(len(self))
+        pad_intg[1:] = integ
+
+        return pad_intg
+
 
 class RadialWaveFunction(RadialFunction):
     """
-    Extends RadialFunction adding info on the set of quantum numbers.
+    Extends `RadialFunction` adding info on the set of quantum numbers.
     and methods specialized for electronic wavefunctions.
     """
     TOL_BOUND = 1.e-10
@@ -403,16 +413,6 @@ class RadialWaveFunction(RadialFunction):
         back = min(10, len(self))
         return np.all(np.abs(self.values[-back:]) < self.TOL_BOUND)
 
-    def r2f2_integral(self):
-        """
-        Cumulatively integrate r**2 f**2(r) using the composite trapezoidal rule.
-        """
-        integ = cumtrapz(self.rmesh**2 * self.values**2, x=self.rmesh)
-        pad_intg = np.zeros(len(self))
-        pad_intg[1:] = integ
-        return pad_intg
-
-##########################################################################################
 
 def plot_aepp(ae_funcs, pp_funcs=None, **kwargs): 
     """
@@ -498,7 +498,6 @@ def plot_aepp(ae_funcs, pp_funcs=None, **kwargs):
 
     return fig
 
-##########################################################################################
 
 def plot_logders(ae_logders, pp_logders, **kwargs): 
     """
@@ -565,8 +564,6 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
 
     return fig
 
-##########################################################################################
-
 
 class Dipole(object):
     """This object stores the dipole matrix elements."""
@@ -585,4 +582,3 @@ class Dipole(object):
             return False
         return True
 
-##########################################################################################

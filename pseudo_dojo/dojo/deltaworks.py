@@ -35,14 +35,18 @@ class DeltaFactory(object):
             raise CIFNotFoundError("%s: cannot find CIF file for symbol" % symbol)
 
     def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, 
-        ecut=None, toldfe=1.e-8, smearing="fermi_dirac:0.0005", workdir=None, manager=None):
+        ecut=None, pawecutdg=None, toldfe=1.e-8, smearing="fermi_dirac:0.0005", 
+        workdir=None, manager=None):
         """
-        Returns a `Work` object from the given pseudopotential.
+        Returns a `Workflow` object from the given pseudopotential.
 
         .. note: 
             0.001 Rydberg is the value used with WIEN2K
         """
         pseudo = Pseudo.aspseudo(pseudo)
+
+        if pseudo.ispaw and pawecutdg is None:
+            raise ValueError("pawecutdg must be specified for PAW calculations.")
 
         try:
             cif_path = self.get_cif_path(pseudo.symbol)
@@ -58,7 +62,8 @@ class DeltaFactory(object):
 
         work = DeltaFactorWorkflow(cif_path, pseudo, kppa,
                          spin_mode=spin_mode, toldfe=toldfe, smearing=smearing, 
-                         accuracy=accuracy, ecut=ecut, ecutsm=0.05, workdir=workdir, manager=manager 
+                         accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.05, 
+                         workdir=workdir, manager=manager 
                         )
         return work
 

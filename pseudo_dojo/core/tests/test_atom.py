@@ -7,7 +7,6 @@ import os
 from pseudo_dojo.core import *
 from pseudo_dojo.refdata.nist import nist_database
 
-##########################################################################################
 
 class AtomicConfigurationTest(PseudoDojoTest):
 
@@ -58,7 +57,6 @@ class AtomicConfigurationTest(PseudoDojoTest):
 
             self.assertTrue(aconf == AtomicConfiguration.neutral_from_symbol(symbol))
 
-##########################################################################################
 
 
 class RadialFunctionTest(PseudoDojoTest):
@@ -83,7 +81,7 @@ class RadialFunctionTest(PseudoDojoTest):
         self.assert_equal(rslice, rf.rmesh[1:4])
         self.assert_equal(vslice, rf.values[1:4])
 
-##########################################################################################
 
 if __name__ == '__main__':
+    import unittest
     unittest.main()

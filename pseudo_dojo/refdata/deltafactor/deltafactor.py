@@ -18,7 +18,6 @@ import numpy as np
 
 from pymatgen.core.units import FloatWithUnit
 
-##########################################################################################
 
 class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 b1")):
     """
@@ -63,10 +62,10 @@ def read_data_from_filename(filename):
             # Conversion GPa --> eV / A**3
             tokens[2] = FloatWithUnit(tokens[2], "GPa").to("eV ang^-3") 
             data[symbol] = DeltaFactorEntry(*tokens)
+
     return data
 
 
-##########################################################################################
 
 class DeltaFactorDatabaseError(Exception):
     """Exceptions raised by the database."""
