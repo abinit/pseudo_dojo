@@ -21,7 +21,6 @@ __all__ = [
     "RadialWaveFunction",
     "plot_aepp",
     "plot_logders",
-    "Dipole",
 ]
 
 # Helper functions
@@ -563,22 +562,4 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
         fig.savefig(savefig)
 
     return fig
-
-
-class Dipole(object):
-    """This object stores the dipole matrix elements."""
-    TOL_LRULE = 0.002
-
-    def __init__(self, istate, ostate, ae_res, pp_res):
-        self.istate = istate
-        self.ostate = ostate
-        self.ae_res = float(ae_res)
-        self.pp_res = float(pp_res)
-        self.aempp = self.ae_res - self.pp_res
-
-    @property
-    def fulfills_lrule(self):
-        if self.istate.lselect(self.ostate) and abs(self.aempp) > self.TOL_LRULE:
-            return False
-        return True
 
