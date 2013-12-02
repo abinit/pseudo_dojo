@@ -36,9 +36,13 @@ class DeltaFactory(object):
 
     def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, 
         ecut=None, pawecutdg=None, toldfe=1.e-8, smearing="fermi_dirac:0.0005", 
-        workdir=None, manager=None):
+        workdir=None, manager=None, **kwargs):
         """
         Returns a `Workflow` object from the given pseudopotential.
+
+        Args:
+            kwargs:
+                Extra variables passed to Abinit.
 
         .. note: 
             0.001 Rydberg is the value used with WIEN2K
@@ -63,7 +67,7 @@ class DeltaFactory(object):
         work = DeltaFactorWorkflow(cif_path, pseudo, kppa,
                          spin_mode=spin_mode, toldfe=toldfe, smearing=smearing, 
                          accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.05, 
-                         workdir=workdir, manager=manager 
+                         workdir=workdir, manager=manager, **kwargs
                         )
         return work
 
