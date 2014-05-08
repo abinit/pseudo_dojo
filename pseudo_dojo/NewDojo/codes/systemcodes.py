@@ -9,7 +9,7 @@ __author__ = 'setten'
 from abc import ABCMeta, abstractproperty, abstractmethod
 
 
-class AbstractSystemCode(object):
+class AbstractSystemCodeInterface(object):
     """
     Abstract class for system code interfaces.
     here we should list all methods that are used in the tests
@@ -29,6 +29,12 @@ class AbstractSystemCode(object):
         """
 
     @abstractmethod
+    def write_pseudo(self, path, data_set):
+        """
+        method to write a pp file for this code to path defined by data_set
+        """
+
+    @abstractmethod
     def calculate_total_energy(self, structure, kpoints, energy_cutoff, test):
         """
         method to calculate and return the total energy of the defined system and parameters
@@ -37,14 +43,13 @@ class AbstractSystemCode(object):
         """
 
 
-class Abinit(AbstractSystemCode):
+class Abinit(AbstractSystemCodeInterface):
     """
     concrete implementation for abinit
     """
     def __init__(self):
         self._periodicity = (False, False, False, True)
         self._is_all_electron = False
-
 
     @property
     def is_all_electron(self):
@@ -59,10 +64,13 @@ class Abinit(AbstractSystemCode):
             return False
         raise NotImplementedError
 
+    def write_pseudo(self, path, data_set):
+        raise NotImplementedError
+
 
 def get_system_code_interface(code):
     """
     factory function to return an instance of a systems code interface
     """
-    cls = {'abinit': Abinit()}
+    cls = {'abinit': Abinit}
     return cls[code]()

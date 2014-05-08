@@ -7,9 +7,26 @@ __author__ = 'setten'
 
 from abc import ABCMeta, abstractproperty, abstractmethod
 
-def get_system_code_interface(code):
+
+class AbstractAtomicCodeIntrerface(object):
+    """
+    """
+    __metaclass__ = ABCMeta
+
+
+class ApeAtomicInterface(AbstractAtomicCodeIntrerface):
+    """
+    """
+
+
+######
+# API
+######
+
+
+def get_atomic_code_interface(code):
     """
     factory function to return a instance of an atomic code interface
     """
-    cls = {}
+    cls = {'ape': ApeAtomicInterface}
     return cls[code]()
