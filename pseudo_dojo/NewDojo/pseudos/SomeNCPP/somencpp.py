@@ -13,7 +13,7 @@ class SomeCPP(AbstractPP):
         self._data_set = NCDataSet()
         self._definition = NCDefinition()
         self._code = 'name'
-        self.creator_interface = get_generator_interface(self.code)
+        self.creator_interface = get_generator_interface(self.generator_code)
 
     @property
     def definition(self):
@@ -24,7 +24,7 @@ class SomeCPP(AbstractPP):
         return self._data_set
 
     @property
-    def code(self):
+    def generator_code(self):
         return self._code
 
     def create(self):
