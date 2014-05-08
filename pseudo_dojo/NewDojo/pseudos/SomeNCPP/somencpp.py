@@ -4,34 +4,30 @@ from pseudo_dojo.NewDojo.pseudos.abstractpseudos import NCDataSet, NCDefinition,
 from pseudo_dojo.NewDojo.codes.generatorcodes import get_generator_interface
 
 
-class SomeCPP(AbstractPP):
+class SomeNCPP(AbstractPP):
     """
     prototype of specific pp of NC type
-    the doc string should contain a human readable concise description
+    used as a template for explicitly programmed NCPP's
     """
     def __init__(self):
+        super(self.__class__, self).__init__()
         self._data_set = NCDataSet()
-        self._definition = NCDefinition()
+        self._definition = NCDefinition()                            # the definition may become public at some point
         self._code = 'name'
-        self.creator_interface = get_generator_interface(self.generator_code)
+        # now we should define the pp here by
+        #   reading a definition:
+        #       self.definition.read_from_file('path')
+        #   or hardcoding a definition
+        #   and creating the data_set:
+        #       self.create()
+        # or
+        #   read a data_set from file
+        #       self._data_set.read_from_file('path')
 
     @property
     def definition(self):
         return self._definition
 
     @property
-    def data_set(self):
-        return self._data_set
-
-    @property
     def generator_code(self):
         return self._code
-
-    def create(self):
-        self._data_set = self.creator_interface.create(self.definition)
-
-    def write(self, path):
-        pass
-
-    def read(self):
-        pass

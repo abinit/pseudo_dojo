@@ -158,15 +158,6 @@ class GeneralNCPP(AbstractPP):
         self._data_set = NCDataSet()
         self._definition = NCDefinition()                            # the definition may become public at some point
         self._code = 'name'
-        # now we should define the pp here by
-        #   reading a definition:
-        #       self.definition.read_from_file('path')
-        #   or hardcoding a definition
-        #   and creating the data_set:
-        #       self.create()
-        # or
-        #   read a data_set from file
-        #       self._data_set.read_from_file('path')
 
     @property
     def definition(self):
