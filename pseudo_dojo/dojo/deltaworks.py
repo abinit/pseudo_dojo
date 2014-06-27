@@ -48,17 +48,20 @@ class DeltaFactory(object):
             0.001 Rydberg is the value used with WIEN2K
         """
 
-        try:
-            pseudo = Pseudo.aspseudo(pseudo)
+#        try:
+#            pseudo = Pseudo.aspseudo(pseudo)
+#
+#            print(pseudo)
+#
+#
+#            if pseudo.ispaw and pawecutdg is None:
+#                raise ValueError("pawecutdg must be specified for PAW calculations.")
+#
+#            symbol = pseudo.symbol
+#        except AttributeError:
+#            symbol = 'Ge'
 
-            print(pseudo)
-
-            if pseudo.ispaw and pawecutdg is None:
-                raise ValueError("pawecutdg must be specified for PAW calculations.")
-
-            symbol = pseudo.symbol
-        except AttributeError:
-            symbol = 'Ge'
+        symbol = 'Ge'
 
         try:
             cif_path = self.get_cif_path(symbol)
@@ -69,8 +72,6 @@ class DeltaFactory(object):
         spin_mode = "unpolarized"
         if symbol in ["Fe", "Co", "Ni"]: spin_mode = "polarized"
         if symbol in ["O", "Cr", "Mn"]: spin_mode = "afm"
-
-
 
         work = DeltaFactorWorkflow(cif_path, pseudo, kppa,
                          spin_mode=spin_mode, toldfe=toldfe, smearing=smearing, 
