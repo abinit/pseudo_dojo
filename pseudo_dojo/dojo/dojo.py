@@ -67,6 +67,10 @@ class Dojo(object):
         """
         pseudo = Pseudo.aspseudo(pseudo)
 
+        print(pseudo)
+
+        print('here .....')
+
         workdir = "DOJO_" + pseudo.name
 
         # Build master instances.
