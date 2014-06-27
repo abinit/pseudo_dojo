@@ -32,9 +32,8 @@ def build_flow(options):
     # Path of the pseudopotential to test.
     #pseudo = data.pseudo("14si.pspnc")
     #pseudo = data.pseudo("Si.GGA_PBE-JTH-paw.xml")
-    here = os.path.abspath()
+    here = os.path.abspath(os.path.curdir())
     pseudo = os.path.join(here, "pseudo_to_test")
-    pseudo = 'pseudo_to_test'
     print(pseudo)
 
 
