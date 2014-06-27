@@ -56,19 +56,21 @@ class DeltaFactory(object):
             if pseudo.ispaw and pawecutdg is None:
                 raise ValueError("pawecutdg must be specified for PAW calculations.")
 
-            try:
-                cif_path = self.get_cif_path(pseudo.symbol)
-            except Exception as exc:
-                raise CIFNotFoundError(str(exc))
-
-            # Include spin polarization for O, Cr and Mn (antiferromagnetic)
-            # and Fe, Co, and Ni (ferromagnetic).
-            spin_mode = "unpolarized"
-
-            if pseudo.symbol in ["Fe", "Co", "Ni"]: spin_mode = "polarized"
-            if pseudo.symbol in ["O", "Cr", "Mn"]: spin_mode = "afm"
+            symbol = pseudo.symbol
         except AttributeError:
-            spin_mode = "unpolarized"
+            symbol = 'Ge'
+
+        try:
+            cif_path = self.get_cif_path(symbol)
+        except Exception as exc:
+            raise CIFNotFoundError(str(exc))
+         # Include spin polarization for O, Cr and Mn (antiferromagnetic)
+        # and Fe, Co, and Ni (ferromagnetic).
+        spin_mode = "unpolarized"
+        if symbol in ["Fe", "Co", "Ni"]: spin_mode = "polarized"
+        if symbol in ["O", "Cr", "Mn"]: spin_mode = "afm"
+
+
 
         work = DeltaFactorWorkflow(cif_path, pseudo, kppa,
                          spin_mode=spin_mode, toldfe=toldfe, smearing=smearing, 
