@@ -48,6 +48,8 @@ class DeltaFactory(object):
             0.001 Rydberg is the value used with WIEN2K
         """
         pseudo = Pseudo.aspseudo(pseudo)
+        
+        print(pseudo)
 
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")

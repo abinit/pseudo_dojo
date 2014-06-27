@@ -172,7 +172,7 @@ class GeneralNCPP(AbstractPP):
 # API
 ######
 # factory functions
-
+# todo design a smart wrapper that reads any pp and determines which kind it is automatically
 
 def get_ncpp_from_definition_file(path):
     """
