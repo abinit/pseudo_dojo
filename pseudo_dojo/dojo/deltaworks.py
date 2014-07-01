@@ -48,20 +48,20 @@ class DeltaFactory(object):
             0.001 Rydberg is the value used with WIEN2K
         """
 
-#        try:
-#            pseudo = Pseudo.aspseudo(pseudo)
-#
-#            print(pseudo)
-#
-#
-#            if pseudo.ispaw and pawecutdg is None:
-#                raise ValueError("pawecutdg must be specified for PAW calculations.")
-#
-#            symbol = pseudo.symbol
-#        except AttributeError:
-#            symbol = 'Ge'
+        try:
+            pseudo = Pseudo.aspseudo(pseudo)
 
-        symbol = 'Ge'
+            print(pseudo)
+
+
+            if pseudo.ispaw and pawecutdg is None:
+                raise ValueError("pawecutdg must be specified for PAW calculations.")
+
+            symbol = pseudo.symbol
+        except AttributeError:
+            print('error in parsing, using hard coded Ge')
+            symbol = 'Ge'
+
 
         try:
             cif_path = self.get_cif_path(symbol)
