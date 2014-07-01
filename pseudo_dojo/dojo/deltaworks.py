@@ -51,16 +51,13 @@ class DeltaFactory(object):
         try:
             pseudo = Pseudo.aspseudo(pseudo)
 
-            print(pseudo)
-
-
             if pseudo.ispaw and pawecutdg is None:
                 raise ValueError("pawecutdg must be specified for PAW calculations.")
 
             symbol = pseudo.symbol
         except AttributeError:
-            print('error in parsing, using hard coded Ge')
-            symbol = 'Ge'
+            print('error in parsing')
+            # symbol = 'Ge'
 
 
         try:
