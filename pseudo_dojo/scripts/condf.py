@@ -69,6 +69,7 @@ class DeltaFactorData(object):
             table.append([x, self.results[x]])
 
         print 'extrapolated Delta Factor: ', my_df_data.df_extra
+        print table
         pprint_table(table, out=stream)
 
     def test_convergence(self):
