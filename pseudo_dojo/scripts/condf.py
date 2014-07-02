@@ -55,11 +55,11 @@ class DeltaFactorData(object):
 
     def test_convergence(self):
         xs = sorted(self.df_data.keys())
-        print xs
+        #print xs
         ys = []
         for x in xs:
             ys.append(self.df_data[x])
-        print ys
+        #print ys
         for tol in [-0.1, -0.01, -0.001, -0.0001]:
             test_res = test_conv(xs, ys, 'df', tol=tol, verbose=False)
             self.results.update({abs(tol): test_res[1]})
