@@ -62,7 +62,9 @@ class DeltaFactorData(object):
         """
         table = [["Convergense criterium", "ecut"]]
 
-        for x in sorted(self.results):
+        print sorted(self.results)
+
+        for x in sorted(self.results.keys()):
 
             table.append([x, self.results[x]])
 
