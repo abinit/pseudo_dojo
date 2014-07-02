@@ -33,8 +33,25 @@ def build_flow(options):
     #pseudo = data.pseudo("14si.pspnc")
     #pseudo = data.pseudo("Si.GGA_PBE-JTH-paw.xml")
     here = os.path.abspath(os.path.curdir)
+
+    # the ocvpsps output file
     pseudo = os.path.join(here, "totest.out")
     print(pseudo)
+
+    with open(pseudo, 'r') as fi:
+        lines = fi.readlines()
+
+    fo = open('totest', 'w')
+    data = False
+    for line in lines:
+        if 'Begin PSPCODE8' in line:
+            data = True
+        if data:
+            fo.write(line)
+    fo.close()
+
+    if options['strip']:
+        exit()
 
 
     # Working directory (default is the name of the script with '.py' removed and "run_" replaced by "flow_")
@@ -95,7 +112,7 @@ def main(options):
 
 
 if __name__ == "__main__":
-    my_options = {'test': False}
+    my_options = {'test': False, 'strip': False}
 
     for arg in sys.argv:
         my_options.update({arg: True})
