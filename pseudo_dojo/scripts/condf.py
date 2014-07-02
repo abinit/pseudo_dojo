@@ -1,12 +1,13 @@
 __author__ = 'setten'
 
 import os
+import sys
 import numpy as np
 import collections
 
 from pymatgen.io.gwwrapper.convergence import test_conv
 from pymatgen.io.abinitio.netcdf import NetcdfReader
-
+from pymatgen.util.string_utils import pprint_table
 
 class DeltaFactorData(object):
     """
@@ -55,6 +56,19 @@ class DeltaFactorData(object):
         """
         print self.df_data
 
+    def print_results(self, stream=sys.stdout):
+        """
+
+        """
+        table = [["Convergense criterium", "ecut"]]
+
+        for x in sorted(self.results):
+
+            table.append([x, self.results[x]])
+
+        print 'extrapolated Delta Factor: ', my_df_data.df_extra
+        pprint_table(table, out=stream)
+
     def test_convergence(self):
         xs = sorted(self.df_data.keys())
         #print xs
@@ -70,8 +84,6 @@ class DeltaFactorData(object):
 if __name__ == "__main__":
     my_df_data = DeltaFactorData()
     my_df_data.read()
-    #my_df_data.print_data()
     my_df_data.test_convergence()
-    print my_df_data.results
-    print 'extrapolated Delta Factor: ', my_df_data.df_extra
+    my_df_data.print_results()
 
