@@ -18,7 +18,7 @@ class DeltaFactorData(object):
         """
         self.param = {}
         self.df_data = {}
-        self.energies = []
+        self.results = {}
 
     def read(self):
         """
@@ -31,13 +31,13 @@ class DeltaFactorData(object):
                 f = open(file_name, 'r')
                 lines = f.readlines()
                 df = float(lines[0].split()[3])
-                print lines[0], df
-                print dirs[0]
+                #print lines[0], df
+                #print dirs[0]
                 location = os.path.split(dirs[0])
-                print location
+                #print location
                 base = os.path.join(*location[0:len(location)-1])
                 out_file = os.path.join(base, 't0', 'outdata', 'out_OUT.nc')
-                print out_file
+                #print out_file
                 out = NetcdfReader(out_file)
                 if not isinstance(out.read_value('ecut'), collections.Iterable):
                     ecut = out.read_value('ecut')
@@ -61,12 +61,13 @@ class DeltaFactorData(object):
             ys.append(self.df_data[x])
         print ys
         for tol in [-0.1, -0.01, -0.001, -0.0001]:
-            print abs(tol), test_conv(xs, ys, 'df', tol=tol, verbose=False)
-
+            test_res = test_conv(xs, ys, 'df', tol=tol, verbose=False)
+            self.results.update({abs(tol): test_res[1]})
 
 if __name__ == "__main__":
     my_df_data = DeltaFactorData()
     my_df_data.read()
-    my_df_data.print_data()
+    #my_df_data.print_data()
     my_df_data.test_convergence()
+    print my_df_data.results
 
