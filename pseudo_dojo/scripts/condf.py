@@ -30,7 +30,7 @@ class DeltaFactorData(object):
             if os.path.isfile(file_name):
                 f = open(file_name, 'r')
                 lines = f.readlines()
-                df = lines[0].split()[3]
+                df = float(lines[0].split()[3])
                 print lines[0], df
                 print dirs[0]
                 location = os.path.split(dirs[0])
