@@ -33,7 +33,11 @@ class DeltaFactorData(object):
             if os.path.isfile(file_name):
                 f = open(file_name, 'r')
                 lines = f.readlines()
-                df = float(lines[0].split()[3])
+                try:
+                    df = float(lines[0].split()[3])
+                except ValueError:
+                    print 'warning', lines[0].split()[3]
+                    df = abs(complex(lines[0].split()[3]))
                 #print lines[0], df
                 #print dirs[0]
                 location = os.path.split(dirs[0])
