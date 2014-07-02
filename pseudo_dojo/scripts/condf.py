@@ -62,15 +62,14 @@ class DeltaFactorData(object):
         """
         table = [["Convergense criterium", "ecut"]]
 
-        print sorted(self.results)
-
-        for x in sorted(self.results.keys()):
-
-            table.append([x, self.results[x]])
-
         print 'extrapolated Delta Factor: ', my_df_data.df_extra
-        print table
-        pprint_table(table, out=stream)
+        for x in sorted(self.results.keys()):
+            print x,  self.results[x]
+
+        #    table.append([x, self.results[x]])
+
+        #print table
+        #pprint_table(table, out=stream)
 
     def test_convergence(self):
         xs = sorted(self.df_data.keys())
