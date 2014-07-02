@@ -74,6 +74,7 @@ def main():
         show_examples_and_exit(err_msg=err_msg)
 
     manager = TaskManager.simple_mpi(mpi_ncpus=1)
+    manager = TaskManager.from_user_config()
 
     dojo = Dojo(manager=manager,
                 max_ncpus=max_ncpus, 
