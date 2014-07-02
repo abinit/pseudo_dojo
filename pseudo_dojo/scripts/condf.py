@@ -61,7 +61,7 @@ class DeltaFactorData(object):
             ys.append(self.df_data[x])
         print ys
         for tol in [0.1, 0.01, 0.001]:
-            print test_conv(xs, ys, 'df', tol=tol)
+            print test_conv(xs, ys, 'df', tol=tol, verbose=True)
 
 
 if __name__ == "__main__":
