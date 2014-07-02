@@ -1,6 +1,7 @@
 __author__ = 'setten'
 
 import os
+import numpy as np
 import collections
 
 from pymatgen.io.gwwrapper.convergence import test_conv
@@ -19,6 +20,7 @@ class DeltaFactorData(object):
         self.param = {}
         self.df_data = {}
         self.results = {}
+        self.df_extra = np.inf
 
     def read(self):
         """
@@ -63,6 +65,7 @@ class DeltaFactorData(object):
         for tol in [-0.1, -0.01, -0.001, -0.0001]:
             test_res = test_conv(xs, ys, 'df', tol=tol, verbose=False)
             self.results.update({abs(tol): test_res[1]})
+            self.df_extra = test_res[4]
 
 if __name__ == "__main__":
     my_df_data = DeltaFactorData()
@@ -70,4 +73,5 @@ if __name__ == "__main__":
     #my_df_data.print_data()
     my_df_data.test_convergence()
     print my_df_data.results
+    print 'extrapolated Delta Factor: ', my_df_data.df_extra
 
