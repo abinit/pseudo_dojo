@@ -44,11 +44,13 @@ def build_flow(options):
     fo = open('totest', 'w')
     data = False
     for line in lines:
-        if 'Begin PSPCODE8' in line:
-            data = True
         if data:
             fo.write(line)
+        if 'Begin PSPCODE8' in line:
+            data = True
     fo.close()
+
+    pseudo = os.path.join(here, "totest")
 
     if options['strip']:
         exit()
