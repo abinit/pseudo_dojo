@@ -78,7 +78,7 @@ class DeltaFactorData(object):
         for x in xs:
             ys.append(self.df_data[x])
         #print ys
-        for tol in [-0.1, -0.01, -0.001, -0.0001]:
+        for tol in [-10, -1.0, -0.1, -0.01]:
             test_res = test_conv(xs, ys, 'df', tol=tol, verbose=False)
             self.results.update({abs(tol): test_res[1]})
             self.df_extra = test_res[4]
