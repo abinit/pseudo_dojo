@@ -7,7 +7,7 @@ import numpy as np
 
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.io.abinitio.workflows import DeltaFactorWorkflow
-from pseudo_dojo.refdata.deltafactor import df_database
+from pseudo_dojo.refdata.deltafactor.deltafactor import df_database
 
 
 class DeltaFactoryError(Exception):
@@ -57,8 +57,6 @@ class DeltaFactory(object):
             symbol = pseudo.symbol
         except AttributeError:
             print('error in parsing')
-            # symbol = 'Ge'
-
 
         try:
             cif_path = self.get_cif_path(symbol)
