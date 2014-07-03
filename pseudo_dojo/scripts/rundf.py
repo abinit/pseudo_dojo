@@ -55,14 +55,6 @@ def build_flow(options):
     if options['strip']:
         exit()
 
-
-    # Working directory (default is the name of the script with '.py' removed and "run_" replaced by "flow_")
-    # workdir = options.workdir
-    # if not options.workdir:
-    #    #workdir = os.path.basename(__file__).replace(".py", "").replace("run_", "flow_")
-
-    workdir = 'df_run'
-
     # Instantiate the TaskManager.
     manager = abilab.TaskManager.from_user_config()  # if not options.manager else options.manager
 
@@ -72,27 +64,27 @@ def build_flow(options):
     # the cutoff energy ecut (Ha) for the pseudopotential.
     # The workflow will produce a pdf file with the equation of state
     # and a file deltafactor.txt with the final results in the
-    # outdir directory DELTAFACTOR/work_0/outdir.
+    # outdir directory DELTAFACTOR/Wnn/outdir.
+
     factory = DeltaFactory()
 
     #extra = {}
 
     if options['test']:
-        kppa = 50    # this value is for testing purpose.
-        ecut = 8
+        workdir = 'df_run_test'
+        flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
+        kppa = 100
+        ecut = 24
         pawecutdg = ecut * 2
-
-        # Initialize the flow.
-        # flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
-
         work = factory.work_for_pseudo(pseudo, accuracy="normal", kppa=kppa,
                                        ecut=ecut, pawecutdg=pawecutdg,
                                        toldfe=1.e-8, smearing="fermi_dirac:0.0005")
-
-        work.start()
-        work.wait()
+        flow.register_work(work, workdir='W'+str(ecut))
+        workflow = flow.allocate()
+        workflow.build_and_pickle_dump()
         return
     else:
+        workdir = 'df_run_full'
         flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
         kppa = 6750  # Use this to have the official k-point sampling
         for ecut in [20, 24, 28, 32, 36, 40, 44, 48]:
