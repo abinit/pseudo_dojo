@@ -10,7 +10,6 @@ Example::
 """
 from __future__ import division, print_function
 
-import sys
 import os
 import os.path
 import collections
@@ -45,6 +44,7 @@ class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 
         """b0 in GPa units."""
         return self.b0.to("GPa") 
 
+
 def read_data_from_filename(filename):
     """
     Reads (v0, b0, b1) from file filename. b0 is in GPa.
@@ -64,7 +64,6 @@ def read_data_from_filename(filename):
             data[symbol] = DeltaFactorEntry(*tokens)
 
     return data
-
 
 
 class DeltaFactorDatabaseError(Exception):
@@ -208,12 +207,16 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
         v0w, b0w, b1w: 
             Volume, bulk-modulus and pressure derivative of b0w (reference values).
         v0f, b0f, b1f:
-            Volume, bulk-modulus and pressure derivative of b0w (computed values).
+            Volume, bulk-modulus and pressure derivative of b0f (computed values).
+        v
+            version of delta factor, current version is 3 this one is symmetrical old version
 
     .. note:
 
         v0 is A**3/natom, by default b0 is in eV/A**3, GPa units are used if b0_GPa is True.
     """
+
+    print(v0w, b0w, b1w, v0f, b0f, b1f)
 
     if v == 1:
         # delta factor form verion 1
@@ -257,15 +260,10 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
     elif v == 3:
         # version 3
 
-        print('using deltafactor v 3')
-        print(v0w, b0w, b1w, v0f, b0f, b1f)
-
         if b0_GPa:
             # Conversion GPa --> eV/A**3
             b0w = FloatWithUnit(b0w, "GPa").to("eV Ang^-3")
             b0f = FloatWithUnit(b0f, "GPa").to("eV Ang^-3")
-
-        print(v0w, b0w, b1w, v0f, b0f, b1f)
 
         if useasymm:
             Vi = 0.94 * v0w
