@@ -27,7 +27,7 @@ class DeltaFactorData(object):
         """
 
         """
-        tree = os.walk('df_run')
+        tree = os.walk('df_run_full')
         for dirs in tree:
             file_name = os.path.join(dirs[0], 'deltadata.txt')
             if os.path.isfile(file_name):
