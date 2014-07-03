@@ -258,6 +258,14 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
         # version 3
 
         print('using deltafactor v 3')
+        print(v0w, b0w, b1w, v0f, b0f, b1f)
+
+        if b0_GPa:
+            # Conversion GPa --> eV/A**3
+            b0w = FloatWithUnit(b0w, "GPa").to("eV Ang^-3")
+            b0f = FloatWithUnit(b0f, "GPa").to("eV Ang^-3")
+
+        print(v0w, b0w, b1w, v0f, b0f, b1f)
 
         if useasymm:
             Vi = 0.94 * v0w
