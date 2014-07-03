@@ -257,6 +257,8 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
     elif v == 3:
         # version 3
 
+        print('using deltafactor v 3')
+
         if useasymm:
             Vi = 0.94 * v0w
             Vf = 1.06 * v0w
