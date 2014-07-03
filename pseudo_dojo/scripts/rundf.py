@@ -97,9 +97,9 @@ def build_flow(options):
         kppa = 6750  # Use this to have the official k-point sampling
         for ecut in [20, 24, 28, 32, 36, 40, 44, 48]:
             pawecutdg = ecut * 2
-            work = factory.work_for_pseudo(pseudo, accuracy="normal", kppa=kppa,
+            work = factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa,
                                            ecut=ecut, pawecutdg=pawecutdg,
-                                           toldfe=1.e-8, smearing="fermi_dirac:0.0005")
+                                           toldfe=1.e-10, smearing="fermi_dirac:0.0005")
             # Register the workflow.
             flow.register_work(work, workdir='W'+str(ecut))
         workflow = flow.allocate()
