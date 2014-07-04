@@ -90,8 +90,8 @@ class DeltaFactorData(object):
             self.results.update({abs(tol): test_res[1]})
             self.df_extra = test_res[4]
         print self.results
-        self.pseudo.dojo_report.update({'hints': {'high': self.results['1.0'], 'medium': self.results['3.0'],
-                                                  'low': self.results['10'], 'based_on': 'delta_factor'}})
+        self.pseudo.dojo_report.update({'hints': {'high': self.results[1.0], 'medium': self.results[3.0],
+                                                  'low': self.results[10], 'based_on': 'delta_factor'}})
 
 
 if __name__ == "__main__":
