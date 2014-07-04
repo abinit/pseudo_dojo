@@ -22,6 +22,7 @@ class DeltaFactorData(object):
         self.param = {}
         self.df_data = {}
         self.results = {}
+        self.etotal_data = {}
         self.df_extra = np.inf
         self.pseudo = Pseudo.from_file('totest')
 
@@ -56,8 +57,10 @@ class DeltaFactorData(object):
                     etotal = out.read_value('etotal')[0]
                 else:
                     raise Exception
+                self.etotal_data.update({ecut: etotal})
                 self.df_data.update({ecut: df})
-        self.pseudo.dojo_report.update({'delta_factor': self.df_data})
+        self.pseudo.dojo_report['delta_factor'] = self.df_data
+        self.pseudo.dojo_report['total_energy'] = self.etotal_data
 
     def print_data(self):
         """
