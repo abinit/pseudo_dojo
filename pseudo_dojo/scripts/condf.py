@@ -45,13 +45,15 @@ class DeltaFactorData(object):
                 location = os.path.split(dirs[0])
                 #print location
                 base = os.path.join(*location[0:len(location)-1])
-                out_file = os.path.join(base, 't0', 'outdata', 'out_OUT.nc')
+                out_file = os.path.join(base, 't3', 'outdata', 'out_GSR.nc')
                 #print out_file
                 out = NetcdfReader(out_file)
                 if not isinstance(out.read_value('ecut'), collections.Iterable):
                     ecut = out.read_value('ecut')
+                    etotal = out.read_value('etotal')
                 elif not isinstance(out.read_value('ecut')[0], collections.Iterable):
                     ecut = out.read_value('ecut')[0]
+                    etotal = out.read_value('etotal')[0]
                 else:
                     raise Exception
                 self.df_data.update({ecut: df})
