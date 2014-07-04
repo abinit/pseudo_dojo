@@ -8,6 +8,7 @@ import collections
 from pymatgen.io.gwwrapper.convergence import test_conv
 from pymatgen.io.abinitio.netcdf import NetcdfReader
 from pymatgen.util.string_utils import pprint_table
+from pymatgen.io.abinitio.pseudos import Pseudo
 
 class DeltaFactorData(object):
     """
@@ -22,6 +23,7 @@ class DeltaFactorData(object):
         self.df_data = {}
         self.results = {}
         self.df_extra = np.inf
+        self.pseudo = Pseudo.from_file('totest')
 
     def read(self):
         """
@@ -53,6 +55,7 @@ class DeltaFactorData(object):
                 else:
                     raise Exception
                 self.df_data.update({ecut: df})
+        self.pseudo.dojo_report.update({'delta_factor': self.df_data})
 
     def print_data(self):
         """
@@ -86,10 +89,15 @@ class DeltaFactorData(object):
             test_res = test_conv(xs, ys, 'df'+str(abs(tol)), tol=tol, verbose=False, mode='extra_noise')
             self.results.update({abs(tol): test_res[1]})
             self.df_extra = test_res[4]
+        self.pseudo.dojo_report.update({'hints': {'high': self.results['1.0'], 'medium': self.results['3.0'],
+                                                  'low': self.results['10'], 'based_on': 'delta_factor'}})
+
 
 if __name__ == "__main__":
     my_df_data = DeltaFactorData()
     my_df_data.read()
     my_df_data.test_convergence()
+    print my_df_data.pseudo.dojo_report
+    my_df_data.pseudo.write_dojo_report()
     my_df_data.print_results()
 

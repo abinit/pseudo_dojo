@@ -74,7 +74,7 @@ def build_flow(options):
         workdir = 'df_run_test'
         flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
         kppa = 100
-        ecut = 24
+        ecut = 28
         pawecutdg = ecut * 2
         work = factory.work_for_pseudo(pseudo, accuracy="normal", kppa=kppa,
                                        ecut=ecut, pawecutdg=pawecutdg,
