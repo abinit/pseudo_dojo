@@ -52,6 +52,7 @@ class DeltaFactorData(object):
                 if not isinstance(out.read_value('ecut'), collections.Iterable):
                     ecut = out.read_value('ecut')
                     etotal = out.read_value('etotal')
+                    ks_gap
                 elif not isinstance(out.read_value('ecut')[0], collections.Iterable):
                     ecut = out.read_value('ecut')[0]
                     etotal = out.read_value('etotal')[0]
