@@ -67,7 +67,7 @@ class DeltaFactory(object):
         spin_mode = "unpolarized"
         if symbol in ["Fe", "Co", "Ni"]:
             spin_mode = "polarized"
-        if symbol in ["O", "Cr", "Mn"]:
+        if False:  # symbol in ["O", "Cr", "Mn"]:
             spin_mode = "afm"
             if symbol == 'O':
                 kwargs['spinat'] = [(0, 0, 1), (0, 0, -1)]
