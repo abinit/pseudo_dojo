@@ -61,43 +61,8 @@ objects:
 
 .. code-block:: pycon
 
-    >>> import pseudo_dojo as mg
+    >>> import pseudo_dojo as dojo
     >>>
-    >>> si = mg.Element("Si")
-    >>> si.atomic_mass
-    28.0855
-    >>> si.melting_point
-    u'1687 K'
-    >>>
-    >>> comp = mg.Composition("Fe2O3")
-    >>> comp.weight
-    159.6882
-    >>> #Note that Composition conveniently allows strings to be treated just
-    >>> #like an Element object.
-    >>> comp["Fe"]
-    2.0
-    >>> comp.get_atomic_fraction("Fe")
-    0.4
-    >>> lattice = mg.Lattice.cubic(4.2)
-    >>> structure = mg.Structure(lattice, ["Cs", "Cl"],
-    ...                          [[0, 0, 0], [0.5, 0.5, 0.5]])
-    >>> structure.volume
-    74.088000000000008
-    >>> structure[0]
-    PeriodicSite: Cs (0.0000, 0.0000, 0.0000) [0.0000, 0.0000, 0.0000]
-    >>>
-    >>> #Integrated symmetry tools from spglib.
-    >>> from pseudo_dojo.symmetry.finder import SymmetryFinder
-    >>> finder = SymmetryFinder(structure)
-    >>> finder.get_spacegroup_symbol()
-    'Pm-3m'
-    >>>
-    >>> #Writing out a POSCAR file for VASP calculations.
-    >>> poscar = Poscar(structure)
-    >>> mg.write_structure(structure, "POSCAR")
-    >>>
-    >>> #Reading a structure from a file.
-    >>> structure = mg.read_structure("POSCAR")
 
 The above illustrates only the most basic capabilities of pseudo_dojo.
 

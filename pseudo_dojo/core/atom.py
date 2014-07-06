@@ -1,7 +1,6 @@
 """This module provides objects and helper functions for atomic calculations."""
 from __future__ import division, print_function
 
-import os
 import collections
 import numpy as np
 
@@ -67,7 +66,6 @@ def parse_orbtoken(orbtoken):
     raise ValueError("Don't know how to interpret %s" % str(orbtoken))
 
 
-
 class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
     """
     This object collects the set of quantum numbers and the physical properties
@@ -131,7 +129,6 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
             raise ValueError("Don't know how to convert %s" % self)
 
         return [string,]
-
 
 
 class AtomicConfiguration(object):
@@ -362,7 +359,7 @@ class RadialFunction(object):
             if r > rpoint: 
                 return i-1
 
-        if (rpoint == self.rmesh[-1]):
+        if rpoint == self.rmesh[-1]:
             return len(self.rmesh)
         else:
             raise ValueError("Cannot find %s in rmesh" % rpoint)

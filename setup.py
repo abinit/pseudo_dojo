@@ -86,12 +86,12 @@ def cleanup():
 # List of external packages we rely on.
 # Note setup install will download them from Pypi if they are not available.
 install_requires = [
-"numpy>=1.5",
-"scipy>=0.10",
-"matplotlib>=1.1",
-"pymatgen>=2.7.3",
-"periodictable",
-#"django",
+    "numpy>=1.5",
+    "scipy>=0.10",
+    "matplotlib>=1.1",
+    "pymatgen>=2.7.3",
+    "periodictable",
+    #"django",
 ]
 
 #---------------------------------------------------------------------------

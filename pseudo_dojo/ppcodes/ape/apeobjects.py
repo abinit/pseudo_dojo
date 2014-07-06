@@ -17,7 +17,6 @@ from pseudo_dojo.ppcodes.ape.apeio import (ape_read_waves, ape_read_potentials, 
 
 __version__ = "0.1"
 
-##########################################################################################
 
 class ApeVariable(object):
 
@@ -70,7 +69,6 @@ class ApeBlock(object):
         lines += ["%"]
         return "\n".join(lines)
 
-##########################################################################################
 
 class ApeAtomicConfiguration(AtomicConfiguration):
 
@@ -128,7 +126,6 @@ class ApeAtomicConfiguration(AtomicConfiguration):
 
         return cls(Z, states)
 
-##########################################################################################
 
 class ApeRadialMesh(dict):
     """
@@ -194,7 +191,6 @@ class ApeControl(dict):
         return ["%s = %s" % kv for kv in self.items()]
 
 
-
 class ApePPComponents(object):
 
     @classmethod
@@ -238,7 +234,6 @@ class ApePPComponents(object):
         lines += ["%"]
         return lines
 
-##########################################################################################
 
 class ApePPSetup(object):
 
@@ -253,8 +248,6 @@ class ApePPSetup(object):
         lines += ["Llocal = %s" % self.llocal]
         lines += self.pp_components.to_input()
         return lines
-
-##########################################################################################
 
 
 class Dipole(object):

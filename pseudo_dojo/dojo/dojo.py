@@ -6,7 +6,6 @@ import shutil
 import time
 import numpy as np
 
-from pprint import pprint
 from pymatgen.serializers.json_coders import json_pretty_dump
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.io.abinitio.calculations import PPConvergenceFactory
@@ -43,7 +42,7 @@ class Dojo(object):
         self.max_ncpus = max_ncpus
         self.verbose = verbose
 
-        # List of master classes that will be instanciated afterwards.
+        # List of master classes that will be instantiated afterwards.
         # They are ordered according to the master level.
         classes = [m for m in DojoMaster.__subclasses__()]
         classes.sort(key=lambda cls: cls.dojo_level)

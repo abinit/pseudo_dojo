@@ -284,6 +284,7 @@ def ape_parse_events(out_lines):
 
 ##########################################################################################
 
+
 def ape_read_waves(dirpath):
     """Read the APE radial wavefunctions located in directory dirpath."""
     waves = {}
@@ -299,6 +300,7 @@ def ape_read_waves(dirpath):
         # Load [r, Radial wavefunctions and first derivative] in data.
         data = np.loadtxt(path)
         waves[state] = RadialWaveFunction(state, state, data[:,0], data[:,1])
+
     return waves
 
 
@@ -338,7 +340,6 @@ def ape_plot_waves(dirpath, **kwargs):
 
     return fig
 
-##########################################################################################
 
 
 def ape_read_potentials(dirpath):
@@ -394,7 +395,6 @@ def ape_plot_potentials(dirpath, **kwargs):
 
     return fig
 
-##########################################################################################
 
 
 def ape_read_densities(dirpath):
@@ -450,7 +450,6 @@ def ape_plot_densities(dirpath, **kwargs):
 
     return fig
 
-##########################################################################################
 
 
 def ape_read_logders(dirpath):
@@ -502,7 +501,6 @@ def ape_plot_logders(dirpath, **kwargs):
     fig = plot_logders(ae_logders, pp_logders, **kwargs)
     return fig
 
-##########################################################################################
 
 
 def ape_check_ghosts(out_lines):
@@ -554,8 +552,6 @@ def ape_check_ghosts(out_lines):
                 ghosts[state] = result
 
     return ghosts
-
-##########################################################################################
 
 
 def ape_check_ppeigen(out_lines):
