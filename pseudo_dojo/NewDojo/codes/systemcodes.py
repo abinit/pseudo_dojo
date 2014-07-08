@@ -34,12 +34,25 @@ class AbstractSystemCodeInterface(object):
         method to write a pp file for this code to path defined by data_set
         """
 
+    ### works
+
     @abstractmethod
-    def calculate_total_energy(self, structure, kpoints, energy_cutoff, test):
+    def calculate_total_energy(self, structure, kpoints, basis_set_pars, test):
         """
         method to calculate and return the total energy of the defined system and parameters
         if test is True, no calculation should be performed only True should be returned if this method is available
         for this code
+        initializing an instance should return a code specific work, which upon execution should return a single scalar
+        """
+
+    @abstractmethod
+    def calculate_electronic_structure(self, structure, kpoints, basis_set_pars, test):
+        """
+        method to calculate and return the electronic structure of the defined system and parameters
+        if test is True, no calculation should be performed only True should be returned if this method is available
+        for this code
+        initializing an instance should return a code specific work, which upon execution should return a pymatgen
+        BandStructure object
         """
 
 
@@ -59,13 +72,23 @@ class Abinit(AbstractSystemCodeInterface):
     def periodicity(self):
         return self._periodicity
 
-    def calculate_total_energy(self, structure, kpoints, energy_cutoff, test):
+    def calculate_total_energy(self, structure, kpoints, basis_set_pars, test):
+        if test:
+            return False
+        raise NotImplementedError
+
+    def calculate_electronic_structure(self, structure, kpoints, basis_set_pars, test):
         if test:
             return False
         raise NotImplementedError
 
     def write_pseudo(self, path, data_set):
         raise NotImplementedError
+
+
+######
+# API
+######
 
 
 def get_system_code_interface(code):

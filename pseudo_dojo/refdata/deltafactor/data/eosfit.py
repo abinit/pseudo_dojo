@@ -1,5 +1,5 @@
 # eosfit.py fits E(V) data to a Birch-Murnaghan equation of state. 
-# Current version: 1.2
+# Current version: 3.0
 #
 # Copyright (C) 2012 Kurt Lejaeghere <Kurt.Lejaeghere@UGent.be>, Center for
 # Molecular Modeling (CMM), Ghent University, Ghent, Belgium

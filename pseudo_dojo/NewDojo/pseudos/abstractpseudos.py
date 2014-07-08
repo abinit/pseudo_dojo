@@ -21,11 +21,11 @@ class AbstractPP(object):
         self.generator_interface = get_generator_interface(self.generator_code)
         self._data_set = None
 
-    def create(self):
+    def create_data_set(self):
         """
         method to create by code the data_set from definition
         """
-        self._data_set = self.generator_interface.create(self.definition)
+        self._data_set = self.generator_interface.create_data_set(self.definition)
 
     def write_pp_file(self, path, system_code):
         """
@@ -172,7 +172,7 @@ class GeneralNCPP(AbstractPP):
 # API
 ######
 # factory functions
-
+# todo design a smart wrapper that reads any pp and determines which kind it is automatically
 
 def get_ncpp_from_definition_file(path):
     """
@@ -181,7 +181,7 @@ def get_ncpp_from_definition_file(path):
     ncpp = GeneralNCPP()
     ncpp.definition.read_from_file(path)
     ncpp._code = ncpp.definition.generator_code
-    ncpp.create()
+    ncpp.create_data_set()
     return ncpp
 
 

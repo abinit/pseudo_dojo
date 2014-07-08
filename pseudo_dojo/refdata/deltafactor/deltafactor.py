@@ -195,12 +195,14 @@ class DeltaFactorDatabase(object):
 __DELTAF_DATABASE = DeltaFactorDatabase()
 
 
+
 def df_database():
     """Returns the deltafactor database with the reference results."""
     return __DELTAF_DATABASE
 
 
-def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False):
+
+def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
     """
     Compute the deltafactor. Based on the code of the offical calcDelta.py script.
 
@@ -208,46 +210,122 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False):
         v0w, b0w, b1w: 
             Volume, bulk-modulus and pressure derivative of b0w (reference values).
         v0f, b0f, b1f:
-            Volume, bulk-modulus and pressure derivative of b0w (computed values).
+            Volume, bulk-modulus and pressure derivative of b0f (computed values).
+        v
+            version of delta factor, current version is 3 this one is symmetrical old version
 
     .. note:
 
         v0 is A**3/natom, by default b0 is in eV/A**3, GPa units are used if b0_GPa is True.
     """
-    if b0_GPa: 
-        # Conversion GPa --> eV/A**3
-        b0w = FloatWithUnit(b0w, "GPa").to("eV Ang^-3")
-        b0f = FloatWithUnit(b0f, "GPa").to("eV Ang^-3")
 
-    Vi = 0.94 * v0w
-    Vf = 1.06 * v0w
+    print(v0w, b0w, b1w, v0f, b0f, b1f)
 
-    a3f = 9. * v0f**3. * b0f / 16. * (b1f - 4.)
-    a2f = 9. * v0f**(7./3.) * b0f / 16. * (14. - 3. * b1f)
-    a1f = 9. * v0f**(5./3.) * b0f / 16. * (3. * b1f - 16.)
-    a0f = 9. * v0f * b0f / 16. * (6. - b1f)
+    if v == 1:
+        # delta factor form verion 1
+        if b0_GPa:
+            # Conversion GPa --> eV/A**3
+            b0w = FloatWithUnit(b0w, "GPa").to("eV Ang^-3")
+            b0f = FloatWithUnit(b0f, "GPa").to("eV Ang^-3")
 
-    a3w = 9. * v0w**3. * b0w / 16. * (b1w - 4.)
-    a2w = 9. * v0w**(7./3.) * b0w / 16. * (14. - 3. * b1w)
-    a1w = 9. * v0w**(5./3.) * b0w / 16. * (3. * b1w - 16.)
-    a0w = 9. * v0w * b0w / 16. * (6. - b1w)
+        Vi = 0.94 * v0w
+        Vf = 1.06 * v0w
 
-    x = [0, 0, 0, 0, 0, 0, 0]
+        a3f = 9. * v0f**3. * b0f / 16. * (b1f - 4.)
+        a2f = 9. * v0f**(7./3.) * b0f / 16. * (14. - 3. * b1f)
+        a1f = 9. * v0f**(5./3.) * b0f / 16. * (3. * b1f - 16.)
+        a0f = 9. * v0f * b0f / 16. * (6. - b1f)
 
-    x[0] = (a0f - a0w)**2
-    x[1] = 6. * (a1f - a1w) * (a0f - a0w)
-    x[2] = -3. * (2. * (a2f - a2w) * (a0f - a0w) + (a1f - a1w)**2.)
-    x[3] = -2. * (a3f - a3w) * (a0f - a0w) - 2. * (a2f - a2w) * (a1f - a1w)
-    x[4] = -3./5. * (2. * (a3f - a3w) * (a1f - a1w) + (a2f - a2w)**2.)
-    x[5] = -6./7. * (a3f - a3w) * (a2f - a2w)
-    x[6] = -1./3. * (a3f - a3w)**2.
+        a3w = 9. * v0w**3. * b0w / 16. * (b1w - 4.)
+        a2w = 9. * v0w**(7./3.) * b0w / 16. * (14. - 3. * b1w)
+        a1w = 9. * v0w**(5./3.) * b0w / 16. * (3. * b1w - 16.)
+        a0w = 9. * v0w * b0w / 16. * (6. - b1w)
 
-    Fi = np.zeros_like(Vi)
-    Ff = np.zeros_like(Vf)
+        x = [0, 0, 0, 0, 0, 0, 0]
 
-    for n in range(7):
-        Fi = Fi + x[n] * Vi**(-(2.*n-3.)/3.)
-        Ff = Ff + x[n] * Vf**(-(2.*n-3.)/3.)
+        x[0] = (a0f - a0w)**2
+        x[1] = 6. * (a1f - a1w) * (a0f - a0w)
+        x[2] = -3. * (2. * (a2f - a2w) * (a0f - a0w) + (a1f - a1w)**2.)
+        x[3] = -2. * (a3f - a3w) * (a0f - a0w) - 2. * (a2f - a2w) * (a1f - a1w)
+        x[4] = -3./5. * (2. * (a3f - a3w) * (a1f - a1w) + (a2f - a2w)**2.)
+        x[5] = -6./7. * (a3f - a3w) * (a2f - a2w)
+        x[6] = -1./3. * (a3f - a3w)**2.
 
-    return 1000. * np.sqrt((Ff - Fi) / (0.12 * v0w))
+        Fi = np.zeros_like(Vi)
+        Ff = np.zeros_like(Vf)
 
+        for n in range(7):
+            Fi = Fi + x[n] * Vi**(-(2.*n-3.)/3.)
+            Ff = Ff + x[n] * Vf**(-(2.*n-3.)/3.)
+
+        return 1000. * np.sqrt((Ff - Fi) / (0.12 * v0w))
+
+    elif v == 3:
+        # version 3
+
+        if b0_GPa:
+            # Conversion GPa --> eV/A**3
+            b0w = FloatWithUnit(b0w, "GPa").to("eV Ang^-3")
+            b0f = FloatWithUnit(b0f, "GPa").to("eV Ang^-3")
+
+        if useasymm:
+            Vi = 0.94 * v0w
+            Vf = 1.06 * v0w
+        else:
+            Vi = 0.94 * (v0w + v0f) / 2.
+            Vf = 1.06 * (v0w + v0f) / 2.
+
+        a3f = 9. * v0f**3. * b0f / 16. * (b1f - 4.)
+        a2f = 9. * v0f**(7./3.) * b0f / 16. * (14. - 3. * b1f)
+        a1f = 9. * v0f**(5./3.) * b0f / 16. * (3. * b1f - 16.)
+        a0f = 9. * v0f * b0f / 16. * (6. - b1f)
+
+        a3w = 9. * v0w**3. * b0w / 16. * (b1w - 4.)
+        a2w = 9. * v0w**(7./3.) * b0w / 16. * (14. - 3. * b1w)
+        a1w = 9. * v0w**(5./3.) * b0w / 16. * (3. * b1w - 16.)
+        a0w = 9. * v0w * b0w / 16. * (6. - b1w)
+
+        x = [0, 0, 0, 0, 0, 0, 0]
+
+        x[0] = (a0f - a0w)**2
+        x[1] = 6. * (a1f - a1w) * (a0f - a0w)
+        x[2] = -3. * (2. * (a2f - a2w) * (a0f - a0w) + (a1f - a1w)**2.)
+        x[3] = -2. * (a3f - a3w) * (a0f - a0w) - 2. * (a2f - a2w) * (a1f - a1w)
+        x[4] = -3./5. * (2. * (a3f - a3w) * (a1f - a1w) + (a2f - a2w)**2.)
+        x[5] = -6./7. * (a3f - a3w) * (a2f - a2w)
+        x[6] = -1./3. * (a3f - a3w)**2.
+
+        y = [0, 0, 0, 0, 0, 0, 0]
+
+        y[0] = (a0f + a0w)**2 / 4.
+        y[1] = 3. * (a1f + a1w) * (a0f + a0w) / 2.
+        y[2] = -3. * (2. * (a2f + a2w) * (a0f + a0w) + (a1f + a1w)**2.) / 4.
+        y[3] = -(a3f + a3w) * (a0f + a0w) / 2. - (a2f + a2w) * (a1f + a1w) / 2.
+        y[4] = -3./20. * (2. * (a3f + a3w) * (a1f + a1w) + (a2f + a2w)**2.)
+        y[5] = -3./14. * (a3f + a3w) * (a2f + a2w)
+        y[6] = -1./12. * (a3f + a3w)**2.
+
+        Fi = np.zeros_like(Vi)
+        Ff = np.zeros_like(Vf)
+
+        Gi = np.zeros_like(Vi)
+        Gf = np.zeros_like(Vf)
+
+        for n in range(7):
+            Fi += x[n] * Vi**(-(2.*n-3.)/3.)
+            Ff += x[n] * Vf**(-(2.*n-3.)/3.)
+
+            Gi += y[n] * Vi**(-(2.*n-3.)/3.)
+            Gf += y[n] * Vf**(-(2.*n-3.)/3.)
+
+        Delta = 1000. * np.sqrt((Ff - Fi) / (Vf - Vi))
+
+        #Deltarel = 100. * np.sqrt((Ff - Fi) / (Gf - Gi))
+        #if useasymm:
+        #    Delta1 = 1000. * np.sqrt((Ff - Fi) / (Vf - Vi)) \
+        #             / v0w / b0w * vref * bref
+        #else:
+        #    Delta1 = 1000. * np.sqrt((Ff - Fi) / (Vf - Vi)) \
+        #             / (v0w + v0f) / (b0w + b0f) * 4. * vref * bref
+
+        return Delta

@@ -8,12 +8,12 @@ data_VESTA_phase_1
 
 
 _pd_phase_name                         'N                                     '
-_cell_length_a                         6.19019
-_cell_length_b                         6.19019
-_cell_length_c                         6.19019
-_cell_angle_alpha                      90
-_cell_angle_beta                       90
-_cell_angle_gamma                      90
+_cell_length_a                         6.190190000
+_cell_length_b                         6.190190000
+_cell_length_c                         6.190190000
+_cell_angle_alpha                      90.00
+_cell_angle_beta                       90.00
+_cell_angle_gamma                      90.00
 _symmetry_space_group_name_H-M         'P 1'
 _symmetry_Int_Tables_number            1
 

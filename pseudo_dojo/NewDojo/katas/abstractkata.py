@@ -36,6 +36,8 @@ class DeltaFactorKata(AbstractKata):
     """
 
     """
+    def __init__(self, pps):
+        self.pps = pps
 
     @property
     def code_type(self):
@@ -52,9 +54,9 @@ class DeltaFactorKata(AbstractKata):
 ######
 
 
-def get_kata(kata):
+def get_kata(kata, pps):
     """
     factory function to return an instance of a systems code interface
     """
-    cls = {'deltafactorkata': DeltaFactorKata()}
-    return cls[kata]()
+    cls = {'deltafactorkata': DeltaFactorKata}
+    return cls[kata](pps)

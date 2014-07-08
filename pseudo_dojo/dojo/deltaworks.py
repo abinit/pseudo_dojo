@@ -7,7 +7,7 @@ import numpy as np
 
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.io.abinitio.workflows import DeltaFactorWorkflow
-from pseudo_dojo.refdata.deltafactor import df_database
+from pseudo_dojo.refdata.deltafactor.deltafactor import df_database
 
 
 class DeltaFactoryError(Exception):
@@ -47,22 +47,36 @@ class DeltaFactory(object):
         .. note: 
             0.001 Rydberg is the value used with WIEN2K
         """
-        pseudo = Pseudo.aspseudo(pseudo)
-
-        if pseudo.ispaw and pawecutdg is None:
-            raise ValueError("pawecutdg must be specified for PAW calculations.")
 
         try:
-            cif_path = self.get_cif_path(pseudo.symbol)
+            pseudo = Pseudo.aspseudo(pseudo)
+
+            if pseudo.ispaw and pawecutdg is None:
+                raise ValueError("pawecutdg must be specified for PAW calculations.")
+
+            symbol = pseudo.symbol
+        except AttributeError:
+            print('error in parsing')
+
+        try:
+            cif_path = self.get_cif_path(symbol)
         except Exception as exc:
             raise CIFNotFoundError(str(exc))
-
-        # Include spin polarization for O, Cr and Mn (antiferromagnetic) 
-        # and Fe, Co, and Ni (ferromagnetic). 
+         # Include spin polarization for O, Cr and Mn (antiferromagnetic)
+        # and Fe, Co, and Ni (ferromagnetic).
         spin_mode = "unpolarized"
+        if symbol in ["Fe", "Co", "Ni"]:
+            spin_mode = "polarized"
+        if symbol in ["O", "Cr", "Mn"]:
+            spin_mode = "afm"
+            if symbol == 'O':
+                kwargs['spinat'] = [(0, 0, 1), (0, 0, -1)]
+            elif symbol == 'Cr':
+                kwargs['spinat'] = [(0, 0, 1), (0, 0, -1)]
+            elif symbol == 'Mn':
+                kwargs['spinat'] = [(0, 0, 1), (0, 0, -1), (0, 0, -1), (0, 0, 1)]
 
-        if pseudo.symbol in ["Fe", "Co", "Ni"]: spin_mode = "polarized"
-        if pseudo.symbol in ["O", "Cr", "Mn"]: spin_mode = "afm"
+
 
         work = DeltaFactorWorkflow(cif_path, pseudo, kppa,
                          spin_mode=spin_mode, toldfe=toldfe, smearing=smearing, 
