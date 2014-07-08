@@ -119,7 +119,7 @@ class DojoMaster(object):
                 classes.append(cls)
 
         if len(classes) != 1:
-            raise self.Error("Found %d masters with dojo_level %d" % (len(classes), dojo_level))
+            raise DojoError("Found %d masters with dojo_level %d" % (len(classes), dojo_level))
 
         return classes[0]
 

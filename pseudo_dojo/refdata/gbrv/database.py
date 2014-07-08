@@ -30,10 +30,13 @@ def count_species(formula):
 
     >>> count_species("Sn")
     OrderedDict([('Sn', 1)])
+
     >>> count_species("OSn")
     OrderedDict([('O', 1), ('Sn', 1)])
+
     >>> count_species("SnO2")
     OrderedDict([('Sn', 1), ('O', 2)])
+
     >>> count_species("OSnO")
     OrderedDict([('O', 2), ('Sn', 1)])
     """
@@ -78,11 +81,21 @@ class Structure(PmgStructure):
 
     @classmethod
     def bcc(cls, a, species, **kwargs):
-        """Build a bcc crystal structure."""
-        lattice = np.array([
+        """
+        Build a bcc crystal structure.
+
+        Args:
+            a: 
+                Lattice parameter in Angstrom.
+            species:
+                Chemical species. See Structure.__init__
+            **kwargs:
+                All keywords arguments supported by Structure.__init__ (except coords_are_cartesian)
+        """
+        lattice = 0.5 * a * np.array([
             -1,  1,  1,
              1, -1,  1,
-             1,  1, -1]) * 0.5 * a
+             1,  1, -1])
 
         frac_coords = np.reshape([0, 0, 0, 0.5, 0.5, 0.5], (2,3))
 
@@ -91,10 +104,10 @@ class Structure(PmgStructure):
     #@classmethod
     #def fcc(cls, a, species, **kwargs):
     #    """Build a fcc crystal structure."""
-    #    lattice = np.array([
+    #    lattice = 0.5 * a * np.array([
     #         1,  1,  0,
     #         0,  1,  1,
-    #         1,  0, -1]) * 0.5 * a
+    #         1,  0, -1]) 
 
     #    frac_coords = np.reshape([
     #       0,     0,   0, 
@@ -142,7 +155,7 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
                 # Set missing entries to None
                 v = None
             else:
-                # Values in GBRV tables are in Anstrom.
+                # Values in GBRV tables are in Angstrom.
                 v = FloatWithUnit(v, "ang")
 
             kwargs[k] = v
@@ -155,21 +168,18 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
         Use the optimized lattice parameters obtained from reference ref.
         Returns None if no lattice parameter is available.
         """
-        # Get structure type and lattive parameters
-        stype = self.struct_type 
-        a = getattr(self, ref)
+        # Get structure type and lattice parameters
+        stype, a = self.struct_type, getattr(self, ref)
 
         # Handle missing value.
         if a is None:
             return None
 
-        if stype ==  "fcc": 
-            sites = 2 * [self.symbol]
-            return Structure.fcc(a, sites)
+        if stype == "fcc":
+            return Structure.fcc(a, sites=2 * [self.symbol])
 
         elif stype == "bcc":
-            sites = 2 * [self.symbol]
-            return Structure.bcc(a, sites)
+            return Structure.bcc(a, sites=2 * [self.symbol])
 
         elif stype == "rocksalt":
             raise NotImplementedError()
@@ -201,10 +211,10 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
         return len(self.specie_counter)
 
 
-
 def read_table_from_file(filename):
     """
     Reads GBRV data from file filename.
+
     Returns a dict of `GbrvEntry` objects indexed by element symbol or chemical formula.
     """
     # File Format:
@@ -238,24 +248,18 @@ def read_table_from_file(filename):
                 assert len(header) == len(tokens)
                 symbol = tokens[0] 
 
-                d = {k:v for k,v in zip(header, tokens)}
+                d = {k: v for k, v in zip(header, tokens)}
                 d.update(info)
                 table[symbol] = GbrvEntry(**d)
 
     return table
 
 
-class GbrvDatabaseError(Exception):
-    """Exceptions raised by the database."""
-
-
 class GbrvDatabase(object):
     """
     This object stores the GBRV results and provides methods to access the data.
     """
-    Error = GbrvDatabaseError
-
-    # We use the structure type to index the tables available in the database.
+    # List of structure types used to index the tables available in the database.
     all_struct_types = [
         "fcc",
         "bcc",
@@ -303,13 +307,13 @@ class GbrvDatabase(object):
     def get_entry(self, symbol, stype):
         """
         Return `GbrvEntry` in the table associated to structure type stype 
-        and with the given symbol. None if symbol is not present
+        and with the given symbol. Return None if symbol is not present.
 
         Args:
             symbol:
                 Chemical symbol or chemical formula
             stype:
-                String identifying the GBRV table
+                Structure type identifying the GBRV table
         """
         return self.tables[stype].get(symbol, None)
 
@@ -339,17 +343,19 @@ class GbrvDatabase(object):
 # Public API to access the database
 ###################################
 
-_GBRV_DATABASE = GbrvDatabase()
+__GBRV_DATABASE = GbrvDatabase()
+
 
 def gbrv_database():
     """Returns the GBRV database with the reference results."""
-    return _GBRV_DATABASE
+    return __GBRV_DATABASE
 
 
 #############
 # Unit tests
 #############
 import unittest
+
 
 class test_gbrv(unittest.TestCase):
     def test_gbrv(self):

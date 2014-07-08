@@ -10,7 +10,6 @@ Example::
 """
 from __future__ import division, print_function
 
-import sys
 import os
 import os.path
 import collections
@@ -38,12 +37,14 @@ class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 
         b0 = FloatWithUnit(new_args[2], "eV ang^-3")
 
         new = super(cls, DeltaFactorEntry).__new__(cls, symbol=new_args[0], v0=v0, b0=b0, b1=new_args[3])
+
         return new
 
     @property
     def b0_GPa(self):
         """b0 in GPa units."""
         return self.b0.to("GPa") 
+
 
 def read_data_from_filename(filename):
     """
@@ -66,7 +67,6 @@ def read_data_from_filename(filename):
     return data
 
 
-
 class DeltaFactorDatabaseError(Exception):
     """Exceptions raised by the database."""
 
@@ -87,12 +87,12 @@ class DeltaFactorDatabase(object):
 
         self._data = d = {}
         for entry in os.listdir(self.dirpath):
-           file_path = os.path.join(self.dirpath, entry)
-           if os.path.isfile(file_path) and file_path.endswith(".txt"):
-                code, ext = os.path.splitext(entry)
-                if code == "README": 
-                    continue
-                d[code] = read_data_from_filename(file_path)
+            file_path = os.path.join(self.dirpath, entry)
+            if os.path.isfile(file_path) and file_path.endswith(".txt"):
+                    code, ext = os.path.splitext(entry)
+                    if code == "README":
+                        continue
+                    d[code] = read_data_from_filename(file_path)
 
         self._cif_paths = d = {}
 
@@ -154,15 +154,15 @@ class DeltaFactorDatabase(object):
         if title:
             fig.suptitle(title)
 
-        for (aname, ax) in zip(values, ax_list):
+        for aname, ax in zip(values, ax_list):
             # Sort entries according to the value of the attribute aname.
-            entries.sort(key = lambda t: getattr(t, aname))
+            entries.sort(key=lambda t: getattr(t, aname))
             #print(entries)
 
             ord_symbols = [r.symbol for r in entries]
             xticks = []
 
-            for (i, osym) in enumerate(ord_symbols):
+            for i, osym in enumerate(ord_symbols):
                 ref_value = getattr(ref_data[osym], aname)
                 value = getattr(data[osym], aname)
 
@@ -192,11 +192,13 @@ class DeltaFactorDatabase(object):
 # Official API to access the database.
 ##########################################################################################
 
-_DELTAF_DATABASE = DeltaFactorDatabase()
+__DELTAF_DATABASE = DeltaFactorDatabase()
+
 
 def df_database():
     """Returns the deltafactor database with the reference results."""
-    return _DELTAF_DATABASE
+    return __DELTAF_DATABASE
+
 
 def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False):
     """

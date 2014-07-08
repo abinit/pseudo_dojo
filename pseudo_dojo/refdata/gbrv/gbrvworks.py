@@ -59,7 +59,6 @@ class GBRVRelaxFactory(object):
         return work
 
 
-
 class GbrvRelaxWorkflow(Workflow):
 
     def __init__(self, structure, pseudo, ngkpt,
