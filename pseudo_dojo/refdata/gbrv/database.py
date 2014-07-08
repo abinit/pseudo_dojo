@@ -5,37 +5,35 @@ Client code should use the official API gbrv_database() to access the database.
 Example::
 
     db = gbrv_database()
-    fcc_si, bcc_si = db.get_fcc_bcc("Si")
+    fcc_si = db.get_fcc_entry("Si")
     print(fcc_si.ae, fcc_si.gbrv_uspp)
 """
 from __future__ import division, print_function
 
-import sys
 import os
 import json
+import numpy as np
 
 from collections import namedtuple, OrderedDict
 from pymatgen.core.units import FloatWithUnit
 
 __all__ = [
-    "GBRVDatabase",
+    "gbrv_database",
 ]
 
 
 def count_species(formula):
     """
     Construct a counter (OrderedDict) from a chemical formula. 
-    Assume chemical elements start with a capital letter.
+    Assume chemical symbols start with a capital letter.
+    The order of the symbols in formula is maintained.
 
     >>> count_species("Sn")
     OrderedDict([('Sn', 1)])
-
     >>> count_species("OSn")
     OrderedDict([('O', 1), ('Sn', 1)])
-
     >>> count_species("SnO2")
     OrderedDict([('Sn', 1), ('O', 2)])
-
     >>> count_species("OSnO")
     OrderedDict([('O', 2), ('Sn', 1)])
     """
@@ -57,16 +55,16 @@ def count_species(formula):
 
         digpos = -1
         for pos, char in enumerate(symbol):
-            #print(char)
             if char.isdigit():
                 digpos = pos
                 break
 
         num = 1
         if digpos != -1:
-            symbol = symbol[:digpos]
             num = int(symbol[digpos:])
+            symbol = symbol[:digpos]
 
+        # Accumulate.
         if symbol in count:
             count[symbol] += num
         else:
@@ -74,9 +72,9 @@ def count_species(formula):
 
     return count
 
-from pymatgen.core.structure import Structure
+from pymatgen.core.structure import Structure as PmgStructure
 
-class MyStructure(Structure):
+class Structure(PmgStructure):
 
     @classmethod
     def bcc(cls, a, species, **kwargs):
@@ -88,37 +86,53 @@ class MyStructure(Structure):
 
         frac_coords = np.reshape([0, 0, 0, 0.5, 0.5, 0.5], (2,3))
 
-        return cls(lattice, species, coords, coords_are_cartesian=False, **kwargs)
-                   #validate_proximity=False, to_unit_cell=False, site_properties=None)
-
-    @classmethod
-    def fcc(cls, a, species, **kwargs):
-        """Build a fcc crystal structure."""
-        lattice = np.array([
-             1,  1,  0,
-             0,  1,  1,
-             1,  0, -1]) * 0.5 * a
-                                                                                        
-        frac_coords = np.reshape([
-           0,     0,   0, 
-           0.5, 0.5, 0.5,
-           0.5, 0.5, 0.5,
-           0.5, 0.5, 0.5], (4,3))
-                                                                                        
-        return cls(lattice, species, coords, coords_are_cartesian=False, **kwargs)
-                   #validate_proximity=False, to_unit_cell=False, site_properties=None)
-
+        return cls(lattice, species, frac_coords, coords_are_cartesian=False, **kwargs)
 
     #@classmethod
-    #def NaCl(cls, a, sites, **kwargs)
+    #def fcc(cls, a, species, **kwargs):
+    #    """Build a fcc crystal structure."""
+    #    lattice = np.array([
+    #         1,  1,  0,
+    #         0,  1,  1,
+    #         1,  0, -1]) * 0.5 * a
+
+    #    frac_coords = np.reshape([
+    #       0,     0,   0, 
+    #       0.5, 0.5, 0.5,
+    #       0.5, 0.5, 0.5,
+    #       0.5, 0.5, 0.5], (4,3))
+    #                                                                                    
+    #    return cls(lattice, species, frac_coords, coords_are_cartesian=False, **kwargs)
+
+    #@classmethod
+    #def rocksalt(cls, a, sites, **kwargs)
+    #    return cls(lattice, species, frac_coords, coords_are_cartesian=False, **kwargs)
+
     #@classmethod
     #def ABO3(cls, a, sites, **kwargs)
+    #    return cls(lattice, species, frac_coords, coords_are_cartesian=False, **kwargs)
+
     #@classmethod
     #def hH(cls, a, sites, **kwargs)
+    #    return cls(lattice, species, frac_coords, coords_are_cartesian=False, **kwargs)
 
 
-class GBRVEntry(namedtuple("GBRVEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw struct_type")):
+class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw struct_type")):
     """
+    Attributes:
+        ae: 
+            AE results
+        gbrb_uspp: 
+            Ultra-soft PP results (Espresso code)
+        vasp: 
+            VASP PAW results
+        pslib: 
+            Espresso PAW results
+        gbrv_paw: 
+            PAW results (Abinit code)
+        struct_type: 
+            Structure type used to select the appropriate table 
+            possible values are listed in GbrvDatabase.all_struct_types.
     """
     def __new__(cls, **kwargs):
         """Extends the base class adding type conversion of arguments."""
@@ -128,58 +142,70 @@ class GBRVEntry(namedtuple("GBRVEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
                 # Set missing entries to None
                 v = None
             else:
-                v = float(v)
-                #v0 = FloatWithUnit(new_args[1], "ang^3")
+                # Values in GBRV tables are in Anstrom.
+                v = FloatWithUnit(v, "ang")
 
             kwargs[k] = v
 
-        return super(cls, GBRVEntry).__new__(cls, **kwargs)
+        return super(cls, GbrvEntry).__new__(cls, **kwargs)
 
-    def build_structure(self, from_ref="ae")
+    def build_structure(self, ref="ae"):
         """
         Returns the crystalline structure associated to this entry.
-        Use the lattive parameters obtained with reference from_ref.
+        Use the optimized lattice parameters obtained from reference ref.
+        Returns None if no lattice parameter is available.
         """
         # Get structure type and lattive parameters
         stype = self.struct_type 
-        a = getattr(self, from_ref)
-        sites = self.sites
+        a = getattr(self, ref)
+
+        # Handle missing value.
+        if a is None:
+            return None
 
         if stype ==  "fcc": 
+            sites = 2 * [self.symbol]
             return Structure.fcc(a, sites)
 
         elif stype == "bcc":
+            sites = 2 * [self.symbol]
             return Structure.bcc(a, sites)
 
-        elif stype == "NaCl":
+        elif stype == "rocksalt":
             raise NotImplementedError()
+            #return Structure.rocksalt(a, sites)
 
         elif stype == "ABO3":
             raise NotImplementedError()
+            #return Structure.peroviskite(a, sites)
 
         elif stype == "hH":
             raise NotImplementedError()
+            #return Structure.hH(a, sites)
 
         raise ValueError("Don't know how to construct %s structure" % stype)
 
     @property
-    def species_counter(self):
+    def specie_counter(self):
         """Returns a dictionary chemical_elements --> number_of_atoms."""
-        return count_specie(self.symbol)
+        try:
+            return self._specie_counter
+
+        except AttributeError:
+            self._specie_counter = count_species(self.symbol)
+            return self._specie_counter
 
     @property
-    def sites(self):
-        sites = []
-        for symb, mult in self.species_counter.items():
-            sites += mult * [symb]
+    def ntypat(self):
+        """Number of type of atoms."""
+        return len(self.specie_counter)
 
-        return sites
 
 
 def read_table_from_file(filename):
     """
     Reads GBRV data from file filename.
-    Returns a dict of `GBRVEntry` objects indexed by element symbol or chemical formula.
+    Returns a dict of `GbrvEntry` objects indexed by element symbol or chemical formula.
     """
     # File Format:
     # 0) Dict with structure type
@@ -193,11 +219,9 @@ def read_table_from_file(filename):
     Symbol,AE,GBRV_USPP,VASP,PSLIB,GBRV_PAW
     H,2.283,2.284,2.283,2.284,2.284
     """
-
     table, count = OrderedDict(), 0
 
     with open(filename, "r") as fh:
-
         for i, line in enumerate(fh):
             line = line.strip()
 
@@ -209,36 +233,33 @@ def read_table_from_file(filename):
                 header = [t.lower() for t in line.split(",")]
             elif i > 2:
                 # Skip comments or empty lines.
-                #if line.startswith("#") or not line: continue
+                if line.startswith("#") or not line: continue
                 tokens = line.split(",")
                 assert len(header) == len(tokens)
                 symbol = tokens[0] 
-                # Conversion GPa --> eV / A**3
-                #tokens[2] = FloatWithUnit(tokens[2], "GPa").to("eV ang^-3") 
+
                 d = {k:v for k,v in zip(header, tokens)}
                 d.update(info)
-                #print(d)
-                table[symbol] = GBRVEntry(**d)
-
+                table[symbol] = GbrvEntry(**d)
 
     return table
 
 
-class GBRVDatabaseError(Exception):
+class GbrvDatabaseError(Exception):
     """Exceptions raised by the database."""
 
 
-class GBRVDatabase(object):
+class GbrvDatabase(object):
     """
     This object stores the GBRV results and provides methods to access the data.
     """
-    Error = GBRVDatabaseError
+    Error = GbrvDatabaseError
 
-    # Tables available in the database.
-    table_names = [
+    # We use the structure type to index the tables available in the database.
+    all_struct_types = [
         "fcc",
         "bcc",
-        "NaCl",
+        "rocksalt",
         "ABO3",
         "hH",
     ]
@@ -252,12 +273,9 @@ class GBRVDatabase(object):
         # Build dictionary of tables.
         self.tables = tables = {}
 
-        for name in self.table_names:
-            filepath = os.path.join(datadir, name + ".csv")
-            tables[name] = read_table_from_file(filepath)
-
-    #def get_table(self, name):
-    #    return self.tables[name]
+        for stype in self.all_struct_types:
+            filepath = os.path.join(datadir, stype + ".csv")
+            tables[stype] = read_table_from_file(filepath)
 
     @property
     def all_symbols(self):
@@ -272,28 +290,28 @@ class GBRVDatabase(object):
 
             return self._all_symbols
 
-    def has_symbol(self, symbol, table=None):
+    def has_symbol(self, symbol, stype=None):
         """
-        True if table contains the given symbol
-        If table is None, we test if symbol is in the database.
+        True if the table associated to structure type stype contains the given symbol
+        If stype is None, we test if symbol is in the database.
         """
-        if table is None:
+        if stype is None:
             return symbol in self.all_symbols
         else:
-            return symbol in self.tables[table]
+            return symbol in self.tables[stype]
 
-    def get_entry(self, symbol, table):
+    def get_entry(self, symbol, stype):
         """
-        Return `GBRVEntry` in table with the given symbol.
-        None if symbol is not present
+        Return `GbrvEntry` in the table associated to structure type stype 
+        and with the given symbol. None if symbol is not present
 
         Args:
             symbol:
                 Chemical symbol or chemical formula
-            table:
+            stype:
                 String identifying the GBRV table
         """
-        return self.tables[table].get(symbol, None)
+        return self.tables[stype].get(symbol, None)
 
     def get_all_entries(self, symbol):
         """
@@ -301,39 +319,60 @@ class GBRVDatabase(object):
         with the given symbol.
         """
         entries = []
-        for tab_name in self.table_names:
-            e = self.get_entry(symbol, tab_name)
+        for stype in self.all_struct_types:
+            e = self.get_entry(symbol, stype)
             if e is not None: entries.append(e)
             
         return entries
 
-    def get_fcc_bcc(self, symbol):
-        """Returns the entries in the FCC and in the BCC table."""
-        fcc = self.get_entry(symbol, "fcc")
-        bcc = self.get_entry(symbol, "bcc")
+    def get_fcc_entry(self, symbol):
+        """Returns the entry in the FCC table."""
+        return self.get_entry(symbol, "fcc")
 
-        return fcc, bcc
+    def get_bcc_entry(self, symbol):
+        """Returns the entry in the BCC table."""
+        return self.get_entry(symbol, "bcc")
 
 
+
+###################################
+# Public API to access the database
+###################################
+
+_GBRV_DATABASE = GbrvDatabase()
+
+def gbrv_database():
+    """Returns the GBRV database with the reference results."""
+    return _GBRV_DATABASE
+
+
+#############
 # Unit tests
+#############
 import unittest
 
 class test_gbrv(unittest.TestCase):
     def test_gbrv(self):
         """Test GBRV database."""
-        db = GBRVDatabase()
+        db = GbrvDatabase()
 
-        self.assertTrue(db.has_symbol("Si", table="fcc"))
-        self.assertFalse(db.has_symbol("Si", table="NaCl"))
+        self.assertTrue(db.has_symbol("Si", stype="fcc"))
+        self.assertFalse(db.has_symbol("Si", stype="rocksalt"))
         self.assertTrue("KMgF3" in db.all_symbols)
 
-        fcc_si, bcc_si = db.get_fcc_bcc("Si")
+        fcc_si = db.get_fcc_entry("Si")
+        bcc_si = db.get_bcc_entry("Si")
         self.assertEqual(fcc_si.ae, 3.857)
         self.assertEqual(fcc_si.gbrv_uspp, 3.853)
         self.assertEqual(fcc_si.struct_type, "fcc")
         self.assertEqual(bcc_si.struct_type, "bcc")
 
+        sbcc = bcc_si.build_structure()
+        #sfcc = fcc_si.build_structure()
+        #print(s)
+        #assert 0
+
 
 if __name__ == "__main__":
-    unitest.main()
+    unittest.main()
 
