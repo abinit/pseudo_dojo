@@ -16,6 +16,7 @@ import numpy as np
 
 from collections import namedtuple, OrderedDict
 from pymatgen.core.units import FloatWithUnit
+from abipy.core.structure import Structure
 
 __all__ = [
     "gbrv_database",
@@ -43,7 +44,8 @@ def count_species(formula):
     # Find positions of chemical elements.
     count, inds = OrderedDict(), []
     for i, char in enumerate(formula):
-        if char.isupper(): inds.append(i)
+        if char.isupper():
+            inds.append(i)
 
     if not len(inds):
         raise ValueError("Chemical elements should start with a capital letter")
@@ -75,64 +77,15 @@ def count_species(formula):
 
     return count
 
-from pymatgen.core.structure import Structure as PmgStructure
-
-class Structure(PmgStructure):
-
-    @classmethod
-    def bcc(cls, a, species, **kwargs):
-        """
-        Build a bcc crystal structure.
-
-        Args:
-            a: 
-                Lattice parameter in Angstrom.
-            species:
-                Chemical species. See Structure.__init__
-            **kwargs:
-                All keywords arguments supported by Structure.__init__ (except coords_are_cartesian)
-        """
-        lattice = 0.5 * a * np.array([
-            -1,  1,  1,
-             1, -1,  1,
-             1,  1, -1])
-
-        frac_coords = np.reshape([0, 0, 0, 0.5, 0.5, 0.5], (2,3))
-
-        return cls(lattice, species, frac_coords, coords_are_cartesian=False, **kwargs)
-
-    #@classmethod
-    #def fcc(cls, a, species, **kwargs):
-    #    """Build a fcc crystal structure."""
-    #    lattice = 0.5 * a * np.array([
-    #         1,  1,  0,
-    #         0,  1,  1,
-    #         1,  0, -1]) 
-
-    #    frac_coords = np.reshape([
-    #       0,     0,   0, 
-    #       0.5, 0.5, 0.5,
-    #       0.5, 0.5, 0.5,
-    #       0.5, 0.5, 0.5], (4,3))
-    #                                                                                    
-    #    return cls(lattice, species, frac_coords, coords_are_cartesian=False, **kwargs)
-
-    #@classmethod
-    #def rocksalt(cls, a, sites, **kwargs)
-    #    return cls(lattice, species, frac_coords, coords_are_cartesian=False, **kwargs)
-
-    #@classmethod
-    #def ABO3(cls, a, sites, **kwargs)
-    #    return cls(lattice, species, frac_coords, coords_are_cartesian=False, **kwargs)
-
-    #@classmethod
-    #def hH(cls, a, sites, **kwargs)
-    #    return cls(lattice, species, frac_coords, coords_are_cartesian=False, **kwargs)
-
 
 class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw struct_type")):
     """
+    Store the GBRV lattice parameter obtained with the different codes and pseudos.
+    Missing values are replaced by None
+
     Attributes:
+        symbol:
+            Chemical symbol of formula.
         ae: 
             AE results
         gbrb_uspp: 
@@ -146,6 +99,9 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
         struct_type: 
             Structure type used to select the appropriate table 
             possible values are listed in GbrvDatabase.all_struct_types.
+
+    .. note:
+        Lattice parameters are in Angstrom
     """
     def __new__(cls, **kwargs):
         """Extends the base class adding type conversion of arguments."""
@@ -175,11 +131,11 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
         if a is None:
             return None
 
-        if stype == "fcc":
-            return Structure.fcc(a, sites=2 * [self.symbol])
+        if stype == "bcc":
+            return Structure.bcc(a, species=[self.symbol])
 
-        elif stype == "bcc":
-            return Structure.bcc(a, sites=2 * [self.symbol])
+        elif stype == "fcc":
+            return Structure.fcc(a, species=[self.symbol])
 
         elif stype == "rocksalt":
             raise NotImplementedError()
@@ -354,31 +310,44 @@ def gbrv_database():
 #############
 # Unit tests
 #############
-import unittest
+from pseudo_dojo.core.testing import PseudoDojoTest
 
 
-class test_gbrv(unittest.TestCase):
+class GbrvDatabaseTest(PseudoDojoTest):
     def test_gbrv(self):
-        """Test GBRV database."""
+        """Testing GBRV database..."""
+        # Init the database.
         db = GbrvDatabase()
 
+        # Test basic methods
         self.assertTrue(db.has_symbol("Si", stype="fcc"))
         self.assertFalse(db.has_symbol("Si", stype="rocksalt"))
         self.assertTrue("KMgF3" in db.all_symbols)
 
+        # Get FCC entry for Silicon
         fcc_si = db.get_fcc_entry("Si")
-        bcc_si = db.get_bcc_entry("Si")
         self.assertEqual(fcc_si.ae, 3.857)
         self.assertEqual(fcc_si.gbrv_uspp, 3.853)
         self.assertEqual(fcc_si.struct_type, "fcc")
-        self.assertEqual(bcc_si.struct_type, "bcc")
+        sfcc = fcc_si.build_structure()
+        #self.assert_almost_equal(sfcc.lattice.abc, math.sqrt(2) * 3.857)
 
-        sbcc = bcc_si.build_structure()
-        #sfcc = fcc_si.build_structure()
-        #print(s)
+        # Get BCC entry for H
+        bcc_h = db.get_bcc_entry("H")
+        self.assertEqual(bcc_h.ae, 1.806)
+        self.assertEqual(bcc_h.gbrv_paw, 1.807)
+        self.assertEqual(bcc_h.struct_type, "bcc")
+        sbcc = bcc_h.build_structure()
+        #print(sbcc.volume / 1.806**3)
+        #self.assert_almost_equal(sbcc.lattice.abc, math.sqrt(2) * 1.806)
         #assert 0
+
+        # Hg is missing.
+        missing = db.get_bcc_entry("Hg")
+        self.assertTrue(missing.ae is None)
 
 
 if __name__ == "__main__":
+    import unittest
     unittest.main()
 

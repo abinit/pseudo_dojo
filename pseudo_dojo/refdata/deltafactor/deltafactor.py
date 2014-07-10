@@ -89,10 +89,10 @@ class DeltaFactorDatabase(object):
         for entry in os.listdir(self.dirpath):
             file_path = os.path.join(self.dirpath, entry)
             if os.path.isfile(file_path) and file_path.endswith(".txt"):
-                    code, ext = os.path.splitext(entry)
-                    if code == "README":
-                        continue
-                    d[code] = read_data_from_filename(file_path)
+                code, ext = os.path.splitext(entry)
+                if code == "README":
+                    continue
+                d[code] = read_data_from_filename(file_path)
 
         self._cif_paths = d = {}
 
@@ -195,11 +195,9 @@ class DeltaFactorDatabase(object):
 __DELTAF_DATABASE = DeltaFactorDatabase()
 
 
-
 def df_database():
     """Returns the deltafactor database with the reference results."""
     return __DELTAF_DATABASE
-
 
 
 def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
@@ -211,18 +209,17 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
             Volume, bulk-modulus and pressure derivative of b0w (reference values).
         v0f, b0f, b1f:
             Volume, bulk-modulus and pressure derivative of b0f (computed values).
-        v
-            version of delta factor, current version is 3 this one is symmetrical old version
+        v:
+            version of delta factor, current version is 3, 1 for symmetrical old version
 
     .. note:
 
         v0 is A**3/natom, by default b0 is in eV/A**3, GPa units are used if b0_GPa is True.
     """
-
     print(v0w, b0w, b1w, v0f, b0f, b1f)
 
     if v == 1:
-        # delta factor form verion 1
+        # delta factor form version 1
         if b0_GPa:
             # Conversion GPa --> eV/A**3
             b0w = FloatWithUnit(b0w, "GPa").to("eV Ang^-3")
@@ -327,5 +324,7 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
         #else:
         #    Delta1 = 1000. * np.sqrt((Ff - Fi) / (Vf - Vi)) \
         #             / (v0w + v0f) / (b0w + b0f) * 4. * vref * bref
-
         return Delta
+
+    else:
+        raise ValueError("Wrong version %s" % v)

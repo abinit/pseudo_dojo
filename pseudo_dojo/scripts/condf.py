@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+from __future__ import division, print_function
 __author__ = 'setten'
 
 import os
@@ -39,7 +41,7 @@ class DeltaFactorData(object):
                 try:
                     df = float(lines[0].split()[3])
                 except ValueError:
-                    print 'warning', lines[0].split()[3]
+                    print('warning', lines[0].split()[3])
                     df = abs(complex(lines[0].split()[3]))
                 #print lines[0], df
                 #print dirs[0]
@@ -66,7 +68,7 @@ class DeltaFactorData(object):
         """
 
         """
-        print self.df_data
+        print(self.df_data)
 
     def print_results(self, stream=sys.stdout):
         """
@@ -74,9 +76,9 @@ class DeltaFactorData(object):
         """
         table = [["Convergense criterium", "ecut"]]
 
-        print 'extrapolated Delta Factor: ', my_df_data.df_extra
+        print('extrapolated Delta Factor: ', my_df_data.df_extra)
         for x in sorted(self.results.keys()):
-            print x,  self.results[x]
+            print(x,  self.results[x])
 
         #    table.append([x, self.results[x]])
 
@@ -94,7 +96,7 @@ class DeltaFactorData(object):
             test_res = test_conv(xs, ys, 'df'+str(abs(tol)), tol=tol, verbose=False, mode='extra_noise')
             self.results.update({abs(tol): test_res[1]})
             self.df_extra = test_res[4]
-        print self.results
+        print(self.results)
         self.pseudo.dojo_report.update({'hints': {'high': self.results[1.0], 'medium': self.results[3.0],
                                                   'low': self.results[10], 'based_on': 'delta_factor'}})
 
@@ -103,7 +105,7 @@ if __name__ == "__main__":
     my_df_data = DeltaFactorData()
     my_df_data.read()
     my_df_data.test_convergence()
-    print my_df_data.pseudo.dojo_report
+    print(my_df_data.pseudo.dojo_report)
     my_df_data.pseudo.write_dojo_report()
     my_df_data.print_results()
 

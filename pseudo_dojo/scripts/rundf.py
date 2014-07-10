@@ -1,8 +1,5 @@
-
 #!/usr/bin/env python
-
 """Compute the deltafactor for a given pseudopotential."""
-
 from __future__ import division, print_function
 
 __author__ = 'setten'
@@ -13,19 +10,7 @@ import sys
 # import abipy.data as data
 import abipy.abilab as abilab
 
-from abipy.data.runs import AbipyTest, MixinTest
 from pseudo_dojo.dojo.deltaworks import DeltaFactory
-
-
-class DeltaFactorFlowTest(AbipyTest, MixinTest):
-    """
-    Unit test for the flow defined in this module.
-    Users who just want to learn how to use this flow can ignore this section.
-    """
-    def setUp(self):
-        super(DeltaFactorFlowTest, self).setUp()
-        self.init_dirs()
-        self.flow = build_flow(workdir=self.workdir)
 
 
 def build_flow(options):
@@ -80,9 +65,8 @@ def build_flow(options):
                                        ecut=ecut, pawecutdg=pawecutdg,
                                        toldfe=1.e-8, smearing="fermi_dirac:0.0005")
         flow.register_work(work, workdir='W'+str(ecut))
-        workflow = flow.allocate()
-        workflow.build_and_pickle_dump()
-        return
+        flow.allocate()
+        return flow.build_and_pickle_dump()
     else:
         workdir = 'df_run_full'
         flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
@@ -94,9 +78,8 @@ def build_flow(options):
                                            toldfe=1.e-10, smearing="fermi_dirac:0.0005")
             # Register the workflow.
             flow.register_work(work, workdir='W'+str(ecut))
-        workflow = flow.allocate()
-        workflow.build_and_pickle_dump()
-        return
+        flow.allocate()
+        return flow.build_and_pickle_dump()
 
 
 #abilab.flow_main
