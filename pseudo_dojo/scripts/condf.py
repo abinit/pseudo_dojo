@@ -10,6 +10,7 @@ from pymatgen.io.abinitio.netcdf import NetcdfReader
 from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.pseudos import Pseudo
 
+
 class DeltaFactorData(object):
     """
     class for delta factor data analisys
