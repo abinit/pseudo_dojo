@@ -51,7 +51,7 @@ class GbrvFactory(object):
 
         return GbrvEosWorkflow(structure, pseudo, ecut, pawecutdg=pawecutdg)
 
-    def relax_and_eos_work(self, pseudo, struct_type, ecut, pawecutdg=None, ref="ae"):
+    def relax_and_eos_work(self, pseudo, struct_type, ecut, pawecutdg=None, paral_kgb=0, ref="ae"):
         """
         Returns a `Workflow` object from the given pseudopotential.
 
@@ -73,7 +73,8 @@ class GbrvFactory(object):
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
-        return GbrvRelaxAndEosWorkflow(structure, struct_type, pseudo, ecut, pawecutdg=pawecutdg)
+        return GbrvRelaxAndEosWorkflow(structure, struct_type, pseudo, ecut,
+                                       pawecutdg=pawecutdg, paral_kgb=paral_kgb)
 
 
 if __name__ == "__main__":
