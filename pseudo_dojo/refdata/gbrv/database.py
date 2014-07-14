@@ -330,7 +330,7 @@ class GbrvDatabaseTest(PseudoDojoTest):
         self.assertEqual(fcc_si.gbrv_uspp, 3.853)
         self.assertEqual(fcc_si.struct_type, "fcc")
         sfcc = fcc_si.build_structure()
-        #self.assert_almost_equal(sfcc.lattice.abc, math.sqrt(2) * 3.857)
+        self.assert_almost_equal(sfcc.volume, fcc_si.ae**3 /4.)
 
         # Get BCC entry for H
         bcc_h = db.get_bcc_entry("H")
@@ -338,14 +338,13 @@ class GbrvDatabaseTest(PseudoDojoTest):
         self.assertEqual(bcc_h.gbrv_paw, 1.807)
         self.assertEqual(bcc_h.struct_type, "bcc")
         sbcc = bcc_h.build_structure()
-        #print(sbcc.volume / 1.806**3)
-        #self.assert_almost_equal(sbcc.lattice.abc, math.sqrt(2) * 1.806)
-        #assert 0
+        self.assert_almost_equal(sbcc.volume, bcc_h.ae**3 /2.)
 
         # Hg is missing.
         missing = db.get_bcc_entry("Hg")
         self.assertTrue(missing.ae is None)
 
+        #assert 0
 
 if __name__ == "__main__":
     import unittest

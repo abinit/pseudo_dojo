@@ -19,7 +19,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class GBRVFactory(object):
+class GbrvFactory(object):
     """
     Factory class producing `Workflow` objects for GBRV calculations.
     """
@@ -30,7 +30,7 @@ class GBRVFactory(object):
         # Get the entry in the database
         entry = self._db.get_entry(symbol, struct_type)
                                                                                          
-        # Build the structures and handle a possibly missing value.
+        # Build the structure and handle a possibly missing value.
         structure = entry.build_structure(ref=ref)
 
         if structure is None:
@@ -73,22 +73,22 @@ class GBRVFactory(object):
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
-        return GbrvRelaxAndEosWorkflow(structure, pseudo, ecut, pawecutdg=pawecutdg)
+        return GbrvRelaxAndEosWorkflow(structure, struct_type, pseudo, ecut, pawecutdg=pawecutdg)
 
 
 if __name__ == "__main__":
-    factory = GBRVFactory()
-    
-    manager = abilab.TaskManager.from_user_config()
-    flow = abilab.AbinitFlow(workdir="hello", manager=manager, pickle_protocol=0)
+    factory = GbrvFactory()
 
     pseudo = "si_pbe_v1_abinit.paw"
-    ecut = 20
+    ecut = 10
     pawecutdg = ecut * 4
 
-    #for struct_type in ["fcc", "bcc"]:
-    #for struct_type in ["bcc"]:
-    for struct_type in ["fcc"]:
+    manager = abilab.TaskManager.from_user_config()
+    flow = abilab.AbinitFlow(workdir="GBRV_Si", manager=manager, pickle_protocol=0)
+
+    struct_types = ["fcc"] #, "bcc"]
+
+    for struct_type in struct_types:
         #work = factory.eoswork_for_pseudo(pseudo, struct_type, ecut, pawecutdg=pawecutdg, ref="gbrv_paw")
         work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg, ref="gbrv_paw")
         flow.register_work(work)
