@@ -1,19 +1,11 @@
 from __future__ import division, print_function
 
-import sys
-import os
-#import collections
-import numpy as np
-
-from pymatgen.io.abinitio.abiobjects import KSampling, RelaxationMethod
 from pymatgen.io.abinitio.pseudos import Pseudo
-from pymatgen.io.abinitio.tasks import ScfTask, RelaxTask 
-from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
 from pymatgen.io.abinitio.workflows import GbrvEosWorkflow, GbrvRelaxAndEosWorkflow
 from pseudo_dojo.refdata.gbrv import gbrv_database
 
 import abipy.abilab as abilab
-from abipy.abilab import Structure
+#from abipy.abilab import Structure
 
 import logging
 logger = logging.getLogger(__name__)
@@ -42,14 +34,14 @@ class GbrvFactory(object):
 
         return structure
 
-    def eoswork_for_pseudo(self, pseudo, struct_type, ecut, pawecutdg=None, ref="ae"):
+    def eoswork_for_pseudo(self, pseudo, struct_type, ecut, pawecutdg=None, paral_kgb=0, ref="ae"):
         pseudo = Pseudo.aspseudo(pseudo)
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
 
-        return GbrvEosWorkflow(structure, pseudo, ecut, pawecutdg=pawecutdg)
+        return GbrvEosWorkflow(structure, pseudo, ecut, pawecutdg=pawecutdg, paral_kgb=paral_kgb)
 
     def relax_and_eos_work(self, pseudo, struct_type, ecut, pawecutdg=None, paral_kgb=0, ref="ae"):
         """

@@ -28,6 +28,9 @@ _build
 *.swp
 *.swo
 
+# Pycharm
+*.idea
+
 # Installer logs
 pip-log.txt
 
