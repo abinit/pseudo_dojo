@@ -63,8 +63,6 @@ class ApeEvent(object):
         """
         return False
 
-##########################################################################################
-
 
 class Comment(ApeEvent):
     """Base class for Comment events."""
@@ -106,8 +104,6 @@ _BASE_CLASSES = [
     Bug,
     Warning,
 ]
-
-##########################################################################################
 
 
 class EventList(collections.Iterable):
@@ -178,8 +174,6 @@ class EventList(collections.Iterable):
         else:
             return self._events_by_baseclass[base_class][:]
 
-##########################################################################################
-
 
 class ApeOutputParser(object):
     """
@@ -208,8 +202,6 @@ class ApeOutputParser(object):
         except AttributeError:
             self._events = ape_parse_events(self.out_fname)
             return self._events
-
-##########################################################################################
 
 
 def ape_parse_events(out_lines):
@@ -252,35 +244,6 @@ def ape_parse_events(out_lines):
         events.append(ApeEvent.from_string(s, lineno))
 
     return events
-
-##########################################################################################
-
-#class ApePlotter(object):
-#
-#    def build_figs(self, dirpath, **kwargs):
-#        """
-#        Args:
-#
-#        ==============  ==============================================================
-#        kwargs          Meaning
-#        ==============  ==============================================================
-#        show            True to show the figure (Default).
-#        ==============  ==============================================================
-#        """
-#        if "show" not in kwargs:
-#            kwargs["show"] = False
-#
-#        self.figs = figs = {}
-#
-#        figs["wave"] = ape_plot_waves(dirpath, **kwargs) 
-#
-#        figs["logd"] = ape_plot_logders(dirpath, **kwargs)
-#
-#        figs["pot"] = ape_plot_potentials(dirpath, **kwargs)
-#
-#        figs["den"] = ape_plot_densities(dirpath, **kwargs)
-
-##########################################################################################
 
 
 def ape_read_waves(dirpath):
@@ -339,7 +302,6 @@ def ape_plot_waves(dirpath, **kwargs):
     return fig
 
 
-
 def ape_read_potentials(dirpath):
     """Read the APE radial potentials located in directory dirpath."""
     pots = {}
@@ -392,7 +354,6 @@ def ape_plot_potentials(dirpath, **kwargs):
         fig = None
 
     return fig
-
 
 
 def ape_read_densities(dirpath):
@@ -449,7 +410,6 @@ def ape_plot_densities(dirpath, **kwargs):
     return fig
 
 
-
 def ape_read_logders(dirpath):
     """Reads the APE log derivatives located in directory dirpath."""
     ae_logders, pp_logders = {}, {}
@@ -498,7 +458,6 @@ def ape_plot_logders(dirpath, **kwargs):
 
     fig = plot_logders(ae_logders, pp_logders, **kwargs)
     return fig
-
 
 
 def ape_check_ghosts(out_lines):

@@ -5,7 +5,6 @@ from pymatgen.io.abinitio.workflows import GbrvEosWorkflow, GbrvRelaxAndEosWorkf
 from pseudo_dojo.refdata.gbrv import gbrv_database
 
 import abipy.abilab as abilab
-#from abipy.abilab import Structure
 
 import logging
 logger = logging.getLogger(__name__)

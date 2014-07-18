@@ -3,6 +3,7 @@ from __future__ import division, print_function
 
 import collections
 import numpy as np
+import cStringIO as StringIO
 
 from pseudo_dojo.refdata.nist import nist_database
 
@@ -254,26 +255,6 @@ class RadialFunction(object):
         self.values = np.ascontiguousarray(values)
         assert len(self.rmesh) == len(self.values)
 
-    def __len__(self):
-        return len(self.values)
-
-    def __iter__(self):
-        """Iterate over (rpoint, value)."""
-        return iter(zip(self.rmesh, self.values))
-
-    def __getitem__(self, rslice):
-        return self.rmesh[rslice], self.values[rslice]
-
-    def __repr__(self):
-        return "<%s, name = %s>" % (self.__class__.__name__, self.name)
-
-    def __str__(self):
-        return str(self)
-
-    #def __add__(self, other):
-    #def __sub__(self, other):
-    #def __mul__(self, other):
-
     @classmethod
     def from_filename(cls, filename, rfunc_name=None, cols=(0,1)):
         """
@@ -291,6 +272,39 @@ class RadialFunction(object):
         rmesh, values = data[:,cols[0]], data[:,cols[1]]
         name = filename if rfunc_name is None else rfunc_name
         return cls(name, rmesh, values)
+
+    def __len__(self):
+        return len(self.values)
+
+    def __iter__(self):
+        """Iterate over (rpoint, value)."""
+        return iter(zip(self.rmesh, self.values))
+
+    def __getitem__(self, rslice):
+        return self.rmesh[rslice], self.values[rslice]
+
+    def __repr__(self):
+        return "<%s, name=%s at %s>" % (self.__class__.__name__, self.name, id(self))
+
+    def __str__(self):
+        stream = StringIO.StringIO()
+        self.pprint(stream=stream)
+        return stream.getvalue()
+
+    #def __add__(self, other):
+    #def __sub__(self, other):
+    #def __mul__(self, other):
+
+    def pprint(self, what="rmesh+values", stream=None):
+        """pprint method (useful for debugging)"""
+        from pprint import pprint
+        if "rmesh" in what:
+            pprint("rmesh:", stream=stream)
+            pprint(self.rmesh, stream=stream)
+
+        if "values" in what:
+            pprint("values:", stream=stream)
+            pprint(self.values, stream=stream)
 
     @property
     def rmax(self):
@@ -435,44 +449,69 @@ def plot_aepp(ae_funcs, pp_funcs=None, **kwargs):
     title = kwargs.pop("title", None)
     show = kwargs.pop("show", True)
     savefig = kwargs.pop("savefig", None)
+    multi_plot = kwargs.pop("multi_plot", True)
+    multi_plot = kwargs.pop("multi_plot", False)
 
     import matplotlib.pyplot as plt
     fig = plt.figure()
 
-    num_funcs = len(ae_funcs) if pp_funcs is None else len(pp_funcs)
+    if multi_plot:
+        num_funcs = len(ae_funcs) if pp_funcs is None else len(pp_funcs)
 
-    spl_idx = 0
-    for (state, ae_phi) in ae_funcs.items():
-        if pp_funcs is not None and state not in pp_funcs:
-            continue
-        
-        spl_idx += 1
-        ax = fig.add_subplot(num_funcs, 1, spl_idx)
+        spl_idx = 0
+        for (state, ae_phi) in ae_funcs.items():
+            if pp_funcs is not None and state not in pp_funcs:
+                continue
 
-        if spl_idx == 1 and title: 
-            ax.set_title(title)
+            spl_idx += 1
+            ax = fig.add_subplot(num_funcs, 1, spl_idx)
+
+            if spl_idx == 1 and title:
+                ax.set_title(title)
+
+            lines, legends = [], []
+            line, = ax.plot(ae_phi.rmesh, ae_phi.values, "-b", linewidth=2.0, markersize=1)
+
+            lines.append(line)
+            legends.append("AE: %s" % state)
+
+            if pp_funcs is not None:
+                pp_phi = pp_funcs[state]
+                line, = ax.plot(pp_phi.rmesh, pp_phi.values, "^r", linewidth=2.0, markersize=4)
+                lines.append(line)
+                legends.append("PP: %s" % state)
+
+            ax.legend(lines, legends, loc="best", shadow=True)
+
+            # Set yticks and labels.
+            ylabel = kwargs.get("ylabel", None)
+            if ylabel is not None:
+                ax.set_ylabel(ylabel)
+
+            if spl_idx == num_funcs:
+                ax.set_xlabel("r [Bohr]")
+
+            ax.grid(True)
+
+    else:
+        ax = fig.add_subplot(1, 1, 1)
+        ax.set_title(title)
 
         lines, legends = [], []
+        for (state, ae_phi) in ae_funcs.items():
+            if pp_funcs is not None and state not in pp_funcs:
+                continue
 
-        ir = len(ae_phi) + 1 
-        # TODO
-        #if ae_phi.isbound:
-        #    norm = ae_phi.r2f2_integral()
-        #    for ir, v in enumerate(norm):
-        #        if v > 0.95: break
-        #    else:
-        #        raise ValueError("AE wavefunction is not normalized")
+            line, = ax.plot(ae_phi.rmesh, ae_phi.values, "-b", linewidth=2.0, markersize=1)
 
-        line, = ax.plot(ae_phi.rmesh[:ir], ae_phi.values[:ir], "-b", linewidth=2.0, markersize=1)
-
-        lines.append(line)
-        legends.append("AE: %s" % state)
-
-        if pp_funcs is not None:
-            pp_phi = pp_funcs[state]
-            line, = ax.plot(pp_phi.rmesh[:ir], pp_phi.values[:ir], "^r", linewidth=2.0, markersize=4)
             lines.append(line)
-            legends.append("PP: %s" % state)
+            legends.append("AE: %s" % state)
+
+            if pp_funcs is not None:
+                pp_phi = pp_funcs[state]
+                line, = ax.plot(pp_phi.rmesh, pp_phi.values, "^r", linewidth=2.0, markersize=4)
+                lines.append(line)
+                legends.append("PP: %s" % state)
 
         ax.legend(lines, legends, loc="best", shadow=True)
 
@@ -481,9 +520,7 @@ def plot_aepp(ae_funcs, pp_funcs=None, **kwargs):
         if ylabel is not None:
             ax.set_ylabel(ylabel)
 
-        if spl_idx == num_funcs:
-            ax.set_xlabel("r [Bohr]")
-
+        ax.set_xlabel("r [Bohr]")
         ax.grid(True)
 
     if show:
