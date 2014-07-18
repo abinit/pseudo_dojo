@@ -15,7 +15,7 @@ class DeltaFactorDatabaseTest(PseudoDojoTest):
         """Get deltafactor entry."""
         database = self.database
         e = database.get_entry("Si")
-        self.assert_almost_equal([e.v0, e.b0_GPa, e.b1], [20.55, 88.846, 4.329])
+        self.assert_almost_equal([e.v0, e.b0_GPa, e.b1], [20.4530, 88.545, 4.31])
         e = database.get_entry("Si", code="VASP")
         self.assert_almost_equal([e.v0, e.b0_GPa, e.b1], [20.446, 88.790, 4.296])
 
@@ -33,6 +33,7 @@ class DeltaFactorDatabaseTest(PseudoDojoTest):
         }
 
         for symbol, ref_df in references.items():
+            print("symbol: %s", symbol)
             wien2k = database.get_entry(symbol)
             vasp = database.get_entry(symbol, code="VASP")
 

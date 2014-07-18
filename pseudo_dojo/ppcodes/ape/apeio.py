@@ -14,8 +14,6 @@ __date__ = "$April 26, 2013M$"
 class ApeError(Exception):
     """Base class for APE Exceptions"""
 
-##########################################################################################
-
 
 class ApeEvent(object):
     """
