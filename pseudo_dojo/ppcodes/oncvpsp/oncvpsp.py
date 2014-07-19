@@ -18,6 +18,14 @@ class OncvOuptputParser(object):
     """
     Object to read and extract data from the output file of oncvpsp.
 
+    Attributes:
+        atsym
+        Z
+        nc
+        nv
+        iexc
+        psfile
+
     Example:
         parser = OncvOutputParser(filename)
 
@@ -168,7 +176,7 @@ class OncvOuptputParser(object):
             l = int(g.data[0, 0])
 
             for n in range(len(g.data[0]) - 2):
-                nl = NlState(n=n, l=l)
+                nl = NlState(n=n+1, l=l)
                 #print("Got projector with: %s" % str(nl))
                 projectors_nl[nl] = RadialWaveFunction(nl, str(nl), rmesh, g.data[:, n+2])
 

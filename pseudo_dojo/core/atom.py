@@ -6,7 +6,6 @@ import numpy as np
 import cStringIO as StringIO
 
 from pseudo_dojo.refdata.nist import nist_database
-
 from scipy.interpolate import UnivariateSpline
 from scipy.integrate import cumtrapz
 
@@ -136,7 +135,7 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
         else:
             raise ValueError("Don't know how to convert %s" % self)
 
-        return [string,]
+        return [string]
 
 
 class AtomicConfiguration(object):
@@ -263,7 +262,7 @@ class RadialFunction(object):
         assert len(self.rmesh) == len(self.values)
 
     @classmethod
-    def from_filename(cls, filename, rfunc_name=None, cols=(0,1)):
+    def from_filename(cls, filename, rfunc_name=None, cols=(0, 1)):
         """
         Initialize the object reading data from filename (txt format).
 
