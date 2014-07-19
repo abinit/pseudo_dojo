@@ -93,9 +93,9 @@ def cleanup():
 install_requires = [
     "numpy>=1.5",
     "scipy>=0.10",
-    "matplotlib>=1.1",
-    "pymatgen>=2.7.3",
     "periodictable",
+    #"matplotlib>=1.1",
+    "pymatgen>=2.9.0",
 ]
 
 #---------------------------------------------------------------------------
