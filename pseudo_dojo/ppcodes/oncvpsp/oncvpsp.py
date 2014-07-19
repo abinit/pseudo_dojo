@@ -1,4 +1,4 @@
-"""Classes and functions for the post-processing of the results produced by ONCVPSP"""
+"""Classes and functions for post-processing the results produced by ONCVPSP."""
 from __future__ import print_function, division
 
 import os
@@ -14,13 +14,27 @@ class OncvOutputParserError(Exception):
 
 
 class OncvOuptputParser(object):
-    """Object to read and extract data from the output file of oncvpsp."""
+    """
+    Object to read and extract data from the output file of oncvpsp.
+
+    Example:
+        parser = OncvOutputParser(filename)
+
+        # To access data:
+        p.radial_wavefunctions
+
+        # To plot data with matplotlib.
+        p = parser.make_plotter()
+        p.plot_slideshow()
+        p.plot_all()
+    """
     Error = OncvOutputParserError
 
-    GrepResults = collections.namedtuple("GrepResults", "data, start, stop")
-
-    # Used to store ae-pp wavefunctions, ae-pp log-derivatives
+    # Used to store ae and pp quantities (e.g wavefunctions) in a single object.
     AePsNamedTuple = collections.namedtuple("AePsNamedTuple", "ae, ps")
+
+    # object returned by self._grep_nparr
+    GrepResults = collections.namedtuple("GrepResults", "data, start, stop")
 
     def __init__(self, filepath):
         """Initialize the object from the oncvpsp output."""
@@ -148,6 +162,7 @@ class OncvOuptputParser(object):
 
     @property
     def atan_logders(self):
+        """Atan of the log derivatives for different l-values."""
         #log derivativve data for plotting, l= 0
         #atan(r * ((d psi(r)/dr)/psi(r))), r=  1.60
         #l, energy, all-electron, pseudopotential
@@ -166,6 +181,7 @@ class OncvOuptputParser(object):
 
     @property
     def ene_vs_ecut(self):
+        """Convergence of energy versus ecut for different l-values."""
         #convergence profiles, (ll=0,lmax)
         #!C     0    5.019345    0.010000
         #...
@@ -180,7 +196,11 @@ class OncvOuptputParser(object):
         return conv_l
 
     def make_plotter(self, plotter_class=None):
-        plotter_class = Plotter if plotter_class is None else plotter_class
+        """
+        Builds an instance of PseudoGenDataPlotter. One can customize the behaviour
+        of the plotter by passing a subclass via plotter_class.
+        """
+        plotter_class = PseudoGenDataPlotter if plotter_class is None else plotter_class
         kwargs = {k: getattr(self, k) for k in plotter_class.all_keys}
 
         return plotter_class(**kwargs)
@@ -204,7 +224,6 @@ class OncvOuptputParser(object):
                     break
 
         if not data:
-            #raise ValueError("Cannot find tag %s in output file %s" % (tag, self.filepath))
             return self.GrepResults(data=None, start=intag, stop=stop)
         else:
             return self.GrepResults(data=np.array(data), start=intag, stop=stop)
@@ -235,13 +254,12 @@ def add_mpl_kwargs(method):
             ax.set_xlabel("xlabel")
 
         ax.grid(True)
-
         return method(self, ax, **kwargs)
 
     return wrapper
 
 
-class Plotter(object):
+class PseudoGenDataPlotter(object):
 
     all_keys = [
         "radial_wfs",
@@ -321,7 +339,7 @@ class Plotter(object):
         return lines
 
     @add_mpl_kwargs
-    def plot_radial_wfs(self, ax,  **kwargs):
+    def plot_radial_wfs(self, ax, **kwargs):
         ae_wfs, ps_wfs = self.radial_wfs.ae, self.radial_wfs.ps
 
         lines, legends = [], []
@@ -340,7 +358,7 @@ class Plotter(object):
         return lines
 
     @add_mpl_kwargs
-    def plot_densities(self, ax,  **kwargs):
+    def plot_densities(self, ax, **kwargs):
 
         lines, legends = [], []
         for name, rho in self.densities.items():
@@ -354,7 +372,7 @@ class Plotter(object):
         return lines
 
     @add_mpl_kwargs
-    def plot_potentials(self, ax,  **kwargs):
+    def plot_potentials(self, ax, **kwargs):
 
         lines, legends = [], []
         for l, pot in self.potentials.items():
@@ -383,13 +401,13 @@ class Plotter(object):
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser(epilog="",
-                                     formatter_class=argparse.RawDescriptionHelpFormatter,)
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument('filename', default="", help="Path to the output file")
 
     parser.add_argument("-p", "--plot-mode", default="all",
-                        help="Quantity to plot (default to all) Can be: %s" % str(["all", "slide"] + Plotter.all_keys))
+                        help="Quantity to plot (default to all) Can be: %s" %
+                             str(["all", "slide"] + PseudoGenDataPlotter.all_keys))
 
     options = parser.parse_args()
 
@@ -404,6 +422,9 @@ def main():
     else:
         p.plot_single(key=options.plot_mode)
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    import sys
+    sys.exit(main())
