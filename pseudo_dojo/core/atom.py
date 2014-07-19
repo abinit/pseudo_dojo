@@ -15,6 +15,7 @@ __author__ = "Matteo Giantomassi"
 __maintainer__ = "Matteo Giantomassi"
 
 __all__ = [
+    "NlState",
     "QState",
     "AtomicConfiguration",
     "RadialFunction",
@@ -65,6 +66,12 @@ def parse_orbtoken(orbtoken):
         return QState(n=m.group(1), l=m.group(2), occ=m.group(3))
 
     raise ValueError("Don't know how to interpret %s" % str(orbtoken))
+
+
+class NlState(collections.namedtuple("NlState", "n, l")):
+    """Named tuple storing (n,l)"""
+    def __str__(self):
+        return "n=%i, l=%i" % self
 
 
 class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
