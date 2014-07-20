@@ -4,7 +4,7 @@ from __future__ import print_function, division
 import os
 import pytest
 
-from pseudo_dojo.ppcodes.oncvpsp.oncvpsp import OncvOuptputParser
+from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser
 
 
 def filepath(basename):

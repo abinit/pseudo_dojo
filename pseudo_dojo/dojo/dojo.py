@@ -373,7 +373,6 @@ class DeltaFactorMaster(DojoMaster):
         d = {self.accuracy: d}
         return {self.dojo_key: d}
 
-################################################################################
 
 _key2level = {}
 for cls in DojoMaster.__subclasses__():
@@ -392,5 +391,6 @@ def repr_dojo_levels():
     lines = ["Dojo level --> Challenge"]
     for k in sorted(level2key):
         lines.append("level %d --> %s" % (k, level2key[k]))
+
     return "\n".join(lines)
 
