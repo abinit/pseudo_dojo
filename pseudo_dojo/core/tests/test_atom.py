@@ -58,7 +58,6 @@ class AtomicConfigurationTest(PseudoDojoTest):
             self.assertTrue(aconf == AtomicConfiguration.neutral_from_symbol(symbol))
 
 
-
 class RadialFunctionTest(PseudoDojoTest):
 
     def test_base(self):
@@ -72,7 +71,7 @@ class RadialFunctionTest(PseudoDojoTest):
         print(self)
 
         # Integral in 3D
-        self.assert_almost_equal(rf.integral(), 1.0)
+        self.assert_almost_equal(rf.integral3d(), 1.0)
 
         for (r, v) in rf:
             rf.derivatives(r)

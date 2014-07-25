@@ -301,6 +301,9 @@ class RadialFunction(object):
     #def __sub__(self, other):
     #def __mul__(self, other):
 
+    def __abs__(self):
+        return self.__class__(self.rmesh, np.abs(self.values))
+
     def pprint(self, what="rmesh+values", stream=None):
         """pprint method (useful for debugging)"""
         from pprint import pprint
@@ -358,7 +361,21 @@ class RadialFunction(object):
         """Return all derivatives of the spline at the point r."""
         return self.spline.derivatives(r)
 
-    def integral(self, a=None, b=None):
+    def integral(self):
+        """
+        Cumulatively integrate y(x) using the composite trapezoidal rule.
+
+        Returns:
+            `Function1d` with :math:`\int y(x) dx`
+        """
+        from scipy.integrate import cumtrapz
+        integ = cumtrapz(self.values, x=self.rmesh)
+        pad_intg = np.zeros(len(self.values))
+        pad_intg[1:] = integ
+
+        return self.__class__(self.rmesh, pad_intg)
+
+    def integral3d(self, a=None, b=None):
         """
         Return definite integral of the spline of (r**2 values**2) between two given points a and b
         Args:

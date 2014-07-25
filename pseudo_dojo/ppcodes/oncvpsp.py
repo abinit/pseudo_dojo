@@ -1,8 +1,9 @@
-#!/usr/bin/env python
 """Classes and functions for post-processing the results produced by ONCVPSP."""
 from __future__ import print_function, division
 
 import os
+import abc
+import time
 import collections
 import numpy as np
 
@@ -10,11 +11,55 @@ from pprint import pprint
 from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
 
 
-class OncvOutputParserError(Exception):
-    """Exceptions raised by OncvParser."""
+class PseudoGenResults(dict):
+    _KEYS = [
+        "max_ecut",
+        "max_atan_logder_l1err",
+    ]
+
+    def __init__(self, *args, **kwargs):
+        super(PseudoGenResults, self).__init__(*args, **kwargs)
+        for k in self._KEYS:
+            if k not in self:
+                self[k] = None
 
 
-class OncvOuptputParser(object):
+class PseudoGenOutputParserError(Exception):
+    """Exceptions raised by OuptputParser instances."""
+
+
+class PseudoGenOutputParser(object):
+    """
+    Abstract baseclass defining the interface that must be provided
+    by the parsers used to extract results from the output file of
+    a pseudopotential generator a.k.a. ppgen
+
+    Attributes:
+        ppgen_errors:
+            List of strings with errors reported by the pp
+    """
+    __metaclass__ = abc.ABCMeta
+
+    Error = PseudoGenOutputParserError
+
+    def __init__(self, filepath):
+        self.filepath = os.path.abspath(filepath)
+        self.run_completed = False
+        self._ppgen_errors = []
+
+    @property
+    def ppgen_errors(self):
+        """List of strings with possible errors reported by the generator at run-time."""
+        return self._ppgen_errors
+
+    @abc.abstractmethod
+    def get_results(self):
+        """
+        Return the most important results of the run in a dictionary.
+        """
+
+
+class OncvOuptputParser(PseudoGenOutputParser):
     """
     Object to read and extract data from the output file of oncvpsp.
 
@@ -37,7 +82,7 @@ class OncvOuptputParser(object):
         p.plot_slideshow()
     """
     # TODO Add fully-relativistic case.
-    Error = OncvOutputParserError
+
 
     # Used to store ae and pp quantities (e.g wavefunctions) in a single object.
     AePsNamedTuple = collections.namedtuple("AePsNamedTuple", "ae, ps")
@@ -47,10 +92,36 @@ class OncvOuptputParser(object):
 
     def __init__(self, filepath):
         """Initialize the object from the oncvpsp output."""
-        self.filepath = os.path.abspath(filepath)
+        super(OncvOuptputParser, self).__init__(filepath)
+        try:
+            self.scan()
+        except:
+            time.sleep(1)
+            try:
+                self.scan()
+            except:
+                raise
+
+    def scan(self):
+        """Scan the output, set and returns `run_completed` attribute."""
         # Read data and store it in lines
+        self.lines = []
         with open(self.filepath) as fh:
-            self.lines = fh.readlines()
+            for i, line in enumerate(fh):
+                line = line.strip()
+                self.lines.append(line)
+
+                if line.startswith("DATA FOR PLOTTING"):
+                    self.run_completed = True
+
+                if line.startswith("ERROR:"):
+                    # Example:
+                    # test_data: must have fcfact>0.0 for icmod= 1
+                    # ERROR: test_data found   1 errors; stopping
+                    self.ppgen_errors.append("\n".join(self.lines[i-1:i+1]))
+
+        if self.ppgen_errors:
+            return
 
         # scalar-relativistic version 2.1.1, 03/26/2014
         toks, self.gendate = self.lines[1].split(",")
@@ -85,7 +156,10 @@ class OncvOuptputParser(object):
     def __str__(self):
         lines = []
         app = lines.append
-        app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
+        #app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
+        app("oncvpsp calculation: %s: " % self.calc_type)
+        app("completed: %s" % self.run_completed)
+
         return "\n".join(lines)
 
     @property
@@ -106,9 +180,10 @@ class OncvOuptputParser(object):
         for l in range(lmax+1):
             ionpots_l[l] = RadialFunction("Ion Pseudopotential, l=%d" % l, vl_data[:, 0], vl_data[:, 2+l])
 
-        # Local part is stored with l == -1
+        # Local part is stored with l == -1 if lloc=4, not present if lloc=l
         vloc = self._grep("!L").data
-        ionpots_l[-1] = RadialFunction("Local part, l=%d" % -1, vloc[:, 0], vloc[:, 1])
+        if vloc is not None:
+            ionpots_l[-1] = RadialFunction("Local part, l=%d" % -1, vloc[:, 0], vloc[:, 1])
 
         return ionpots_l
 
@@ -127,16 +202,14 @@ class OncvOuptputParser(object):
     @property
     def radial_wfs(self):
         """Read the radial wavefunctions."""
-        # TODO: Check this
-        ae_waves, ps_waves = {}, {}
         #n= 1,  l= 0, all-electron wave function, pseudo w-f
         #
         #&     0    0.009945   -0.092997    0.015273
+        ae_waves, ps_waves = {}, {}
 
         beg = 0
         while True:
             g = self._grep("&", beg=beg)
-            #print(g)
             if g.data is None:
                 break
             beg = g.stop + 1
@@ -160,7 +233,6 @@ class OncvOuptputParser(object):
     @property
     def projectors(self):
         """Read the projector wave functions."""
-        # TODO: Check this
         #n= 1 2  l= 0, projecctor pseudo wave functions, well or 2nd valence
         #
         #@     0    0.009945    0.015274   -0.009284
@@ -217,6 +289,28 @@ class OncvOuptputParser(object):
 
         return conv_l
 
+    def get_results(self):
+        """"Most importan results reported by the pp generator."""
+        if not self.run_completed:
+            PseudoGenResults(info="Run is not completed")
+
+        # Get the ecut needed to converged within ... TODO
+        max_ecut = 0.0
+        for l in range(self.lmax+1):
+            max_ecut = max(max_ecut, self.ene_vs_ecut[l].energies[-1])
+
+        # Compute the l1 error in atag(logder)
+        from scipy.integrate import cumtrapz
+        max_l1err = 0.0
+        for l in range(self.lmax+1):
+            f1, f2 = self.atan_logders.ae[l], self.atan_logders.ps[l]
+
+            adiff = np.abs(f1.values - f2.values)
+            integ = cumtrapz(adiff, x=f1.energies) / (f1.energies[-1] - f1.energies[0])
+            max_l1err = max(max_l1err, integ[-1])
+
+        return PseudoGenResults(max_ecut=max_ecut, max_atan_logder_l1err=max_l1err)
+
     def make_plotter(self, plotter_class=None):
         """
         Builds an instance of PseudoGenDataPlotter. One can customize the behavior
@@ -228,6 +322,9 @@ class OncvOuptputParser(object):
         return plotter_class(**kwargs)
 
     def _grep(self, tag, beg=0):
+        """
+        This routine finds the first field in the file with the specified tag.
+        """
         data, stop, intag = [], None, -1
 
         if beg >= len(self.lines):
@@ -286,7 +383,6 @@ class PseudoGenDataPlotter(object):
     Plots the results produced by a pseudopotential generator.
     """
     # TODO: Add fully-relativistic case.
-
     # List of results supported by the plotter (initialized via __init__)
     all_keys = [
         "radial_wfs",
@@ -317,12 +413,15 @@ class PseudoGenDataPlotter(object):
         """Iterator with the keys stored in self."""
         return (k for k in self.all_keys if getattr(self, k))
 
-    def plot_key(self, key, **kwargs):
+    def plot_key(self, key, ax=None, **kwargs):
         """Plot a singol quantity specified by key."""
-        fig = self._mplt.figure()
-        ax = fig.add_subplot(1, 1, 1)
+        if ax is None:
+            fig = self._mplt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+
         # key --> self.plot_key()
         getattr(self, "plot_" + key)(ax, **kwargs)
+
         self._mplt.show()
 
     def _wf_pltopts(self, l, aeps):
@@ -499,3 +598,154 @@ class PseudoGenDataPlotter(object):
             self.plot_projectors(ax_list[ax_idx][1], lselect=[l])
 
         return self._finalize_fig(fig, **kwargs)
+
+
+class MultiPseudoGenDataPlotter(object):
+    """
+    Class for plotting data produced by multiple pseudogenerators
+    on separated plots.
+
+    Usage example:
+
+    .. code-block:: python
+
+        plotter = MultiPseudoGenPlotter()
+        plotter.add_psgen("bar.nc", label="bar bands")
+        plotter.add_plotter("foo.nc", label="foo bands")
+        plotter.plot()
+    """
+    _LINE_COLORS = ["b", "r",]
+    _LINE_STYLES = ["-",":","--","-.",]
+    _LINE_WIDTHS = [2,]
+
+    def __init__(self):
+        self._plotters = collections.OrderedDict()
+
+    def __len__(self):
+        return len(self._plotters)
+
+    #@property
+    #def plotters(self):
+    #    """"List of registered `Plotters`."""
+    #    return list(self._plotters.values())
+
+    @property
+    def labels(self):
+        return list(self._plotters.keys())
+
+    def iter_lineopt(self):
+        """Generates style options for lines."""
+        import itertools
+        for o in itertools.product( self._LINE_WIDTHS,  self._LINE_STYLES, self._LINE_COLORS):
+            yield {"linewidth": o[0], "linestyle": o[1], "color": o[2]}
+
+    def add_psgen(self, label, psgen, plotter_class=None):
+        """Add a plotter of class plotter_class from a `PseudoGenerator` instance."""
+        oparser = psgen.parse_output()
+        self.add_plotter(label, oparser.make_plotter(plotter_class=plotter_class))
+
+    def add_plotter(self, label, plotter):
+        """
+        Adds a plotter.
+
+        Args:
+            label:
+                label for the plotter. Must be unique.
+            plotter:
+                `PseudoGenDataPlotter` object.
+        """
+        if label in self.labels:
+            raise ValueError("label %s is already in %s" % (label, self.labels))
+
+        self._plotters[label] = plotter
+
+    def plot_key(self, key, **kwargs):
+        """
+        Plot the band structure and the DOS.
+
+        Args:
+            klabels:
+                dictionary whose keys are tuple with the reduced
+                coordinates of the k-points. The values are the labels.
+                e.g. klabels = {(0.0,0.0,0.0): "$\Gamma$", (0.5,0,0): "L"}.
+
+        ==============  ==============================================================
+        kwargs          Meaning
+        ==============  ==============================================================
+        title           Title of the plot (Default: None).
+        show            True to show the figure (Default).
+        savefig         'abc.png' or 'abc.eps'* to save the figure to a file.
+        ylim            y-axis limits. None (default) for automatic determination.
+        ==============  ==============================================================
+
+        Returns:
+            matplotlib figure.
+        """
+        title = kwargs.pop("title", None)
+        show = kwargs.pop("show", True)
+        savefig = kwargs.pop("savefig", None)
+
+        import matplotlib.pyplot as plt
+        from matplotlib.gridspec import GridSpec
+
+        fig, ax_list = plt.subplots(nrows=len(self), ncols=1, sharex=False, squeeze=False)
+        ax_list = ax_list.ravel()
+
+        # Build grid of plots.
+        #if self.edoses_dict:
+        #    gspec = GridSpec(1, 2, width_ratios=[2, 1])
+        #    ax1 = plt.subplot(gspec[0])
+        #    # Align bands and DOS.
+        #    ax2 = plt.subplot(gspec[1], sharey=ax1)
+        #    ax_list = [ax1, ax2]
+        #    fig = plt.gcf()
+        #else:
+        #    fig = plt.figure()
+        #    ax1 = fig.add_subplot(111)
+        #    ax_list = [ax1]
+
+        if title is not None:
+            fig.suptitle(title)
+
+        for ax in ax_list:
+            ax.grid(True)
+
+        #plot_key(self, key, ax=None)
+
+        #ylim = kwargs.pop("ylim", None)
+        #if ylim is not None:
+        #    [ax.set_ylim(ylim) for ax in ax_list]
+
+        # Plot bands.
+        lines, legends = [], []
+        my_kwargs, opts_label = kwargs.copy(), {}
+        i = -1
+        for (label, plotter), lineopt in zip(self._plotters.items(), self.iter_lineopt()):
+            i += 1
+            #my_kwargs.update(lineopt)
+            #opts_label[label] = my_kwargs.copy()
+
+            plotter.plot_key(key, ax=ax_list[i])
+
+            #l = bands.plot_ax(ax1, spin=None, band=None, **my_kwargs)
+            #lines.append(l[0])
+
+            # Use relative paths if label is a file.
+            #if os.path.isfile(label):
+            #    legends.append("%s" % os.path.relpath(label))
+            #else:
+            #    legends.append("%s" % label)
+
+            # Set ticks and labels, legends.
+            #if i == 0:
+            #    bands.decorate_ax(ax)
+
+        #ax.legend(lines, legends, 'best', shadow=True)
+
+        if show:
+            plt.show()
+
+        if savefig is not None:
+            fig.savefig(savefig)
+
+        return fig
