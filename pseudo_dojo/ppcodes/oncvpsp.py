@@ -7,7 +7,6 @@ import time
 import collections
 import numpy as np
 
-from pprint import pprint
 from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
 
 
@@ -37,6 +36,7 @@ class PseudoGenOutputParser(object):
     Attributes:
         ppgen_errors:
             List of strings with errors reported by the pp
+        results:
     """
     __metaclass__ = abc.ABCMeta
 
@@ -46,16 +46,22 @@ class PseudoGenOutputParser(object):
         self.filepath = os.path.abspath(filepath)
         self.run_completed = False
         self._ppgen_errors = []
+        self._results = None
 
     @property
     def ppgen_errors(self):
         """List of strings with possible errors reported by the generator at run-time."""
         return self._ppgen_errors
 
+    @property
+    def results(self):
+        return self._results
+
     @abc.abstractmethod
     def get_results(self):
         """
         Return the most important results of the run in a dictionary.
+        Set self.results
         """
 
 
@@ -93,6 +99,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
     def __init__(self, filepath):
         """Initialize the object from the oncvpsp output."""
         super(OncvOuptputParser, self).__init__(filepath)
+
         try:
             self.scan()
         except:
@@ -290,7 +297,10 @@ class OncvOuptputParser(PseudoGenOutputParser):
         return conv_l
 
     def get_results(self):
-        """"Most importan results reported by the pp generator."""
+        """"
+        Return the most important results reported by the pp generator.
+        Set the valu of self.results
+        """
         if not self.run_completed:
             PseudoGenResults(info="Run is not completed")
 
@@ -309,7 +319,8 @@ class OncvOuptputParser(PseudoGenOutputParser):
             integ = cumtrapz(adiff, x=f1.energies) / (f1.energies[-1] - f1.energies[0])
             max_l1err = max(max_l1err, integ[-1])
 
-        return PseudoGenResults(max_ecut=max_ecut, max_atan_logder_l1err=max_l1err)
+        self._results = PseudoGenResults(max_ecut=max_ecut, max_atan_logder_l1err=max_l1err)
+        return self._results
 
     def make_plotter(self, plotter_class=None):
         """
@@ -619,19 +630,28 @@ class MultiPseudoGenDataPlotter(object):
     _LINE_WIDTHS = [2,]
 
     def __init__(self):
-        self._plotters = collections.OrderedDict()
+        self._plotters_odict = collections.OrderedDict()
 
     def __len__(self):
-        return len(self._plotters)
+        return len(self._plotters_odict)
 
-    #@property
-    #def plotters(self):
-    #    """"List of registered `Plotters`."""
-    #    return list(self._plotters.values())
+    @property
+    def plotters(self):
+        """"List of registered `Plotters`."""
+        return list(self._plotters_odict.values())
 
     @property
     def labels(self):
-        return list(self._plotters.keys())
+        return list(self._plotters_odict.keys())
+
+    def keys(self):
+        """List of strings with the quantities that can be plotted."""
+        keys_set = set()
+        for plotter in self.plotters:
+            keys_set.update(plotter.keys())
+        keys_set = list(keys_set)
+        #keys_set = list(self.plotters[0].keys())
+        return list(sorted(keys_set))
 
     def iter_lineopt(self):
         """Generates style options for lines."""
@@ -657,7 +677,7 @@ class MultiPseudoGenDataPlotter(object):
         if label in self.labels:
             raise ValueError("label %s is already in %s" % (label, self.labels))
 
-        self._plotters[label] = plotter
+        self._plotters_odict[label] = plotter
 
     def plot_key(self, key, **kwargs):
         """
@@ -675,34 +695,20 @@ class MultiPseudoGenDataPlotter(object):
         title           Title of the plot (Default: None).
         show            True to show the figure (Default).
         savefig         'abc.png' or 'abc.eps'* to save the figure to a file.
-        ylim            y-axis limits. None (default) for automatic determination.
+        sharex          True if subplots should share the x axis
         ==============  ==============================================================
 
         Returns:
             matplotlib figure.
         """
+        import matplotlib.pyplot as plt
         title = kwargs.pop("title", None)
         show = kwargs.pop("show", True)
         savefig = kwargs.pop("savefig", None)
 
-        import matplotlib.pyplot as plt
-        from matplotlib.gridspec import GridSpec
-
-        fig, ax_list = plt.subplots(nrows=len(self), ncols=1, sharex=False, squeeze=False)
-        ax_list = ax_list.ravel()
-
         # Build grid of plots.
-        #if self.edoses_dict:
-        #    gspec = GridSpec(1, 2, width_ratios=[2, 1])
-        #    ax1 = plt.subplot(gspec[0])
-        #    # Align bands and DOS.
-        #    ax2 = plt.subplot(gspec[1], sharey=ax1)
-        #    ax_list = [ax1, ax2]
-        #    fig = plt.gcf()
-        #else:
-        #    fig = plt.figure()
-        #    ax1 = fig.add_subplot(111)
-        #    ax_list = [ax1]
+        fig, ax_list = plt.subplots(nrows=len(self), ncols=1, sharex=kwargs.pop("sharex", True), squeeze=False)
+        ax_list = ax_list.ravel()
 
         if title is not None:
             fig.suptitle(title)
@@ -710,17 +716,11 @@ class MultiPseudoGenDataPlotter(object):
         for ax in ax_list:
             ax.grid(True)
 
-        #plot_key(self, key, ax=None)
-
-        #ylim = kwargs.pop("ylim", None)
-        #if ylim is not None:
-        #    [ax.set_ylim(ylim) for ax in ax_list]
-
-        # Plot bands.
+        # Plot key on the each axis in ax_list.
         lines, legends = [], []
-        my_kwargs, opts_label = kwargs.copy(), {}
+        #my_kwargs, opts_label = kwargs.copy(), {}
         i = -1
-        for (label, plotter), lineopt in zip(self._plotters.items(), self.iter_lineopt()):
+        for (label, plotter), lineopt in zip(self._plotters_odict.items(), self.iter_lineopt()):
             i += 1
             #my_kwargs.update(lineopt)
             #opts_label[label] = my_kwargs.copy()
@@ -740,7 +740,7 @@ class MultiPseudoGenDataPlotter(object):
             #if i == 0:
             #    bands.decorate_ax(ax)
 
-        #ax.legend(lines, legends, 'best', shadow=True)
+            #ax.legend(lines, legends, 'best', shadow=True)
 
         if show:
             plt.show()

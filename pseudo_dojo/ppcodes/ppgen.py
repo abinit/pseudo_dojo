@@ -11,6 +11,9 @@ import warnings
 from monty.os.path import which
 from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser
 
+import logging
+logger = logging.getLogger()
+
 
 # Possible status of the PseudoGenerator.
 _STATUS2STR = collections.OrderedDict([
@@ -69,6 +72,8 @@ class PseudoGenerator(object):
             Flag defining the status of the ps generator.
         retcode:
             Return code of the code
+        errors:
+            List of strings with errors.
     """
     __metaclass__ = abc.ABCMeta
 
@@ -90,6 +95,7 @@ class PseudoGenerator(object):
     def __init__(self):
         # Set the initial status.
         self.set_status(self.S_INIT)
+        self.errors = []
 
         # Build a temporary directory
         self.workdir = tempfile.mkdtemp(prefix=self.__class__.__name__)
@@ -132,7 +138,7 @@ class PseudoGenerator(object):
         if self.status >= self.S_RUN:
             return 0
 
-        print("Running in %s:" % self.workdir)
+        logger.info("Running in %s:" % self.workdir)
         with open(self.stdin_path, "w") as fh:
             fh.write(self.input_str)
 
@@ -166,6 +172,7 @@ class PseudoGenerator(object):
         """Kill the child."""
         self.process.kill()
         self.set_status(self.S_ERROR)
+        self.errors.append("Process has beed killed by host code.")
         self._retcode = self.process.returncode
 
     def set_status(self, status, info_msg=None):
@@ -300,22 +307,27 @@ class OncvGenerator(PseudoGenerator):
             self._status == self.S_ERROR
             return self._status
 
-        print("run_completed:", parser.run_completed)
+        logger.info("run_completed:", parser.run_completed)
         if self.status == self.S_DONE and not parser.run_completed:
-            warnings.warn("Run is not completed!")
+            logger.warning("Run is not completed!")
             self._status = self.S_ERROR
 
         if parser.run_completed:
-            print("setting status to S_OK")
+            logger.info("setting status to S_OK")
             self._status = self.S_OK
+
+        if parser.ppgen_errors:
+            logger.critical("setting status to S_ERROR")
+            self._status = self.S_ERROR
+            self.errors.extend(parser.ppgen_errors)
 
         return self._status
 
     def plot_results(self, **kwargs):
         """Plot the results with matplotlib."""
-        #if not self.status == self.S_OK:
-        #    warnings.warn("Cannot plot results. ppgen status is %s:!" % self.status)
-        #    return
+        if not self.status == self.S_OK:
+            logger.warning("Cannot plot results. ppgen status is %s:!" % self.status)
+            return
 
         # Call the output parser to get the results.
         parser = OncvOuptputParser(self.stdout_path)
@@ -330,6 +342,10 @@ class OncvGenerator(PseudoGenerator):
         None if results are not available e.g. because the
         calculation is still running
         """
+        if not self.status == self.S_OK:
+            logger.warning("Cannot get_results. ppgen status is %s:!" % self.status)
+            return None
+
         return OncvOuptputParser(self.stdout_path).get_results()
 
 
