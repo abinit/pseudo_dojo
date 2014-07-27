@@ -6,13 +6,12 @@ import os
 import tempfile
 import collections
 import time
-import warnings
 
 from monty.os.path import which
 from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser
 
 import logging
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 # Possible status of the PseudoGenerator.
@@ -254,20 +253,27 @@ class PseudoGenerator(object):
     def plot_results(self, **kwargs):
         """Plot the results with matplotlib."""
 
-    @abc.abstractmethod
-    def get_results(self, **kwargs):
-        """
-        Returns a dictionary with the most important results.
-        None if results are not yet available before the calculation
-        is still running.
-        """
+    #@abc.abstractmethod
+    #def get_results(self, **kwargs):
+    #    """
+    #    Returns a dictionary with the most important results.
+    #    None if results are not yet available before the calculation
+    #    is still running.
+    #    """
 
     def parse_output(self):
         parser = self.OutputParser(self.stdout_path)
         parser.scan()
         return parser
 
-    #def get_plotter(self):
+    @property
+    def results(self):
+        return getattr(self, "_results", None)
+
+    @property
+    def plotter(self):
+        return getattr(self, "_plotter", None)
+
 
 
 class OncvGenerator(PseudoGenerator):
@@ -315,6 +321,11 @@ class OncvGenerator(PseudoGenerator):
         if parser.run_completed:
             logger.info("setting status to S_OK")
             self._status = self.S_OK
+            #########################################
+            # Here we initialize results and plotter.
+            #########################################
+            self._results = parser.get_results()
+            self._plotter = parser.make_plotter()
 
         if parser.ppgen_errors:
             logger.critical("setting status to S_ERROR")
@@ -336,17 +347,17 @@ class OncvGenerator(PseudoGenerator):
         plotter = parser.make_plotter()
         plotter.plot_atanlogder_econv()
 
-    def get_results(self):
-        """
-        Return the most important results of the run.
-        None if results are not available e.g. because the
-        calculation is still running
-        """
-        if not self.status == self.S_OK:
-            logger.warning("Cannot get_results. ppgen status is %s:!" % self.status)
-            return None
+    #def get_results(self):
+    #    """
+    #    Return the most important results of the run.
+    #    None if results are not available e.g. because the
+    #    calculation is still running
+    #    """
+    #    if not self.status == self.S_OK:
+    #        logger.warning("Cannot get_results. ppgen status is %s:!" % self.status)
+    #        return None
 
-        return OncvOuptputParser(self.stdout_path).get_results()
+    #    return OncvOuptputParser(self.stdout_path).get_results()
 
 
 mock_input = """

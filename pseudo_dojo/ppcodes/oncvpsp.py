@@ -7,10 +7,14 @@ import time
 import collections
 import numpy as np
 
+from pymatgen.core.design_patterns import AttrDict
 from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
 
+import logging
+logger = logging.getLogger(__name__)
 
-class PseudoGenResults(dict):
+
+class PseudoGenResults(AttrDict):
     _KEYS = [
         "max_ecut",
         "max_atan_logder_l1err",
@@ -61,7 +65,7 @@ class PseudoGenOutputParser(object):
     def get_results(self):
         """
         Return the most important results of the run in a dictionary.
-        Set self.results
+        Set self.results attribute
         """
 
 
@@ -107,10 +111,13 @@ class OncvOuptputParser(PseudoGenOutputParser):
             try:
                 self.scan()
             except:
-                raise
+                pass
 
     def scan(self):
         """Scan the output, set and returns `run_completed` attribute."""
+        if not os.path.exists(self.filepath):
+            return
+
         # Read data and store it in lines
         self.lines = []
         with open(self.filepath) as fh:
@@ -226,7 +233,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
             n = int(n.split("=")[1])
             l = int(l.split("=")[1])
             nl = NlState(n=n, l=l)
-            #print("Got state: %s" % str(nl))
+            logger.info("Got state: %s" % str(nl))
 
             rmesh = g.data[:, 1]
             ae_wf = g.data[:, 2]
@@ -256,7 +263,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
             for n in range(len(g.data[0]) - 2):
                 nl = NlState(n=n+1, l=l)
-                #print("Got projector with: %s" % str(nl))
+                logger.info("Got projector with: %s" % str(nl))
                 projectors_nl[nl] = RadialWaveFunction(nl, str(nl), rmesh, g.data[:, n+2])
 
         return projectors_nl
@@ -319,7 +326,26 @@ class OncvOuptputParser(PseudoGenOutputParser):
             integ = cumtrapz(adiff, x=f1.energies) / (f1.energies[-1] - f1.energies[0])
             max_l1err = max(max_l1err, integ[-1])
 
-        self._results = PseudoGenResults(max_ecut=max_ecut, max_atan_logder_l1err=max_l1err)
+        # Read Hermiticity error and compute the max value of PSP excitation error=
+        # Hermiticity error    4.8392D-05
+        # PSP excitation error=  1.56D-10
+        herm_tag = "Hermiticity error"
+        pspexc_tag = "PSP excitation error="
+        herm_err, max_psexc_abserr = None, -np.inf
+
+        for line in self.lines:
+            i = line.find(herm_tag)
+            if i != -1:
+                herm_err = float(line.split()[-1].replace("D", "E"))
+
+            i = line.find(pspexc_tag)
+            if i != -1:
+                max_psexc_abserr = max(max_psexc_abserr, abs(float(line.split()[-1].replace("D", "E"))))
+
+        self._results = PseudoGenResults(
+            max_ecut=max_ecut, max_atan_logder_l1err=max_l1err,
+            herm_err=herm_err, max_psexc_abserr=max_psexc_abserr)
+
         return self._results
 
     def make_plotter(self, plotter_class=None):
@@ -642,6 +668,7 @@ class MultiPseudoGenDataPlotter(object):
 
     @property
     def labels(self):
+        """List of labels."""
         return list(self._plotters_odict.keys())
 
     def keys(self):
@@ -650,7 +677,7 @@ class MultiPseudoGenDataPlotter(object):
         for plotter in self.plotters:
             keys_set.update(plotter.keys())
         keys_set = list(keys_set)
-        #keys_set = list(self.plotters[0].keys())
+
         return list(sorted(keys_set))
 
     def iter_lineopt(self):
