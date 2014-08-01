@@ -68,6 +68,14 @@ class PseudoGenOutputParser(object):
         Set self.results attribute
         """
 
+    @abc.abstractmethod
+    def get_input_str(self):
+        """Returns a string with the input file."""
+    
+    @abc.abstractmethod
+    def get_pseudo_str(self):
+        """Returns a string with the pseudopotential."""
+
 
 class OncvOuptputParser(PseudoGenOutputParser):
     """
@@ -92,7 +100,6 @@ class OncvOuptputParser(PseudoGenOutputParser):
         p.plot_slideshow()
     """
     # TODO Add fully-relativistic case.
-
 
     # Used to store ae and pp quantities (e.g wavefunctions) in a single object.
     AePsNamedTuple = collections.namedtuple("AePsNamedTuple", "ae, ps")
@@ -347,6 +354,32 @@ class OncvOuptputParser(PseudoGenOutputParser):
             herm_err=herm_err, max_psexc_abserr=max_psexc_abserr)
 
         return self._results
+
+    def find_string(self, s):
+        """
+        Returns the index of the first line that contains string s.
+        Raise self.Error if s cannot be found.
+        """
+        for i, line in enumerate(self.lines):
+            if s in line:
+                return i
+        else:
+            raise self.Error("Cannot find %s in lines" % s)
+
+    def get_input_str(self)
+        """String with the input file."""
+        i = self.find_string("Reference configufation results")
+        return "\n".join(self.lines[:i])
+
+    def get_pseudo_str(self):
+        """String with the pseudopotential data."""
+        i = self.find_string('Begin PSPCODE8')
+        ps_data = "\n".join(self.lines[i+1:])
+
+        ps_input = self.get_input_str()
+
+        # Append the input to ps_data (note XML markers)
+        return ps_data + "\n\n<INPUT>" + ps_input + "</INPUT>\n\n"
 
     def make_plotter(self, plotter_class=None):
         """

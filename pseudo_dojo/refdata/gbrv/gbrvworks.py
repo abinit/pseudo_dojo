@@ -72,8 +72,8 @@ if __name__ == "__main__":
     factory = GbrvFactory()
 
     pseudo = "si_pbe_v1_abinit.paw"
-    ecut = 10
-    pawecutdg = ecut * 4
+    ecut = 20
+    pawecutdg = ecut * 8
 
     manager = abilab.TaskManager.from_user_config()
     flow = abilab.AbinitFlow(workdir="GBRV_Si", manager=manager, pickle_protocol=0)

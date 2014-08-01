@@ -319,7 +319,7 @@ class OncvGenerator(PseudoGenerator):
 
         logger.info("run_completed:", parser.run_completed)
         if self.status == self.S_DONE and not parser.run_completed:
-            logger.warning("Run is not completed!")
+            logger.info("Run is not completed!")
             self._status = self.S_ERROR
 
         if parser.run_completed:
@@ -332,7 +332,7 @@ class OncvGenerator(PseudoGenerator):
             self._plotter = parser.make_plotter()
 
         if parser.ppgen_errors:
-            logger.critical("setting status to S_ERROR")
+            logger.warning("setting status to S_ERROR")
             self._status = self.S_ERROR
             self.errors.extend(parser.ppgen_errors)
 
@@ -341,7 +341,7 @@ class OncvGenerator(PseudoGenerator):
     def plot_results(self, **kwargs):
         """Plot the results with matplotlib."""
         if not self.status == self.S_OK:
-            logger.warning("Cannot plot results. ppgen status is %s:!" % self.status)
+            logger.warning("Cannot plot results. ppgen status is %s" % self.status)
             return
 
         # Call the output parser to get the results.
@@ -411,7 +411,7 @@ mock_input = """
 """
 
 if __name__ == "__main__":
-    pgen = OncvGenerator(mock_input, "scalar-relativistic")
+    pgen = OncvGenerator(input_str=mock_input, calc_type="scalar-relativistic")
     pgen.start()
     pgen.wait()
     print("retcode: %s: " % pgen.retcode)

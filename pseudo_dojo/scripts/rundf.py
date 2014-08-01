@@ -7,7 +7,6 @@ __author__ = 'setten'
 
 import os
 import sys
-# import abipy.data as data
 import abipy.abilab as abilab
 
 from pseudo_dojo.dojo.deltaworks import DeltaFactory
@@ -38,7 +37,7 @@ def build_flow(options):
     pseudo = os.path.join(here, "totest")
 
     if options['strip']:
-        exit()
+        sys.exit()
 
     # Instantiate the TaskManager.
     manager = abilab.TaskManager.from_user_config()  # if not options.manager else options.manager
@@ -65,8 +64,7 @@ def build_flow(options):
                                        ecut=ecut, pawecutdg=pawecutdg,
                                        toldfe=1.e-8, smearing="fermi_dirac:0.0005")
         flow.register_work(work, workdir='W'+str(ecut))
-        flow.allocate()
-        return flow.build_and_pickle_dump()
+
     else:
         workdir = 'df_run_full'
         flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
@@ -78,8 +76,9 @@ def build_flow(options):
                                            toldfe=1.e-10, smearing="fermi_dirac:0.0005")
             # Register the workflow.
             flow.register_work(work, workdir='W'+str(ecut))
-        flow.allocate()
-        return flow.build_and_pickle_dump()
+
+    flow.allocate()
+    return flow.build_and_pickle_dump()
 
 
 #abilab.flow_main
