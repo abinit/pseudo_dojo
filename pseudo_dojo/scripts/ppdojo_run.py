@@ -73,9 +73,7 @@ def main():
         err_msg = "mpi_cpus %(mpi_ncpus)s cannot be greater than max_ncpus %(max_ncpus)s" % locals()
         show_examples_and_exit(err_msg=err_msg)
 
-    manager = TaskManager.simple_mpi(mpi_ncpus=1)
     manager = TaskManager.from_user_config()
-
     print(manager)
 
     dojo = Dojo(manager=manager,

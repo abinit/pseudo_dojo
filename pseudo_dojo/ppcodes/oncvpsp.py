@@ -366,7 +366,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
         else:
             raise self.Error("Cannot find %s in lines" % s)
 
-    def get_input_str(self)
+    def get_input_str(self):
         """String with the input file."""
         i = self.find_string("Reference configufation results")
         return "\n".join(self.lines[:i])

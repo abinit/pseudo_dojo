@@ -172,17 +172,18 @@ def read_table_from_file(filename):
     Reads GBRV data from file filename.
 
     Returns a dict of `GbrvEntry` objects indexed by element symbol or chemical formula.
-    """
-    # File Format:
-    # 0) Dict with structure type
-    # 1) Comment
-    # 2) Header with column names
-    # 3) rows in CSV format
-    # Example:
-    """
+
+    File Format:
+     0) Dict with structure type
+     1) Comment
+     2) Header with column names
+     3) rows in CSV format
+    
+    Example:
+    
     # {"struct_type": "fcc"}                                              
     # fcc testing data,,Please see supplementary materials for details.,,,
-    Symbol,AE,GBRV_USPP,VASP,PSLIB,GBRV_PAW
+    # Symbol,AE,GBRV_USPP,VASP,PSLIB,GBRV_PAW
     H,2.283,2.284,2.283,2.284,2.284
     """
     table, count = OrderedDict(), 0
@@ -305,48 +306,3 @@ __GBRV_DATABASE = GbrvDatabase()
 def gbrv_database():
     """Returns the GBRV database with the reference results."""
     return __GBRV_DATABASE
-
-
-#############
-# Unit tests
-#############
-from pseudo_dojo.core.testing import PseudoDojoTest
-
-
-class GbrvDatabaseTest(PseudoDojoTest):
-    def test_gbrv(self):
-        """Testing GBRV database..."""
-        # Init the database.
-        db = GbrvDatabase()
-
-        # Test basic methods
-        self.assertTrue(db.has_symbol("Si", stype="fcc"))
-        self.assertFalse(db.has_symbol("Si", stype="rocksalt"))
-        self.assertTrue("KMgF3" in db.all_symbols)
-
-        # Get FCC entry for Silicon
-        fcc_si = db.get_fcc_entry("Si")
-        self.assertEqual(fcc_si.ae, 3.857)
-        self.assertEqual(fcc_si.gbrv_uspp, 3.853)
-        self.assertEqual(fcc_si.struct_type, "fcc")
-        sfcc = fcc_si.build_structure()
-        self.assert_almost_equal(sfcc.volume, fcc_si.ae**3 /4.)
-
-        # Get BCC entry for H
-        bcc_h = db.get_bcc_entry("H")
-        self.assertEqual(bcc_h.ae, 1.806)
-        self.assertEqual(bcc_h.gbrv_paw, 1.807)
-        self.assertEqual(bcc_h.struct_type, "bcc")
-        sbcc = bcc_h.build_structure()
-        self.assert_almost_equal(sbcc.volume, bcc_h.ae**3 /2.)
-
-        # Hg is missing.
-        missing = db.get_bcc_entry("Hg")
-        self.assertTrue(missing.ae is None)
-
-        #assert 0
-
-if __name__ == "__main__":
-    import unittest
-    unittest.main()
-

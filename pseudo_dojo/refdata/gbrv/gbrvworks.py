@@ -40,7 +40,7 @@ class GbrvFactory(object):
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
 
-        return GbrvEosWorkflow(structure, pseudo, ecut, pawecutdg=pawecutdg, paral_kgb=paral_kgb)
+        return GbrvEosWorkflow(structure, struct_type, pseudo, ecut, pawecutdg=pawecutdg, paral_kgb=paral_kgb)
 
     def relax_and_eos_work(self, pseudo, struct_type, ecut, pawecutdg=None, paral_kgb=0, ref="ae"):
         """
@@ -72,17 +72,26 @@ if __name__ == "__main__":
     factory = GbrvFactory()
 
     pseudo = "si_pbe_v1_abinit.paw"
+    pseudo = "o_pbe_v1.2_abinit.paw"
+    pseudo = "c_pbe_v1.2_abinit.paw"
+    pseudo = "ca_pbe_v1_abinit.paw"
+    pseudo = "w_pbe_v1.2_abinit.paw"
+    pseudo = "zn_pbe_v1_abinit.paw"
+
+    import os
+    pseudo = os.path.join("./GBRV_all_pbe", pseudo)
     ecut = 20
-    pawecutdg = ecut * 8
+    pawecutdg = ecut * 4
 
     manager = abilab.TaskManager.from_user_config()
-    flow = abilab.AbinitFlow(workdir="GBRV_Si", manager=manager, pickle_protocol=0)
+    flow = abilab.AbinitFlow(workdir="FLOW_GBRV", manager=manager, pickle_protocol=0)
 
     struct_types = ["fcc"] #, "bcc"]
+    #struct_types = ["bcc"]
 
     for struct_type in struct_types:
-        #work = factory.eoswork_for_pseudo(pseudo, struct_type, ecut, pawecutdg=pawecutdg, ref="gbrv_paw")
-        work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg, ref="gbrv_paw")
+        #work = factory.eoswork_for_pseudo(pseudo, struct_type, ecut, pawecutdg=pawecutdg) # ref="gbrv_paw")
+        work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg) #, ref="gbrv_paw")
         flow.register_work(work)
 
     flow.allocate()

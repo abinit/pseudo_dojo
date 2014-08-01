@@ -2,6 +2,7 @@
 from __future__ import division, print_function
 
 from pseudo_dojo.core.testing import PseudoDojoTest
+from pseudo_dojo.refdata.gbrv.database import GbrvDatabase
 
 
 class TestGbrvDatabase(PseudoDojoTest):
@@ -40,4 +41,3 @@ class TestGbrvDatabase(PseudoDojoTest):
 if __name__ == "__main__":
     import unittest
     unittest.main()
-
