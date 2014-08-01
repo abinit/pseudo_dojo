@@ -73,6 +73,12 @@ class PseudoGenerator(object):
             Return code of the code
         errors:
             List of strings with errors.
+        parser:
+            Output parser. None if results are not available because
+            the calculations is still running or errors
+        results:
+            Dictionary with the most important results. None if results are not available because
+            the calculations is still running or errors
     """
     __metaclass__ = abc.ABCMeta
 
@@ -128,6 +134,13 @@ class PseudoGenerator(object):
 
     def __str__(self):
         return "<%s at %s, status=%s>" % (self.__class__.__name__, os.path.basename(self.workdir), self.status)
+
+    #def __hash__(self):
+    #    return hash(self.input_str)
+    #def __eq__(self, other):
+    #    return self.input_str == other.input_str
+    #def __ne__(self, other):
+    #    return not self == other
 
     def start(self):
         """"
@@ -253,14 +266,6 @@ class PseudoGenerator(object):
     def plot_results(self, **kwargs):
         """Plot the results with matplotlib."""
 
-    #@abc.abstractmethod
-    #def get_results(self, **kwargs):
-    #    """
-    #    Returns a dictionary with the most important results.
-    #    None if results are not yet available before the calculation
-    #    is still running.
-    #    """
-
     def parse_output(self):
         parser = self.OutputParser(self.stdout_path)
         parser.scan()
@@ -273,7 +278,6 @@ class PseudoGenerator(object):
     @property
     def plotter(self):
         return getattr(self, "_plotter", None)
-
 
 
 class OncvGenerator(PseudoGenerator):
@@ -346,18 +350,6 @@ class OncvGenerator(PseudoGenerator):
         # Build the plotter and plot data according to **kwargs
         plotter = parser.make_plotter()
         plotter.plot_atanlogder_econv()
-
-    #def get_results(self):
-    #    """
-    #    Return the most important results of the run.
-    #    None if results are not available e.g. because the
-    #    calculation is still running
-    #    """
-    #    if not self.status == self.S_OK:
-    #        logger.warning("Cannot get_results. ppgen status is %s:!" % self.status)
-    #        return None
-
-    #    return OncvOuptputParser(self.stdout_path).get_results()
 
 
 mock_input = """

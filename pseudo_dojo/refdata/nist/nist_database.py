@@ -1681,13 +1681,13 @@ class NistEntry(namedtuple("NistEntry", "Z, states, energies")):
     Database entry:
 
     A NistEntry has the atomic number Z, a list of NistState object and
-    a dictionary  with the energies in Ha units.
+    a dictionary with the energies in Ha units.
     """
     def __str__(self):
         lines = []
         app = lines.append
 
-        app("Element: %s, Z: %d" % (symbol_from_Z(self.Z), self.Z))
+        app("Element: %s, Z: %d" % (self.symbol, self.Z))
         app("Quantum numbers, occupations, eigenvalues [Ha]:")
         for s in self.states:
             app("\t" + str(s).replace(s.__class__.__name__,""))
@@ -1696,12 +1696,30 @@ class NistEntry(namedtuple("NistEntry", "Z, states, energies")):
         app("\t" + str(self.energies))
         return "\n".join(lines)
 
+    @property
+    def symbol(self):
+        return symbol_from_Z(self.Z)
+
+    def to_table(self):
+        """
+        Returns a table of strings whose columns contain ["n", "l", "occ", "eigval [Ha]"]]
+        """
+        table = [["n", "l", "occ", "eigval [Ha]"]]
+        for state in self.states:
+            table.append([state.n, state.l, state.occ, state.eig])
+
+        return table
+
 
 def get_neutral_entry(symbol):
-    """Retrieve an entry of the data from the element symbol (neutral atoms)."""
+    """Retrieve an entry of the data from the element symbol or from Z (neutral atoms)."""
+    if isinstance(symbol, int):
+        symbol = symbol_from_Z(symbol)
+
     entry = _neutral_entries[symbol]
     states = [NistState(n=s[0], l=s[1], occ=s[2], eig=s[3]) for s in entry[1]]
     return NistEntry(Z=entry[0], states=states, energies=entry[2])
+
 
 #def get_cation_entry(symbol):
 #    "Retrieve an entry of the data from the element symbol (cations)"

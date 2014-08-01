@@ -461,6 +461,10 @@ class PseudoGenDataPlotter(object):
 
         self._mplt.show()
 
+    #def plot_all(self, **kwargs):
+    #    for key in self.all_keys:
+    #        plot_key(key, ax)
+
     def _wf_pltopts(self, l, aeps):
         """Plot options for wavefunctions."""
         return dict(
