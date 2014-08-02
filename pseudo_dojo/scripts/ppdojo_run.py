@@ -79,8 +79,7 @@ def main():
     dojo = Dojo(manager=manager,
                 max_ncpus=max_ncpus, 
                 max_level=options.max_level, 
-                verbose=options.verbose,
-                )
+                verbose=options.verbose)
 
     stats = []
     for pseudo in pseudos:

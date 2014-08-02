@@ -5,11 +5,14 @@ import abc
 import shutil
 import time
 import numpy as np
+from abipy import abilab
 
 from pymatgen.serializers.json_coders import json_pretty_dump
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.io.abinitio.calculations import PPConvergenceFactory
+from pymatgen.io.abinitio.launcher import PyFlowScheduler
 from pseudo_dojo.dojo.deltaworks import DeltaFactory
+from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
 
 class DojoError(Exception):
@@ -21,7 +24,7 @@ class Dojo(object):
     This object drives the execution of the tests for the pseudopotential.
 
     A Dojo has a set of masters, each master is associated to a particular trial
-    and is responsible for the validation/rating of the results of the tests.
+    and the master is responsible for the validation/rating of the results of the tests.
     """
     Error = DojoError
 
@@ -67,7 +70,6 @@ class Dojo(object):
         pseudo = Pseudo.aspseudo(pseudo)
 
         print(pseudo)
-
         print('here .....')
 
         workdir = "DOJO_" + pseudo.name
@@ -75,6 +77,7 @@ class Dojo(object):
         # Build master instances.
         masters = [cls(manager=self.manager, max_ncpus=self.max_ncpus,
                        verbose=self.verbose) for cls in self.master_classes]
+
         isok = False
         for master in masters:
             if master.accept_pseudo(pseudo, **kwargs):
@@ -142,8 +145,7 @@ class DojoMaster(object):
 
         A master can train the pseudo if his level == pseudo.dojo_level + 1
         """
-        if not isinstance(pseudo, Pseudo):
-            pseudo = Pseudo.from_filename(pseudo)
+        pseudo = Pseudo.aspseudo(pseudo)
 
         ready = False
         pseudo_dojo_level = self.inspect_pseudo(pseudo)
@@ -151,6 +153,7 @@ class DojoMaster(object):
         if pseudo_dojo_level is None:
             # Hints are missing
             ready = (self.dojo_level == 0)
+            pseudo.write_dojo_report(report={})
         else:
             if pseudo_dojo_level == self.dojo_level:
                 # pseudo has already a test associated to this level.
@@ -192,10 +195,9 @@ class DojoMaster(object):
         Write/update the DOJO_REPORT section of the pseudopotential.
         """
         dojo_key = self.dojo_key
-        pseudo = self.pseudo
 
         # Read old_report from pseudo.
-        old_report = pseudo.read_dojo_report()
+        old_report = self.pseudo.read_dojo_report()
 
         if dojo_key not in old_report:
             # Create new entry
@@ -209,7 +211,7 @@ class DojoMaster(object):
         old_report[dojo_key].update(report[dojo_key])
 
         # Write new report
-        pseudo.write_dojo_report(old_report)
+        self.pseudo.write_dojo_report(old_report)
 
     def start_training(self, workdir, **kwargs):
         """Start the tests in the working directory workdir."""
@@ -240,55 +242,61 @@ class HintsMaster(DojoMaster):
     dojo_level = 0
     dojo_key = "hints"
 
-    # Absolute tolerance for low,normal,high accuracy.
+    # Absolute tolerance for low, normal, and high accuracy.
     _ATOLS_MEV = (10, 1, 0.1)
 
     def challenge(self, workdir, **kwargs):
-        pseudo = self.pseudo
-        toldfe = 1.e-8
+        workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level))
+        flow = abilab.AbinitFlow(workdir=workdir, manager=self.manager, pickle_protocol=0)
 
         factory = PPConvergenceFactory()
 
-        workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level))
-
+        pseudo = self.pseudo
+        toldfe = 1.e-10
         estep = kwargs.get("estep", 10)
-
         eslice = slice(5, None, estep)
 
-        w = factory.work_for_pseudo(workdir, self.manager, pseudo, eslice,
-                                    toldfe=toldfe, atols_mev=self._ATOLS_MEV)
+        # TODO Rewrite this
+        #w = factory.work_for_pseudo(pseudo, eslice, toldfe=toldfe, atols_mev=self._ATOLS_MEV)
+        #flow.register_work(w)
+        #flow.allocate()
+        #flow.build_and_pickle_dump()
+        #w = flow[0]
+        #scheduler = PyFlowScheduler.from_user_config()
+        #scheduler.add_flow(flow)
 
-        if os.path.exists(w.workdir):
-            shutil.rmtree(w.workdir)
+        #if os.path.exists(w.workdir): shutil.rmtree(w.workdir)
+        #print("Converging %s in iterative mode with ecut_slice %s" % (pseudo.name, eslice, self.max_ncpus))
+        #scheduler.start()
 
-        print("Converging %s in iterative mode with ecut_slice %s, max_ncpus = %d ..." %
-              (pseudo.name, eslice, self.max_ncpus))
+        #w.start()
+        #w.wait()
+        #wres = w.get_results()
+        #w.move("ITERATIVE")
 
-        w.start()
-        w.wait()
+        #estart = max(wres["low"]["ecut"] - estep, 5)
+        #if estart <= 10:
+        #    estart = 1 # To be sure we don't overestimate ecut_low
 
-        wres = w.get_results()
-        w.move("ITERATIVE")
-
-        estart = max(wres["low"]["ecut"] - estep, 5)
-        if estart <= 10:
-            estart = 1 # To be sure we don't overestimate ecut_low
-
-        estop, estep = wres["high"]["ecut"] + estep, 1
+        #estop, estep = wres["high"]["ecut"] + estep, 1
+        estart=10; estop=55; estep=5
 
         erange = list(np.arange(estart, estop, estep))
 
-        work = factory.work_for_pseudo(workdir, self.manager, pseudo, erange,
-                                       toldfe=toldfe, atols_mev=self._ATOLS_MEV)
+        work = factory.work_for_pseudo(pseudo, erange, toldfe=toldfe, atols_mev=self._ATOLS_MEV)
+
+        flow.register_work(work)
+        flow.allocate()
+        flow.build_and_pickle_dump()
 
         print("Finding optimal values for ecut in the range [%.1f, %.1f, %1.f,] Hartree, "
               "max_ncpus = %d ..." % (estart, estop, estep, self.max_ncpus))
 
-        from pymatgen.io.abinitio.launcher import PyResourceManager
-        PyResourceManager(work, self.max_ncpus).run()
+        scheduler = PyFlowScheduler.from_user_config()
+        scheduler.add_flow(flow)
+        scheduler.start()
 
         wf_results = work.get_results()
-
         #wf_results.json_dump(work.path_in_workdir("dojo_results.json"))
 
         return wf_results
@@ -316,16 +324,17 @@ class DeltaFactorMaster(DojoMaster):
         ready = super(DeltaFactorMaster, self).accept_pseudo(pseudo, **kwargs)
 
         # Do we have this element in the deltafactor database?
-        from pseudo_dojo.refdata.deltafactor import df_database
+
         return (ready and df_database().has_symbol(self.pseudo.symbol))
 
     def challenge(self, workdir, **kwargs):
-        self.accuracy = kwargs.pop("accuracy", "normal")
-
-        factory = DeltaFactory()
-
         # Calculations will be executed in this directory.
         workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level) + "_ACC_" + self.accuracy)
+
+        flow = abilab.AbinitFlow(workdir=workdir, manager=self.manager)
+
+
+        self.accuracy = kwargs.pop("accuracy", "normal")
 
         # 6750 is the value used in the deltafactor code.
         kppa = kwargs.get("kppa", 6750)
@@ -337,13 +346,16 @@ class DeltaFactorMaster(DojoMaster):
             print("Accuracy = %s" % self.accuracy)
             print("Manager = ",self.manager)
 
+        factory = DeltaFactory()
         work = factory.work_for_pseudo(workdir, self.manager, self.pseudo, 
                                        accuracy=self.accuracy, kppa=kppa, ecut=None)
 
-        retcodes = PyResourceManager(work, self.max_ncpus).run()
+        flow.register_work(work)
+        flow.allocate()
 
-        if self.verbose:
-            print("Returncodes %s" % retcodes)
+        scheduler = PyFlowScheduler.from_user_config()
+        scheduler.add_flow(flow)
+        scheduler.start()
 
         wf_results = work.get_results()
 
@@ -352,7 +364,7 @@ class DeltaFactorMaster(DojoMaster):
 
     def make_report(self, results, **kwargs):
         # Get reference results (Wien2K).
-        from pseudo_dojo.refdata.deltafactor import df_database, df_compute
+
         wien2k = df_database().get_entry(self.pseudo.symbol)
 
         # Get our results and compute deltafactor estimator.

@@ -151,6 +151,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
         self.calc_type, self.version = toks[0], toks[-1]
 
         if self.calc_type not in ["scalar-relativistic", "non-relativistic"]:
+            print("will raise %s because found %s" % (self.Error, self.calc_type))
             raise self.Error("Fully relativistic case is not supported")
 
         # Read configuration (not very robust because we assume the user didn't change the template but oh well)

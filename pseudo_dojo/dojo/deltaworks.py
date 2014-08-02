@@ -7,7 +7,7 @@ import numpy as np
 
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.io.abinitio.workflows import DeltaFactorWorkflow
-from pseudo_dojo.refdata.deltafactor.deltafactor import df_database
+from pseudo_dojo.refdata.deltafactor import df_database
 
 
 class DeltaFactoryError(Exception):
@@ -62,7 +62,8 @@ class DeltaFactory(object):
             cif_path = self.get_cif_path(symbol)
         except Exception as exc:
             raise CIFNotFoundError(str(exc))
-         # Include spin polarization for O, Cr and Mn (antiferromagnetic)
+
+        # Include spin polarization for O, Cr and Mn (antiferromagnetic)
         # and Fe, Co, and Ni (ferromagnetic).
         spin_mode = "unpolarized"
         if symbol in ["Fe", "Co", "Ni"]:
@@ -77,11 +78,9 @@ class DeltaFactory(object):
                 kwargs['spinat'] = [(0, 0, 1), (0, 0, -1), (0, 0, -1), (0, 0, 1)]
 
 
-
         work = DeltaFactorWorkflow(cif_path, pseudo, kppa,
                          spin_mode=spin_mode, toldfe=toldfe, smearing=smearing, 
                          accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.05, 
-                         workdir=workdir, manager=manager, **kwargs
-                        )
+                         workdir=workdir, manager=manager, **kwargs)
         return work
 

@@ -63,7 +63,6 @@ def build_flow(options):
         work = factory.work_for_pseudo(pseudo, accuracy="normal", kppa=kppa,
                                        ecut=ecut, pawecutdg=pawecutdg,
                                        toldfe=1.e-8, smearing="fermi_dirac:0.0005")
-        flow.register_work(work, workdir='W'+str(ecut))
 
     else:
         workdir = 'df_run_full'
@@ -74,10 +73,11 @@ def build_flow(options):
             work = factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa,
                                            ecut=ecut, pawecutdg=pawecutdg,
                                            toldfe=1.e-10, smearing="fermi_dirac:0.0005")
-            # Register the workflow.
-            flow.register_work(work, workdir='W'+str(ecut))
 
+    # Register the workflow.
+    flow.register_work(work, workdir='W'+str(ecut))
     flow.allocate()
+
     return flow.build_and_pickle_dump()
 
 

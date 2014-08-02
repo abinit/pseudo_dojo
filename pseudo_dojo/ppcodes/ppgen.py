@@ -9,6 +9,7 @@ import time
 
 from monty.os.path import which
 from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser
+from pymatgen.io.abinitio.pseudos import Pseudo
 
 import logging
 logger = logging.getLogger(__name__)
@@ -79,6 +80,8 @@ class PseudoGenerator(object):
         results:
             Dictionary with the most important results. None if results are not available because
             the calculations is still running or errors
+        pseudo:
+            PseudoPotential object. None if not available
     """
     __metaclass__ = abc.ABCMeta
 
@@ -118,6 +121,13 @@ class PseudoGenerator(object):
     def retcode(self):
         try:
             return self._retcode
+        except AttributeError:
+            return None
+
+    @property
+    def pseudo(self):
+        try:
+            return self._pseudo
         except AttributeError:
             return None
 
@@ -221,9 +231,7 @@ class PseudoGenerator(object):
             self.check_status()
 
         #if status == self.S_OK:
-            #if status == self.S_UNCONVERGED:
-            #    logger.debug("Task %s broadcasts signal S_UNCONVERGED" % self)
-            #    dispatcher.send(signal=self.S_UNCONVERGED, sender=self)
+        #    self.on_ok()
 
         return status
 
@@ -261,6 +269,12 @@ class PseudoGenerator(object):
             return 0
         except:
             return 1
+
+    #def on_ok(self):
+    #    """
+    #    Method called when calculation reaches S_OK
+    #    Perform operations to finalize the run. Subclasses should provide their own implementation.
+    #    """
 
     @abc.abstractmethod
     def plot_results(self, **kwargs):
@@ -310,6 +324,9 @@ class OncvGenerator(PseudoGenerator):
             raise RuntimeError(msg)
 
     def check_status(self):
+        if self.status == self.S_OK:
+            return self._status
+
         parser = OncvOuptputParser(self.stdout_path)
         try:
             parser.scan()
@@ -330,6 +347,18 @@ class OncvGenerator(PseudoGenerator):
             #########################################
             self._results = parser.get_results()
             self._plotter = parser.make_plotter()
+
+            # Write Abinit pseudopotential.
+            filepath = os.path.join(self.workdir, parser.atsym + ".psp8")
+            if os.path.exists(filepath): 
+                raise RuntimeError("File %s already exists" % filepath)
+
+            # Initialize self.pseudo from file.
+            with open(filepath, "w") as fh:
+                fh.write(parser.get_pseudo_str())
+
+            self._pseudo = Pseudo.from_file(filepath)
+            #print(self.pseudo)
 
         if parser.ppgen_errors:
             logger.warning("setting status to S_ERROR")

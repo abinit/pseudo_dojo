@@ -16,7 +16,7 @@ def test_oncvoutput_parser():
 
     # TODO: Full-relativistic case not yet supported.
     with pytest.raises(OncvOuptputParser.Error):
-        p = OncvOuptputParser(filepath("08_O_r.out"))
+        OncvOuptputParser(filepath("08_O_r.out"))
 
     # Non-relativistic results
     p = OncvOuptputParser(filepath("08_O_nr.out"))
@@ -96,10 +96,4 @@ def test_oncvoutput_parser():
     ae1, ps1 = p.atan_logders.ae[1], p.atan_logders.ps[1]
     assert ae1.energies[0], ae1.values[0]  == (2.000000, -2.523018)
     assert ps1.values[0] == -2.521334
-
-
-
-
-
-
 
