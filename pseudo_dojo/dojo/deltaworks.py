@@ -48,15 +48,11 @@ class DeltaFactory(object):
             0.001 Rydberg is the value used with WIEN2K
         """
 
-        try:
-            pseudo = Pseudo.aspseudo(pseudo)
+        pseudo = Pseudo.aspseudo(pseudo)
+        symbol = pseudo.symbol
 
-            if pseudo.ispaw and pawecutdg is None:
-                raise ValueError("pawecutdg must be specified for PAW calculations.")
-
-            symbol = pseudo.symbol
-        except AttributeError:
-            print('error in parsing')
+        if pseudo.ispaw and pawecutdg is None:
+            raise ValueError("pawecutdg must be specified for PAW calculations.")
 
         try:
             cif_path = self.get_cif_path(symbol)
@@ -68,6 +64,7 @@ class DeltaFactory(object):
         spin_mode = "unpolarized"
         if symbol in ["Fe", "Co", "Ni"]:
             spin_mode = "polarized"
+
         if symbol in ["O", "Cr", "Mn"]:
             spin_mode = "afm"
             if symbol == 'O':
@@ -78,9 +75,11 @@ class DeltaFactory(object):
                 kwargs['spinat'] = [(0, 0, 1), (0, 0, -1), (0, 0, -1), (0, 0, 1)]
 
 
-        work = DeltaFactorWorkflow(cif_path, pseudo, kppa,
-                         spin_mode=spin_mode, toldfe=toldfe, smearing=smearing, 
-                         accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.05, 
-                         workdir=workdir, manager=manager, **kwargs)
+        work = DeltaFactorWorkflow(
+                cif_path, pseudo, kppa,
+                spin_mode=spin_mode, toldfe=toldfe, smearing=smearing, 
+                accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.05, 
+                workdir=workdir, manager=manager, **kwargs)
+
         return work
 

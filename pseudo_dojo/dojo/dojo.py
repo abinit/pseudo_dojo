@@ -14,6 +14,9 @@ from pymatgen.io.abinitio.launcher import PyFlowScheduler
 from pseudo_dojo.dojo.deltaworks import DeltaFactory
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
+import logging
+logger = logging.getLogger(__file__)
+
 
 class DojoError(Exception):
     """Base Error class for DOJO calculations."""
@@ -28,21 +31,21 @@ class Dojo(object):
     """
     Error = DojoError
 
-    def __init__(self, manager, max_ncpus=1, max_level=None, verbose=0):
+    def __init__(self, manager, max_level=None, verbose=0):
         """
         Args:
+            workdir:
+                Working directory.
             manager:
                 `TaskManager` object that will handle the sumbmission of the job 
                 and the parallel execution.
-            max_ncpus:
-                Max number of CPUs to use
             max_level:
                 Max test level to perform.
             verbose:
                 Verbosity level (int).
         """
+        #self.workdir = os.path.abspath(workdir)
         self.manager = manager
-        self.max_ncpus = max_ncpus
         self.verbose = verbose
 
         # List of master classes that will be instantiated afterwards.
@@ -67,16 +70,13 @@ class Dojo(object):
         Args:
             `Pseudo` object or filename.
         """
-        pseudo = Pseudo.aspseudo(pseudo)
-
-        print(pseudo)
-        print('here .....')
+        pseudo = Pseudo.as_pseudo(pseudo)
+        print("Will challenge pseudo:\n", pseudo)
 
         workdir = "DOJO_" + pseudo.name
 
         # Build master instances.
-        masters = [cls(manager=self.manager, max_ncpus=self.max_ncpus,
-                       verbose=self.verbose) for cls in self.master_classes]
+        masters = [cls(manager=self.manager, verbose=self.verbose) for cls in self.master_classes]
 
         isok = False
         for master in masters:
@@ -98,18 +98,15 @@ class DojoMaster(object):
 
     Error = DojoError
 
-    def __init__(self, manager, max_ncpus=1, verbose=0):
+    def __init__(self, manager, verbose=0):
         """
         Args:
             manager:
                 `TaskManager` object 
-            max_ncpus:
-                Max number of CPUs to use
             verbose:
                 Verbosity level (int).
         """
         self.manager = manager
-        self.max_ncpus = max_ncpus
         self.verbose = verbose
 
     @property
@@ -132,11 +129,15 @@ class DojoMaster(object):
 
     def inspect_pseudo(self, pseudo):
         """Returns the maximum level of the DOJO trials passed by the pseudo."""
-        if not pseudo.dojo_report:
-            return None
+        pseudo.read_dojo_report()
+        if not pseudo.has_dojo_report:
+            max_level = None
         else:
             levels = [dojo_key2level(key) for key in pseudo.dojo_report]
-            return max(levels)
+            max_level = max(levels)
+
+        print("max_level", max_level)
+        return max_level
 
     def accept_pseudo(self, pseudo, **kwargs):
         """
@@ -145,7 +146,7 @@ class DojoMaster(object):
 
         A master can train the pseudo if his level == pseudo.dojo_level + 1
         """
-        pseudo = Pseudo.aspseudo(pseudo)
+        pseudo = Pseudo.as_pseudo(pseudo)
 
         ready = False
         pseudo_dojo_level = self.inspect_pseudo(pseudo)
@@ -177,28 +178,14 @@ class DojoMaster(object):
 
         return ready
 
-    @abc.abstractmethod
-    def challenge(self, workdir, **kwargs):
-        """Abstract method to run the calculation."""
-
-    @abc.abstractmethod
-    def make_report(self, **kwargs):
-        """
-        Abstract method.
-        Returns: 
-            report:
-                Dictionary with the results of the trial.
-        """
-
     def write_dojo_report(self, report, overwrite_data=False, ignore_errors=False):
         """
         Write/update the DOJO_REPORT section of the pseudopotential.
         """
-        dojo_key = self.dojo_key
-
         # Read old_report from pseudo.
         old_report = self.pseudo.read_dojo_report()
 
+        dojo_key = self.dojo_key
         if dojo_key not in old_report:
             # Create new entry
             old_report[dojo_key] = {}
@@ -216,12 +203,11 @@ class DojoMaster(object):
     def start_training(self, workdir, **kwargs):
         """Start the tests in the working directory workdir."""
         start_time = time.time()
-        results = self.challenge(workdir, **kwargs)
 
+        results = self.challenge(workdir, **kwargs)
         report = self.make_report(results, **kwargs)
 
-        json_pretty_dump(results, os.path.join(workdir, "report.json"))
-
+        #json_pretty_dump(results, os.path.join(workdir, "report.json"))
         self.write_dojo_report(report)
 
         print("Elapsed time %.2f [s]" % (time.time() - start_time))
@@ -232,6 +218,19 @@ class DojoMaster(object):
             print("got exceptions: ",report["_exceptions"])
 
         return isok
+
+    @abc.abstractmethod
+    def challenge(self, workdir, **kwargs):
+        """Abstract method to run the calculation."""
+
+    @abc.abstractmethod
+    def make_report(self, **kwargs):
+        """
+        Abstract method.
+        Returns: 
+            report:
+                Dictionary with the results of the trial.
+        """
 
 
 class HintsMaster(DojoMaster):
@@ -290,7 +289,7 @@ class HintsMaster(DojoMaster):
         flow.build_and_pickle_dump()
 
         print("Finding optimal values for ecut in the range [%.1f, %.1f, %1.f,] Hartree, "
-              "max_ncpus = %d ..." % (estart, estop, estep, self.max_ncpus))
+              % (estart, estop, estep))
 
         scheduler = PyFlowScheduler.from_user_config()
         scheduler.add_flow(flow)
@@ -314,7 +313,7 @@ class HintsMaster(DojoMaster):
 
 class DeltaFactorMaster(DojoMaster):
     """
-    Level 1 master that drives the computation of the delta factor.
+    This master performs the computation of the delta factor.
     """
     dojo_level = 1
     dojo_key = "delta_factor"
@@ -324,47 +323,41 @@ class DeltaFactorMaster(DojoMaster):
         ready = super(DeltaFactorMaster, self).accept_pseudo(pseudo, **kwargs)
 
         # Do we have this element in the deltafactor database?
-
         return (ready and df_database().has_symbol(self.pseudo.symbol))
 
     def challenge(self, workdir, **kwargs):
         # Calculations will be executed in this directory.
+        self.accuracy = kwargs.pop("accuracy", "normal")
         workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level) + "_ACC_" + self.accuracy)
 
         flow = abilab.AbinitFlow(workdir=workdir, manager=self.manager)
 
-
-        self.accuracy = kwargs.pop("accuracy", "normal")
-
         # 6750 is the value used in the deltafactor code.
         kppa = kwargs.get("kppa", 6750)
-        #kppa = 1
+        kppa = 1
 
         if self.verbose:
-            print("Running delta_factor calculation with %d python threads" % self.max_ncpus)
+            print("Running delta_factor calculation")
             print("Will use kppa = %d " % kppa)
             print("Accuracy = %s" % self.accuracy)
             print("Manager = ",self.manager)
 
         factory = DeltaFactory()
-        work = factory.work_for_pseudo(workdir, self.manager, self.pseudo, 
-                                       accuracy=self.accuracy, kppa=kppa, ecut=None)
+        work = factory.work_for_pseudo(self.pseudo, accuracy=self.accuracy, kppa=kppa, ecut=None, pawecutdg=None)
 
         flow.register_work(work)
         flow.allocate()
+        flow.build_and_pickle_dump()
 
         scheduler = PyFlowScheduler.from_user_config()
         scheduler.add_flow(flow)
         scheduler.start()
 
         wf_results = work.get_results()
-
-        wf_results.json_dump(work.path_in_workdir("dojo_results.json"))
         return wf_results
 
     def make_report(self, results, **kwargs):
         # Get reference results (Wien2K).
-
         wien2k = df_database().get_entry(self.pseudo.symbol)
 
         # Get our results and compute deltafactor estimator.
@@ -376,8 +369,7 @@ class DeltaFactorMaster(DojoMaster):
         d = dict(v0=v0,
                  b0_GPa=b0_GPa,
                  b1=b1,
-                 dfact=dfact
-                )
+                 dfact=dfact)
 
         if results.exceptions:
             d["_exceptions"] = str(results.exceptions)
@@ -398,11 +390,10 @@ def dojo_key2level(key):
 
 def repr_dojo_levels():
     """String representation of the different levels of the Dojo."""
-    level2key = {v: k for k,v in _key2level.items()}
+    level2key = {v: k for k, v in _key2level.items()}
 
     lines = ["Dojo level --> Challenge"]
     for k in sorted(level2key):
         lines.append("level %d --> %s" % (k, level2key[k]))
 
     return "\n".join(lines)
-

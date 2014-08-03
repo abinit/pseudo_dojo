@@ -34,7 +34,7 @@ class GbrvFactory(object):
         return structure
 
     def eoswork_for_pseudo(self, pseudo, struct_type, ecut, pawecutdg=None, paral_kgb=0, ref="ae"):
-        pseudo = Pseudo.aspseudo(pseudo)
+        pseudo = Pseudo.as_pseudo(pseudo)
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
@@ -57,7 +57,7 @@ class GbrvFactory(object):
                   (only for magnetic moments for which spin-unpolarized structures are used)
                 - All calculations are done on an 8x8x8 k-point density and with 0.002 Ry Fermi-Dirac smearing
         """
-        pseudo = Pseudo.aspseudo(pseudo)
+        pseudo = Pseudo.as_pseudo(pseudo)
 
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
@@ -69,20 +69,18 @@ class GbrvFactory(object):
 
 
 
-def gbrv_flow_for_pseudo(pseudo, ecut, pawecutdg):
-    manager = abilab.TaskManager.from_user_config()
-    flow = abilab.AbinitFlow(workdir="FLOW_GBRV", manager=manager, pickle_protocol=0)
+def gbrv_flow_for_pseudo(workdir, pseudo, struct_type, ecut, pawecutdg, with_relax=True, manager=None):
 
-    struct_types = ["fcc"] #, "bcc"]
-    #struct_types = ["bcc"]
+    manager = abilab.TaskManager.from_user_config() if manager is None else manager
+    flow = abilab.AbinitFlow(workdir=manager, manager=manager)
 
     factory = GbrvFactory()
+    if with_relax:
+        work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg, ref="ae")
+    else:
+        work = factory.eoswork_for_pseudo(pseudo, struct_type, ecut, pawecutdg=pawecutdg, ref="ae")
 
-    for struct_type in struct_types:
-        #work = factory.eoswork_for_pseudo(pseudo, struct_type, ecut, pawecutdg=pawecutdg) # ref="gbrv_paw")
-        work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg) #, ref="gbrv_paw")
-        flow.register_work(work)
-
+    flow.register_work(work)
     flow.allocate()
     return flow
 
@@ -100,5 +98,8 @@ if __name__ == "__main__":
     ecut = 20
     pawecutdg = ecut * 4
 
-    flow = gbrv_flow_for_pseudo(pseudo, ecut, pawecutdg)
+    struct_type = "fcc"
+    #struct_type = "bcc"
+
+    flow = gbrv_flow_for_pseudo("FLOW_GBRV", pseudo, struct_type, ecut, pawecutdg)
     flow.build_and_pickle_dump()

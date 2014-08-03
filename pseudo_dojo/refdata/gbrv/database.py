@@ -174,17 +174,17 @@ def read_table_from_file(filename):
     Returns a dict of `GbrvEntry` objects indexed by element symbol or chemical formula.
 
     File Format:
-     0) Dict with structure type
-     1) Comment
-     2) Header with column names
-     3) rows in CSV format
+        0) Dict with structure type
+        1) Comment
+        2) Header with column names
+        3) rows in CSV format
     
     Example:
     
-    # {"struct_type": "fcc"}                                              
-    # fcc testing data,,Please see supplementary materials for details.,,,
-    # Symbol,AE,GBRV_USPP,VASP,PSLIB,GBRV_PAW
-    H,2.283,2.284,2.283,2.284,2.284
+        # {"struct_type": "fcc"}                                              
+        # fcc testing data,,Please see supplementary materials for details.,,,
+        # Symbol,AE,GBRV_USPP,VASP,PSLIB,GBRV_PAW
+        H,2.283,2.284,2.283,2.284,2.284
     """
     table, count = OrderedDict(), 0
 
