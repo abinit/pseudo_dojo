@@ -34,12 +34,6 @@ def main():
     parser.add_argument('-l', '--max-level', type=int, default=0, 
                         help="Maximum DOJO level (default 0 i.e. ecut hints).")
 
-    parser.add_argument('-a', '--accuracy', type=str, default="normal", 
-                        help="Accuracy of the calculation (low-normal-high). Default: normal.")
-
-    parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
-                         help='Verbose, can be supplied multiple times to increase verbosity')
-
     parser.add_argument('--loglevel', default="ERROR", type=str,
                          help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
 
@@ -61,14 +55,16 @@ def main():
     manager = TaskManager.from_user_config()
     pseudos = options.pseudos
 
-    dojo = Dojo(manager=manager, max_level=options.max_level, verbose=options.verbose)
+    dojo = Dojo(pseudos[0], manager=manager, max_level=options.max_level)
 
-    stats = []
-    for pseudo in pseudos:
-        isok = dojo.challenge_pseudo(pseudo, accuracy=options.accuracy)
-        stats.append(isok)
+    return dojo.start_training()
 
-    return stats.count(True)
+    #stats = []
+    #for pseudo in pseudos:
+    #    isok = dojo.add_pseudo(pseudo)
+    #    stats.append(isok)
+
+    #return stats.count(True)
 
 
 if __name__ == "__main__":

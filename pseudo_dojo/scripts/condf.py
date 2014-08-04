@@ -4,8 +4,8 @@ __author__ = 'setten'
 
 import os
 import sys
-import numpy as np
 import collections
+import numpy as np
 
 from pymatgen.io.gwwrapper.convergence import test_conv
 from pymatgen.io.abinitio.netcdf import NetcdfReader
