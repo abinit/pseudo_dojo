@@ -6,12 +6,13 @@ from pymatgen.core.structure import Structure
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.io.smartio import read_structure
 from pymatgen.io.gwwrapper.helpers import refine_structure
-from pymatgen.io.abinitio.workflows import Workflow
+#from pymatgen.io.abinitio.workflows import Workflow
 from pymatgen.io.abinitio.abiobjects import AbiStructure, Smearing, KSampling, Electrons, RelaxationMethod
 from pymatgen.io.abinitio.strategies import HtcStrategy, ScfStrategy, RelaxStrategy #, num_valence_electrons
 from pymatgen.io.abinitio.tasks import (Task, AbinitTask, Dependency, Node, ScfTask, NscfTask, BseTask, RelaxTask)
 from pymatgen.io.abinitio.eos import EOS
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
+from pseudo_dojo.dojo.dojo_workflow import DojoWorkflow
 
 
 class DeltaFactoryError(Exception):
@@ -83,8 +84,9 @@ class DeltaFactory(object):
             workdir=workdir, manager=manager, **kwargs)
 
 
-class DeltaFactorWorkflow(Workflow):
+class DeltaFactorWorkflow(DojoWorkflow):
     """Workflow for the calculation of the deltafactor."""
+
     def __init__(self, structure_or_cif, pseudo, kppa,
                  spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
                  accuracy="normal", ecut=None, pawecutdg=None, ecutsm=0.05, chksymbreak=0,
@@ -133,7 +135,7 @@ class DeltaFactorWorkflow(Workflow):
         if ecut is not None:
             extra_abivars.update({"ecut": ecut})
 
-        self.pseudo = Pseudo.as_pseudo(pseudo)
+        self._pseudo = Pseudo.as_pseudo(pseudo)
 
         structure = AbiStructure.asabistructure(structure)
         self._input_structure = structure
@@ -157,13 +159,21 @@ class DeltaFactorWorkflow(Workflow):
 
             self.register(scf_input, task_class=ScfTask, manager=manager)
 
+    @property
+    def pseudo(self):
+        return self._pseudo
+
+    @property
+    def dojo_trial(self):
+        return "deltafactor"
+
     def get_results(self):
-        wf_results = super(DeltaFactorWorkflow, self).get_results()
+        results = super(DeltaFactorWorkflow, self).get_results()
 
         num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")
 
-        wf_results.update(dict(
+        results.update(dict(
             etotals=list(etotals),
             volumes=list(self.volumes),
             num_sites=num_sites))
@@ -189,7 +199,7 @@ class DeltaFactorWorkflow(Workflow):
             print("delta", eos_fit)
             print("Deltafactor = %.3f meV" % dfact)
 
-            wf_results.update({
+            results.update({
                 "dfact_meV": dfact,
                 "v0": eos_fit.v0,
                 "b0": eos_fit.b0,
@@ -198,7 +208,13 @@ class DeltaFactorWorkflow(Workflow):
             })
 
         except EOS.Error as exc:
-            wf_results.push_exceptions(exc)
+            results.push_exceptions(exc)
+
+        d = {k: results[k] for k in ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes", "num_sites")}
+        if results.exceptions:
+            d["_exceptions"] = str(results.exceptions)
+
+        self.write_dojo_report(d)
 
         # Write data for the computation of the delta factor
         with open(self.outdir.path_in("deltadata.txt"), "w") as fh:
@@ -207,7 +223,7 @@ class DeltaFactorWorkflow(Workflow):
             for (v, e) in zip(self.volumes, etotals):
                 fh.write("%s %s\n" % (v/num_sites, e/num_sites))
 
-        return wf_results
+        return results
 
     def on_all_ok(self):
         """Callback executed when all tasks in self have reached S_OK."""

@@ -1694,16 +1694,16 @@ class NistEntry(namedtuple("NistEntry", "Z, states, energies")):
 
         app("Atomic energies [Ha]:")
         app("\t" + str(self.energies))
+
         return "\n".join(lines)
 
     @property
     def symbol(self):
+        """Chemical symbol"""
         return symbol_from_Z(self.Z)
 
     def to_table(self):
-        """
-        Returns a table of strings whose columns contain ["n", "l", "occ", "eigval [Ha]"]]
-        """
+        """Returns a table of strings whose columns contain ["n", "l", "occ", "eigval [Ha]"]]"""
         table = [["n", "l", "occ", "eigval [Ha]"]]
         for state in self.states:
             table.append([state.n, state.l, state.occ, state.eig])

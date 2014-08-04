@@ -9,8 +9,9 @@ from pymatgen.core.structure import Structure
 from pymatgen.io.abinitio.abiobjects import AbiStructure, Smearing, KSampling, Electrons, RelaxationMethod
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
 from pymatgen.io.abinitio.tasks import ScfTask, RelaxTask
-from pymatgen.io.abinitio.workflows import Workflow
+#from pymatgen.io.abinitio.workflows import Workflow
 from pseudo_dojo.refdata.gbrv import gbrv_database
+from pseudo_dojo.dojo.dojo_workflow import DojoWorkflow
 
 import logging
 logger = logging.getLogger(__name__)
@@ -84,7 +85,7 @@ def gbrv_nband(pseudo):
     return nband
 
 
-class GbrvRelaxAndEosWorkflow(Workflow):
+class GbrvRelaxAndEosWorkflow(DojoWorkflow):
 
     def __init__(self, structure, struct_type, pseudo, ecut, ngkpt=(8,8,8),
                  spin_mode="unpolarized", toldfe=1.e-8, smearing="fermi_dirac:0.001 Ha",
@@ -121,7 +122,7 @@ class GbrvRelaxAndEosWorkflow(Workflow):
         self.accuracy = accuracy
 
         # nband must be large enough to accomodate fractional occupancies.
-        self.pseudo = Pseudo.as_pseudo(pseudo)
+        self._pseudo = Pseudo.as_pseudo(pseudo)
         self.nband = gbrv_nband(self.pseudo)
 
         # Set extra_abivars.
@@ -148,6 +149,14 @@ class GbrvRelaxAndEosWorkflow(Workflow):
 
         # Register structure relaxation task.
         self.relax_task = self.register(self.relax_input, task_class=RelaxTask)
+
+    @property
+    def dojo_trial(self):
+        return "gbrv_" + self.struct_type
+
+    @property
+    def pseudo(self):
+        return self._pseudo
 
     def add_eos_tasks(self):
         """
@@ -178,14 +187,14 @@ class GbrvRelaxAndEosWorkflow(Workflow):
         self.flow.build_and_pickle_dump()
 
     def compute_eos(self):
-        wf_results = self.Results()
+        results = self.Results()
 
         # Read etotals and fit E(V) with a parabola to find minimum
         #num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")[1:]
         assert len(etotals) == len(self.volumes)
 
-        wf_results.update(dict(
+        results.update(dict(
             etotals=list(etotals),
             volumes=list(self.volumes),
             #num_sites=num_sites,
@@ -196,7 +205,7 @@ class GbrvRelaxAndEosWorkflow(Workflow):
             #eos_fit.plot(show=False, savefig=self.outdir.path_in("eos.pdf"))
 
         except EOS.Error as exc:
-            wf_results.push_exceptions(exc)
+            results.push_exceptions(exc)
 
         # Function to compute cubic a0 from primitive v0 (depends on struct_type)
         vol2a = {"fcc": lambda vol: (4 * vol) ** (1/3.),
@@ -205,7 +214,7 @@ class GbrvRelaxAndEosWorkflow(Workflow):
 
         a0 = vol2a(eos_fit.v0)
 
-        wf_results.update(dict(
+        results.update(dict(
             v0=eos_fit.v0,
             b0=eos_fit.b0,
             b1=eos_fit.b1,
@@ -225,7 +234,13 @@ class GbrvRelaxAndEosWorkflow(Workflow):
         print("AE - THIS: abs_err = %f, rel_err = %f %%" % (abs_err, rel_err))
         print("GBRV-PAW - THIS: abs_err = %f, rel_err = %f %%" % (pawabs_err, pawrel_err))
 
-        return wf_results
+        d = {k: results[k] for k in ("a0", "etotals", "volumes")}
+        if results.exceptions:
+            d["_exceptions"] = str(results.exceptions)
+
+        self.write_dojo_report(d)
+
+        return results
 
     @property
     def addeos_done(self):

@@ -35,14 +35,14 @@ def main():
                         help="Maximum DOJO level (default 0 i.e. ecut hints).")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
-                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
+                        help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
 
     parser.add_argument('pseudos', nargs='+', help='List of pseudopotential files.')
 
     try:
         options = parser.parse_args()
     except:
-        shows_examples_and_exit(1)
+        show_examples_and_exit(1)
 
     # loglevel is bound to the string value obtained from the command line argument. 
     # Convert to upper case to allow the user to specify --loglevel=DEBUG or --loglevel=debug
@@ -52,13 +52,17 @@ def main():
         raise ValueError('Invalid log level: %s' % options.loglevel)
     logging.basicConfig(level=numeric_level)
 
-    manager = TaskManager.from_user_config()
     pseudos = options.pseudos
+    manager = TaskManager.from_user_config()
 
-    dojo = Dojo(pseudos[0], manager=manager, max_level=options.max_level)
+    dojo = Dojo(manager=manager, max_level=options.max_level)
 
-    return dojo.start_training()
+    for pseudo in pseudos:
+        dojo.add_pseudo(pseudo)
 
+    dojo.build()
+
+    #return dojo.start_training()
     #stats = []
     #for pseudo in pseudos:
     #    isok = dojo.add_pseudo(pseudo)
