@@ -48,7 +48,7 @@ class GbrvFactory(object):
 
         return structure
 
-    def relax_and_eos_work(self, pseudo, struct_type, ecut, pawecutdg=None, paral_kgb=0, ref="ae"):
+    def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, paral_kgb=0, ref="ae"):
         """
         Returns a `Workflow` object from the given pseudopotential.
 
@@ -70,7 +70,7 @@ class GbrvFactory(object):
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
-        return GbrvRelaxAndEosWorkflow(structure, struct_type, pseudo, ecut,
+        return GbrvRelaxAndEosWorkflow(structure, struct_type, pseudo, ecut=ecut,
                                        pawecutdg=pawecutdg, paral_kgb=paral_kgb)
 
 
@@ -87,9 +87,9 @@ def gbrv_nband(pseudo):
 
 class GbrvRelaxAndEosWorkflow(DojoWorkflow):
 
-    def __init__(self, structure, struct_type, pseudo, ecut, ngkpt=(8,8,8),
+    def __init__(self, structure, struct_type, pseudo, ecut=None, pawecutdg=None, ngkpt=(8,8,8),
                  spin_mode="unpolarized", toldfe=1.e-8, smearing="fermi_dirac:0.001 Ha",
-                 accuracy="normal", pawecutdg=None, paral_kgb=0, ecutsm=0.05, chksymbreak=0,
+                 accuracy="normal", paral_kgb=0, ecutsm=0.05, chksymbreak=0,
                  workdir=None, manager=None, **kwargs):
                  # FIXME Hack in chksymbreak
         """

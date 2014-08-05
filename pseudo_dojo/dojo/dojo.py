@@ -10,11 +10,9 @@ from abipy import abilab
 from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.tasks import TaskManager
 from pymatgen.io.abinitio.pseudos import Pseudo, read_dojo_report
-from pymatgen.io.abinitio.calculations import PPConvergenceFactory
-from pymatgen.io.abinitio.launcher import PyFlowScheduler
-from pymatgen.io.abinitio.eos import EOS
 from pseudo_dojo.dojo.deltaworks import DeltaFactory
 from pseudo_dojo.dojo.gbrvworks import GbrvFactory
+from pseudo_dojo.dojo.pseudo_convergence import PPConvergenceFactory
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
 import logging
@@ -23,17 +21,46 @@ logger = logging.getLogger(__file__)
 _ALL_ACCURACIES = ["low", "normal", "high"]
 
 
-class DojoReport(dict):
-    _TESTS = ["delta_factor",]
+#class DojoReportSection(dict)
+#    #dojo_trial
+#
+#    def __init__(self, dojo_accuracy, **kwargs)
+#        super(ReportEntry, self).__init__(**kwargs)
+#        self.dojo_accuracy = dojo_accuracy
+#
+#    def plot(self, ax=None, **kwargs)
+#
+#class DeltaFactorSection(DojoReportSection)
+#    dojo_trial = "delta_factor"
+    
 
-    _TESTS2KEY = dict(
-        delta_factor="dfact_meV",
-    )
+
+class DojoReport(dict):
+    _TESTS = [
+        "deltafactor",
+        "gbrv_bcc",
+        "gbrv_fcc",
+
+    ]
+
+    _TESTS2KEY = {
+        "deltafactor": "dfact_meV",
+        "gbrv_bcc": "a0",
+        "gbrv_fcc": "a0",
+    }
 
     def __init__(self, filepath): 
         super(dict, self).__init__()
         d = read_dojo_report(filepath)
         self.update(**d)
+
+    @classmethod
+    def from_file(cls, filepath):
+        return cls(filepath)
+
+    #def groupby(self):
+
+    #def has_trial(self, dojo_trial, accuracy=None)
 
     def print_table(self, stream=sys.stdout):
         pprint_table(self.to_table(), out=stream)
@@ -57,6 +84,7 @@ class DojoReport(dict):
             row = [accuracy]
             for test in self._TESTS:
                 d = self[test][accuracy]
+                print(d.keys())
                 #value = d["dojo_value"]
                 #rel_err = d["dojo_rel_err"]
                 #s = "%s (%s %%)" % (value, rel_err)
@@ -67,8 +95,6 @@ class DojoReport(dict):
             table.append(row)
 
         return table
-
-    #def has_trial(self, dojo_trial, accuracy=None)
 
     def find_exceptions(self):
         problems = {}
@@ -118,7 +144,11 @@ class Dojo(object):
     """
     Error = DojoError
 
-    ACCURACIES = ["low", "normal", "high"]
+    ACCURACIES = [
+        "low", 
+        #"normal", 
+        #"high"
+    ]
 
     TRIALS = [
         #"DeltaFactor",
@@ -147,45 +177,48 @@ class Dojo(object):
     def add_pseudo(self, pseudo):
         """Add a pseudo to the Dojo."""
         pseudo = Pseudo.as_pseudo(pseudo)
-
-        # Inspect the dojo_report and build the flow
-        #if not pseudo.has_hints:
-        #    raise NotImplementedError
-
-        dojo_report = DojoReport(pseudo.filepath)
-        print(dojo_report)
+        #dojo_report = DojoReport(pseudo.filepath)
+        #print(dojo_report)
 
         # Construct the flow 
         flow_workdir = os.path.join(self.workdir, pseudo.name)
         flow = abilab.AbinitFlow(workdir=flow_workdir, manager=self.manager, pickle_protocol=0)
 
-        ecut = 4  # FIXME
+        # Inspect the dojo_report and build the flow
+        if not pseudo.has_hints:
+            factory = PPConvergenceFactory()
+            ecut_work = factory.work_for_pseudo(pseudo, ecut_slice=slice(4,None,1))
+            flow.register_work(ecut_work)
 
-        dojo_trial = "deltafactor"
-        if dojo_trial in self.TRIALS:
-            # Do we have this element in the deltafactor database?
-            if not df_database().has_symbol(pseudo.symbol):
-                logger.warning("Cannot find %s in deltafactor database." % pseudo.symbol)
+        else
+            # FIXME
+            ecut = 4  
 
-            delta_factory = DeltaFactory()
-            # 6750 is the value used in the deltafactor code.
-            kppa = 6750
-            kppa = 1
+            dojo_trial = "deltafactor"
+            if dojo_trial in self.TRIALS:
+                # Do we have this element in the deltafactor database?
+                if not df_database().has_symbol(pseudo.symbol):
+                    logger.warning("Cannot find %s in deltafactor database." % pseudo.symbol)
 
-            for accuracy in self.ACCURACIES:
-                #if dojo_report.has_trial(dojo_trial, accuracy=accuracy): continue
-                work = delta_factory.work_for_pseudo(pseudo, accuracy=accuracy, kppa=kppa, ecut=10, pawecutdg=None)
-                work.set_dojo_accuracy(accuracy)
-                flow.register_work(work)
+                delta_factory = DeltaFactory()
+                # 6750 is the value used in the deltafactor code.
+                kppa = 6750
+                kppa = 1
 
-        if "GbrvRelax" in self.TRIALS:
-            gbrv_factory = GbrvFactory()
-            for struct_type in ["fcc", "bcc"]:
                 for accuracy in self.ACCURACIES:
                     #if dojo_report.has_trial(dojo_trial, accuracy=accuracy): continue
-                    work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=None)
+                    work = delta_factory.work_for_pseudo(pseudo, accuracy=accuracy, kppa=kppa) #, ecut=10, pawecutdg=None)
                     work.set_dojo_accuracy(accuracy)
-                    flow.register_work(work)
+                    flow.register_work(work, deps=deps)
+
+            if "GbrvRelax" in self.TRIALS:
+                gbrv_factory = GbrvFactory()
+                for struct_type in ["fcc", "bcc"]:
+                    for accuracy in self.ACCURACIES:
+                        #if dojo_report.has_trial(dojo_trial, accuracy=accuracy): continue
+                        work = gbrv_factory.relax_and_eos_work(pseudo, struct_type) #, ecut, pawecutdg=None)
+                        work.set_dojo_accuracy(accuracy)
+                        flow.register_work(work, deps=deps)
 
         flow.allocate()
         self.pseudos.append(pseudo)
@@ -198,104 +231,27 @@ class Dojo(object):
 
 
 
-class DojoMaster(object):
-    @staticmethod
-    def subclass_from_dojo_level(dojo_level):
-        """Returns a subclass of `DojoMaster` given the dojo_level."""
-        classes = []
-        for cls in DojoMaster.__subclasses__():
-            if cls.dojo_level == dojo_level:
-                classes.append(cls)
-
-        if len(classes) != 1:
-            raise DojoError("Found %d masters with dojo_level %d" % (len(classes), dojo_level))
-
-        return classes[0]
-
-
-class HintsMaster(DojoMaster):
-    """
-    Level 0 master that analyzes the convergence of the total energy versus
-    the plane-wave cutoff energy.
-    """
-    dojo_level = 0
-    dojo_key = "hints"
-
-    # Absolute tolerance for low, normal, and high accuracy.
-    _ATOLS_MEV = (10, 1, 0.1)
-
-    def challenge(self, workdir):
-        workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level))
-        flow = abilab.AbinitFlow(workdir=workdir, manager=self.manager)
-
-        factory = PPConvergenceFactory()
-
-        pseudo = self.pseudo
-        toldfe = 1.e-10
-        estep = 10 #kwargs.get("estep", 10)
-        eslice = slice(5, None, estep)
-
-        # TODO Rewrite this
-        #w = factory.work_for_pseudo(pseudo, eslice, toldfe=toldfe, atols_mev=self._ATOLS_MEV)
-
-        #if os.path.exists(w.workdir): shutil.rmtree(w.workdir)
-        #print("Converging %s in iterative mode with ecut_slice %s" % (pseudo.name, eslice, self.max_ncpus))
-        #scheduler.start()
-
-        #w.start()
-        #w.wait()
-        #wres = w.get_results()
-        #w.move("ITERATIVE")
-
-        #estart = max(wres["low"]["ecut"] - estep, 5)
-        #if estart <= 10:
-        #    estart = 1 # To be sure we don't overestimate ecut_low
-
-        #estop, estep = wres["high"]["ecut"] + estep, 1
-        estart=10; estop=25; estep=5
-
-        erange = list(np.arange(estart, estop, estep))
-
-        self.work = work = factory.work_for_pseudo(pseudo, erange, toldfe=toldfe, atols_mev=self._ATOLS_MEV)
-
-        flow.register_work(work)
-        flow.allocate()
-        flow.build_and_pickle_dump()
-
-        print("Finding optimal values for ecut in the range [%.1f, %.1f, %1.f,] Hartree, "
-              % (estart, estop, estep))
-
-        scheduler = PyFlowScheduler.from_user_config()
-        scheduler.add_flow(flow)
-        scheduler.start()
-
-    def make_report(self):
-        """
-        "hints": {
-            "high": {"aug_ratio": 1, "ecut": 45},
-            "low": {...},
-            "normal": {...}
-        """
-        results = self.work.get_results()
-        d = {key: results[key] for key in _ALL_ACCURACIES}
-
-        d.update(dict(
-            ecuts=results["ecuts"],
-            etotals=results["etotals"],
-        ))
-        
-        if results.exceptions:
-            d["_exceptions"] = str(results.exceptions)
-
-        return {self.dojo_key: d}
+#class DojoMaster(object):
+#    @staticmethod
+#    def subclass_from_dojo_level(dojo_level):
+#        """Returns a subclass of `DojoMaster` given the dojo_level."""
+#        classes = []
+#        for cls in DojoMaster.__subclasses__():
+#            if cls.dojo_level == dojo_level:
+#                classes.append(cls)
+#
+#        if len(classes) != 1:
+#            raise DojoError("Found %d masters with dojo_level %d" % (len(classes), dojo_level))
+#
+#        return classes[0]
 
 
-_key2level = {}
-for cls in DojoMaster.__subclasses__():
-    _key2level[cls.dojo_key] = cls.dojo_level
-
-
-def dojo_key2level(key):
-    """Return the trial level from the name found in the pseudo."""
-    return _key2level[key]
-
+#_key2level = {}
+#for cls in DojoMaster.__subclasses__():
+#    _key2level[cls.dojo_key] = cls.dojo_level
+#
+#
+#def dojo_key2level(key):
+#    """Return the trial level from the name found in the pseudo."""
+#    return _key2level[key]
+#

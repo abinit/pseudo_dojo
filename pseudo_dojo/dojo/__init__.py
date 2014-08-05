@@ -1,1 +1,1 @@
-from .dojo import Dojo
+from .dojo import Dojo, DojoReport

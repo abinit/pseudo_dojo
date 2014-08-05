@@ -3,11 +3,10 @@
 from __future__ import division, print_function
 
 import sys
+import argparse
 
-from argparse import ArgumentParser
 from pprint import pprint
-
-from pseudo_dojo import Dojo, TaskManager
+from pseudo_dojo import Dojo, DojoReport, TaskManager
 
 __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
@@ -17,11 +16,9 @@ __maintainer__ = "Matteo Giantomassi"
 def main():
     def str_examples():
         examples = """
-          Usage Example:
-          \n
-          ppdojo_run.py Si.fhi -m10           => Cutoff converge test for Si.fhi using up to 10 CPUs.
-          ppdojo_run.py Si.fhi -l1 -n10 -m20  => Deltafactor test using up to 20 CPUs, each task uses 10 MPI nodes.
-        """
+Usage Example:\n
+    ppdojo_run.py build Si.fhi  => Build pseudo_dojo flow for Si.fhi
+\n"""
         return examples
 
     def show_examples_and_exit(error_code=1):
@@ -29,7 +26,29 @@ def main():
         sys.stderr.write(str_examples())
         sys.exit(error_code)
 
-    parser = ArgumentParser(epilog=str_examples())
+    # Decorate argparse classes to add portable support for aliases in add_subparsers
+    class MyArgumentParser(argparse.ArgumentParser):
+        def add_subparsers(self, **kwargs):
+            new = super(MyArgumentParser, self).add_subparsers(**kwargs)
+            # Use my class
+            new.__class__ = MySubParserAction
+            return new
+                                                                                                                    
+    class MySubParserAction(argparse._SubParsersAction):
+        def add_parser(self, name, **kwargs):
+            """Allows one to pass the aliases option even if this version of ArgumentParser does not support it."""
+            try:
+                return super(MySubParserAction, self).add_parser(name, **kwargs)
+            except Exception as exc:
+                if "aliases" in kwargs: 
+                    # Remove aliases and try again.
+                    kwargs.pop("aliases")
+                    return super(MySubParserAction, self).add_parser(name, **kwargs)
+                else:
+                    # Wrong call.
+                    raise exc
+
+    parser = MyArgumentParser(epilog=str_examples())
 
     parser.add_argument('-l', '--max-level', type=int, default=0, 
                         help="Maximum DOJO level (default 0 i.e. ecut hints).")
@@ -38,6 +57,15 @@ def main():
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
 
     parser.add_argument('pseudos', nargs='+', help='List of pseudopotential files.')
+
+    # Create the parsers for the sub-commands
+    subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
+
+    # Subparser for single command.
+    p_build = subparsers.add_parser('build', aliases=["b"], help="Build dojo.")
+
+    # Subparser for single command.
+    p_report = subparsers.add_parser('report', aliases=["r"], help="Show DOJO_REPORT.")
 
     try:
         options = parser.parse_args()
@@ -55,21 +83,20 @@ def main():
     pseudos = options.pseudos
     manager = TaskManager.from_user_config()
 
-    dojo = Dojo(manager=manager, max_level=options.max_level)
+    if options.command == "build":
+        dojo = Dojo(manager=manager, max_level=options.max_level)
 
-    for pseudo in pseudos:
-        dojo.add_pseudo(pseudo)
+        for pseudo in pseudos:
+            dojo.add_pseudo(pseudo)
 
-    dojo.build()
+        dojo.build()
 
-    #return dojo.start_training()
-    #stats = []
-    #for pseudo in pseudos:
-    #    isok = dojo.add_pseudo(pseudo)
-    #    stats.append(isok)
+    elif options.command == "report":
+        for pseudo in pseudos:
+            report = DojoReport.from_file(pseudo)
+            report.print_table()
 
-    #return stats.count(True)
-
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())
