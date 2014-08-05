@@ -24,7 +24,6 @@ from pymatgen.io.smartio import read_structure
 from pymatgen.io.gwwrapper.helpers import refine_structure
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -157,85 +156,6 @@ def compute_hints(ecuts, etotals, atols_mev, min_numpts=1, stream=sys.stdout):
         high={"ecut": ecut_high, "aug_ratio": aug_ratio_high})
 
 
-def plot_etotals(ecuts, etotals, aug_ratios, **kwargs):
-    """
-    Uses Matplotlib to plot the energy curve as function of ecut
-
-    Args:
-        ecuts:
-            List of cutoff energies
-        etotals:
-            Total energies in Hartree, see aug_ratios
-        aug_ratios:
-            List augmentation rations. [1,] for norm-conserving, [4, ...] for PAW
-            The number of elements in aug_ration must equal the number of (sub)lists
-            in etotals. Example:
-
-                - NC: etotals = [3.4, 4,5 ...], aug_ratios = [1,]
-                - PAW: etotals = [[3.4, ...], [3.6, ...]], aug_ratios = [4,6]
-
-        =========     ==============================================================
-        kwargs        description
-        =========     ==============================================================
-        show          True to show the figure
-        savefig       'abc.png' or 'abc.eps'* to save the figure to a file.
-        =========     ==============================================================
-
-    Returns:
-        `matplotlib` figure.
-    """
-    show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None)
-
-    import matplotlib.pyplot as plt
-    fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
-
-    npts = len(ecuts)
-
-    if len(aug_ratios) != 1 and len(aug_ratios) != len(etotals):
-        raise ValueError("The number of sublists in etotal must equal the number of aug_ratios")
-
-    if len(aug_ratios) == 1:
-        etotals = [etotals,]
-
-    lines, legends = [], []
-
-    #emax = -np.inf
-    for (aratio, etot) in zip(aug_ratios, etotals):
-        emev = np.array(etot) * Ha_to_eV * 1000
-        emev_inf = npts * [emev[-1]]
-        yy = emev - emev_inf
-        #print("emax", emax)
-        #print("yy", yy)
-        #emax = np.max(emax, np.max(yy))
-
-        line, = ax.plot(ecuts, yy, "-->", linewidth=3.0, markersize=10)
-
-        lines.append(line)
-        legends.append("aug_ratio = %s" % aratio)
-
-    ax.legend(lines, legends, 'upper right', shadow=True)
-
-    # Set xticks and labels.
-    ax.grid(True)
-    ax.set_title("$\Delta$ Etotal Vs Ecut")
-    ax.set_xlabel("Ecut [Ha]")
-    ax.set_ylabel("$\Delta$ Etotal [meV]")
-    ax.set_xticks(ecuts)
-
-    #ax.yaxis.set_view_interval(-10, emax + 0.01 * abs(emax))
-    ax.yaxis.set_view_interval(-10, 20)
-
-    if show:
-        plt.show()
-
-    if savefig is not None:
-        fig.savefig(savefig)
-
-    return fig
-
-
 class PseudoConvergence(DojoWorkflow):
 
     def __init__(self, pseudo, ecut_slice, nlaunch, atols_mev,
@@ -315,18 +235,6 @@ class PseudoConvergence(DojoWorkflow):
         self.ecuts.append(ecut)
         self.register(strategy)
 
-    #def get_results(self):
-    #    """Return the results of the tasks."""
-    #    wf_results = super(PseudoIterativeConvergence, self).get_results()
-    #    data = self.check_etotal_convergence()
-    #    ecuts, etotals, aug_ratios = data["ecuts"],  data["etotals"], data["aug_ratios"]
-    #    #plot_etotals(ecuts, etotals, aug_ratios, show=False, savefig=self.path_in_workdir("etotals.pdf"))
-    #    wf_results.update(data)
-    #    if not monotonic(data["etotals"], mode="<", atol=1.0e-5):
-    #        logger.warning("E(ecut) is not decreasing")
-    #        wf_results.push_exceptions("E(ecut) is not decreasing\n" + str(etotals))
-    #    return wf_results
-
     def make_report(self):
         """
         "hints": {
@@ -350,13 +258,15 @@ class PseudoConvergence(DojoWorkflow):
     def on_all_ok(self):
         """
         This method is called when self reaches S_OK.
+        It checks if Etotal(ecut) is converged withing atols_mev
+        If the condition is not fulfilled, the callback creates
+        nlaunch new tasks with larger values of ecut and we keep on running.
         """
         etotals = self.read_etotals()
         data = compute_hints(self.ecuts, etotals, self.atols_mev)
 
         if data.exit:
             print("converged")
-
             d = {key: data[key] for key in ["low", "normal", "high"]}
                                                                          
             d.update(dict(
@@ -367,7 +277,7 @@ class PseudoConvergence(DojoWorkflow):
             #if results.exceptions:
             #    d["_exceptions"] = str(results.exceptions)
 
-            print(d)
+            #print(d)
             #self.write_dojo_report(d)
 
             # Read old_report from pseudo.
@@ -378,7 +288,7 @@ class PseudoConvergence(DojoWorkflow):
             self.pseudo.write_dojo_report(old_report)
 
         else:
-            print("Building new tasks")
+            logger.info("Building new tasks")
 
             estart = self.ecuts[-1] 
             for i in range(self.nlaunch):
@@ -430,22 +340,6 @@ class PPConvergenceFactory(object):
             toldfe=toldfe, spin_mode=spin_mode,
             acell=acell, smearing=smearing, workdir=workdir, manager=manager)
 
-
-
-#def build_flow():
-#    from abipy import abilab
-#    factory = PPConvergenceFactory()
-#    pseudo = sys.argv[1]
-#
-#    flow = abilab.AbinitFlow("hello_pseudo", abilab.TaskManager.from_user_config(), pickle_protocol=0)
-#
-#    atols_mev = (10, 1, 0.1)
-#    ecut_slice = slice(5, None, 1)
-#
-#    work = PseudoConvergence(pseudo, ecut_slice, atols_mev)
-#    #work = factory.work_for_pseudo(pseudo, [2, 4, 6])
-#    flow.register_work(work)
-#    return flow.allocate()
 
 
 class DeltaFactoryError(Exception):
@@ -886,11 +780,11 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
         a new workflow for the computation of the EOS with the GBRV parameters.
         """
         if not self.addeos_done:
-            print("Building EOS tasks")
+            logger.info("Building EOS tasks")
             self.add_eos_tasks()
             self._finalized = False
         else:
-            print("Computing EOS")
+            logger.info("Computing EOS")
             self.compute_eos()
 
         return super(GbrvRelaxAndEosWorkflow, self).on_all_ok()

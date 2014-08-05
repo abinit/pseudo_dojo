@@ -50,8 +50,8 @@ Usage Example:\n
 
     parser = MyArgumentParser(epilog=str_examples())
 
-    parser.add_argument('-l', '--max-level', type=int, default=0, 
-                        help="Maximum DOJO level (default 0 i.e. ecut hints).")
+    #parser.add_argument('-l', '--max-level', type=int, default=0, 
+    #                    help="Maximum DOJO level (default 0 i.e. ecut hints).")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
@@ -84,7 +84,7 @@ Usage Example:\n
     manager = TaskManager.from_user_config()
 
     if options.command == "build":
-        dojo = Dojo(manager=manager, max_level=options.max_level)
+        dojo = Dojo(manager=manager)
 
         for pseudo in pseudos:
             dojo.add_pseudo(pseudo)
