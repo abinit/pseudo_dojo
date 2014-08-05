@@ -2,18 +2,13 @@ from __future__ import division, print_function
 
 import sys
 import os
-import abc
-import shutil
 import numpy as np
 
 from abipy import abilab
 from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.tasks import TaskManager
 from pymatgen.io.abinitio.pseudos import Pseudo, read_dojo_report
-from pseudo_dojo.dojo.deltaworks import DeltaFactory
-from pseudo_dojo.dojo.gbrvworks import GbrvFactory
-from pseudo_dojo.dojo.pseudo_convergence import PPConvergenceFactory
-from pseudo_dojo.refdata.deltafactor import df_database, df_compute
+from pseudo_dojo.dojo.dojo_workflows import PPConvergenceFactory, DeltaFactory, GbrvFactory
 
 import logging
 logger = logging.getLogger(__file__)
@@ -32,7 +27,6 @@ _ALL_ACCURACIES = ["low", "normal", "high"]
 #
 #class DeltaFactorSection(DojoReportSection)
 #    dojo_trial = "delta_factor"
-    
 
 
 class DojoReport(dict):
@@ -59,7 +53,6 @@ class DojoReport(dict):
         return cls(filepath)
 
     #def groupby(self):
-
     #def has_trial(self, dojo_trial, accuracy=None)
 
     def print_table(self, stream=sys.stdout):
@@ -131,10 +124,6 @@ class DojoReport(dict):
     #def plot_gbrv_eos(self, **kwargs):
 
 
-class DojoError(Exception):
-    """Base Error class for DOJO calculations."""
-
-
 class Dojo(object):
     """
     This object drives the execution of the tests for the pseudopotential.
@@ -142,7 +131,6 @@ class Dojo(object):
     A Dojo has a set of masters, each master is associated to a particular trial
     and the master is responsible for the validation/rating of the results of the tests.
     """
-    Error = DojoError
 
     ACCURACIES = [
         "low", 
@@ -151,11 +139,11 @@ class Dojo(object):
     ]
 
     TRIALS = [
-        #"DeltaFactor",
+        #"deltafactor",
         "GbrvRelax",
     ]
 
-    def __init__(self, workdir=None, manager=None, max_level=None):
+    def __init__(self, workdir=None, manager=None):
         """
         Args:
             pseudo:
@@ -163,13 +151,11 @@ class Dojo(object):
                 Working directory.
             manager:
                 `TaskManager` object that will handle the sumbmission of the jobs.
-            max_level:
-                Max test level to perform.
         """
         self.workdir = os.path.abspath(workdir) if workdir is not None else os.path.join(os.getcwd(), "DOJO")
         self.manager = TaskManager.from_user_config() if manager is None else manager
 
-        # List of pseudos analyzed by the Dojo and flow associated to the pseudo.
+        # List of pseudos analyzed by the Dojo and corresponding flows.
         self.pseudos, self.flows = [], []
 
     #def __str__(self):
@@ -187,38 +173,40 @@ class Dojo(object):
         # Inspect the dojo_report and build the flow
         if not pseudo.has_hints:
             factory = PPConvergenceFactory()
-            ecut_work = factory.work_for_pseudo(pseudo, ecut_slice=slice(4,None,1))
+            ecut_work = factory.work_for_pseudo(pseudo, ecut_slice=slice(4, None, 1), nlaunch=4)
             flow.register_work(ecut_work)
 
-        else
-            # FIXME
-            ecut = 4  
+        else:
+            hint = pseudo.hint_for_accuracy(accuracy="normal")
+            ecut = hint.ecut
+            pawecutdg = ecut * hint.aug_ratio
 
             dojo_trial = "deltafactor"
             if dojo_trial in self.TRIALS:
                 # Do we have this element in the deltafactor database?
-                if not df_database().has_symbol(pseudo.symbol):
-                    logger.warning("Cannot find %s in deltafactor database." % pseudo.symbol)
+                #if not df_database().has_symbol(pseudo.symbol):
+                #    logger.warning("Cannot find %s in deltafactor database." % pseudo.symbol)
 
                 delta_factory = DeltaFactory()
-                # 6750 is the value used in the deltafactor code.
-                kppa = 6750
+                kppa = 6750 # 6750 is the value used in the deltafactor code.
                 kppa = 1
 
                 for accuracy in self.ACCURACIES:
                     #if dojo_report.has_trial(dojo_trial, accuracy=accuracy): continue
-                    work = delta_factory.work_for_pseudo(pseudo, accuracy=accuracy, kppa=kppa) #, ecut=10, pawecutdg=None)
+                    work = delta_factory.work_for_pseudo(pseudo, accuracy=accuracy, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg)
+
                     work.set_dojo_accuracy(accuracy)
-                    flow.register_work(work, deps=deps)
+                    flow.register_work(work)
 
             if "GbrvRelax" in self.TRIALS:
                 gbrv_factory = GbrvFactory()
                 for struct_type in ["fcc", "bcc"]:
                     for accuracy in self.ACCURACIES:
                         #if dojo_report.has_trial(dojo_trial, accuracy=accuracy): continue
-                        work = gbrv_factory.relax_and_eos_work(pseudo, struct_type) #, ecut, pawecutdg=None)
+                        work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg)
+
                         work.set_dojo_accuracy(accuracy)
-                        flow.register_work(work, deps=deps)
+                        flow.register_work(work)
 
         flow.allocate()
         self.pseudos.append(pseudo)
@@ -228,30 +216,3 @@ class Dojo(object):
         """Build the dojo."""
         for flow in self.flows:
             flow.build_and_pickle_dump()
-
-
-
-#class DojoMaster(object):
-#    @staticmethod
-#    def subclass_from_dojo_level(dojo_level):
-#        """Returns a subclass of `DojoMaster` given the dojo_level."""
-#        classes = []
-#        for cls in DojoMaster.__subclasses__():
-#            if cls.dojo_level == dojo_level:
-#                classes.append(cls)
-#
-#        if len(classes) != 1:
-#            raise DojoError("Found %d masters with dojo_level %d" % (len(classes), dojo_level))
-#
-#        return classes[0]
-
-
-#_key2level = {}
-#for cls in DojoMaster.__subclasses__():
-#    _key2level[cls.dojo_key] = cls.dojo_level
-#
-#
-#def dojo_key2level(key):
-#    """Return the trial level from the name found in the pseudo."""
-#    return _key2level[key]
-#
