@@ -5,11 +5,10 @@ import abc
 import sys
 import numpy as np
 
-from pymatgen.core.units import ArrayWithUnit, Ha_to_eV
+from pymatgen.core.units import Ha_to_eV
 from pymatgen.core.design_patterns import AttrDict
-from pymatgen.util.num_utils import iterator_from_slice, chunks, monotonic
+from pymatgen.util.num_utils import iterator_from_slice, monotonic
 from pymatgen.util.string_utils import pprint_table
-from pymatgen.io.abinitio.tasks import (AbinitTask, Dependency, Node, ScfTask, NscfTask, BseTask, RelaxTask)
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
 from pymatgen.io.abinitio.abiobjects import Smearing, AbiStructure, KSampling, Electrons
 from pymatgen.io.abinitio.eos import EOS
@@ -17,7 +16,6 @@ from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.structure import Structure
 from pymatgen.io.abinitio.abiobjects import AbiStructure, Smearing, KSampling, Electrons, RelaxationMethod
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
-from pymatgen.io.abinitio.tasks import ScfTask, RelaxTask
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pymatgen.io.abinitio.workflows import Workflow
 from pymatgen.io.smartio import read_structure
@@ -60,10 +58,8 @@ class DojoWorkflow(Workflow):
             if self.dojo_accuracy in old_report[dojo_trial] and not overwrite_data:
                 raise RuntimeError("%s already exists in DOJO_REPORT. Cannot overwrite data" % dojo_trial)
 
-        # Update old report card with the new one.
+        # Update old report card with the new one and write new report
         old_report[dojo_trial][dojo_accuracy] = report
-
-        # Write new report
         self.pseudo.write_dojo_report(old_report)
 
 
@@ -72,9 +68,7 @@ def check_conv(values, tol, min_numpts=1, mode="abs", vinf=None):
     Given a list of values and a tolerance tol, returns the leftmost index for which
 
         abs(value[i] - vinf) < tol if mode == "abs"
-
     or
-
         abs(value[i] - vinf) / vinf < tol if mode == "rel"
 
     returns -1 if convergence is not achieved. By default, vinf = values[-1]
@@ -160,7 +154,7 @@ class PseudoConvergence(DojoWorkflow):
 
     def __init__(self, pseudo, ecut_slice, nlaunch, atols_mev,
                  toldfe=1.e-8, spin_mode="polarized", acell=(8, 9, 10), 
-                 smearing="fermi_dirac:0.1 eV", max_niter=50, workdir=None, manager=None):
+                 smearing="fermi_dirac:0.1 eV", max_niter=300, workdir=None, manager=None):
         """
         Args:
             pseudo:
@@ -192,11 +186,9 @@ class PseudoConvergence(DojoWorkflow):
         self.acell = acell
         self.smearing = smearing
         self.max_niter = max_niter; assert max_niter > 0
+        self.ecut_slice = ecut_slice; assert isinstance(ecut_slice, slice)
 
         self.ecuts = []
-
-        assert isinstance(ecut_slice, slice)
-        self.ecut_slice = ecut_slice
 
         if self.pseudo.ispaw:
             raise NotImplementedError("PAW convergence tests are not supported yet")
@@ -221,12 +213,10 @@ class PseudoConvergence(DojoWorkflow):
         # Gamma-only sampling.
         gamma_only = KSampling.gamma_only()
 
-        # Don't write WFK files.
         extra_abivars = {
             "ecut" : ecut,
             "prtwf": 0,
-            "toldfe": self.toldfe,
-        }
+            "toldfe": self.toldfe}
 
         strategy = ScfStrategy(boxed_atom, self.pseudo, gamma_only,
                                spin_mode=self.spin_mode, smearing=self.smearing,
@@ -266,7 +256,7 @@ class PseudoConvergence(DojoWorkflow):
         data = compute_hints(self.ecuts, etotals, self.atols_mev)
 
         if data.exit:
-            print("converged")
+            logger.info("Converged")
             d = {key: data[key] for key in ["low", "normal", "high"]}
                                                                          
             d.update(dict(
@@ -277,15 +267,12 @@ class PseudoConvergence(DojoWorkflow):
             #if results.exceptions:
             #    d["_exceptions"] = str(results.exceptions)
 
-            #print(d)
-            #self.write_dojo_report(d)
-
-            # Read old_report from pseudo.
-            old_report = self.pseudo.read_dojo_report()
-            old_report["hints"] = d
+            # Read old report from pseudo and add hints
+            report = self.pseudo.read_dojo_report()
+            report["hints"] = d
 
             # Write new report
-            self.pseudo.write_dojo_report(old_report)
+            self.pseudo.write_dojo_report(report)
 
         else:
             logger.info("Building new tasks")
@@ -295,8 +282,8 @@ class PseudoConvergence(DojoWorkflow):
                 ecut = estart + (i+1) * self.ecut_slice.step
                 self.add_task_with_ecut(ecut)
 
-            # TODO
-            #if len(self.ecuts) > self.max_niter
+            if len(self.ecuts) > self.max_niter:
+                raise self.Error("Cannot create more that %d tasks, aborting now" % self.max_niter)
 
             self._finalized = False
             self.flow.allocate()
@@ -413,7 +400,6 @@ class DeltaFactorWorkflow(DojoWorkflow):
                  ecut=None, pawecutdg=None, ecutsm=0.05,
                  spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
                  accuracy="normal",  chksymbreak=0, paral_kgb=0, workdir=None, manager=None, **kwargs):
-                 # FIXME Hack in chksymbreak
         """
         Build a `Workflow` for the computation of the deltafactor.
 
@@ -499,32 +485,29 @@ class DeltaFactorWorkflow(DojoWorkflow):
 
         try:
             #eos_fit = EOS.Murnaghan().fit(self.volumes/num_sites, etotals/num_sites)
-            #print("murn",eos_fit)
             #eos_fit.plot(show=False, savefig=self.path_in_workdir("murn_eos.pdf"))
+            #print("murn",eos_fit)
 
             # Use same fit as the one employed for the deltafactor.
             eos_fit = EOS.DeltaFactor().fit(self.volumes/num_sites, etotals/num_sites)
             #eos_fit.plot(show=False, savefig=self.outdir.path_in("eos.pdf"))
 
-            # FIXME: This object should be moved to pseudo_dojo.
             # Get reference results (Wien2K).
-
             wien2k = df_database().get_entry(self.pseudo.symbol)
                                                                                                  
             # Compute deltafactor estimator.
             dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
                                eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
 
-            print("delta", eos_fit)
-            print("Deltafactor = %.3f meV" % dfact)
+            #print("delta", eos_fit)
+            #print("Deltafactor = %.3f meV" % dfact)
 
             results.update({
                 "dfact_meV": dfact,
                 "v0": eos_fit.v0,
                 "b0": eos_fit.b0,
                 "b0_GPa": eos_fit.b0_GPa,
-                "b1": eos_fit.b1,
-            })
+                "b1": eos_fit.b1})
 
         except EOS.Error as exc:
             results.push_exceptions(exc)
@@ -539,7 +522,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
         with open(self.outdir.path_in("deltadata.txt"), "w") as fh:
             fh.write("# Deltafactor = %s meV\n" % dfact)
             fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
-            for (v, e) in zip(self.volumes, etotals):
+            for v, e in zip(self.volumes, etotals):
                 fh.write("%s %s\n" % (v/num_sites, e/num_sites))
 
         return results
@@ -614,11 +597,10 @@ def gbrv_nband(pseudo):
 
 class GbrvRelaxAndEosWorkflow(DojoWorkflow):
 
-    def __init__(self, structure, struct_type, pseudo, ecut=None, pawecutdg=None, ngkpt=(8,8,8),
+    def __init__(self, structure, struct_type, pseudo, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
                  spin_mode="unpolarized", toldfe=1.e-8, smearing="fermi_dirac:0.001 Ha",
                  accuracy="normal", paral_kgb=0, ecutsm=0.05, chksymbreak=0,
                  workdir=None, manager=None, **kwargs):
-                 # FIXME Hack in chksymbreak
         """
         Build a `Workflow` for the computation of the relaxed lattice parameter.
 
@@ -675,7 +657,7 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
                                          smearing=smearing, **self.extra_abivars)
 
         # Register structure relaxation task.
-        self.relax_task = self.register(self.relax_input, task_class=RelaxTask)
+        self.relax_task = self.register_relax_task(self.relax_input)
 
     @property
     def dojo_trial(self):
@@ -707,7 +689,7 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
                                     smearing=self.smearing, **self.extra_abivars)
 
             # Register new task
-            self.register(scf_input, task_class=ScfTask)
+            self.register_scf_task(scf_input)
 
         # Allocate new tasks and update the pickle database.
         self.flow.allocate()
@@ -746,8 +728,7 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
             b0=eos_fit.b0,
             b1=eos_fit.b1,
             a0=a0,
-            struct_type=self.struct_type,
-        ))
+            struct_type=self.struct_type))
 
         db = gbrv_database()
         entry = db.get_entry(self.pseudo.symbol, stype=self.struct_type)
@@ -770,7 +751,7 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
         return results
 
     @property
-    def addeos_done(self):
+    def add_eos_done(self):
         return len(self) > 1
 
     def on_all_ok(self):
@@ -779,7 +760,7 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
         It reads the optimized structure from the netcdf file and build
         a new workflow for the computation of the EOS with the GBRV parameters.
         """
-        if not self.addeos_done:
+        if not self.add_eos_done:
             logger.info("Building EOS tasks")
             self.add_eos_tasks()
             self._finalized = False
@@ -788,15 +769,3 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
             self.compute_eos()
 
         return super(GbrvRelaxAndEosWorkflow, self).on_all_ok()
-
-
-def gbrv_flow_for_pseudo(workdir, pseudo, struct_type, ecut, pawecutdg, manager=None):
-    import abipy.abilab as abilab
-    manager = abilab.TaskManager.from_user_config() if manager is None else manager
-    flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
-
-    factory = GbrvFactory()
-    work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg, ref="ae")
-
-    flow.register_work(work)
-    return flow.allocate()

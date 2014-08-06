@@ -7,7 +7,7 @@ import numpy as np
 from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.tasks import TaskManager
-from pymatgen.io.abinitio.flow import AbinitFlow
+from pymatgen.io.abinitio.flows import AbinitFlow
 from pymatgen.io.abinitio.pseudos import Pseudo, read_dojo_report
 from pseudo_dojo.dojo.dojo_workflows import PPConvergenceFactory, DeltaFactory, GbrvFactory
 
@@ -54,6 +54,13 @@ class DojoReport(dict):
 
         return problems
 
+    @property
+    def has_hints(self):
+        return "hints" in self
+
+    def trials(self):
+        return [k for k in self.keys() if  k != "hints"]
+
     def has_trial(self, dojo_trial, accuracy):
         """
         True if the dojo_report contains an entry for the
@@ -68,10 +75,7 @@ class DojoReport(dict):
         else:
             return all(acc in self[dojo_trial] for acc in ALL_ACCURACIES)
 
-    #def trials(self)
-    #    return self.keys()
-
-    def to_table(self):
+    def to_table(self, **kwargs):
         """
         ===========  ===============  ===============   ===============
         Trial             low              normal            high 
@@ -80,9 +84,14 @@ class DojoReport(dict):
         gbrv_fcc     ...              ...               ...
         ===========  ===============  ===============   ===============
         """
-        table = [["Trial"] + list(ALL_ACCURACIES)]
+        # Build the header
+        if kwargs.pop("with_hints", True):
+            ecut_acc = {acc: self["hints"][acc]["ecut"] for acc in ALL_ACCURACIES}
+            l = ["%s (%s Ha)" % (acc, ecut_acc[acc]) for acc in ALL_ACCURACIES]
+        else:
+            l = list(ALL_ACCURACIES)
 
-        #ecut = self["hints"][accuracy]["ecut"]
+        table = [["Trial"] + l]
         #row = ["%s (%s)" % (accuracy, ecut)]
 
         for trial in ALL_TRIALS:
@@ -169,7 +178,6 @@ class Dojo(object):
         pseudo = Pseudo.as_pseudo(pseudo)
 
         dojo_report = DojoReport.from_file(pseudo.filepath)
-        #print(dojo_report)
 
         # Construct the flow 
         flow_workdir = os.path.join(self.workdir, pseudo.name)

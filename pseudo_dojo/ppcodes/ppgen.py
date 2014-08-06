@@ -26,7 +26,7 @@ _STATUS2STR = collections.OrderedDict([
 
 
 class Status(int):
-    """This object is an integer representing the status of the `Node`."""
+    """An integer representing the status of the 'PseudoGenearator`."""
     def __repr__(self):
         return "<%s: %s, at %s>" % (self.__class__.__name__, str(self), id(self))
 
@@ -57,12 +57,10 @@ class PseudoGenerator(object):
     """
     This object receives a string with the input file and generates a pseudopotential.
     It calls the pp generator in a subprocess to produce results in a temporary directory with a
-    non-blocking interface implemented here.
-    It also provides an interface to validate/analyze/plot the final results produced by the code.
-    concrete classes must:
+    non-blocking interface. It also provides an interface to validate/analyze/plot the results 
+    produced by the pseudopotential code. Concrete classes must:
 
         1) call super().__init__() in their constructor.
-
         2) the object should have the input file stored in self.input_str
 
     Attributes:
@@ -331,7 +329,7 @@ class OncvGenerator(PseudoGenerator):
         try:
             parser.scan()
         except:
-            self._status == self.S_ERROR
+            self._status = self.S_ERROR
             return self._status
 
         logger.info("run_completed:", parser.run_completed)

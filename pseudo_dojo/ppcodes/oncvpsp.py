@@ -33,11 +33,12 @@ class PseudoGenOutputParserError(Exception):
 
 class PseudoGenOutputParser(object):
     """
-    Abstract baseclass defining the interface that must be provided
+    Abstract class defining the interface that must be provided
     by the parsers used to extract results from the output file of
     a pseudopotential generator a.k.a. ppgen
 
     Attributes:
+
         ppgen_errors:
             List of strings with errors reported by the pp
         results:
@@ -74,7 +75,7 @@ class PseudoGenOutputParser(object):
     
     @abc.abstractmethod
     def get_pseudo_str(self):
-        """Returns a string with the pseudopotential."""
+        """Returns a string with the pseudopotential file."""
 
 
 class OncvOuptputParser(PseudoGenOutputParser):
