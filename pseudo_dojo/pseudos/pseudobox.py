@@ -8,11 +8,11 @@ class Table(collections.set):
     """
     list of pseudo boxes
     """
-    def __init__(self, input):
-        if input is list of boxes
-            pass
-        elif input is string
-            make
+#    def __init__(self, input):
+#        if input is list of boxes
+#            pass
+#        elif input is string
+#            make
 
     @property
     def version(self):
@@ -49,13 +49,21 @@ class AbstractPseudoBox(object):
     concrte implentations for pseudo generators
     """
     def __init__(self):
+        """
 
+        """
 
     @abc.abstractproperty
     def pseudo(self):
+        """
+
+        """
 
     @abc.abstractproperty
     def generator_code(self):
+        """
+
+        """
 
     @abc.abstractmethod
     def get_code_imput(self):
