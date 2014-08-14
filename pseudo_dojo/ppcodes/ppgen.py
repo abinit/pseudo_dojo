@@ -5,6 +5,7 @@ import abc
 import os
 import tempfile
 import collections
+import shutil
 import time
 
 from monty.os.path import which
@@ -17,11 +18,11 @@ logger = logging.getLogger(__name__)
 
 # Possible status of the PseudoGenerator.
 _STATUS2STR = collections.OrderedDict([
-    (1,  "Initialized"),    # PseudoGenerator has been initialized
-    (5,  "Running"),        # PseudoGenerator is running.
-    (6,  "Done"),           # Calculation done, This does not imply that results are ok
-    (10, "Error"),          #
-    (11, "Completed"),      # Execution completed successfully.
+    (1, "Initialized"),    # PseudoGenerator has been initialized
+    (2, "Running"),        # PseudoGenerator is running.
+    (3, "Done"),           # Calculation done, This does not imply that results are ok
+    (4, "Error"),           # Generator error.
+    (5, "Completed"),       # Execution completed successfully.
 ])
 
 
@@ -56,11 +57,12 @@ class Status(int):
 class PseudoGenerator(object):
     """
     This object receives a string with the input file and generates a pseudopotential.
-    It calls the pp generator in a subprocess to produce results in a temporary directory with a
-    non-blocking interface. It also provides an interface to validate/analyze/plot the results 
+    It calls the pp generator in a subprocess to produce the results in a temporary directory.
+    It also provides an interface to validate/analyze/plot the results 
     produced by the pseudopotential code. Concrete classes must:
 
         1) call super().__init__() in their constructor.
+
         2) the object should have the input file stored in self.input_str
 
     Attributes:
@@ -72,6 +74,8 @@ class PseudoGenerator(object):
             Return code of the code
         errors:
             List of strings with errors.
+        warnings:
+            List of strings with warnings.
         parser:
             Output parser. None if results are not available because
             the calculations is still running or errors
@@ -101,14 +105,23 @@ class PseudoGenerator(object):
     def __init__(self):
         # Set the initial status.
         self.set_status(self.S_INIT)
-        self.errors = []
+        self.errors, self.warnings = [], []
 
         # Build a temporary directory
         self.workdir = tempfile.mkdtemp(prefix=self.__class__.__name__)
 
         # Construct paths for stdin, stdout, stderr and write input file.
-        self.stdin_path = os.path.join(self.workdir, "run.in")
-        self.stdout_path = os.path.join(self.workdir, "run.out")
+
+    @property
+    def stdin_path(self):
+        return os.path.join(self.workdir, "run.in")
+
+    @property
+    def stdout_path(self):
+        return os.path.join(self.workdir, "run.out")
+
+    @property
+    def stderr_path(self):
         self.stderr_path = os.path.join(self.workdir, "run.err")
 
     @property
@@ -261,7 +274,6 @@ class PseudoGenerator(object):
 
     def rmtree(self):
         """Remove the temporary directory. Return exit status"""
-        import shutil
         try:
             shutil.rmtree(self.workdir)
             return 0
@@ -280,8 +292,16 @@ class PseudoGenerator(object):
 
     def parse_output(self):
         parser = self.OutputParser(self.stdout_path)
-        parser.scan()
-        return parser
+        try:
+            parser.scan()
+        except parser.Error:
+            time.sleep(1)
+            try:
+                parser.scan()
+            except parser.Error:
+                raise
+        #finally:
+        #    return parser
 
     @property
     def results(self):
@@ -328,7 +348,7 @@ class OncvGenerator(PseudoGenerator):
         parser = OncvOuptputParser(self.stdout_path)
         try:
             parser.scan()
-        except:
+        except parser.Error:
             self._status = self.S_ERROR
             return self._status
 
@@ -343,36 +363,49 @@ class OncvGenerator(PseudoGenerator):
             #########################################
             # Here we initialize results and plotter.
             #########################################
-            self._results = parser.get_results()
+            if parser.warnings:
+                self.errors.extend(parser.warnings)
+
+            try:
+                self._results = parser.get_results()
+            except parser.Error:
+                # File may not be completed.
+                time.sleep(1)
+                try:
+                    self._results = parser.get_results()
+                except:
+                    raise
+
             self._plotter = parser.make_plotter()
 
             # Write Abinit pseudopotential.
             filepath = os.path.join(self.workdir, parser.atsym + ".psp8")
-            if os.path.exists(filepath): 
-                raise RuntimeError("File %s already exists" % filepath)
+            #if os.path.exists(filepath): 
+            #    raise RuntimeError("File %s already exists" % filepath)
 
             # Initialize self.pseudo from file.
             with open(filepath, "w") as fh:
                 fh.write(parser.get_pseudo_str())
+                #fh.write(parser.get_ecut_hints())
 
             self._pseudo = Pseudo.from_file(filepath)
-            #print(self.pseudo)
 
-        if parser.ppgen_errors:
+        if parser.errors:
             logger.warning("setting status to S_ERROR")
             self._status = self.S_ERROR
-            self.errors.extend(parser.ppgen_errors)
+            self.errors.extend(parser.errors)
 
         return self._status
 
     def plot_results(self, **kwargs):
         """Plot the results with matplotlib."""
-        if not self.status == self.S_OK:
-            logger.warning("Cannot plot results. ppgen status is %s" % self.status)
-            return
+        #if not self.status == self.S_OK:
+        #    logger.warning("Cannot plot results. ppgen status is %s" % self.status)
+        #    return
 
         # Call the output parser to get the results.
         parser = OncvOuptputParser(self.stdout_path)
+        parser.scan()
 
         # Build the plotter and plot data according to **kwargs
         plotter = parser.make_plotter()

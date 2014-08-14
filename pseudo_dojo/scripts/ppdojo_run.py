@@ -6,7 +6,8 @@ import sys
 import argparse
 
 from pprint import pprint
-from pseudo_dojo import Dojo, DojoReport, TaskManager
+from pymatgen.io.abinitio import TaskManager
+from pseudo_dojo.dojo import Dojo, HintsAndGbrvDojo, DojoReport
 
 __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
@@ -84,7 +85,8 @@ Usage Example:\n
     manager = TaskManager.from_user_config()
 
     if options.command == "build":
-        dojo = Dojo(manager=manager)
+        #dojo = Dojo(manager=manager)
+        dojo = HintsAndGbrvDojo(manager=manager)
 
         for pseudo in pseudos:
             dojo.add_pseudo(pseudo)

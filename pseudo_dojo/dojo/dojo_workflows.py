@@ -195,6 +195,7 @@ class PseudoConvergence(DojoWorkflow):
 
         for i in range(self.nlaunch):
             ecut = ecut_slice.start + i * ecut_slice.step
+            #if self.ecut_slice.stop is not None and ecut > self.ecut_slice.stop: continue
             self.add_task_with_ecut(ecut)
 
     @property
@@ -214,16 +215,18 @@ class PseudoConvergence(DojoWorkflow):
         gamma_only = KSampling.gamma_only()
 
         extra_abivars = {
-            "ecut" : ecut,
-            "prtwf": 0,
-            "toldfe": self.toldfe}
+            "ecut": ecut,
+            "toldfe": self.toldfe,
+            "prtwf": 1,
+            #"intxc": 1,
+        }
 
         strategy = ScfStrategy(boxed_atom, self.pseudo, gamma_only,
                                spin_mode=self.spin_mode, smearing=self.smearing,
                                **extra_abivars)
 
         self.ecuts.append(ecut)
-        self.register(strategy)
+        self.register_scf_task(strategy)
 
     def make_report(self):
         """
@@ -280,6 +283,7 @@ class PseudoConvergence(DojoWorkflow):
             estart = self.ecuts[-1] 
             for i in range(self.nlaunch):
                 ecut = estart + (i+1) * self.ecut_slice.step
+                #if self.ecut_slice.stop is not None and ecut > self.ecut_slice.stop: continue
                 self.add_task_with_ecut(ecut)
 
             if len(self.ecuts) > self.max_niter:
@@ -326,7 +330,6 @@ class PPConvergenceFactory(object):
             pseudo, ecut_slice, nlaunch, atols_mev,
             toldfe=toldfe, spin_mode=spin_mode,
             acell=acell, smearing=smearing, workdir=workdir, manager=manager)
-
 
 
 class DeltaFactoryError(Exception):
@@ -462,7 +465,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
                                     accuracy=accuracy, spin_mode=spin_mode,
                                     smearing=smearing, **extra_abivars)
 
-            self.register(scf_input, task_class=ScfTask)
+            self.register_scf_task(scf_input)
 
     @property
     def pseudo(self):

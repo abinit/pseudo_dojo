@@ -4,420 +4,14 @@ from __future__ import print_function, division
 import os
 import abc
 import time
-import collections
 import numpy as np
 
+from collections import namedtuple, OrderedDict
 from pymatgen.core.design_patterns import AttrDict
 from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
 
 import logging
 logger = logging.getLogger(__name__)
-
-
-class PseudoGenResults(AttrDict):
-    _KEYS = [
-        "max_ecut",
-        "max_atan_logder_l1err",
-    ]
-
-    def __init__(self, *args, **kwargs):
-        super(PseudoGenResults, self).__init__(*args, **kwargs)
-        for k in self._KEYS:
-            if k not in self:
-                self[k] = None
-
-
-class PseudoGenOutputParserError(Exception):
-    """Exceptions raised by OuptputParser instances."""
-
-
-class PseudoGenOutputParser(object):
-    """
-    Abstract class defining the interface that must be provided
-    by the parsers used to extract results from the output file of
-    a pseudopotential generator a.k.a. ppgen
-
-    Attributes:
-
-        ppgen_errors:
-            List of strings with errors reported by the pp
-        results:
-    """
-    __metaclass__ = abc.ABCMeta
-
-    Error = PseudoGenOutputParserError
-
-    def __init__(self, filepath):
-        self.filepath = os.path.abspath(filepath)
-        self.run_completed = False
-        self._ppgen_errors = []
-        self._results = None
-
-    @property
-    def ppgen_errors(self):
-        """List of strings with possible errors reported by the generator at run-time."""
-        return self._ppgen_errors
-
-    @property
-    def results(self):
-        return self._results
-
-    @abc.abstractmethod
-    def get_results(self):
-        """
-        Return the most important results of the run in a dictionary.
-        Set self.results attribute
-        """
-
-    @abc.abstractmethod
-    def get_input_str(self):
-        """Returns a string with the input file."""
-    
-    @abc.abstractmethod
-    def get_pseudo_str(self):
-        """Returns a string with the pseudopotential file."""
-
-
-class OncvOuptputParser(PseudoGenOutputParser):
-    """
-    Object to read and extract data from the output file of oncvpsp.
-
-    Attributes:
-        atsym
-        Z
-        nc
-        nv
-        iexc
-        psfile
-
-    Example:
-        parser = OncvOutputParser(filename)
-
-        # To access data:
-        p.radial_wavefunctions
-
-        # To plot data with matplotlib.
-        p = parser.make_plotter()
-        p.plot_slideshow()
-    """
-    # TODO Add fully-relativistic case.
-
-    # Used to store ae and pp quantities (e.g wavefunctions) in a single object.
-    AePsNamedTuple = collections.namedtuple("AePsNamedTuple", "ae, ps")
-
-    # object returned by self._grep
-    GrepResults = collections.namedtuple("GrepResults", "data, start, stop")
-
-    def __init__(self, filepath):
-        """Initialize the object from the oncvpsp output."""
-        super(OncvOuptputParser, self).__init__(filepath)
-
-        try:
-            self.scan()
-        except:
-            time.sleep(1)
-            try:
-                self.scan()
-            except:
-                pass
-
-    def scan(self):
-        """Scan the output, set and returns `run_completed` attribute."""
-        if not os.path.exists(self.filepath):
-            return
-
-        # Read data and store it in lines
-        self.lines = []
-        with open(self.filepath) as fh:
-            for i, line in enumerate(fh):
-                line = line.strip()
-                self.lines.append(line)
-
-                if line.startswith("DATA FOR PLOTTING"):
-                    self.run_completed = True
-
-                if line.startswith("ERROR:"):
-                    # Example:
-                    # test_data: must have fcfact>0.0 for icmod= 1
-                    # ERROR: test_data found   1 errors; stopping
-                    self.ppgen_errors.append("\n".join(self.lines[i-1:i+1]))
-
-        if self.ppgen_errors:
-            return
-
-        # scalar-relativistic version 2.1.1, 03/26/2014
-        toks, self.gendate = self.lines[1].split(",")
-
-        toks = toks.split()
-        self.calc_type, self.version = toks[0], toks[-1]
-
-        if self.calc_type not in ["scalar-relativistic", "non-relativistic"]:
-            print("will raise %s because found %s" % (self.Error, self.calc_type))
-            raise self.Error("Fully relativistic case is not supported")
-
-        # Read configuration (not very robust because we assume the user didn't change the template but oh well)
-        header = "# atsym  z    nc    nv    iexc   psfile"
-        for i, line in enumerate(self.lines):
-            if line.startswith(header):
-                values = self.lines[i+1].split()
-                keys = header[1:].split()
-                assert len(keys) == len(values)
-                # Store them in self.
-                for k, v in zip(keys, values):
-                    setattr(self, k, v)
-                break
-
-        # Read lmax (not very robust because we assume the user didn't change the template but oh well)
-        header = "# lmax"
-        for i, line in enumerate(self.lines):
-            if line.startswith(header):
-                self.lmax = int(self.lines[i+1])
-                break
-        else:
-            raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
-
-    def __str__(self):
-        lines = []
-        app = lines.append
-        #app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
-        app("oncvpsp calculation: %s: " % self.calc_type)
-        app("completed: %s" % self.run_completed)
-
-        return "\n".join(lines)
-
-    @property
-    def fully_relativistic(self):
-        return self.calc_type == "fully-relativistic"
-
-    @property
-    def potentials(self):
-        """Radial functions with the non-local and local potentials."""
-        #radii, charge, pseudopotentials (ll=0, 1, lmax)
-        #!p   0.0099448   4.7237412  -7.4449470 -14.6551019
-        vl_data = self._grep("!p").data
-        lmax = len(vl_data[0]) - 3
-        assert lmax == self.lmax
-
-        # From 0 up to lmax
-        ionpots_l = {}
-        for l in range(lmax+1):
-            ionpots_l[l] = RadialFunction("Ion Pseudopotential, l=%d" % l, vl_data[:, 0], vl_data[:, 2+l])
-
-        # Local part is stored with l == -1 if lloc=4, not present if lloc=l
-        vloc = self._grep("!L").data
-        if vloc is not None:
-            ionpots_l[-1] = RadialFunction("Local part, l=%d" % -1, vloc[:, 0], vloc[:, 1])
-
-        return ionpots_l
-
-    @property
-    def densities(self):
-        """Dictionary with charge densities on the radial mesh."""
-        # radii, charge, core charge, model core charge
-        # !r   0.0100642   4.7238866  53.4149287   0.0000000
-        rho_data = self._grep("!r").data
-
-        return dict(
-            rhoV=RadialFunction("Valence charge", rho_data[:, 0], rho_data[:, 1]),
-            rhoC=RadialFunction("Core charge", rho_data[:, 0], rho_data[:, 2]),
-            rhoM=RadialFunction("Model charge", rho_data[:, 0], rho_data[:, 3]))
-
-    @property
-    def radial_wfs(self):
-        """Read the radial wavefunctions."""
-        #n= 1,  l= 0, all-electron wave function, pseudo w-f
-        #
-        #&     0    0.009945   -0.092997    0.015273
-        ae_waves, ps_waves = {}, {}
-
-        beg = 0
-        while True:
-            g = self._grep("&", beg=beg)
-            if g.data is None:
-                break
-            beg = g.stop + 1
-
-            header = self.lines[g.start-2]
-            n, l = header.split(",")[0:2]
-            n = int(n.split("=")[1])
-            l = int(l.split("=")[1])
-            nl = NlState(n=n, l=l)
-            logger.info("Got state: %s" % str(nl))
-
-            rmesh = g.data[:, 1]
-            ae_wf = g.data[:, 2]
-            ps_wf = g.data[:, 3]
-
-            ae_waves[nl] = RadialWaveFunction(nl, str(nl), rmesh, ae_wf)
-            ps_waves[nl] = RadialWaveFunction(nl, str(nl), rmesh, ps_wf)
-
-        return self.AePsNamedTuple(ae=ae_waves, ps=ps_waves)
-
-    @property
-    def projectors(self):
-        """Read the projector wave functions."""
-        #n= 1 2  l= 0, projecctor pseudo wave functions, well or 2nd valence
-        #
-        #@     0    0.009945    0.015274   -0.009284
-        projectors_nl = {}
-        beg = 0
-        while True:
-            g = self._grep("@", beg=beg)
-            if g.data is None:
-                break
-            beg = g.stop + 1
-
-            rmesh = g.data[:, 1]
-            l = int(g.data[0, 0])
-
-            for n in range(len(g.data[0]) - 2):
-                nl = NlState(n=n+1, l=l)
-                logger.info("Got projector with: %s" % str(nl))
-                projectors_nl[nl] = RadialWaveFunction(nl, str(nl), rmesh, g.data[:, n+2])
-
-        return projectors_nl
-
-    @property
-    def atan_logders(self):
-        """Atan of the log derivatives for different l-values."""
-        #log derivativve data for plotting, l= 0
-        #atan(r * ((d psi(r)/dr)/psi(r))), r=  1.60
-        #l, energy, all-electron, pseudopotential
-        #
-        #!      0    2.000000    0.706765    0.703758
-        atan_logder = collections.namedtuple("AtanLogDer", "energies values")
-        ae_atan_logder_l, ps_atan_logder_l = {}, {}
-
-        for l in range(self.lmax+1):
-            data = self._grep(tag="!      %d" % l).data
-            assert l == int(data[0, 0])
-            ae_atan_logder_l[l] = atan_logder(energies=data[:, 1], values=data[:, 2])
-            ps_atan_logder_l[l] = atan_logder(energies=data[:, 1], values=data[:, 3])
-
-        return self.AePsNamedTuple(ae=ae_atan_logder_l, ps=ps_atan_logder_l)
-
-    @property
-    def ene_vs_ecut(self):
-        """Convergence of energy versus ecut for different l-values."""
-        #convergence profiles, (ll=0,lmax)
-        #!C     0    5.019345    0.010000
-        #...
-        #!C     1   19.469226    0.010000
-        conv_data = collections.namedtuple("ConvData", "energies values")
-        conv_l = {}
-
-        for l in range(self.lmax+1):
-            data = self._grep(tag="!C     %d" % l).data
-            conv_l[l] = conv_data(energies=data[:, 1], values=data[:, 2])
-
-        return conv_l
-
-    def get_results(self):
-        """"
-        Return the most important results reported by the pp generator.
-        Set the valu of self.results
-        """
-        if not self.run_completed:
-            PseudoGenResults(info="Run is not completed")
-
-        # Get the ecut needed to converged within ... TODO
-        max_ecut = 0.0
-        for l in range(self.lmax+1):
-            max_ecut = max(max_ecut, self.ene_vs_ecut[l].energies[-1])
-
-        # Compute the l1 error in atag(logder)
-        from scipy.integrate import cumtrapz
-        max_l1err = 0.0
-        for l in range(self.lmax+1):
-            f1, f2 = self.atan_logders.ae[l], self.atan_logders.ps[l]
-
-            adiff = np.abs(f1.values - f2.values)
-            integ = cumtrapz(adiff, x=f1.energies) / (f1.energies[-1] - f1.energies[0])
-            max_l1err = max(max_l1err, integ[-1])
-
-        # Read Hermiticity error and compute the max value of PSP excitation error=
-        # Hermiticity error    4.8392D-05
-        # PSP excitation error=  1.56D-10
-        herm_tag = "Hermiticity error"
-        pspexc_tag = "PSP excitation error="
-        herm_err, max_psexc_abserr = None, -np.inf
-
-        for line in self.lines:
-            i = line.find(herm_tag)
-            if i != -1:
-                herm_err = float(line.split()[-1].replace("D", "E"))
-
-            i = line.find(pspexc_tag)
-            if i != -1:
-                max_psexc_abserr = max(max_psexc_abserr, abs(float(line.split()[-1].replace("D", "E"))))
-
-        self._results = PseudoGenResults(
-            max_ecut=max_ecut, max_atan_logder_l1err=max_l1err,
-            herm_err=herm_err, max_psexc_abserr=max_psexc_abserr)
-
-        return self._results
-
-    def find_string(self, s):
-        """
-        Returns the index of the first line that contains string s.
-        Raise self.Error if s cannot be found.
-        """
-        for i, line in enumerate(self.lines):
-            if s in line:
-                return i
-        else:
-            raise self.Error("Cannot find %s in lines" % s)
-
-    def get_input_str(self):
-        """String with the input file."""
-        i = self.find_string("Reference configufation results")
-        return "\n".join(self.lines[:i])
-
-    def get_pseudo_str(self):
-        """String with the pseudopotential data."""
-        i = self.find_string('Begin PSPCODE8')
-        ps_data = "\n".join(self.lines[i+1:])
-
-        ps_input = self.get_input_str()
-
-        # Append the input to ps_data (note XML markers)
-        return ps_data + "\n\n<INPUT>" + ps_input + "</INPUT>\n\n"
-
-    def make_plotter(self, plotter_class=None):
-        """
-        Builds an instance of PseudoGenDataPlotter. One can customize the behavior
-        of the plotter by passing a subclass via plotter_class.
-        """
-        plotter_class = PseudoGenDataPlotter if plotter_class is None else plotter_class
-        kwargs = {k: getattr(self, k) for k in plotter_class.all_keys}
-
-        return plotter_class(**kwargs)
-
-    def _grep(self, tag, beg=0):
-        """
-        This routine finds the first field in the file with the specified tag.
-        """
-        data, stop, intag = [], None, -1
-
-        if beg >= len(self.lines):
-            raise ValueError()
-
-        for i, l in enumerate(self.lines[beg:]):
-            l = l.lstrip()
-            if l.startswith(tag):
-                if intag == -1:
-                    intag = beg + i
-                data.append([float(c) for c in l.split()[1:]])
-            else:
-                # Exit because we know there's only one section starting with tag'
-                if intag != -1:
-                    stop = beg + i
-                    break
-
-        if not data:
-            return self.GrepResults(data=None, start=intag, stop=stop)
-        else:
-            return self.GrepResults(data=np.array(data), start=intag, stop=stop)
 
 
 def add_mpl_kwargs(method):
@@ -466,10 +60,11 @@ class PseudoGenDataPlotter(object):
     ]
 
     # matplotlib options.
-    linewidth, markersize = 2, 1
+    linewidth, markersize = 2, 2
 
     linestyle_aeps = dict(ae="solid", ps="dashed")
-    color_l = {-1: "blue", 0: "red", 1: "green", 2: "yellow", 3: "magenta"}
+    markers_aeps = dict(ae=".", ps="o")
+    color_l = {-1: "black", 0: "red", 1: "blue", 2: "green", 3: "orange"}
 
     def __init__(self, **kwargs):
         """Store kwargs in self if k is in self.all_keys."""
@@ -478,6 +73,7 @@ class PseudoGenDataPlotter(object):
 
         for k in self.all_keys:
             setattr(self, k, kwargs.pop(k, {}))
+
         if kwargs:
             raise ValueError("Unknown keys: %s" % list(kwargs.keys()))
 
@@ -503,7 +99,7 @@ class PseudoGenDataPlotter(object):
     def _wf_pltopts(self, l, aeps):
         """Plot options for wavefunctions."""
         return dict(
-            color=self.color_l[l], linestyle=self.linestyle_aeps[aeps],
+            color=self.color_l[l], linestyle=self.linestyle_aeps[aeps], #marker=self.markers_aeps[aeps],
             linewidth=self.linewidth, markersize=self.markersize)
 
     @add_mpl_kwargs
@@ -515,15 +111,18 @@ class PseudoGenDataPlotter(object):
         for l, ae_alog in ae.items():
             ps_alog = ps[l]
 
-            ae_line, = ax.plot(ae_alog.energies, ae_alog.values, **self._wf_pltopts(l, "ae"))
-            ps_line, = ax.plot(ps_alog.energies, ps_alog.values, **self._wf_pltopts(l, "ps"))
+            # Add padd to avoid overlapping curves.
+            ae_line, = ax.plot(ae_alog.energies, ae_alog.values + pad, **self._wf_pltopts(l, "ae"))
+            ps_line, = ax.plot(ps_alog.energies, ps_alog.values + pad, **self._wf_pltopts(l, "ps"))
+            pad = (l+1) * 1.0
 
             lines.extend([ae_line, ps_line])
             legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
 
         ax.set_xlabel("Energy [Ha]")
-        ax.set_title("ARCTAN(Log Derivatives)")
+        ax.set_title("ATAN(Log Derivative)")
         ax.legend(lines, legends, loc="best", shadow=True)
+
         return lines
 
     @add_mpl_kwargs
@@ -549,8 +148,10 @@ class PseudoGenDataPlotter(object):
             legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
 
         ax.set_xlabel("r [Bohr]")
+        ax.set_ylabel("$\phi(r)$")
         ax.set_title("Wave Functions")
         ax.legend(lines, legends, loc="best", shadow=True)
+
         return lines
 
     @add_mpl_kwargs
@@ -573,6 +174,7 @@ class PseudoGenDataPlotter(object):
             legends.append("Proj %s" % str(nl))
 
         ax.set_xlabel("r [Bohr]")
+        ax.set_ylabel("$p(r)$")
         ax.set_title("Projector Wave Functions")
         ax.legend(lines, legends, loc="best", shadow=True)
         return lines
@@ -590,7 +192,9 @@ class PseudoGenDataPlotter(object):
 
         ax.legend(lines, legends, loc="best", shadow=True)
         ax.set_xlabel("r [Bohr]")
+        ax.set_ylabel("$n(r)$")
         ax.set_title("Charge densities")
+
         return lines
 
     @add_mpl_kwargs
@@ -607,8 +211,10 @@ class PseudoGenDataPlotter(object):
                 legends.append("PS l=%s" % str(l))
 
         ax.set_xlabel("r [Bohr]")
+        ax.set_ylabel("$v_l(r)$")
         ax.set_title("Ion Pseudopotentials")
         ax.legend(lines, legends, loc="best", shadow=True)
+
         return lines
 
     @add_mpl_kwargs
@@ -622,10 +228,12 @@ class PseudoGenDataPlotter(object):
             legends.append("Conv l=%s" % str(l))
 
         ax.set_xlabel("Ecut [Ha]")
-        ax.set_title("Energy Error per Electron (Ha)")
+        ax.set_ylabel("$\Delta E$")
+        ax.set_title("Energy error per electron (Ha)")
 
         ax.legend(lines, legends, loc="best", shadow=True)
         ax.set_yscale("log")
+
         return lines
 
     def _finalize_fig(self, fig, **kwargs):
@@ -678,8 +286,7 @@ class PseudoGenDataPlotter(object):
 
 class MultiPseudoGenDataPlotter(object):
     """
-    Class for plotting data produced by multiple pseudogenerators
-    on separated plots.
+    Class for plotting data produced by multiple pp generators on separated plots.
 
     Usage example:
 
@@ -695,7 +302,7 @@ class MultiPseudoGenDataPlotter(object):
     _LINE_WIDTHS = [2,]
 
     def __init__(self):
-        self._plotters_odict = collections.OrderedDict()
+        self._plotters_odict = OrderedDict()
 
     def __len__(self):
         return len(self._plotters_odict)
@@ -725,10 +332,10 @@ class MultiPseudoGenDataPlotter(object):
         for o in itertools.product( self._LINE_WIDTHS,  self._LINE_STYLES, self._LINE_COLORS):
             yield {"linewidth": o[0], "linestyle": o[1], "color": o[2]}
 
-    def add_psgen(self, label, psgen, plotter_class=None):
+    def add_psgen(self, label, psgen):
         """Add a plotter of class plotter_class from a `PseudoGenerator` instance."""
         oparser = psgen.parse_output()
-        self.add_plotter(label, oparser.make_plotter(plotter_class=plotter_class))
+        self.add_plotter(label, oparser.make_plotter())
 
     def add_plotter(self, label, plotter):
         """
@@ -815,3 +422,432 @@ class MultiPseudoGenDataPlotter(object):
             fig.savefig(savefig)
 
         return fig
+
+
+class PseudoGenResults(AttrDict):
+    _KEYS = [
+        "max_ecut",
+        "max_atan_logder_l1err",
+    ]
+
+    def __init__(self, *args, **kwargs):
+        super(PseudoGenResults, self).__init__(*args, **kwargs)
+        for k in self._KEYS:
+            if k not in self:
+                self[k] = None
+
+
+class PseudoGenOutputParserError(Exception):
+    """Exceptions raised by OuptputParser instances."""
+
+
+class PseudoGenOutputParser(object):
+    """
+    Abstract class defining the interface that must be provided
+    by the parsers used to extract results from the output file of
+    a pseudopotential generator a.k.a. ppgen
+
+    Attributes:
+        errors:
+            List of strings with errors reported by the pp generator
+        warnings:
+            List of strings with the warnings reported by the pp generator.
+        results:
+    """
+    __metaclass__ = abc.ABCMeta
+
+    Error = PseudoGenOutputParserError
+
+    def __init__(self, filepath):
+        self.filepath = os.path.abspath(filepath)
+        self.run_completed = False
+        self._errors = []
+        self._warnings = []
+        self._results = None
+
+    @property
+    def errors(self):
+        """List of strings with possible errors reported by the generator at run-time."""
+        return self._errors
+
+    @property
+    def warnings(self):
+        """List of strings with possible errors reported by the generator at run-time."""
+        return self._warnings
+
+    @property
+    def results(self):
+        return self._results
+
+    @abc.abstractmethod
+    def get_results(self):
+        """
+        Return the most important results of the run in a dictionary.
+        Set self.results attribute
+        """
+
+    @abc.abstractmethod
+    def get_input_str(self):
+        """Returns a string with the input file."""
+    
+    @abc.abstractmethod
+    def get_pseudo_str(self):
+        """Returns a string with the pseudopotential file."""
+
+
+class OncvOuptputParser(PseudoGenOutputParser):
+    """
+    Object to read and extract data from the output file of oncvpsp.
+
+    Attributes:
+        atsym
+        Z
+        nc
+        nv
+        iexc
+        psfile
+
+    Example:
+        parser = OncvOutputParser(filename)
+
+        # To access data:
+        p.radial_wavefunctions
+
+        # To plot data with matplotlib.
+        p = parser.make_plotter()
+        p.plot_slideshow()
+    """
+    # TODO Add fully-relativistic case.
+
+    # Used to store ae and pp quantities (e.g wavefunctions) in a single object.
+    AePsNamedTuple = namedtuple("AePsNamedTuple", "ae, ps")
+
+    # Object returned by self._grep
+    GrepResults = namedtuple("GrepResults", "data, start, stop")
+
+    # Object storing the final results.
+    Results = PseudoGenResults
+
+    # Class used to instanciate the plotter.
+    Plotter = PseudoGenDataPlotter
+
+    #def __init__(self, filepath):
+    #    """Initialize the object from the oncvpsp output."""
+    #    super(OncvOuptputParser, self).__init__(filepath)
+
+    #    try:
+    #        self.scan()
+    #    except:
+    #        time.sleep(1)
+    #        try:
+    #            self.scan()
+    #        except:
+    #            raise
+
+    def scan(self):
+        """
+        Scan the output, set and returns `run_completed` attribute.
+        Return exit status or raise.
+        """
+        if not os.path.exists(self.filepath):
+            raise self.Error("File %s does not exist" % self.filepath)
+
+        # Read data and store it in lines
+        self.lines = []
+        with open(self.filepath) as fh:
+            for i, line in enumerate(fh):
+                line = line.strip()
+                self.lines.append(line)
+
+                if line.startswith("DATA FOR PLOTTING"):
+                    self.run_completed = True
+
+                if "ERROR" in line:
+                    # Example:
+                    # test_data: must have fcfact>0.0 for icmod= 1
+                    # ERROR: test_data found   1 errors; stopping
+                    self._errors.append("\n".join(self.lines[i-1:i+1]))
+
+                if "WARNING" in line:
+                    self._warnings.append("\n".join(self.lines[i:i+2]))
+
+        #if self.errors:
+        #    return 1
+
+        # scalar-relativistic version 2.1.1, 03/26/2014
+        toks, self.gendate = self.lines[1].split(",")
+
+        toks = toks.split()
+        self.calc_type, self.version = toks[0], toks[-1]
+
+        if self.calc_type not in ["scalar-relativistic", "non-relativistic"]:
+            print("will raise %s because found %s" % (self.Error, self.calc_type))
+            raise self.Error("Fully relativistic case is not supported")
+
+        # Read configuration (not very robust because we assume the user didn't change the template but oh well)
+        header = "# atsym  z    nc    nv    iexc   psfile"
+        for i, line in enumerate(self.lines):
+            if line.startswith(header):
+                values = self.lines[i+1].split()
+                keys = header[1:].split()
+                assert len(keys) == len(values)
+                # Store them in self.
+                for k, v in zip(keys, values):
+                    setattr(self, k, v)
+                break
+
+        # Read lmax (not very robust because we assume the user didn't change the template but oh well)
+        header = "# lmax"
+        for i, line in enumerate(self.lines):
+            if line.startswith(header):
+                self.lmax = int(self.lines[i+1])
+                break
+        else:
+            raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
+        print("lmax", self.lmax)
+
+    def __str__(self):
+        lines = []
+        app = lines.append
+        #app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
+        app("oncvpsp calculation: %s: " % self.calc_type)
+        app("completed: %s" % self.run_completed)
+
+        return "\n".join(lines)
+
+    @property
+    def fully_relativistic(self):
+        return self.calc_type == "fully-relativistic"
+
+    @property
+    def potentials(self):
+        """Radial functions with the non-local and local potentials."""
+        #radii, charge, pseudopotentials (ll=0, 1, lmax)
+        #!p   0.0099448   4.7237412  -7.4449470 -14.6551019
+        vl_data = self._grep("!p").data
+        lmax = len(vl_data[0]) - 3
+        assert lmax == self.lmax
+
+        # From 0 up to lmax
+        ionpots_l = {}
+        for l in range(lmax+1):
+            ionpots_l[l] = RadialFunction("Ion Pseudopotential, l=%d" % l, vl_data[:, 0], vl_data[:, 2+l])
+
+        # Local part is stored with l == -1 if lloc=4, not present if lloc=l
+        vloc = self._grep("!L").data
+        if vloc is not None:
+            ionpots_l[-1] = RadialFunction("Local part, l=%d" % -1, vloc[:, 0], vloc[:, 1])
+
+        return ionpots_l
+
+    @property
+    def densities(self):
+        """Dictionary with charge densities on the radial mesh."""
+        # radii, charge, core charge, model core charge
+        # !r   0.0100642   4.7238866  53.4149287   0.0000000
+        rho_data = self._grep("!r").data
+
+        return dict(
+            rhoV=RadialFunction("Valence charge", rho_data[:, 0], rho_data[:, 1]),
+            rhoC=RadialFunction("Core charge", rho_data[:, 0], rho_data[:, 2]),
+            rhoM=RadialFunction("Model charge", rho_data[:, 0], rho_data[:, 3]))
+
+    @property
+    def radial_wfs(self):
+        """Read the radial wavefunctions."""
+        #n= 1,  l= 0, all-electron wave function, pseudo w-f
+        #
+        #&     0    0.009945   -0.092997    0.015273
+        ae_waves, ps_waves = OrderedDict(), OrderedDict()
+
+        beg = 0
+        while True:
+            g = self._grep("&", beg=beg)
+            if g.data is None:
+                break
+            beg = g.stop + 1
+
+            header = self.lines[g.start-2]
+            n, l = header.split(",")[0:2]
+            n = int(n.split("=")[1])
+            l = int(l.split("=")[1])
+            nl = NlState(n=n, l=l)
+            logger.info("Got state: %s" % str(nl))
+
+            rmesh = g.data[:, 1]
+            ae_wf = g.data[:, 2]
+            ps_wf = g.data[:, 3]
+
+            ae_waves[nl] = RadialWaveFunction(nl, str(nl), rmesh, ae_wf)
+            ps_waves[nl] = RadialWaveFunction(nl, str(nl), rmesh, ps_wf)
+
+        return self.AePsNamedTuple(ae=ae_waves, ps=ps_waves)
+
+    @property
+    def projectors(self):
+        """Read the projector wave functions."""
+        #n= 1 2  l= 0, projecctor pseudo wave functions, well or 2nd valence
+        #
+        #@     0    0.009945    0.015274   -0.009284
+        projectors_nl = OrderedDict()
+        beg = 0
+        while True:
+            g = self._grep("@", beg=beg)
+            if g.data is None:
+                break
+            beg = g.stop + 1
+
+            rmesh = g.data[:, 1]
+            l = int(g.data[0, 0])
+
+            for n in range(len(g.data[0]) - 2):
+                nl = NlState(n=n+1, l=l)
+                logger.info("Got projector with: %s" % str(nl))
+                projectors_nl[nl] = RadialWaveFunction(nl, str(nl), rmesh, g.data[:, n+2])
+
+        return projectors_nl
+
+    @property
+    def atan_logders(self):
+        """Atan of the log derivatives for different l-values."""
+        #log derivativve data for plotting, l= 0
+        #atan(r * ((d psi(r)/dr)/psi(r))), r=  1.60
+        #l, energy, all-electron, pseudopotential
+        #
+        #!      0    2.000000    0.706765    0.703758
+        atan_logder = namedtuple("AtanLogDer", "energies values")
+        ae_atan_logder_l, ps_atan_logder_l = OrderedDict(), OrderedDict()
+
+        for l in range(self.lmax+1):
+            data = self._grep(tag="!      %d" % l).data
+            assert l == int(data[0, 0])
+            ae_atan_logder_l[l] = atan_logder(energies=data[:, 1], values=data[:, 2])
+            ps_atan_logder_l[l] = atan_logder(energies=data[:, 1], values=data[:, 3])
+
+        return self.AePsNamedTuple(ae=ae_atan_logder_l, ps=ps_atan_logder_l)
+
+    @property
+    def ene_vs_ecut(self):
+        """Convergence of energy versus ecut for different l-values."""
+        #convergence profiles, (ll=0,lmax)
+        #!C     0    5.019345    0.010000
+        #...
+        #!C     1   19.469226    0.010000
+        conv_data = namedtuple("ConvData", "energies values")
+        conv_l = OrderedDict()
+
+        for l in range(self.lmax+1):
+            data = self._grep(tag="!C     %d" % l).data
+            conv_l[l] = conv_data(energies=data[:, 1], values=data[:, 2])
+
+        hints = 3 * [-np.inf]
+        for i in range(3):
+            for l in range(self.lmax+1):
+                hints[i] = max(hints[i], conv_l[l].energies[-i]
+        print("hints:", hints)
+
+        return conv_l
+
+    def get_results(self):
+        """"
+        Return the most important results reported by the pp generator.
+        Set the valu of self.results
+        """
+        #if not self.run_completed:
+        #    self.Results(info="Run is not completed")
+
+        # Get the ecut needed to converged within ... TODO
+        max_ecut = 0.0
+        for l in range(self.lmax+1):
+            max_ecut = max(max_ecut, self.ene_vs_ecut[l].energies[-1])
+
+        # Compute the l1 error in atag(logder)
+        from scipy.integrate import cumtrapz
+        max_l1err = 0.0
+        for l in range(self.lmax+1):
+            f1, f2 = self.atan_logders.ae[l], self.atan_logders.ps[l]
+
+            adiff = np.abs(f1.values - f2.values)
+            integ = cumtrapz(adiff, x=f1.energies) / (f1.energies[-1] - f1.energies[0])
+            max_l1err = max(max_l1err, integ[-1])
+
+        # Read Hermiticity error and compute the max value of PSP excitation error=
+        # Hermiticity error    4.8392D-05
+        # PSP excitation error=  1.56D-10
+        herm_tag, pspexc_tag = "Hermiticity error", "PSP excitation error="
+        herm_err, max_psexc_abserr = None, -np.inf
+
+        for line in self.lines:
+            i = line.find(herm_tag)
+            if i != -1:
+                herm_err = float(line.split()[-1].replace("D", "E"))
+
+            i = line.find(pspexc_tag)
+            if i != -1:
+                max_psexc_abserr = max(max_psexc_abserr, abs(float(line.split()[-1].replace("D", "E"))))
+
+        self._results = self.Results(
+            max_ecut=max_ecut, max_atan_logder_l1err=max_l1err,
+            herm_err=herm_err, max_psexc_abserr=max_psexc_abserr)
+
+        return self._results
+
+    def find_string(self, s):
+        """
+        Returns the index of the first line that contains string s.
+        Raise self.Error if s cannot be found.
+        """
+        for i, line in enumerate(self.lines):
+            if s in line:
+                return i
+        else:
+            raise self.Error("Cannot find %s in lines" % s)
+
+    def get_input_str(self):
+        """String with the input file."""
+        i = self.find_string("Reference configufation results")
+        return "\n".join(self.lines[:i])
+
+    def get_pseudo_str(self):
+        """String with the pseudopotential data."""
+        i = self.find_string('Begin PSPCODE8')
+        ps_data = "\n".join(self.lines[i+1:])
+
+        ps_input = self.get_input_str()
+
+        # Append the input to ps_data (note XML markers)
+        s = ps_data + "\n\n<INPUT>" + ps_input + "</INPUT>\n\n"
+
+        #s = ps_data + json.dumps(self.hints)
+        return s 
+
+    def make_plotter(self):
+        """Builds an instance of PseudoGenDataPlotter."""
+        kwargs = {k: getattr(self, k) for k in self.Plotter.all_keys}
+        return self.Plotter(**kwargs)
+
+    def _grep(self, tag, beg=0):
+        """
+        This routine finds the first field in the file with the specified tag.
+        """
+        data, stop, intag = [], None, -1
+
+        if beg >= len(self.lines):
+            raise ValueError()
+
+        for i, l in enumerate(self.lines[beg:]):
+            l = l.lstrip()
+            if l.startswith(tag):
+                if intag == -1:
+                    intag = beg + i
+                data.append([float(c) for c in l.split()[1:]])
+            else:
+                # Exit because we know there's only one section starting with tag'
+                if intag != -1:
+                    stop = beg + i
+                    break
+
+        if not data:
+            return self.GrepResults(data=None, start=intag, stop=stop)
+        else:
+            return self.GrepResults(data=np.array(data), start=intag, stop=stop)

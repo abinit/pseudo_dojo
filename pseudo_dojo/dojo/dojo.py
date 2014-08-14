@@ -154,6 +154,9 @@ class DojoReport(dict):
         plt.show()
 
 
+
+
+
 class Dojo(object):
     """
     This object build the flows for the analysis/validation of pseudopotentials
@@ -239,6 +242,12 @@ class Dojo(object):
         """Build the dojo."""
         for flow in self.flows:
             flow.build_and_pickle_dump()
+
+
+class HintsAndGbrvDojo(Dojo):
+    def __init__(self, workdir=None, manager=None):
+        Dojo.__init__(self, workdir=workdir, manager=manager,
+                      trials=("gbrv_bcc", "gbrv_fcc"), accuracies=["normal"])
 
 
 def plot_etotals(ecuts, etotals, aug_ratios, **kwargs):
