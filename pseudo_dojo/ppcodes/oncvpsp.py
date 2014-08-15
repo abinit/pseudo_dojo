@@ -112,9 +112,10 @@ class PseudoGenDataPlotter(object):
             ps_alog = ps[l]
 
             # Add padd to avoid overlapping curves.
+            pad = (l+1) * 1.0
+
             ae_line, = ax.plot(ae_alog.energies, ae_alog.values + pad, **self._wf_pltopts(l, "ae"))
             ps_line, = ax.plot(ps_alog.energies, ps_alog.values + pad, **self._wf_pltopts(l, "ps"))
-            pad = (l+1) * 1.0
 
             lines.extend([ae_line, ps_line])
             legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
@@ -743,7 +744,8 @@ class OncvOuptputParser(PseudoGenOutputParser):
         hints = 3 * [-np.inf]
         for i in range(3):
             for l in range(self.lmax+1):
-                hints[i] = max(hints[i], conv_l[l].energies[-i]
+                hints[i] = max(hints[i], conv_l[l].energies[-i-1])
+        hints.reverse()
         print("hints:", hints)
 
         return conv_l

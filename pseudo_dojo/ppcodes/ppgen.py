@@ -122,7 +122,7 @@ class PseudoGenerator(object):
 
     @property
     def stderr_path(self):
-        self.stderr_path = os.path.join(self.workdir, "run.err")
+        return os.path.join(self.workdir, "run.err")
 
     @property
     def status(self):
