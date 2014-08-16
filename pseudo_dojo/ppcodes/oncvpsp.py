@@ -4,6 +4,7 @@ from __future__ import print_function, division
 import os
 import abc
 import time
+import json
 import numpy as np
 
 from collections import namedtuple, OrderedDict
@@ -741,14 +742,28 @@ class OncvOuptputParser(PseudoGenOutputParser):
             data = self._grep(tag="!C     %d" % l).data
             conv_l[l] = conv_data(energies=data[:, 1], values=data[:, 2])
 
+        return conv_l
+
+    @property
+    def hints(self):
+        # Extract the hints
         hints = 3 * [-np.inf]
+        ene_vs_ecut = self.ene_vs_ecut
         for i in range(3):
             for l in range(self.lmax+1):
-                hints[i] = max(hints[i], conv_l[l].energies[-i-1])
+                hints[i] = max(hints[i], ene_vs_ecut[l].energies[-i-1])
         hints.reverse()
-        print("hints:", hints)
 
-        return conv_l
+        print("hints:", hints)
+        # Convert to int and truncate upwards
+        hints = [int(h) + 1 for h in hints]
+
+        hints = {
+            "low": hints[0],
+            "normal": hints[1],
+            "high": hints[2]}
+
+        return hints
 
     def get_results(self):
         """"
@@ -812,16 +827,18 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
     def get_pseudo_str(self):
         """String with the pseudopotential data."""
+        # Extract the pseudo in Abinit format.
         i = self.find_string('Begin PSPCODE8')
         ps_data = "\n".join(self.lines[i+1:])
 
-        ps_input = self.get_input_str()
-
         # Append the input to ps_data (note XML markers)
-        s = ps_data + "\n\n<INPUT>" + ps_input + "</INPUT>\n\n"
+        ps_data += "\n\n<INPUT>" + self.get_input_str() + "</INPUT>\n\n"
 
-        #s = ps_data + json.dumps(self.hints)
-        return s 
+        # Add the initial DOJO_REPORT with the hints:
+        d = {"hints": self.hints}
+        ps_data += "\n\n\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
+
+        return ps_data
 
     def make_plotter(self):
         """Builds an instance of PseudoGenDataPlotter."""

@@ -5,7 +5,7 @@ import collections
 import numpy as np
 import cStringIO as StringIO
 
-from pseudo_dojo.refdata.nist import nist_database
+from pseudo_dojo.refdata.nist import database as nist_database
 from scipy.interpolate import UnivariateSpline
 from scipy.integrate import cumtrapz
 
