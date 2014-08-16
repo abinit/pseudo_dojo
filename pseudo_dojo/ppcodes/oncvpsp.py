@@ -758,10 +758,10 @@ class OncvOuptputParser(PseudoGenOutputParser):
         # Convert to int and truncate upwards
         hints = [int(h) + 1 for h in hints]
 
-        hints = {
-            "low": hints[0],
-            "normal": hints[1],
-            "high": hints[2]}
+        hints = dict(
+            low={"ecut": hints[0], "aug_ratio": 1},
+            normal={"ecut": hints[1], "aug_ratio": 1},
+            high={"ecut": hints[2], "aug_ratio": 1})
 
         return hints
 
@@ -832,11 +832,11 @@ class OncvOuptputParser(PseudoGenOutputParser):
         ps_data = "\n".join(self.lines[i+1:])
 
         # Append the input to ps_data (note XML markers)
-        ps_data += "\n\n<INPUT>" + self.get_input_str() + "</INPUT>\n\n"
+        ps_data += "\n\n<INPUT>\n" + self.get_input_str() + "</INPUT>\n"
 
         # Add the initial DOJO_REPORT with the hints:
         d = {"hints": self.hints}
-        ps_data += "\n\n\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
+        ps_data += "\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
 
         return ps_data
 

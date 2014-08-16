@@ -110,8 +110,7 @@ class PseudoGenerator(object):
         # Build a temporary directory
         self.workdir = tempfile.mkdtemp(prefix=self.__class__.__name__)
 
-        # Construct paths for stdin, stdout, stderr and write input file.
-
+    # paths for stdin, stdout, stderr
     @property
     def stdin_path(self):
         return os.path.join(self.workdir, "run.in")

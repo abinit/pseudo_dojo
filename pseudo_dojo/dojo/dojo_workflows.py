@@ -10,7 +10,7 @@ from pymatgen.core.design_patterns import AttrDict
 from pymatgen.util.num_utils import iterator_from_slice, monotonic
 from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
-from pymatgen.io.abinitio.abiobjects import Smearing, AbiStructure, KSampling, Electrons
+from pymatgen.io.abinitio.abiobjects import SpinMode, Smearing, AbiStructure, KSampling, Electrons
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.structure import Structure
@@ -398,7 +398,6 @@ class DeltaFactory(object):
 
 class DeltaFactorWorkflow(DojoWorkflow):
     """Workflow for the calculation of the deltafactor."""
-
     def __init__(self, structure_or_cif, pseudo, kppa,
                  ecut=None, pawecutdg=None, ecutsm=0.05,
                  spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
@@ -426,11 +425,22 @@ class DeltaFactorWorkflow(DojoWorkflow):
         """
         super(DeltaFactorWorkflow, self).__init__(workdir=workdir, manager=manager)
 
+        self._pseudo = Pseudo.as_pseudo(pseudo)
+
         if isinstance(structure_or_cif, Structure):
             structure = refine_structure(structure_or_cif, symprec=1e-6)
         else:
             # Assume CIF file
             structure = refine_structure(read_structure(structure_or_cif), symprec=1e-6)
+
+        structure = AbiStructure.asabistructure(structure)
+        spin_mode = SpinMode.as_spinmode(spin_mode)
+
+        # Compute the number of bands from the pseudo and the spin-polarization.
+        # Add 10 bands to account for smearing.
+        nval = structure.num_valence_electrons(self.pseudo)
+        spin_fact = 2 if spin_mode.nsppol == 2 else 1
+        nband = int(nval / spin_fact) + 10
 
         # Set extra_abivars
         extra_abivars = dict(
@@ -438,15 +448,13 @@ class DeltaFactorWorkflow(DojoWorkflow):
             pawecutdg=pawecutdg,
             ecutsm=ecutsm,
             toldfe=toldfe,
+            nband=nband,
             prtwf=0,
             paral_kgb=paral_kgb,
+            mem_check=0,
         )
 
         extra_abivars.update(**kwargs)
-
-        self._pseudo = Pseudo.as_pseudo(pseudo)
-
-        structure = AbiStructure.asabistructure(structure)
         self._input_structure = structure
         v0 = structure.volume
 
