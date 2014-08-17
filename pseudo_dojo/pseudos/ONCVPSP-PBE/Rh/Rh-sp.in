@@ -21,8 +21,8 @@ Rh 45 6 4 4 psp8
 4 5 1.35 0.0
 # l nproj debl
 0 2 1.0
-1 2 2.0
-2 2 2.0
+1 2 2.5
+2 2 2.5
 # icmod fcfact
 1 0.45
 # epsh1 epsh2 depsh

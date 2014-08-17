@@ -23,7 +23,7 @@ Sn 50 8 3 4 psp8
 # l nproj debl
 0 2 2.3
 1 2 2.5
-2 2 1.0
+2 2 2.0
 # icmod fcfact
 1 1.45
 # epsh1 epsh2 depsh
