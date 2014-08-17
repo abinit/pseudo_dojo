@@ -49,6 +49,7 @@ Y-sp.psp8_DFLOW/W31/outdata/deltadata.txt:# Deltafactor = 0.276514370784 meV
 @ Zn-sp.psp8_DFLOW/W47/outdata/deltadata.txt:# Deltafactor = (5.50071969288-0.716215681404j) meV
 
 Sb-d.psp8 Deltafactor = 0.800 meV
+Po Deltafactor = 0.639 me
 
 Hf-spdf.psp8_DFLOW/W57/outdata/deltadata.txt:# Deltafactor = 0.533160457775 meV
 Ta-spdf.psp8_DFLOW/W51/outdata/deltadata.txt:# Deltafactor = 2.89184522889 meV
