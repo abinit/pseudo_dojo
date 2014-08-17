@@ -59,3 +59,4 @@ Hg-spd.psp8_DFLOW/W44/outdata/deltadata.txt:# Deltafactor = 1.35661332849 meV
 @ Zn-sp.psp8_DFLOW/W47/outdata/deltadata.txt:# Deltafactor = 22.571 meV
 @Tl-d.psp8: # Deltafactor = 6.1368240612 meV
 @Te-d.psp8_DFLOW/W39: Deltafactor = 4.676 meV
+@Sn-d.psp9_DFLOW34 Deltafactor = 1.256 meV
