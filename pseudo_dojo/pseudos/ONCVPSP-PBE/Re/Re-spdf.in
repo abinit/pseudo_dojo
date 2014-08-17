@@ -30,7 +30,7 @@ Re 75 9 5 4 psp8
 2 2 1.0
 3 2 2.0
 # icmod fcfact
-1 0.1
+1 0.35
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl
