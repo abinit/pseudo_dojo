@@ -18,10 +18,10 @@ V 23 3 4 4 psp8
 4 5 1.15 0.0
 # l nproj debl
 0 2 1.0
-1 2 2.0
-2 2 2.0
+1 2 1.5
+2 2 1.5
 # icmod fcfact
-1 0.4
+1 0.15
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl
