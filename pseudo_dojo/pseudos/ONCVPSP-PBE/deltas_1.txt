@@ -44,10 +44,11 @@ Ir-spdf.psp8_DFLOW/ Deltafactor = 3.356 meV
 
 # TO BE IMPROVED
 @ Mg-sp.psp8_DFLOW/W37/outdata/deltadata.txt:# Deltafactor = 5.590 meV
+@ Mg.psp8_DFLOE/W15: Deltafactor = 2.738 meV
+@ Na-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 1.645 meV
 @ C.psp8_DFLOW/W30/outdata/deltadata.txt:# Deltafactor = 1.53655747594 meV
 @ Ne.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.639 meV
 @ N.psp8_DFLOW/W33/outdata/deltadata.txt:# Deltafactor = 1.751 meV
-@ Na-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 1.645 meV
 @ O.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 10.647 meV
 
 @ Zr-sp.psp8_DFLOW/W31/outdata/deltadata.txt:# Deltafactor = 1.220 meV
