@@ -18,9 +18,9 @@ Kr 36 5 3 4 psp8
 # lloc lpopt rc5 dvloc0
 4 5 1.45 0.0
 # l nproj debl
-0 2 3.0
-1 2 3.0
-2 2 4.0
+0 2 2.0
+1 2 2.0
+2 2 4.2
 # icmod fcfact
 1 0.45
 # epsh1 epsh2 depsh
