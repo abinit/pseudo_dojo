@@ -12,7 +12,7 @@ O 8 1 2 4 psp8
 # lloc lpopt rc5 dvloc0
 4 5 1.0 0.0
 # l nproj debl
-0 2 1.0
+0 2 1.9
 1 2 1.0
 # icmod fcfact
 1 0.15
