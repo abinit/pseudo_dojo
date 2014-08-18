@@ -23,8 +23,8 @@ Ba 56 9 3 4 psp8
 4 5 1.7 0.0
 # l nproj debl
 0 2 1.0
-1 2 2.0
-2 2 2.0
+1 2 6.0
+2 2 5.0
 # icmod fcfact
 1 0.15
 # epsh1 epsh2 depsh
