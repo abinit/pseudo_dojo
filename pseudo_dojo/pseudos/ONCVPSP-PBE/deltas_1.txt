@@ -40,6 +40,7 @@ Pt-spdf.psp8_DFLOW/W57/outdata/deltadata.txt:# Deltafactor = 3.41473543466 meV
 Au-spd.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 2.39892135249 meV
 Hg-spd.psp8_DFLOW/W44/outdata/deltadata.txt:# Deltafactor = 1.35661332849 meV
 V-sp.psp8_DFLOW/W40/outdata/deltadata.txt:# Deltafactor = 0.199 meV
+Ir-spdf.psp8_DFLOW/ Deltafactor = 3.356 meV
 
 # TO BE IMPROVED
 @ Zr-sp.psp8_DFLOW/W31/outdata/deltadata.txt:# Deltafactor = 1.220 meV
