@@ -1,6 +1,8 @@
 # First optimization
-He.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 0.00516632137952 meV
 H.psp8_DFLOW/W30/outdata/deltadata.txt:# Deltafactor = 0.0470408055568 meV
+He.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 0.00516632137952 meV
+Li-s.psp8_DFLOW/W35/outdata/deltadata.txt:# Deltafactor = 0.148139813429 meV
+Be-s.psp8_DFLOW/W35/outdata/deltadata.txt:# Deltafactor = 1.47759788418 meV
 Ag-sp.psp8_DFLOW/W40/outdata/deltadata.txt:# Deltafactor = 1.41581753244 meV
 B.psp8_DFLOW/W26/outdata/deltadata.txt:# Deltafactor = 1.15 meV
 Nb-sp.psp8_DFLOW/W35/outdata/deltadata.txt:# Deltafactor = 1.06 meV
@@ -9,11 +11,9 @@ P.psp8_DFLOW/W20/outdata/deltadata.txt:# Deltafactor = 0.719 meV
 Mo-sp.psp8_DFLOW/W35/outdata/deltadata.txt:# Deltafactor = 0.976 meV
 Tc-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 1.775 meV
 Ba-sp.psp8_DFLOW/W30/outdata/deltadata.txt:# Deltafactor = 0.550142319483 meV
-Be-s.psp8_DFLOW/W35/outdata/deltadata.txt:# Deltafactor = 1.47759788418 meV
 K-sp.psp8_DFLOW/W32/outdata/deltadata.txt:# Deltafactor = 0.165267532065 meV
 Ge-d.psp8_DFLOW/W42/outdata/deltadata.txt:# Deltafactor = 0.158 meV
 Ga-d.psp8_DFLOW/W42/outdata/deltadata.txt:# Deltafactor = 0.138 meV
-Li-s.psp8_DFLOW/W35/outdata/deltadata.txt:# Deltafactor = 0.148139813429 meV
 Y-sp.psp8_DFLOW/W31/outdata/deltadata.txt:# Deltafactor = 0.268 meV
 Cs-sp-low.psp8_DFLOW/W32/outdata/deltadata.txt:# Deltafactor = 0.0664586249835 meV
 Cs-sp.psp8_DFLOW/W32/outdata/deltadata.txt:# Deltafactor = 0.0727283784195 meV
@@ -50,8 +50,9 @@ Hf-spdf.psp8_DFLOW/W57/outdata/deltadata.txt:# Deltafactor = 0.533160457775 meV
 
 # TO BE IMPROVED (large dfs)
 @ N.psp8_DFLOW/W33/outdata/deltadata.txt:# Deltafactor = 1.751 meV
-@ Na-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 1.645 meV
 @ Ne.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.639 meV
+@ Na-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 1.645 meV
+
 @ O.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 10.647 meV
 @ Mg.psp8_DFLOE/W15: Deltafactor = 2.738 meV
 @ Mg-sp.psp8_DFLOW/W37/outdata/deltadata.txt:# Deltafactor = 5.590 meV
