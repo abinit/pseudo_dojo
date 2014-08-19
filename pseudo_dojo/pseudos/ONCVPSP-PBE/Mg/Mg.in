@@ -13,8 +13,8 @@ Mg 12 3 1 4 psp8
 # lloc lpopt rc5 dvloc0
 4 5 2.1 0.0
 # l nproj debl
-0 2 2.9
-1 2 2.9
+0 2 2.5
+1 2 2.2
 # icmod fcfact
 1 2.0
 # epsh1 epsh2 depsh
