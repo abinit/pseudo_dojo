@@ -49,23 +49,22 @@ Sb-d.psp8 Deltafactor = 0.800 meV
 Hf-spdf.psp8_DFLOW/W57/outdata/deltadata.txt:# Deltafactor = 0.533160457775 meV
 
 # TO BE IMPROVED (large dfs)
+@ N.psp8_DFLOW/W33/outdata/deltadata.txt:# Deltafactor = 1.751 meV
+@ Na-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 1.645 meV
+@ Ne.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.639 meV
+@ O.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 10.647 meV
+@ Mg.psp8_DFLOE/W15: Deltafactor = 2.738 meV
+@ Mg-sp.psp8_DFLOW/W37/outdata/deltadata.txt:# Deltafactor = 5.590 meV
+@ C.psp8_DFLOW/W30/outdata/deltadata.txt:# Deltafactor = 1.53655747594 meV
 @ Te-d.psp8_DFLOW/W39: Deltafactor = 4.676 meV
 @ Tl-d.psp8: # Deltafactor = 6.1368240612 meV
-@ Ne.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.639 meV
-@ Na-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 1.645 meV
-@ O.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 10.647 meV
-@ Mg-sp.psp8_DFLOW/W37/outdata/deltadata.txt:# Deltafactor = 5.590 meV
-@ Mg.psp8_DFLOE/W15: Deltafactor = 2.738 meV
-@ C.psp8_DFLOW/W30/outdata/deltadata.txt:# Deltafactor = 1.53655747594 meV
-@ N.psp8_DFLOW/W33/outdata/deltadata.txt:# Deltafactor = 1.751 meV
-
 @ Zr-sp.psp8_DFLOW/W31/outdata/deltadata.txt:# Deltafactor = 1.220 meV
 @ Sn-d.psp9_DFLOW34 Deltafactor = 1.256 meV
-@ Rh-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 2.615 meV
 @ Ru-sp.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.970 meV
+@ Rh-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 2.615 meV
+@ Cd-sp.psp8_DFLOW/W35/outdata/deltadata.txt:# Deltafactor = 3.676 meV
 @ Co-sp.psp8_DFLOW/W46/outdata/deltadata.txt:# Deltafactor = 4.063 meV meV
 @ Zn-sp.psp8_DFLOW/W47/outdata/deltadata.txt:# Deltafactor = 22.577 meV
-@ Cd-sp.psp8_DFLOW/W35/outdata/deltadata.txt:# Deltafactor = 3.676 meV
 @ Cu-sp.psp8_DFLOW/W43/outdata/deltadata.txt:# Deltafactor = 11.5019560498 meV
 @ Fe-sp.psp8_DFLOW/W45/outdata/deltadata.txt:# Deltafactor = 47.0004604966 meV
 @ Ni-sp.psp8_DFLOW/W44/outdata/deltadata.txt:# Deltafactor = 25.376 meV
