@@ -12,9 +12,11 @@ if sys.version[0:3] < '2.7':
     sys.stderr.write("ERROR: pseudo_dojo requires Python Version 2.7 or above. Exiting.")
     sys.exit(1)
 
-# A little utility we'll need below, since glob() does NOT allow you to do exclusion on multiple endings!
+
 def file_doesnt_end_with(test, endings):
     """
+    A little utility we'll need below, since glob() does NOT allow you to do exclusion on multiple endings!
+
     Return true if test is a file and its name does NOT end with any
     of the strings listed in endings.
     """
@@ -45,12 +47,14 @@ with open(release_file) as f:
 #    """Find all packages."""
 #    return find_packages(exclude=())
 
+
 def find_package_data():
     """Find pseudo_dojo's package_data."""
     # This is not enough for these things to appear in an sdist.
     # We need to muck with the MANIFEST to get this to work
     package_data = {
         'pseudo_dojo.refdata.deltafactor.data' : ['*.txt', '*.gz', 'CIFs/*'],
+        'pseudo_dojo.refdata.gbrv.data' : ['*.csv'],
         'pseudo_dojo.pseudos' : [
             "*.json", 
             "NC/GGA/PBE_HGHK/*",
@@ -67,6 +71,7 @@ def find_scripts():
     # All python files in abipy/scripts
     pyfiles = glob(os.path.join('pseudo_dojo','scripts',"*.py") )
     scripts.extend(pyfiles)
+
     return scripts
 
 
@@ -86,12 +91,11 @@ def cleanup():
 # List of external packages we rely on.
 # Note setup install will download them from Pypi if they are not available.
 install_requires = [
-"numpy>=1.5",
-"scipy>=0.10",
-"matplotlib>=1.1",
-"pymatgen>=2.7.3",
-"periodictable",
-#"django",
+    "periodictable",
+    "numpy>=1.5",
+    "scipy>=0.10",
+    #"matplotlib>=1.1",
+    #"pymatgen>=2.9.0",
 ]
 
 #---------------------------------------------------------------------------
@@ -110,21 +114,21 @@ my_package_data = find_package_data()
 # Create a dict with the basic information
 # This dict is eventually passed to setup after additional keys are added.
 setup_args = dict(
-      name             = name,
-      version          = version,
-      description      = description,
-      long_description = long_description,
-      author           = author,
-      author_email     = author_email,
-      #url              = url,
-      #download_url     = download_url,
-      license          = license,
-      platforms        = platforms,
-      keywords         = keywords,
-      install_requires = install_requires,
-      packages         = my_packages,
-      package_data     = my_package_data,
-      scripts          = my_scripts,
+      name=name,
+      version=version,
+      description=description,
+      long_description=long_description,
+      author=author,
+      author_email=author_email,
+      #url=url,
+      #download_url=download_url,
+      license=license,
+      platforms=platforms,
+      keywords=keywords,
+      install_requires=install_requires,
+      packages=my_packages,
+      package_data=my_package_data,
+      scripts=my_scripts,
       )
 
 

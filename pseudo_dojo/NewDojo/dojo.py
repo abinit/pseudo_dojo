@@ -103,6 +103,7 @@ class Dojo(object):
         while not all_done:
             if self.data_base.has_new_data():  # todo find out how to do this ...
                 for shiai in self.shiais:
+                    pass
                     # when it is complete and not done
                     # evaluate the data
             else:

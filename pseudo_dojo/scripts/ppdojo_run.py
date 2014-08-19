@@ -3,59 +3,75 @@
 from __future__ import division, print_function
 
 import sys
+import argparse
 
-from argparse import ArgumentParser
 from pprint import pprint
-
-from pseudo_dojo import Dojo, TaskManager
+from pymatgen.io.abinitio import TaskManager
+from pseudo_dojo.dojo import Dojo, HintsAndGbrvDojo, DojoReport
 
 __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
 __maintainer__ = "Matteo Giantomassi"
 
 
-def str_examples():
-    examples = """
-      Usage Example:
-      \n
-      ppdojo_run.py Si.fhi -m10           => Cutoff converge test for Si.fhi using up to 10 CPUs.
-      ppdojo_run.py Si.fhi -l1 -n10 -m20  => Deltafactor test using up to 20 CPUs, each task uses 10 MPI nodes.
-    """
-    return examples
-
-def show_examples_and_exit(err_msg=None, error_code=1):
-    "Display the usage of the script."
-    sys.stderr.write(str_examples())
-    if err_msg: 
-        sys.stderr.write("Fatal Error\n" + err_msg + "\n")
-    sys.exit(error_code)
-
-
 def main():
-    parser = ArgumentParser(epilog=str_examples())
+    def str_examples():
+        examples = """
+Usage Example:\n
+    ppdojo_run.py build Si.fhi  => Build pseudo_dojo flow for Si.fhi
+\n"""
+        return examples
 
-    parser.add_argument('-m', '--max_ncpus', type=int, default=1,
-                        help="Maximum number of CPUs that can be used by the DOJO.")
+    def show_examples_and_exit(error_code=1):
+        """Display the usage of the script."""
+        sys.stderr.write(str_examples())
+        sys.exit(error_code)
 
-    parser.add_argument('-n', '--mpi-ncpus', type=int, default=1,
-                        help="Number of MPI processes per task).")
+    # Decorate argparse classes to add portable support for aliases in add_subparsers
+    class MyArgumentParser(argparse.ArgumentParser):
+        def add_subparsers(self, **kwargs):
+            new = super(MyArgumentParser, self).add_subparsers(**kwargs)
+            # Use my class
+            new.__class__ = MySubParserAction
+            return new
+                                                                                                                    
+    class MySubParserAction(argparse._SubParsersAction):
+        def add_parser(self, name, **kwargs):
+            """Allows one to pass the aliases option even if this version of ArgumentParser does not support it."""
+            try:
+                return super(MySubParserAction, self).add_parser(name, **kwargs)
+            except Exception as exc:
+                if "aliases" in kwargs: 
+                    # Remove aliases and try again.
+                    kwargs.pop("aliases")
+                    return super(MySubParserAction, self).add_parser(name, **kwargs)
+                else:
+                    # Wrong call.
+                    raise exc
 
-    parser.add_argument('-l', '--max-level', type=int, default=0, 
-                        help="Maximum DOJO level (default 0 i.e. ecut hints).")
+    parser = MyArgumentParser(epilog=str_examples())
 
-    parser.add_argument('-a', '--accuracy', type=str, default="normal", 
-                        help="Accuracy of the calculation (low-normal-high). Default: normal.")
-
-
-    parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
-                         help='Verbose, can be supplied multiple times to increase verbosity')
+    #parser.add_argument('-l', '--max-level', type=int, default=0, 
+    #                    help="Maximum DOJO level (default 0 i.e. ecut hints).")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
-                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
+                        help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
 
     parser.add_argument('pseudos', nargs='+', help='List of pseudopotential files.')
 
-    options = parser.parse_args()
+    # Create the parsers for the sub-commands
+    subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
+
+    # Subparser for single command.
+    p_build = subparsers.add_parser('build', aliases=["b"], help="Build dojo.")
+
+    # Subparser for single command.
+    p_report = subparsers.add_parser('report', aliases=["r"], help="Show DOJO_REPORT.")
+
+    try:
+        options = parser.parse_args()
+    except:
+        show_examples_and_exit(1)
 
     # loglevel is bound to the string value obtained from the command line argument. 
     # Convert to upper case to allow the user to specify --loglevel=DEBUG or --loglevel=debug
@@ -66,31 +82,23 @@ def main():
     logging.basicConfig(level=numeric_level)
 
     pseudos = options.pseudos
-    max_ncpus = options.max_ncpus
-    mpi_ncpus = options.mpi_ncpus
-
-    if mpi_ncpus > max_ncpus:
-        err_msg = "mpi_cpus %(mpi_ncpus)s cannot be greater than max_ncpus %(max_ncpus)s" % locals()
-        show_examples_and_exit(err_msg=err_msg)
-
-    manager = TaskManager.simple_mpi(mpi_ncpus=1)
     manager = TaskManager.from_user_config()
 
-    print(manager)
+    if options.command == "build":
+        #dojo = Dojo(manager=manager)
+        dojo = HintsAndGbrvDojo(manager=manager)
 
-    dojo = Dojo(manager=manager,
-                max_ncpus=max_ncpus, 
-                max_level=options.max_level, 
-                verbose=options.verbose,
-                )
+        for pseudo in pseudos:
+            dojo.add_pseudo(pseudo)
 
-    stats = []
-    for pseudo in pseudos:
-        isok = dojo.challenge_pseudo(pseudo, accuracy=options.accuracy)
-        stats.append(isok)
+        dojo.build()
 
-    return stats.count(True)
+    elif options.command == "report":
+        for pseudo in pseudos:
+            report = DojoReport.from_file(pseudo)
+            report.print_table()
 
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())

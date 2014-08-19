@@ -1,397 +1,329 @@
 from __future__ import division, print_function
 
+import sys
 import os
-import abc
-import shutil
-import time
 import numpy as np
 
-from pprint import pprint
-from pymatgen.serializers.json_coders import json_pretty_dump
-from pymatgen.io.abinitio.pseudos import Pseudo
-from pymatgen.io.abinitio.calculations import PPConvergenceFactory
-from pseudo_dojo.dojo.deltaworks import DeltaFactory
+from pymatgen.util.string_utils import pprint_table
+from pymatgen.io.abinitio.eos import EOS
+from pymatgen.io.abinitio.tasks import TaskManager
+from pymatgen.io.abinitio.flows import AbinitFlow
+from pymatgen.io.abinitio.pseudos import Pseudo, read_dojo_report
+from pseudo_dojo.dojo.dojo_workflows import PPConvergenceFactory, DeltaFactory, GbrvFactory
+
+import logging
+logger = logging.getLogger(__file__)
+
+ALL_ACCURACIES = ("low", "normal", "high")
+
+ALL_TRIALS = (
+    "deltafactor",
+    "gbrv_bcc",
+    "gbrv_fcc",
+)
 
 
-class DojoError(Exception):
-    """Base Error class for DOJO calculations."""
+class DojoReport(dict):
+
+    _TRIALS2KEY = {
+        "deltafactor": "dfact_meV",
+        "gbrv_bcc": "a0",
+        "gbrv_fcc": "a0",
+    }
+
+    def __init__(self, filepath): 
+        super(dict, self).__init__()
+        d = read_dojo_report(filepath)
+        self.update(**d)
+
+    @classmethod
+    def from_file(cls, filepath):
+        return cls(filepath)
+
+    def has_exceptions(self):
+        problems = {}
+
+        for trial in self.ALL_TRIALS:
+            for accuracy in ALL_ACCURACIES:
+                excs = self[trial][accuracy].get("_exceptions", None)
+                if excs is not None:
+                    if trial not in problems:
+                        problems[trial] = {}
+
+                    problems[trial][accuracy] = excs
+
+        return problems
+
+    @property
+    def has_hints(self):
+        return "hints" in self
+
+    def trials(self):
+        return [k for k in self.keys() if  k != "hints"]
+
+    def has_trial(self, dojo_trial, accuracy):
+        """
+        True if the dojo_report contains an entry for the
+        given dojo_trial with the specified accuracy.
+        If accuracy is None, we test if all accuracies are present
+        """
+        if dojo_trial not in self:
+            return False
+
+        if accuracy is not None:
+            return accuracy in self[dojo_trial]
+        else:
+            return all(acc in self[dojo_trial] for acc in ALL_ACCURACIES)
+
+    def to_table(self, **kwargs):
+        """
+        ===========  ===============  ===============   ===============
+        Trial             low              normal            high 
+        ===========  ===============  ===============   ===============
+        deltafactor  value (rel_err)  value (rel_err)   value (rel_err)
+        gbrv_fcc     ...              ...               ...
+        ===========  ===============  ===============   ===============
+        """
+        # Build the header
+        if kwargs.pop("with_hints", True):
+            ecut_acc = {acc: self["hints"][acc]["ecut"] for acc in ALL_ACCURACIES}
+            l = ["%s (%s Ha)" % (acc, ecut_acc[acc]) for acc in ALL_ACCURACIES]
+        else:
+            l = list(ALL_ACCURACIES)
+
+        table = [["Trial"] + l]
+        #row = ["%s (%s)" % (accuracy, ecut)]
+
+        for trial in ALL_TRIALS:
+            row = [trial]
+            for accuracy in ALL_ACCURACIES:
+                if not self.has_trial(trial, accuracy): 
+                    row.append("N/A")
+                else:
+                    d = self[trial][accuracy]
+                    #print(d.keys())
+                    #s = "%s (%s %%)" % (value, rel_err)
+                    value = d[self._TRIALS2KEY[trial]]
+                    s = "%.1f" % value
+                    row.append(s)
+
+            table.append(row)
+
+        return table
+
+    def print_table(self, stream=sys.stdout):
+        pprint_table(self.to_table(), out=stream)
+
+    def plot_etotal_vs_ecut(self, **kwargs):
+        d = self["hints"]
+        ecuts, etotals, aug_ratios = np.array(d["ecuts"]), np.array(d["etotals"]), d["aug_ratio"]
+        plot_etotals(ecuts, etotals, aug_ratios, **kwargs)
+
+    def plot_gbrv_eos(self, struct_type, **kwargs):
+        import matplotlib.pyplot as plt
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1)
+
+        trial = "gbrv_" + struct_type
+        for accuracy in ALL_ACCURACIES:
+            if not self.has_trial(trial, accuracy): continue
+            d = self[trial][accuracy]
+            #num_sites, volumes, etotals = d["num_sites"], np.array(d["volumes"]), np.array(d["etotals"])
+            volumes, etotals = np.array(d["volumes"]), np.array(d["etotals"])
+
+            eos_fit = EOS.Quadratic().fit(volumes, etotals)
+            eos_fit.plot(ax=ax, show=False) 
+
+        plt.show()
+
+    def plot_delta_factor_eos(self, **kwargs):
+        import matplotlib.pyplot as plt
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1)
+
+        trial = "deltafactor"
+        for accuracy in ALL_ACCURACIES:
+            if not self.has_trial(trial, accuracy): continue
+            d = self[trial][accuracy]
+            num_sites, volumes, etotals = d["num_sites"], np.array(d["volumes"]), np.array(d["etotals"])
+
+            # Use same fit as the one employed for the deltafactor.
+            eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
+            eos_fit.plot(ax=ax, show=False)
+
+        plt.show()
+
+
+
 
 
 class Dojo(object):
     """
-    This object drives the execution of the tests for the pseudopotential.
-
-    A Dojo has a set of masters, each master is associated to a particular trial
-    and is responsible for the validation/rating of the results of the tests.
+    This object build the flows for the analysis/validation of pseudopotentials
     """
-    Error = DojoError
-
-    def __init__(self, manager, max_ncpus=1, max_level=None, verbose=0):
+    def __init__(self, workdir=None, manager=None, trials=ALL_TRIALS, accuracies=ALL_ACCURACIES):
         """
         Args:
+            workdir:
+                Working directory.
             manager:
-                `TaskManager` object that will handle the sumbmission of the job 
-                and the parallel execution.
-            max_ncpus:
-                Max number of CPUs to use
-            max_level:
-                Max test level to perform.
-            verbose:
-                Verbosity level (int).
+                `TaskManager` object that will handle the sumbmission of the jobs.
         """
-        self.manager = manager
-        self.max_ncpus = max_ncpus
-        self.verbose = verbose
+        self.workdir = os.path.abspath(workdir) if workdir is not None else os.path.join(os.getcwd(), "DOJO")
+        self.manager = TaskManager.from_user_config() if manager is None else manager
+        self.trials, self.accuracies = trials, accuracies
 
-        # List of master classes that will be instanciated afterwards.
-        # They are ordered according to the master level.
-        classes = [m for m in DojoMaster.__subclasses__()]
-        classes.sort(key=lambda cls: cls.dojo_level)
+        # List of pseudos analyzed by the Dojo and corresponding flows.
+        self.pseudos, self.flows = [], []
 
-        self.master_classes = classes
+    def add_pseudo(self, pseudo):
+        """Add a pseudo to the Dojo."""
+        pseudo = Pseudo.as_pseudo(pseudo)
 
-        if max_level is not None:
-            self.master_classes = classes[:max_level+1]
+        dojo_report = DojoReport.from_file(pseudo.filepath)
 
-    def __str__(self):
-        return repr_dojo_levels()
+        # Construct the flow 
+        flow_workdir = os.path.join(self.workdir, pseudo.name)
+        flow = AbinitFlow(workdir=flow_workdir, manager=self.manager, pickle_protocol=0)
 
-    def challenge_pseudo(self, pseudo, **kwargs):
-        """
-        This method represents the main entry point for client code.
-        The Dojo receives a pseudo-like object and delegate the execution
-        of the tests to the dojo_masters
+        # Construct the flow according to the info found in the dojo report.
+        if not pseudo.has_hints:
+            # We need the hints in order to run the other tests
+            factory = PPConvergenceFactory()
+            ecut_work = factory.work_for_pseudo(pseudo, ecut_slice=slice(4, None, 1), nlaunch=4)
+            flow.register_work(ecut_work)
 
-        Args:
-            `Pseudo` object or filename.
-        """
-        pseudo = Pseudo.aspseudo(pseudo)
-
-        print(pseudo)
-
-        print('here .....')
-
-        workdir = "DOJO_" + pseudo.name
-
-        # Build master instances.
-        masters = [cls(manager=self.manager, max_ncpus=self.max_ncpus,
-                       verbose=self.verbose) for cls in self.master_classes]
-        isok = False
-        for master in masters:
-            if master.accept_pseudo(pseudo, **kwargs):
-                isok = master.start_training(workdir, **kwargs)
-                if not isok:
-                    print("master: %s returned isok %s.\n Skipping next trials!" % (master.name, isok))
-                    break
-
-        return isok
-
-
-class DojoMaster(object):
-    """"
-    Abstract base class for the dojo masters.
-    Subclasses must define the class attribute level.
-    """
-    __metaclass__ = abc.ABCMeta
-
-    Error = DojoError
-
-    def __init__(self, manager, max_ncpus=1, verbose=0):
-        """
-        Args:
-            manager:
-                `TaskManager` object 
-            max_ncpus:
-                Max number of CPUs to use
-            verbose:
-                Verbosity level (int).
-        """
-        self.manager = manager
-        self.max_ncpus = max_ncpus
-        self.verbose = verbose
-
-    @property
-    def name(self):
-        """Name of the subclass."""
-        return self.__class__.__name__
-
-    @staticmethod
-    def subclass_from_dojo_level(dojo_level):
-        """Returns a subclass of `DojoMaster` given the dojo_level."""
-        classes = []
-        for cls in DojoMaster.__subclasses__():
-            if cls.dojo_level == dojo_level:
-                classes.append(cls)
-
-        if len(classes) != 1:
-            raise self.Error("Found %d masters with dojo_level %d" % (len(classes), dojo_level))
-
-        return classes[0]
-
-    def inspect_pseudo(self, pseudo):
-        """Returns the maximum level of the DOJO trials passed by the pseudo."""
-        if not pseudo.dojo_report:
-            return None
         else:
-            levels = [dojo_key2level(key) for key in pseudo.dojo_report]
-            return max(levels)
+            # Hints are available --> construct a flow for the different trials.
+            dojo_trial = "deltafactor"
+            if dojo_trial in self.trials:
+                # Do we have this element in the deltafactor database?
+                #if not df_database().has_symbol(pseudo.symbol):
+                #    logger.warning("Cannot find %s in deltafactor database." % pseudo.symbol)
 
-    def accept_pseudo(self, pseudo, **kwargs):
-        """
-        Returns True if the mast can train the pseudo.
-        This method is called before testing the pseudo.
+                delta_factory = DeltaFactory()
+                kppa = 6750 # 6750 is the value used in the deltafactor code.
+                kppa = 1
 
-        A master can train the pseudo if his level == pseudo.dojo_level + 1
-        """
-        if not isinstance(pseudo, Pseudo):
-            pseudo = Pseudo.from_filename(pseudo)
+                for accuracy in self.accuracies:
+                    if dojo_report.has_trial(dojo_trial, accuracy): continue
+                    ecut, pawecutdg = self._ecut_pawecutdg(pseudo, accuracy)
+                    work = delta_factory.work_for_pseudo(pseudo, accuracy=accuracy, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg)
 
-        ready = False
-        pseudo_dojo_level = self.inspect_pseudo(pseudo)
-        
-        if pseudo_dojo_level is None:
-            # Hints are missing
-            ready = (self.dojo_level == 0)
-        else:
-            if pseudo_dojo_level == self.dojo_level:
-                # pseudo has already a test associated to this level.
-                # check if it has the same accuracy.
-                accuracy = kwargs.get("accuracy", "normal")
-                if accuracy not in pseudo.dojo_report[self.dojo_key]:
-                    ready = True
-                else:
-                    print("%s: %s has already an entry for accuracy %s" % (self.name, pseudo.name, accuracy))
-                    ready = False
+                    logger.info("Adding work for %s with accuracy %s" % (dojo_trial, accuracy))
+                    work.set_dojo_accuracy(accuracy)
+                    flow.register_work(work)
 
-            else:
-                # Pseudo level must be one less than the level of the master.
-                ready = (pseudo_dojo_level == self.dojo_level - 1)
+            # Test if GBRV tests are wanted.
+            gbrv_structs = [s.split("_")[1] for s in self.trials if s.startswith("gbrv_")]
 
-        if not ready:
-            print("%s: Sorry, %s-san, I cannot train you" % (self.name, pseudo.name))
-        else:
-            print("%s: Welcome %s-san, I'm your level-%d trainer" % (self.name, pseudo.name, self.dojo_level))
-            self.pseudo = pseudo
+            if gbrv_structs:
+                gbrv_factory = GbrvFactory()
+                for struct_type in gbrv_structs:
+                    dojo_trial = "gbrv_" + struct_type
+                    for accuracy in self.accuracies:
+                        if dojo_report.has_trial(dojo_trial, accuracy): continue
+                        ecut, pawecutdg = self._ecut_pawecutdg(pseudo, accuracy)
+                        work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg)
 
-        return ready
+                        logger.info("Adding work for %s with accuracy %s" % (dojo_trial, accuracy))
+                        work.set_dojo_accuracy(accuracy)
+                        flow.register_work(work)
 
-    @abc.abstractmethod
-    def challenge(self, workdir, **kwargs):
-        """Abstract method to run the calculation."""
+        flow.allocate()
+        self.pseudos.append(pseudo)
+        self.flows.append(flow)
 
-    @abc.abstractmethod
-    def make_report(self, **kwargs):
-        """
-        Abstract method.
-        Returns: 
-            report:
-                Dictionary with the results of the trial.
-        """
+    def _ecut_pawecutdg(self, pseudo, accuracy):
+        hint = pseudo.hint_for_accuracy(accuracy=accuracy)
+        return hint.ecut, hint.ecut * hint.aug_ratio
 
-    def write_dojo_report(self, report, overwrite_data=False, ignore_errors=False):
-        """
-        Write/update the DOJO_REPORT section of the pseudopotential.
-        """
-        dojo_key = self.dojo_key
-        pseudo = self.pseudo
-
-        # Read old_report from pseudo.
-        old_report = pseudo.read_dojo_report()
-
-        if dojo_key not in old_report:
-            # Create new entry
-            old_report[dojo_key] = {}
-        else:
-            # Check that we are not going to overwrite data.
-            if self.accuracy in old_report[dojo_key] and not overwrite_data:
-                raise self.Error("%s already exists in the old pseudo. Cannot overwrite data" % dojo_key)
-
-        # Update old report card with the new one.
-        old_report[dojo_key].update(report[dojo_key])
-
-        # Write new report
-        pseudo.write_dojo_report(old_report)
-
-    def start_training(self, workdir, **kwargs):
-        """Start the tests in the working directory workdir."""
-        start_time = time.time()
-        results = self.challenge(workdir, **kwargs)
-
-        report = self.make_report(results, **kwargs)
-
-        json_pretty_dump(results, os.path.join(workdir, "report.json"))
-
-        self.write_dojo_report(report)
-
-        print("Elapsed time %.2f [s]" % (time.time() - start_time))
-
-        isok = True
-        if "_exceptions" in report:
-            isok = False
-            print("got exceptions: ",report["_exceptions"])
-
-        return isok
+    def build(self):
+        """Build the dojo."""
+        for flow in self.flows:
+            flow.build_and_pickle_dump()
 
 
-class HintsMaster(DojoMaster):
+class HintsAndGbrvDojo(Dojo):
+    def __init__(self, workdir=None, manager=None):
+        Dojo.__init__(self, workdir=workdir, manager=manager,
+                      trials=("gbrv_bcc", "gbrv_fcc"), accuracies=["normal"])
+
+
+def plot_etotals(ecuts, etotals, aug_ratios, **kwargs):
     """
-    Level 0 master that analyzes the convergence of the total energy versus
-    the plane-wave cutoff energy.
+    Uses Matplotlib to plot the energy curve as function of ecut
+
+    Args:
+        ecuts:
+            List of cutoff energies
+        etotals:
+            Total energies in Hartree, see aug_ratios
+        aug_ratios:
+            List augmentation rations. [1,] for norm-conserving, [4, ...] for PAW
+            The number of elements in aug_ration must equal the number of (sub)lists
+            in etotals. Example:
+
+                - NC: etotals = [3.4, 4,5 ...], aug_ratios = [1,]
+                - PAW: etotals = [[3.4, ...], [3.6, ...]], aug_ratios = [4,6]
+
+        =========     ==============================================================
+        kwargs        description
+        =========     ==============================================================
+        show          True to show the figure
+        savefig       'abc.png' or 'abc.eps'* to save the figure to a file.
+        =========     ==============================================================
+
+    Returns:
+        `matplotlib` figure.
     """
-    dojo_level = 0
-    dojo_key = "hints"
+    show = kwargs.pop("show", True)
+    savefig = kwargs.pop("savefig", None)
 
-    # Absolute tolerance for low,normal,high accuracy.
-    _ATOLS_MEV = (10, 1, 0.1)
+    import matplotlib.pyplot as plt
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
 
-    def challenge(self, workdir, **kwargs):
-        pseudo = self.pseudo
-        toldfe = 1.e-8
+    npts = len(ecuts)
 
-        factory = PPConvergenceFactory()
+    if len(aug_ratios) != 1 and len(aug_ratios) != len(etotals):
+        raise ValueError("The number of sublists in etotal must equal the number of aug_ratios")
 
-        workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level))
+    if len(aug_ratios) == 1:
+        etotals = [etotals,]
 
-        estep = kwargs.get("estep", 10)
+    lines, legends = [], []
 
-        eslice = slice(5, None, estep)
+    #emax = -np.inf
+    for aratio, etot in zip(aug_ratios, etotals):
+        emev = np.array(etot) * Ha_to_eV * 1000
+        emev_inf = npts * [emev[-1]]
+        yy = emev - emev_inf
+        #print("emax", emax)
+        #print("yy", yy)
+        #emax = np.max(emax, np.max(yy))
 
-        w = factory.work_for_pseudo(workdir, self.manager, pseudo, eslice,
-                                    toldfe=toldfe, atols_mev=self._ATOLS_MEV)
+        line, = ax.plot(ecuts, yy, "-->", linewidth=3.0, markersize=10)
 
-        if os.path.exists(w.workdir):
-            shutil.rmtree(w.workdir)
+        lines.append(line)
+        legends.append("aug_ratio = %s" % aratio)
 
-        print("Converging %s in iterative mode with ecut_slice %s, max_ncpus = %d ..." %
-              (pseudo.name, eslice, self.max_ncpus))
+    ax.legend(lines, legends, 'upper right', shadow=True)
 
-        w.start()
-        w.wait()
+    # Set xticks and labels.
+    ax.grid(True)
+    ax.set_title("$\Delta$ Etotal Vs Ecut")
+    ax.set_xlabel("Ecut [Ha]")
+    ax.set_ylabel("$\Delta$ Etotal [meV]")
+    ax.set_xticks(ecuts)
 
-        wres = w.get_results()
-        w.move("ITERATIVE")
+    #ax.yaxis.set_view_interval(-10, emax + 0.01 * abs(emax))
+    ax.yaxis.set_view_interval(-10, 20)
 
-        estart = max(wres["low"]["ecut"] - estep, 5)
-        if estart <= 10:
-            estart = 1 # To be sure we don't overestimate ecut_low
+    if show:
+        plt.show()
 
-        estop, estep = wres["high"]["ecut"] + estep, 1
+    if savefig is not None:
+        fig.savefig(savefig)
 
-        erange = list(np.arange(estart, estop, estep))
-
-        work = factory.work_for_pseudo(workdir, self.manager, pseudo, erange,
-                                       toldfe=toldfe, atols_mev=self._ATOLS_MEV)
-
-        print("Finding optimal values for ecut in the range [%.1f, %.1f, %1.f,] Hartree, "
-              "max_ncpus = %d ..." % (estart, estop, estep, self.max_ncpus))
-
-        from pymatgen.io.abinitio.launcher import PyResourceManager
-        PyResourceManager(work, self.max_ncpus).run()
-
-        wf_results = work.get_results()
-
-        #wf_results.json_dump(work.path_in_workdir("dojo_results.json"))
-
-        return wf_results
-
-    def make_report(self, results, **kwargs):
-        d = {}
-        for key in ["low", "normal", "high"]:
-            d[key] = results[key]
-
-        if results.exceptions:
-            d["_exceptions"] = str(results.exceptions)
-
-        return {self.dojo_key: d}
-
-
-class DeltaFactorMaster(DojoMaster):
-    """
-    Level 1 master that drives the computation of the delta factor.
-    """
-    dojo_level = 1
-    dojo_key = "delta_factor"
-
-    def accept_pseudo(self, pseudo, **kwargs):
-        """Returns True if the master can train the pseudo."""
-        ready = super(DeltaFactorMaster, self).accept_pseudo(pseudo, **kwargs)
-
-        # Do we have this element in the deltafactor database?
-        from pseudo_dojo.refdata.deltafactor import df_database
-        return (ready and df_database().has_symbol(self.pseudo.symbol))
-
-    def challenge(self, workdir, **kwargs):
-        self.accuracy = kwargs.pop("accuracy", "normal")
-
-        factory = DeltaFactory()
-
-        # Calculations will be executed in this directory.
-        workdir = os.path.join(workdir, "LEVEL_" + str(self.dojo_level) + "_ACC_" + self.accuracy)
-
-        # 6750 is the value used in the deltafactor code.
-        kppa = kwargs.get("kppa", 6750)
-        #kppa = 1
-
-        if self.verbose:
-            print("Running delta_factor calculation with %d python threads" % self.max_ncpus)
-            print("Will use kppa = %d " % kppa)
-            print("Accuracy = %s" % self.accuracy)
-            print("Manager = ",self.manager)
-
-        work = factory.work_for_pseudo(workdir, self.manager, self.pseudo, 
-                                       accuracy=self.accuracy, kppa=kppa, ecut=None)
-
-        retcodes = PyResourceManager(work, self.max_ncpus).run()
-
-        if self.verbose:
-            print("Returncodes %s" % retcodes)
-
-        wf_results = work.get_results()
-
-        wf_results.json_dump(work.path_in_workdir("dojo_results.json"))
-        return wf_results
-
-    def make_report(self, results, **kwargs):
-        # Get reference results (Wien2K).
-        from pseudo_dojo.refdata.deltafactor import df_database, df_compute
-        wien2k = df_database().get_entry(self.pseudo.symbol)
-
-        # Get our results and compute deltafactor estimator.
-        v0, b0_GPa, b1 = results["v0"], results["b0_GPa"], results["b1"]
-
-        dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1, v0, b0_GPa, b1, b0_GPa=True)
-        print("Deltafactor = %.3f meV" % dfact)
-
-        d = dict(v0=v0,
-                 b0_GPa=b0_GPa,
-                 b1=b1,
-                 dfact=dfact
-                )
-
-        if results.exceptions:
-            d["_exceptions"] = str(results.exceptions)
-
-        d = {self.accuracy: d}
-        return {self.dojo_key: d}
-
-################################################################################
-
-_key2level = {}
-for cls in DojoMaster.__subclasses__():
-    _key2level[cls.dojo_key] = cls.dojo_level
-
-
-def dojo_key2level(key):
-    """Return the trial level from the name found in the pseudo."""
-    return _key2level[key]
-
-
-def repr_dojo_levels():
-    """String representation of the different levels of the Dojo."""
-    level2key = {v: k for k,v in _key2level.items()}
-
-    lines = ["Dojo level --> Challenge"]
-    for k in sorted(level2key):
-        lines.append("level %d --> %s" % (k, level2key[k]))
-    return "\n".join(lines)
-
+    return fig

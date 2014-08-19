@@ -143,7 +143,7 @@ def main():
     # Subparser for Pseudization with template.
     p_pst = subparsers.add_parser('pst', help='Pseudization with template input file')
 
-    p_pst.add_argument('template', metavar='STRING', default= "", help="Path to the template file")
+    p_pst.add_argument('template', metavar='STRING', default="", help="Path to the template file")
 
     # Plot subparser
     p_plot = subparsers.add_parser('plot', help='Plot data with matplotlib')
