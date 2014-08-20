@@ -61,9 +61,11 @@ Co-sp.psp8_DFLOW/W46/outdata/deltadata.txt:# Deltafactor = 4.102 meV meV
 @ Sn-d.psp9_DFLOW34 Deltafactor = 1.256 meV
 @ Zn-sp.psp8_DFLOW/W47/outdata/deltadata.txt:# Deltafactor = 22.577 meV
 @ Cu-sp.psp8_DFLOW/W43/outdata/deltadata.txt:# Deltafactor = 11.5019560498 meV
+Cu.psp8_DFLOW/W34: Deltafactor = 2.006 meV
 @ Fe-sp.psp8_DFLOW/W45/outdata/deltadata.txt:# Deltafactor = 47.0004604966 meV
 @ Fe.psp8/W34 Deltafactor = 45.524 meV --> 30.412 but I had to use a huge fcfact for the nlcc
 @ Ni-sp.psp8_DFLOW/W44/outdata/deltadata.txt:# Deltafactor = 25.376 meV
+Ni.psp8_DFLOW/W33:# Deltafactor = 3.832 meV
 
 Si.psp8_DFLOW/W22/outdata/deltadata.txt:# Deltafactor = 0.97389438724 meV
 Po Deltafactor = 0.639 me
