@@ -26,28 +26,29 @@ Sc-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 0.151812957451 meV
 Sr-sp.psp8_DFLOW/W30/outdata/deltadata.txt:# Deltafactor = 0.085327333044 meV
 Kr-d.psp8_DFLOW/W45 Deltafactor = 0.106 meV
 Kr.psp8_DFLOW/W22/outdata/deltadata.txt:# Deltafactor = 0.0497411907783 meV
+Ti-sp.psp8_DFLOW/W38/outdata/deltadata.txt:# Deltafactor = 0.394 meV
+Cl.psp8_DFLOW/W24/outdata/deltadata.txt:# Deltafactor = 0.117 meV
+Ca-sp.psp8_DFLOW/W33/outdata/deltadata.txt:# Deltafactor = 0.110 meV
+Al.psp8_DFLOW/W15/outdata/deltadata.txt:# Deltafactor = 0.306 meV
+Rb-sp.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 0.522 meV
+Ta-spdf.psp8_DFLOW/W51/outdata/deltadata.txt:# Deltafactor = 2.903 meV
+W-spdf.psp8_DFLOW/W44/outdata/deltadata.txt:# Deltafactor = 1.804 meV
+Re-spdf.psp8_DFLOW/W52/outdata/deltadata.txt:# Deltafactor = 1.836 meV
+Os-spdf.psp8_DFLOW/W52/outdata/deltadata.txt:# Deltafactor = 2.524 meV
+Au-spd.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 2.398 meV
+Pt-spdf.psp8_DFLOW/W57/outdata/deltadata.txt:# Deltafactor = 3.452 meV
 # End first optimization
 
 # TO BE IMPROVED
-Ti-sp.psp8_DFLOW/W38/outdata/deltadata.txt:# Deltafactor = 0.391403538064 meV
-Cl.psp8_DFLOW/W24/outdata/deltadata.txt:# Deltafactor = 0.203068896953 meV
-Ca-sp.psp8_DFLOW/W33/outdata/deltadata.txt:# Deltafactor = 0.169719387706 meV
-Al.psp8_DFLOW/W15/outdata/deltadata.txt:# Deltafactor = 0.305511762398 meV
-Rb-sp.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 0.525899883724 meV
-Ta-spdf.psp8_DFLOW/W51/outdata/deltadata.txt:# Deltafactor = 2.89184522889 meV
-W-spdf.psp8_DFLOW/W44/outdata/deltadata.txt:# Deltafactor = 1.80459022191 meV
-Re-spdf.psp8_DFLOW/W52/outdata/deltadata.txt:# Deltafactor = 1.83772637065 meV
-Os-spdf.psp8_DFLOW/W52/outdata/deltadata.txt:# Deltafactor = 2.5238064348 meV
-Pt-spdf.psp8_DFLOW/W57/outdata/deltadata.txt:# Deltafactor = 3.41473543466 meV
-Au-spd.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 2.39892135249 meV
 Hg-spd.psp8_DFLOW/W44/outdata/deltadata.txt:# Deltafactor = 1.35661332849 meV
 
 Ir-spdf.psp8_DFLOW/ Deltafactor = 3.356 meV
+Hf-spdf.psp8_DFLOW/W57/outdata/deltadata.txt:# Deltafactor = 0.533160457775 meV
+
+Si.psp8_DFLOW/W22/outdata/deltadata.txt:# Deltafactor = 0.97389438724 meV
+As-d.psp8_DFLOW/W40/outdata/deltadata.txt:# Deltafactor = 0.260724599894 meV
 Po Deltafactor = 0.639 me
 Sb-d.psp8 Deltafactor = 0.800 meV
-Hf-spdf.psp8_DFLOW/W57/outdata/deltadata.txt:# Deltafactor = 0.533160457775 meV
-As-d.psp8_DFLOW/W40/outdata/deltadata.txt:# Deltafactor = 0.260724599894 meV
-Si.psp8_DFLOW/W22/outdata/deltadata.txt:# Deltafactor = 0.97389438724 meV
 
 # TO BE IMPROVED (large dfs)
 @ Ne.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.639 meV
@@ -58,7 +59,7 @@ Si.psp8_DFLOW/W22/outdata/deltadata.txt:# Deltafactor = 0.97389438724 meV
 @ Mg-sp.psp8_DFLOW/W37/outdata/deltadata.txt:# Deltafactor = 5.590 meV
 @ C.psp8_DFLOW/W30/outdata/deltadata.txt:# Deltafactor = 1.53655747594 meV
 @ Te-d.psp8_DFLOW/W39: Deltafactor = 4.676 meV
-@ Tl-d.psp8: # Deltafactor = 6.1368240612 meV
+@ Tl-d.psp8: Deltafactor = 6.1368240612 meV
 @ Zr-sp.psp8_DFLOW/W31/outdata/deltadata.txt:# Deltafactor = 1.220 meV
 @ Sn-d.psp9_DFLOW34 Deltafactor = 1.256 meV
 @ Ru-sp.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.970 meV
