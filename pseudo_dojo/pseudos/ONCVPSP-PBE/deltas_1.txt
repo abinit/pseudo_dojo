@@ -44,10 +44,11 @@ Hf-spdf.psp8_DFLOW/W57/outdata/deltadata.txt:# Deltafactor = 0.533 meV
 Ru-sp.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.969 meV
 Rh-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 2.609 meV
 Cd-sp.psp8_DFLOW/W35/outdata/deltadata.txt:# Deltafactor = 3.673 meV
-Co-sp.psp8_DFLOW/W46/outdata/deltadata.txt:# Deltafactor = 4.102 meV meV
 # End first optimization
 
 # TO BE IMPROVED (large dfs)
+Co-sp.psp8_DFLOW/W46/outdata/deltadata.txt:# Deltafactor = 4.102 meV meV
+Co.psp8_DFLOW/W34# Deltafactor = 28.977 meV
 @ Ne.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.639 meV
 @ N.psp8_DFLOW/W33/outdata/deltadata.txt:# Deltafactor = 1.751 meV
 @ Na-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 1.645 meV
@@ -60,6 +61,7 @@ Co-sp.psp8_DFLOW/W46/outdata/deltadata.txt:# Deltafactor = 4.102 meV meV
 @ Zr-sp.psp8_DFLOW/W31/outdata/deltadata.txt:# Deltafactor = 1.220 meV
 @ Sn-d.psp9_DFLOW34 Deltafactor = 1.256 meV
 @ Zn-sp.psp8_DFLOW/W47/outdata/deltadata.txt:# Deltafactor = 22.577 meV
+Zn.psp8_DFLOW/W34: Deltafactor = 0.405 meV
 @ Cu-sp.psp8_DFLOW/W43/outdata/deltadata.txt:# Deltafactor = 11.5019560498 meV
 Cu.psp8_DFLOW/W34: Deltafactor = 2.006 meV
 @ Fe-sp.psp8_DFLOW/W45/outdata/deltadata.txt:# Deltafactor = 47.0004604966 meV
