@@ -7,10 +7,10 @@ N 7 1 2 4 psp8
 # lmax
 1
 # l rc ep ncon nbas qcut
-0 1.4 0.0 4 7 8.0
-1 1.55 0.0 4 7 8.0
+0 1.5 0.0 4 7 8.0
+1 1.6 0.0 4 7 8.0
 # lloc lpopt rc5 dvloc0
-4 5 1.4 0.0
+4 5 1.5 0.0
 # l nproj debl
 0 2 1.2
 1 2 1.2
