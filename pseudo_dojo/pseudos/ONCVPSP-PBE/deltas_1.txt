@@ -50,7 +50,7 @@ Cd.psp8_DFLOW/W32:# Deltafactor = 3.791 meV
 # TO BE IMPROVED (large dfs)
 Co-sp.psp8_DFLOW/W46/outdata/deltadata.txt:# Deltafactor = 4.102 meV meV
 Co.psp8_DFLOW/W34# Deltafactor = 28.678 meV
-@ Ne.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.639 meV
+@ Ne.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 0.037 meV (without NLCC!)
 @ N.psp8_DFLOW/W33/outdata/deltadata.txt:# Deltafactor = 1.751 meV
 @ Na-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 1.645 meV
 @ O.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 2.632 meV
