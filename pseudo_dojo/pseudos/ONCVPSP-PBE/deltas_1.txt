@@ -48,31 +48,35 @@ Cd.psp8_DFLOW/W32:# Deltafactor = 3.791 meV
 # End first optimization
 
 # TO BE IMPROVED (large dfs)
-@ N.psp8_DFLOW/W33/outdata/deltadata.txt:# Deltafactor = 1.751 meV
-Co-sp.psp8_DFLOW/W46/outdata/deltadata.txt:# Deltafactor = 4.102 meV meV
-Co.psp8_DFLOW/W34# Deltafactor = 28.678 meV
+@ N.psp8_DFLOW/W33/outdata/deltadata.txt:# Deltafactor = 1.751 meV (Very sensitive!)
 @ Ne.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 0.037 meV (without NLCC!)
 @ Na-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 1.645 meV
 @ O.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 2.632 meV
-@ Mg.psp8_DFLOE/W15: Deltafactor = 0.335 meV
+
+@Co-sp.psp8_DFLOW/W46/outdata/deltadata.txt:# Deltafactor = 4.102 meV meV
+Co.psp8_DFLOW/W34# Deltafactor = 28.678 meV
+
 @ Mg-sp.psp8_DFLOW/W37/outdata/deltadata.txt:# Deltafactor = 5.590 meV
+Mg.psp8_DFLOE/W15: Deltafactor = 0.335 meV
 
 C.psp8_DFLOW/W31/outdata/deltadata.txt:# Deltafactor = 1.40152534876 meV
 C.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 0.736922179974 meV
 
-@ Te-d.psp8_DFLOW/W39: Deltafactor = 4.676 meV
-@ Tl-d.psp8: Deltafactor = 6.1368240612 meV
-@ Zr-sp.psp8_DFLOW/W31/outdata/deltadata.txt:# Deltafactor = 1.220 meV
-@ Sn-d.psp9_DFLOW34 Deltafactor = 1.256 meV
-@ Zn-sp.psp8_DFLOW/W47/outdata/deltadata.txt:# Deltafactor = 22.577 meV
-Zn.psp8_DFLOW/W34: Deltafactor = 0.405 meV
 @ Cu-sp.psp8_DFLOW/W43/outdata/deltadata.txt:# Deltafactor = 11.5019560498 meV
 Cu.psp8_DFLOW/W34: Deltafactor = 2.006 meV
+
+@ Zn-sp.psp8_DFLOW/W47/outdata/deltadata.txt:# Deltafactor = 22.577 meV
+Zn.psp8_DFLOW/W34: Deltafactor = 0.405 meV
+
 @ Fe-sp.psp8_DFLOW/W45/outdata/deltadata.txt:# Deltafactor = 47.0004604966 meV
 @ Fe.psp8/W34 Deltafactor = 45.524 meV --> 30.412 but I had to use a huge fcfact for the nlcc
 @ Ni-sp.psp8_DFLOW/W44/outdata/deltadata.txt:# Deltafactor = 25.376 meV
 Ni.psp8_DFLOW/W33:# Deltafactor = 3.832 meV
 
+@ Te-d.psp8_DFLOW/W39: Deltafactor = 4.676 meV
+@ Tl-d.psp8: Deltafactor = 6.1368240612 meV
+@ Zr-sp.psp8_DFLOW/W31/outdata/deltadata.txt:# Deltafactor = 1.220 meV
+@ Sn-d.psp9_DFLOW34 Deltafactor = 1.256 meV
 Si.psp8_DFLOW/W22/outdata/deltadata.txt:# Deltafactor = 0.97389438724 meV
 Po Deltafactor = 0.639 me
 Sb-d.psp8 Deltafactor = 0.800 meV
