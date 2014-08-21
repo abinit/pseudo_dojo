@@ -5,7 +5,7 @@ from __future__ import print_function, division
 import sys
 import collections
 
-from pseudo_dojo.ppcodes.oncvpsp import  OncvOuptputParser, PseudoGenDataPlotter
+from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser, PseudoGenDataPlotter
 
 
 def main():
