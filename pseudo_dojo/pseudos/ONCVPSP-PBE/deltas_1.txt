@@ -46,6 +46,7 @@ Ru-sp.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.969 meV
 Rh-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 2.609 meV
 Cd-sp.psp8_DFLOW/W35/outdata/deltadata.txt:# Deltafactor = 3.673 meV
 Cd.psp8_DFLOW/W32:# Deltafactor = 3.791 meV
+I.psp8_DFLOW/W35:# Deltafactor = 0.527 meV
 # End first optimization
 
 # TO BE IMPROVED (large dfs)
