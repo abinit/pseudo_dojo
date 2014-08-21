@@ -612,7 +612,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
         lines = []
         app = lines.append
         #app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
-        app("oncvpsp calculation: %s: " % self.calc_type)
+        #app("oncvpsp calculation: %s: " % self.calc_type)
         app("completed: %s" % self.run_completed)
 
         return "\n".join(lines)

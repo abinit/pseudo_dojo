@@ -24,6 +24,7 @@ def main():
     options = parser.parse_args()
 
     onc_parser = OncvOuptputParser(options.filename)
+    onc_parser.scan()
     print(onc_parser)
 
     # Build the plotter
