@@ -78,9 +78,9 @@ Zn.psp8_DFLOW/W34: Deltafactor = 0.405 meV
 Ni.psp8_DFLOW/W33:# Deltafactor = 3.832 meV
 
 @ Te-d.psp8_DFLOW/W39: Deltafactor = 4.676 meV
+Te.psp8_DFLOW/W23/outdata/deltadata.txt:# Deltafactor = 1.02936315609 meV
 @ Tl-d.psp8: Deltafactor = 6.1368240612 meV
 @ Zr-sp.psp8_DFLOW/W31/outdata/deltadata.txt:# Deltafactor = 1.220 meV
 @ Sn-d.psp9_DFLOW34 Deltafactor = 1.256 meV
 Si.psp8_DFLOW/W22/outdata/deltadata.txt:# Deltafactor = 0.97389438724 meV
 Po Deltafactor = 0.639 me
-
