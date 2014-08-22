@@ -94,8 +94,8 @@ install_requires = [
     "periodictable",
     "numpy>=1.5",
     "scipy>=0.10",
+    "pymatgen>=2.9.0",
     #"matplotlib>=1.1",
-    #"pymatgen>=2.9.0",
 ]
 
 #---------------------------------------------------------------------------

@@ -9,6 +9,7 @@ import numpy as np
 
 from collections import namedtuple, OrderedDict
 from pymatgen.core.design_patterns import AttrDict
+from pymatgen.util.lazy import lazy_property
 from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
 
 import logging
@@ -609,7 +610,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
     def fully_relativistic(self):
         return self.calc_type == "fully-relativistic"
 
-    @property
+    @lazy_property
     def potentials(self):
         """Radial functions with the non-local and local potentials."""
         #radii, charge, pseudopotentials (ll=0, 1, lmax)
@@ -630,7 +631,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
         return ionpots_l
 
-    @property
+    @lazy_property
     def densities(self):
         """Dictionary with charge densities on the radial mesh."""
         # radii, charge, core charge, model core charge
@@ -642,7 +643,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
             rhoC=RadialFunction("Core charge", rho_data[:, 0], rho_data[:, 2]),
             rhoM=RadialFunction("Model charge", rho_data[:, 0], rho_data[:, 3]))
 
-    @property
+    @lazy_property
     def radial_wfs(self):
         """Read the radial wavefunctions."""
         #n= 1,  l= 0, all-electron wave function, pseudo w-f
@@ -673,7 +674,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
         return self.AePsNamedTuple(ae=ae_waves, ps=ps_waves)
 
-    @property
+    @lazy_property
     def projectors(self):
         """Read the projector wave functions."""
         #n= 1 2  l= 0, projecctor pseudo wave functions, well or 2nd valence
@@ -697,7 +698,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
         return projectors_nl
 
-    @property
+    @lazy_property
     def atan_logders(self):
         """Atan of the log derivatives for different l-values."""
         #log derivativve data for plotting, l= 0
@@ -716,7 +717,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
         return self.AePsNamedTuple(ae=ae_atan_logder_l, ps=ps_atan_logder_l)
 
-    @property
+    @lazy_property
     def ene_vs_ecut(self):
         """Convergence of energy versus ecut for different l-values."""
         #convergence profiles, (ll=0,lmax)
@@ -732,7 +733,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
         return conv_l
 
-    @property
+    @lazy_property
     def hints(self):
         # Extract the hints
         hints = 3 * [-np.inf]
