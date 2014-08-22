@@ -43,6 +43,7 @@ As.psp8_DFLOW/W30: # Deltafactor = 0.378 meV
 Hg-spd.psp8_DFLOW/W44/outdata/deltadata.txt:# Deltafactor = 1.358 meV
 Ir-spdf.psp8_DFLOW/ Deltafactor = 3.356 meV
 Hf-spdf.psp8_DFLOW/W57/outdata/deltadata.txt:# Deltafactor = 0.533 meV
+Hf-sp.psp8_DFLOW/W28/outdata/deltadata.txt:# Deltafactor = 4.323 meV
 Ru-sp.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 1.969 meV
 Rh-sp.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 2.609 meV
 Cd-sp.psp8_DFLOW/W35/outdata/deltadata.txt:# Deltafactor = 3.673 meV
