@@ -35,6 +35,7 @@ Rb-sp.psp8_DFLOW/W34/outdata/deltadata.txt:# Deltafactor = 0.522 meV
 Ta-spdf.psp8_DFLOW/W51/outdata/deltadata.txt:# Deltafactor = 2.903 meV
 Ta-sp.psp8_DFLOW/W29: Deltafactor = 8.014 meV
 W-spdf.psp8_DFLOW/W44/outdata/deltadata.txt:# Deltafactor = 1.804 meV
+W-sp.psp8_DFLOW/W31:# Deltafactor = 11.512 meV
 Re-spdf.psp8_DFLOW/W52/outdata/deltadata.txt:# Deltafactor = 1.836 meV
 Os-spdf.psp8_DFLOW/W52/outdata/deltadata.txt:# Deltafactor = 2.524 meV
 Au-spd.psp8_DFLOW/W36/outdata/deltadata.txt:# Deltafactor = 2.398 meV
