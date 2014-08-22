@@ -225,18 +225,6 @@ class PseudoGenerator(object):
 
         self._status = status
 
-        # Add new entry to history only if the status has changed.
-        #if changed:
-        #    if status == self.S_SUB:
-        #        self._submission_time = time.time()
-        #        self.history.append("Submitted on %s" % time.asctime())
-
-        #    if status == self.S_OK:
-        #        self.history.append("Completed on %s" % time.asctime())
-
-        #    if status == self.S_ABICRITICAL:
-        #        self.history.append("Error info:\n %s" % str(info_msg))
-
         if status == self.S_DONE:
             self.check_status()
 
@@ -299,8 +287,6 @@ class PseudoGenerator(object):
                 parser.scan()
             except parser.Error:
                 raise
-        #finally:
-        #    return parser
 
     @property
     def results(self):

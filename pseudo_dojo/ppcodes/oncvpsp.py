@@ -179,6 +179,7 @@ class PseudoGenDataPlotter(object):
         ax.set_ylabel("$p(r)$")
         ax.set_title("Projector Wave Functions")
         ax.legend(lines, legends, loc="best", shadow=True)
+
         return lines
 
     @add_mpl_kwargs
@@ -533,19 +534,6 @@ class OncvOuptputParser(PseudoGenOutputParser):
     # Class used to instanciate the plotter.
     Plotter = PseudoGenDataPlotter
 
-    #def __init__(self, filepath):
-    #    """Initialize the object from the oncvpsp output."""
-    #    super(OncvOuptputParser, self).__init__(filepath)
-
-    #    try:
-    #        self.scan()
-    #    except:
-    #        time.sleep(1)
-    #        try:
-    #            self.scan()
-    #        except:
-    #            raise
-
     def scan(self):
         """
         Scan the output, set and returns `run_completed` attribute.
@@ -606,13 +594,13 @@ class OncvOuptputParser(PseudoGenOutputParser):
                 break
         else:
             raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
-        print("lmax", self.lmax)
+        #print("lmax", self.lmax)
 
     def __str__(self):
         lines = []
         app = lines.append
-        #app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
-        #app("oncvpsp calculation: %s: " % self.calc_type)
+        app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
+        app("oncvpsp calculation: %s: " % self.calc_type)
         app("completed: %s" % self.run_completed)
 
         return "\n".join(lines)
@@ -861,7 +849,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
                     intag = beg + i
                 data.append([float(c) for c in l.split()[1:]])
             else:
-                # Exit because we know there's only one section starting with tag'
+                # Exit because we know there's only one section starting with 'tag'
                 if intag != -1:
                     stop = beg + i
                     break

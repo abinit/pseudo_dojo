@@ -18,7 +18,7 @@ def main():
                         help=("Quantity to plot. Possible values: %s" %
                               str(["slide", "wp, dp, lc"] + PseudoGenDataPlotter.all_keys) + "\n"
                               "wp --> wavefunctions and projectors\n" +
-                              "dp --> densities and potentialss\n" +
+                              "dp --> densities and potentials\n" +
                               "lc --> atan(logder) and convergence wrt ecut"))
 
     options = parser.parse_args()
