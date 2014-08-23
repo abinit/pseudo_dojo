@@ -4,12 +4,12 @@ from __future__ import print_function, division
 
 import sys
 import collections
+import argparse
 
-from pseudo_dojo.ppcodes.oncvpsp import  OncvOuptputParser, PseudoGenDataPlotter
+from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser, PseudoGenDataPlotter
 
 
 def main():
-    import argparse
     parser = argparse.ArgumentParser() #formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument('filename', default="", help="Path to the output file")
@@ -31,7 +31,7 @@ def main():
     #print(onc_parser)
 
     if options.json:
-        import json
+        
         print(json.dumps(onc_parser.to_dict, indent=4))
         return 0
 

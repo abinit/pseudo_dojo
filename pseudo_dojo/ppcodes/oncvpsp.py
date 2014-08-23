@@ -302,7 +302,7 @@ class MultiPseudoGenDataPlotter(object):
         plotter.plot()
     """
     _LINE_COLORS = ["b", "r",]
-    _LINE_STYLES = ["-",":","--","-.",]
+    _LINE_STYLES = ["-", ":", "--", "-.",]
     _LINE_WIDTHS = [2,]
 
     def __init__(self):
@@ -333,7 +333,7 @@ class MultiPseudoGenDataPlotter(object):
     def iter_lineopt(self):
         """Generates style options for lines."""
         import itertools
-        for o in itertools.product( self._LINE_WIDTHS,  self._LINE_STYLES, self._LINE_COLORS):
+        for o in itertools.product(self._LINE_WIDTHS,  self._LINE_STYLES, self._LINE_COLORS):
             yield {"linewidth": o[0], "linestyle": o[1], "color": o[2]}
 
     def add_psgen(self, label, psgen):
@@ -887,7 +887,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
     def _grep(self, tag, beg=0):
         """
-        This routine finds the first field in the file with the specified tag.
+        Finds the first field in the file with the specified tag.
         """
         data, stop, intag = [], None, -1
 
