@@ -437,10 +437,10 @@ class DeltaFactorWorkflow(DojoWorkflow):
         spin_mode = SpinMode.as_spinmode(spin_mode)
 
         # Compute the number of bands from the pseudo and the spin-polarization.
-        # Add 10 bands to account for smearing.
+        # Add 6 bands to account for smearing.
         nval = structure.num_valence_electrons(self.pseudo)
         spin_fact = 2 if spin_mode.nsppol == 2 else 1
-        nband = int(nval / spin_fact) + 10
+        nband = int(nval / spin_fact) + 6
 
         # Set extra_abivars
         extra_abivars = dict(
