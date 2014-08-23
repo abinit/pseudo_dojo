@@ -21,11 +21,19 @@ def main():
                               "dp --> densities and potentials\n" +
                               "lc --> atan(logder) and convergence wrt ecut"))
 
+    parser.add_argument("-j", "--json", action="store_true", default=False, 
+                        help="Produce a string with the results in a JSON dictionary and exit")
+
     options = parser.parse_args()
 
     onc_parser = OncvOuptputParser(options.filename)
     onc_parser.scan()
-    print(onc_parser)
+    #print(onc_parser)
+
+    if options.json:
+        import json
+        print(json.dumps(onc_parser.to_dict, indent=4))
+        return 0
 
     # Build the plotter
     plotter = onc_parser.make_plotter()

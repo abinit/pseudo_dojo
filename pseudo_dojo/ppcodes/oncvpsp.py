@@ -440,6 +440,14 @@ class PseudoGenResults(AttrDict):
             if k not in self:
                 self[k] = None
 
+class AtanLogDer(namedtuple("AtanLogDer", "l, energies, values")):
+    @property
+    def to_dict(self):
+        return dict(
+            l=self.l,
+            energies=list(self.energies),
+            values=list(self.values))
+
 
 class PseudoGenOutputParserError(Exception):
     """Exceptions raised by OuptputParser instances."""
@@ -706,14 +714,13 @@ class OncvOuptputParser(PseudoGenOutputParser):
         #l, energy, all-electron, pseudopotential
         #
         #!      0    2.000000    0.706765    0.703758
-        atan_logder = namedtuple("AtanLogDer", "energies values")
         ae_atan_logder_l, ps_atan_logder_l = OrderedDict(), OrderedDict()
 
         for l in range(self.lmax+1):
             data = self._grep(tag="!      %d" % l).data
             assert l == int(data[0, 0])
-            ae_atan_logder_l[l] = atan_logder(energies=data[:, 1], values=data[:, 2])
-            ps_atan_logder_l[l] = atan_logder(energies=data[:, 1], values=data[:, 3])
+            ae_atan_logder_l[l] = AtanLogDer(l=l, energies=data[:, 1], values=data[:, 2])
+            ps_atan_logder_l[l] = AtanLogDer(l=l, energies=data[:, 1], values=data[:, 3])
 
         return self.AePsNamedTuple(ae=ae_atan_logder_l, ps=ps_atan_logder_l)
 
@@ -724,12 +731,19 @@ class OncvOuptputParser(PseudoGenOutputParser):
         #!C     0    5.019345    0.010000
         #...
         #!C     1   19.469226    0.010000
-        conv_data = namedtuple("ConvData", "energies values")
+        class ConvData(namedtuple("ConvData", "l energies values")):
+            @property
+            def to_dict(self):
+                return dict(
+                    l=self.l,
+                    energies=list(self.energies),
+                    values=list(self.values))
+
         conv_l = OrderedDict()
 
         for l in range(self.lmax+1):
             data = self._grep(tag="!C     %d" % l).data
-            conv_l[l] = conv_data(energies=data[:, 1], values=data[:, 2])
+            conv_l[l] = ConvData(l=l, energies=data[:, 1], values=data[:, 2])
 
         return conv_l
 
@@ -833,6 +847,43 @@ class OncvOuptputParser(PseudoGenOutputParser):
         """Builds an instance of PseudoGenDataPlotter."""
         kwargs = {k: getattr(self, k) for k in self.Plotter.all_keys}
         return self.Plotter(**kwargs)
+
+    @property
+    def to_dict(self):
+        """
+        Returns a dictionary with the radial functions and the other
+        important results produced by ONCVPSP in JSON format.
+        """
+        # Dimensions and basic info.
+        jdict = dict(
+            lmax=self.lmax,
+            ncore=self.nc,
+            nvalence=self.nv,
+            calc_type=self.calc_type)
+
+        # List of radial wavefunctions (AE and PS)
+        jdict["radial_wfs"] = d = {}
+        d["ae"] = [wave.to_dict for wave in self.radial_wfs.ae.values()]
+        d["ps"] = [wave.to_dict for wave in self.radial_wfs.ps.values()]
+
+        # List of projectors
+        jdict["projectors"] = [proj.to_dict for proj in self.projectors.values()]
+
+        # Charge densities
+        jdict["densities"] = dict(
+             rhoV=self.densities["rhoV"].to_dict,
+             rhoC=self.densities["rhoC"].to_dict,
+             rhoM=self.densities["rhoM"].to_dict)
+
+        # Logders (AE and PS)
+        jdict["atan_logders"] = d = {}
+        d["ae"] = [f.to_dict for f in self.atan_logders.ae.values()]
+        d["ps"] = [f.to_dict for f in self.atan_logders.ps.values()]
+
+        # Convergence of the different l-channels as function of ecut.
+        jdict["ene_vs_ecut"] = [f.to_dict for f in self.ene_vs_ecut.values()]
+
+        return jdict
 
     def _grep(self, tag, beg=0):
         """
