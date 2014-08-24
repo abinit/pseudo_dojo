@@ -20,13 +20,13 @@ Tl 81 12 3 4 psp8
 2
 # l rc ep ncon nbas qcut
 0 1.85 0.0 4 7 1.5
-1 2.45 0.0 4 7 1.0
+1 2.6 0.0 4 7 0.8
 2 1.6 0.0 4 7 9.0
 # lloc lpopt rc5 dvloc0
 4 5 1.6 0.0
 # l nproj debl
 0 2 1.0
-1 2 3.5
+1 2 2.5
 2 2 1.0
 # icmod fcfact
 1 1.25
