@@ -49,12 +49,12 @@ class DojoWorkflow(Workflow):
 
         dojo_trial, dojo_accuracy = self.dojo_trial, self.dojo_accuracy
         if dojo_trial not in old_report:
-            # Create new entry
-            old_report[dojo_trial] = {}
-        else:
-            # Check that we are not going to overwrite data.
-            if self.dojo_accuracy in old_report[dojo_trial] and not overwrite_data:
-                raise RuntimeError("%s already exists in DOJO_REPORT. Cannot overwrite data" % dojo_trial)
+        	# Create new entry
+        	old_report[dojo_trial] = {}
+        #else:
+        #    # Check that we are not going to overwrite data.
+        #    if self.dojo_accuracy in old_report[dojo_trial] and not overwrite_data:
+        #        raise RuntimeError("%s already exists in DOJO_REPORT. Cannot overwrite data" % dojo_trial)
 
         # Update old report card with the new one and write new report
         old_report[dojo_trial][dojo_accuracy] = report
@@ -434,9 +434,9 @@ class DeltaFactorWorkflow(DojoWorkflow):
 
         # Compute the number of bands from the pseudo and the spin-polarization.
         # Add 6 bands to account for smearing.
-        nval = structure.num_valence_electrons(self.pseudo)
-        spin_fact = 2 if spin_mode.nsppol == 2 else 1
-        nband = int(nval / spin_fact) + 6
+        #nval = structure.num_valence_electrons(self.pseudo)
+        #spin_fact = 2 if spin_mode.nsppol == 2 else 1
+        #nband = int(nval / spin_fact) + 6
 
         # Set extra_abivars
         extra_abivars = dict(
@@ -444,10 +444,10 @@ class DeltaFactorWorkflow(DojoWorkflow):
             pawecutdg=pawecutdg,
             ecutsm=ecutsm,
             toldfe=toldfe,
-            nband=nband,
+            #nband=nband,
             prtwf=0,
             paral_kgb=paral_kgb,
-            mem_check=0,
+            #mem_test=0,
         )
 
         extra_abivars.update(**kwargs)
@@ -490,6 +490,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
             volumes=list(self.volumes),
             num_sites=num_sites))
 
+        d = {}
         try:
             #eos_fit = EOS.Murnaghan().fit(self.volumes/num_sites, etotals/num_sites)
             #eos_fit.plot(show=False, savefig=self.path_in_workdir("murn_eos.pdf"))
@@ -506,8 +507,8 @@ class DeltaFactorWorkflow(DojoWorkflow):
             dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
                                eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
 
-            #print("delta", eos_fit)
-            #print("Deltafactor = %.3f meV" % dfact)
+            print("delta", eos_fit)
+            print("Deltafactor = %.3f meV" % dfact)
 
             results.update({
                 "dfact_meV": dfact,
@@ -516,21 +517,22 @@ class DeltaFactorWorkflow(DojoWorkflow):
                 "b0_GPa": eos_fit.b0_GPa,
                 "b1": eos_fit.b1})
 
+            d = {k: results[k] for k in ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes", "num_sites")}
+
+            # Write data for the computation of the delta factor
+            with open(self.outdir.path_in("deltadata.txt"), "w") as fh:
+                fh.write("# Deltafactor = %s meV\n" % dfact)
+                fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
+                for v, e in zip(self.volumes, etotals):
+                   fh.write("%s %s\n" % (v/num_sites, e/num_sites))
+
         except EOS.Error as exc:
             results.push_exceptions(exc)
 
-        d = {k: results[k] for k in ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes", "num_sites")}
         if results.exceptions:
             d["_exceptions"] = str(results.exceptions)
 
         self.write_dojo_report(d)
-
-        # Write data for the computation of the delta factor
-        with open(self.outdir.path_in("deltadata.txt"), "w") as fh:
-            fh.write("# Deltafactor = %s meV\n" % dfact)
-            fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
-            for v, e in zip(self.volumes, etotals):
-                fh.write("%s %s\n" % (v/num_sites, e/num_sites))
 
         return results
 
