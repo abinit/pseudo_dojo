@@ -3,7 +3,6 @@ from __future__ import print_function, division
 
 import os
 import abc
-import time
 import json
 import numpy as np
 
@@ -301,9 +300,9 @@ class MultiPseudoGenDataPlotter(object):
         plotter.add_plotter("foo.nc", label="foo bands")
         plotter.plot()
     """
-    _LINE_COLORS = ["b", "r",]
-    _LINE_STYLES = ["-", ":", "--", "-.",]
-    _LINE_WIDTHS = [2,]
+    _LINE_COLORS = ["b", "r"]
+    _LINE_STYLES = ["-", ":", "--", "-."]
+    _LINE_WIDTHS = [2]
 
     def __init__(self):
         self._plotters_odict = OrderedDict()
@@ -440,6 +439,7 @@ class PseudoGenResults(AttrDict):
             if k not in self:
                 self[k] = None
 
+
 class AtanLogDer(namedtuple("AtanLogDer", "l, energies, values")):
     @property
     def to_dict(self):
@@ -450,7 +450,7 @@ class AtanLogDer(namedtuple("AtanLogDer", "l, energies, values")):
 
 
 class PseudoGenOutputParserError(Exception):
-    """Exceptions raised by OuptputParser instances."""
+    """Exceptions raised by OuptputParser."""
 
 
 class PseudoGenOutputParser(object):
@@ -871,9 +871,9 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
         # Charge densities
         jdict["densities"] = dict(
-             rhoV=self.densities["rhoV"].to_dict,
-             rhoC=self.densities["rhoC"].to_dict,
-             rhoM=self.densities["rhoM"].to_dict)
+            rhoV=self.densities["rhoV"].to_dict,
+            rhoC=self.densities["rhoC"].to_dict,
+            rhoM=self.densities["rhoM"].to_dict)
 
         # Logders (AE and PS)
         jdict["atan_logders"] = d = {}

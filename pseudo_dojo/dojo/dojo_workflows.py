@@ -7,19 +7,17 @@ import numpy as np
 
 from pymatgen.core.units import Ha_to_eV
 from pymatgen.core.design_patterns import AttrDict
-from pymatgen.util.num_utils import iterator_from_slice, monotonic
+from pymatgen.util.num_utils import monotonic
 from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
-from pymatgen.io.abinitio.abiobjects import SpinMode, Smearing, AbiStructure, KSampling, Electrons
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.structure import Structure
-from pymatgen.io.abinitio.abiobjects import AbiStructure, Smearing, KSampling, Electrons, RelaxationMethod
-from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
-from pseudo_dojo.refdata.gbrv import gbrv_database
+from pymatgen.io.abinitio.abiobjects import AbiStructure, SpinMode, Smearing, KSampling, Electrons, RelaxationMethod
 from pymatgen.io.abinitio.workflows import Workflow
 from pymatgen.io.smartio import read_structure
 from pymatgen.io.gwwrapper.helpers import refine_structure
+from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
 import logging
@@ -240,8 +238,7 @@ class PseudoConvergence(DojoWorkflow):
 
         d.update(dict(
             ecuts=results["ecuts"],
-            etotals=results["etotals"],
-        ))
+            etotals=results["etotals"]))
         
         if results.exceptions:
             d["_exceptions"] = str(results.exceptions)
@@ -264,8 +261,7 @@ class PseudoConvergence(DojoWorkflow):
                                                                          
             d.update(dict(
                 ecuts=data["ecuts"],
-                etotals=data["etotals"],
-            ))
+                etotals=data["etotals"]))
 
             #if results.exceptions:
             #    d["_exceptions"] = str(results.exceptions)
