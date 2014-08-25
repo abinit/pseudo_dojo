@@ -348,7 +348,7 @@ class DeltaFactory(object):
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
     def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, ecut=None, pawecutdg=None,
-                        toldfe=1.e-8, smearing="fermi_dirac:0.0005", workdir=None, manager=None, **kwargs):
+                        toldfe=1.e-8, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
         Returns a `Workflow` object from the given pseudopotential.
 
@@ -397,14 +397,14 @@ class DeltaFactory(object):
         return DeltaFactorWorkflow(
             cif_path, pseudo, kppa,
             spin_mode=spin_mode, toldfe=toldfe, smearing=smearing,
-            accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.05,
+            accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
 
 
 class DeltaFactorWorkflow(DojoWorkflow):
     """Workflow for the calculation of the deltafactor."""
     def __init__(self, structure_or_cif, pseudo, kppa,
-                 ecut=None, pawecutdg=None, ecutsm=0.05,
+                 ecut=None, pawecutdg=None, ecutsm=0.5,
                  spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
                  accuracy="normal",  chksymbreak=0, paral_kgb=0, workdir=None, manager=None, **kwargs):
         """
