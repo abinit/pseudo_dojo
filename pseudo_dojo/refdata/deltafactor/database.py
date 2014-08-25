@@ -216,7 +216,7 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
 
         v0 is A**3/natom, by default b0 is in eV/A**3, GPa units are used if b0_GPa is True.
     """
-    print(v0w, b0w, b1w, v0f, b0f, b1f)
+    #print(v0w, b0w, b1w, v0f, b0f, b1f)
 
     if v == 1:
         # delta factor form version 1
@@ -317,13 +317,14 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
 
         Delta = 1000. * np.sqrt((Ff - Fi) / (Vf - Vi))
 
-        #Deltarel = 100. * np.sqrt((Ff - Fi) / (Gf - Gi))
-        #if useasymm:
-        #    Delta1 = 1000. * np.sqrt((Ff - Fi) / (Vf - Vi)) \
-        #             / v0w / b0w * vref * bref
-        #else:
-        #    Delta1 = 1000. * np.sqrt((Ff - Fi) / (Vf - Vi)) \
-        #             / (v0w + v0f) / (b0w + b0f) * 4. * vref * bref
+        Deltarel = 100. * np.sqrt((Ff - Fi) / (Gf - Gi))
+        if useasymm:
+            Delta1 = 1000. * np.sqrt((Ff - Fi) / (Vf - Vi)) \
+                     / v0w / b0w * vref * bref
+        else:
+            Delta1 = 1000. * np.sqrt((Ff - Fi) / (Vf - Vi)) \
+                     / (v0w + v0f) / (b0w + b0f) * 4. * vref * bref
+
         return Delta
 
     else:
