@@ -31,7 +31,7 @@ def main():
     #print(onc_parser)
 
     if options.json:
-        
+        import json
         print(json.dumps(onc_parser.to_dict, indent=4))
         return 0
 

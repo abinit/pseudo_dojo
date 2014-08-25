@@ -56,9 +56,7 @@ def find_package_data():
         'pseudo_dojo.refdata.deltafactor.data' : ['*.txt', '*.gz', 'CIFs/*'],
         'pseudo_dojo.refdata.gbrv.data' : ['*.csv'],
         'pseudo_dojo.pseudos' : [
-            "*.json", 
-            "NC/GGA/PBE_HGHK/*",
-            "NC/GGA/PBE_FHI/*",
+            "ONCVPSP-PBE/*/*",
             ],
     }
     return package_data
