@@ -372,18 +372,27 @@ class DeltaFactory(object):
 
         # Include spin polarization for O, Cr and Mn (antiferromagnetic)
         # and Fe, Co, and Ni (ferromagnetic).
+        # antiferromagnetic Cr, O
+        # ferrimagnetic Mn
         spin_mode = "unpolarized"
+
         if symbol in ["Fe", "Co", "Ni"]:
             spin_mode = "polarized"
+            if symbol == "Fe":
+                kwargs['spinat'] = 2 * [(0, 0, 2.3)]
+            if symbol == "Co":
+                kwargs['spinat'] = 2 * [(0, 0, 1.2)]
+            if symbol == "Ni":
+                kwargs['spinat'] = 4 * [(0, 0, 0.6)]
 
         if symbol in ["O", "Cr", "Mn"]:
             spin_mode = "afm"
             if symbol == 'O':
-                kwargs['spinat'] = [(0, 0, 1), (0, 0, -1)]
+                kwargs['spinat'] = [(0, 0, 1.5), (0, 0, 1.5), (0, 0, -1.5), (0, 0, -1.5)]
             elif symbol == 'Cr':
-                kwargs['spinat'] = [(0, 0, 1), (0, 0, -1)]
+                kwargs['spinat'] = [(0, 0, 1.5), (0, 0, -1.5)]
             elif symbol == 'Mn':
-                kwargs['spinat'] = [(0, 0, 1), (0, 0, -1), (0, 0, -1), (0, 0, 1)]
+                kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
 
         return DeltaFactorWorkflow(
             cif_path, pseudo, kppa,
