@@ -432,11 +432,13 @@ class DeltaFactorWorkflow(DojoWorkflow):
 
         self._pseudo = Pseudo.as_pseudo(pseudo)
 
-        if isinstance(structure_or_cif, Structure):
-            structure = refine_structure(structure_or_cif, symprec=1e-6)
-        else:
-            # Assume CIF file
-            structure = refine_structure(read_structure(structure_or_cif), symprec=1e-6)
+        #if isinstance(structure_or_cif, Structure):
+        #    structure = refine_structure(structure_or_cif, symprec=1e-6)
+        #else:
+        #    # Assume CIF file
+        #    structure = refine_structure(read_structure(structure_or_cif), symprec=1e-6)
+        structure = read_structure(structure_or_cif, primitive=False)
+        print(structure)
 
         structure = AbiStructure.asabistructure(structure)
         spin_mode = SpinMode.as_spinmode(spin_mode)
@@ -456,6 +458,8 @@ class DeltaFactorWorkflow(DojoWorkflow):
             #nband=nband,
             prtwf=0,
             paral_kgb=paral_kgb,
+			chkprim=0,
+			nstep=50,
             #mem_test=0,
         )
 
