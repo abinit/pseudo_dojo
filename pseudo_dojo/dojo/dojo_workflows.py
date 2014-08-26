@@ -58,7 +58,10 @@ class DojoWorkflow(Workflow):
 
         # Update old report card with the new one and write new report
         old_report[dojo_trial][dojo_accuracy] = report
-        self.pseudo.write_dojo_report(old_report)
+        try:
+           self.pseudo.write_dojo_report(old_report)
+        except:
+			print("Something wrong in write_dojo_report")
 
 
 def check_conv(values, tol, min_numpts=1, mode="abs", vinf=None):
