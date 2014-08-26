@@ -3078,6 +3078,11 @@ Ni 28.00     3     4     4      psp8
 
 <DOJO_REPORT>
 {
+    "deltafactor": {
+        "normal": {
+            "_exceptions": "['No minimum could be found']"
+        }
+    }, 
     "hints": {
         "high": {
             "aug_ratio": 1, 
