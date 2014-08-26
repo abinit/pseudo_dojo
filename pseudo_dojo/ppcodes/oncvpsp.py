@@ -762,9 +762,9 @@ class OncvOuptputParser(PseudoGenOutputParser):
         hints = [int(h) + 1 for h in hints]
 
         hints = dict(
-            low={"ecut": hints[0], "aug_ratio": 1},
-            normal={"ecut": hints[1], "aug_ratio": 1},
-            high={"ecut": hints[2], "aug_ratio": 1})
+            low={"ecut": hints[1], "aug_ratio": 1},
+            normal={"ecut": hints[2], "aug_ratio": 1},
+            high={"ecut": hints[2] + 20, "aug_ratio": 1})
 
         return hints
 
