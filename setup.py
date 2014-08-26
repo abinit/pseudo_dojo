@@ -53,7 +53,7 @@ def find_package_data():
     # This is not enough for these things to appear in an sdist.
     # We need to muck with the MANIFEST to get this to work
     package_data = {
-        'pseudo_dojo.refdata.deltafactor.data' : ['*.txt', '*.gz', 'CIFs/*'],
+        'pseudo_dojo.refdata.deltafactor.data' : ['*.txt', 'CIFs/*', 'history/*'],
         'pseudo_dojo.refdata.gbrv.data' : ['*.csv'],
         'pseudo_dojo.pseudos' : [
             "ONCVPSP-PBE/*/*",
