@@ -11,14 +11,14 @@ Ni 28 5 2 4 psp8
 # lmax
 2
 # l rc ep ncon nbas qcut
-0 2.2 0.0 4 7 3.0
-1 2.2 0.0 4 7 3.0
+0 2.2 0.0 4 7 3.5
+1 2.2 0.0 4 7 6.0
 2 1.85 0.0 4 7 8.5
 # lloc lpopt rc5 dvloc0
 4 5 1.85 0.0
 # l nproj debl
-0 2 2.5
-1 2 2.5
+0 2 1.8
+1 2 1.8
 2 2 1.0
 # icmod fcfact
 1 1.2
