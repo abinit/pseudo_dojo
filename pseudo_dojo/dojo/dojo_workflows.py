@@ -441,7 +441,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
         #    # Assume CIF file
         #    structure = refine_structure(read_structure(structure_or_cif), symprec=1e-6)
         structure = read_structure(structure_or_cif, primitive=False)
-        print(structure)
+        #print(structure)
 
         structure = AbiStructure.asabistructure(structure)
         spin_mode = SpinMode.as_spinmode(spin_mode)
