@@ -25,8 +25,8 @@ Re 75 10 4 4 psp8
 4 5 1.45 0.0
 # l nproj debl
 0 2 1.0
-1 2 2.0
-2 2 1.5
+1 2 1.0
+2 2 1.0
 # icmod fcfact
 1 0.5
 # epsh1 epsh2 depsh
