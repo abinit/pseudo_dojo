@@ -15,9 +15,9 @@ Sb 51 9 2 4 psp8
 # lmax
 2
 # l rc ep ncon nbas qcut
-0 2.2 0.0 4 7 3.2
-1 2.1 0.0 4 7 4.0
-2 2.6 0.1 4 7 4.0
+0 2.3 0.0 4 7 3.6
+1 2.1 0.0 4 7 4.2
+2 2.6 0.1 4 7 4.2
 # lloc lpopt rc5 dvloc0
 4 5 2.1 0.0
 # l nproj debl
