@@ -16,7 +16,7 @@ from pymatgen.core.structure import Structure
 from pymatgen.io.abinitio.abiobjects import AbiStructure, SpinMode, Smearing, KSampling, Electrons, RelaxationMethod
 from pymatgen.io.abinitio.workflows import Workflow
 from pymatgen.io.smartio import read_structure
-from pymatgen.io.gwwrapper.helpers import refine_structure
+#from pymatgen.io.gwwrapper.helpers import refine_structure
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
@@ -435,12 +435,11 @@ class DeltaFactorWorkflow(DojoWorkflow):
 
         self._pseudo = Pseudo.as_pseudo(pseudo)
 
-        #if isinstance(structure_or_cif, Structure):
-        #    structure = refine_structure(structure_or_cif, symprec=1e-6)
-        #else:
-        #    # Assume CIF file
-        #    structure = refine_structure(read_structure(structure_or_cif), symprec=1e-6)
-        structure = read_structure(structure_or_cif, primitive=False)
+        if not isinstance(structure_or_cif, Structure):
+            # Assume CIF file
+            structure = read_structure(structure_or_cif, primitive=False)
+        else:
+            structure = structure_or_cif
         #print(structure)
 
         structure = AbiStructure.asabistructure(structure)

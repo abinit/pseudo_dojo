@@ -46,14 +46,14 @@ class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 
         return self.b0.to("GPa") 
 
 
-def read_data_from_filename(filename):
+def read_data_from_filepath(filepath):
     """
     Reads (v0, b0, b1) from file filename. b0 is in GPa.
     Returns a dict of `DeltaFactorEntry` objects indexed by element symbol.
     """
     data = collections.OrderedDict()
 
-    with open(filename, "r") as fh:
+    with open(filepath, "r") as fh:
         for line in fh:
             line = line.strip()
             if line.startswith("#") or not line: 
@@ -65,6 +65,50 @@ def read_data_from_filename(filename):
             data[symbol] = DeltaFactorEntry(*tokens)
 
     return data
+
+def read_tables_from_file(filepath):
+    import pandas as pd
+    columns = ["v0", "b0_GPa", "b1", "deltaf"]
+    title = None
+    tables = []
+
+    with open(filepath, "r") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line: continue
+            #print(line)
+
+            if line.startswith("#"):
+                if title is not None:
+                    table = pd.DataFrame(rows, index=symbols, columns=columns)
+                    table.title, table.info = title, info
+                    tables.append(table)
+
+                title, info = line.split("--")
+                symbols, rows = [], []
+                continue
+
+            tokens = line.split()
+            # Conversion GPa --> eV / A**3
+            symbol = tokens[0]
+            symbols.append(symbol)
+            b0_GPa = float(tokens[2])
+            #b0 = FloatWithUnit(b0_GPa, "GPa").to("eV ang^-3") 
+            row = {"v0": float(tokens[1]), "b0_GPa": b0_GPa, "b1": float(tokens[3])}
+
+            df = df_wien2k(symbol, row["v0"], b0_GPa, row["b1"], b0_GPa=True)
+            row.update({"deltaf": df})
+            rows.append(row)
+
+    table = pd.DataFrame(rows, index=symbols, columns=columns)
+    table.title, table.info = title, info
+    tables.append(table)
+
+    for table in tables:
+        print(table.title)
+        print(table)
+
+    return tables
 
 
 class DeltaFactorDatabaseError(Exception):
@@ -79,6 +123,12 @@ class DeltaFactorDatabase(object):
     # Reference code.
     _REF_CODE = "WIEN2k"
 
+    _FILES = [
+        "WIEN2k.txt",
+        "VASP.txt",
+        "VASP-relaxed.txt",
+    ]
+
     Error = DeltaFactorDatabaseError
 
     def __init__(self):
@@ -86,13 +136,14 @@ class DeltaFactorDatabase(object):
         self.dirpath = os.path.join(self.dirpath, "data")
 
         self._data = d = {}
-        for entry in os.listdir(self.dirpath):
+        #for entry in os.listdir(self.dirpath):
+        for entry in self._FILES:
             file_path = os.path.join(self.dirpath, entry)
             if os.path.isfile(file_path) and file_path.endswith(".txt"):
                 code, ext = os.path.splitext(entry)
                 if code == "README":
                     continue
-                d[code] = read_data_from_filename(file_path)
+                d[code] = read_data_from_filepath(file_path)
 
         self._cif_paths = d = {}
 
@@ -198,6 +249,18 @@ __DELTAF_DATABASE = DeltaFactorDatabase()
 def df_database():
     """Returns the deltafactor database with the reference results."""
     return __DELTAF_DATABASE
+
+
+def df_wien2k(symbol, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
+    wien2k = __DELTAF_DATABASE.get_entry(symbol)
+    b0 = wien2k.b0
+    if b0_GPa: b0 = wien2k.b0_GPa
+    #print(v0f, b0f, b1f)
+    #print(wien2k.v0, b0, wien2k.b1)
+
+    df = df_compute(float(wien2k.v0), float(b0), wien2k.b1, v0f, b0f, b1f, b0_GPa=b0_GPa, v=v, useasymm=useasymm)
+    #print(df)
+    return df
 
 
 def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
@@ -329,3 +392,8 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
 
     else:
         raise ValueError("Wrong version %s" % v)
+
+
+if __name__ == "__main__":
+    import sys
+    read_tables_from_file(sys.argv[1])
