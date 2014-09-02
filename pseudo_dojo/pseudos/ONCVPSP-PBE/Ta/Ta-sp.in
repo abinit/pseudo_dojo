@@ -18,14 +18,14 @@ Ta 73 10 4 4 psp8
 # lmax
 2
 # l rc ep ncon nbas qcut
-0 1.6 0.0 4 7 8.2
-1 1.7 0.0 4 7 8.8
+0 1.55 0.0 4 7 7.8
+1 1.55 0.0 4 7 8.4
 2 1.55 0.0 4 7 9.5
 # lloc lpopt rc5 dvloc0
 4 5 1.5 0.0
 # l nproj debl
-0 2 1.0
-1 2 2.0
+0 2 1.5
+1 2 1.5
 2 2 0.8
 # icmod fcfact
 1 0.5
