@@ -394,6 +394,8 @@ class DeltaFactory(object):
                 kwargs['spinat'] = [(0, 0, 1.5), (0, 0, 1.5), (0, 0, -1.5), (0, 0, -1.5)]
             elif symbol == 'Cr':
                 kwargs['spinat'] = [(0, 0, 1.5), (0, 0, -1.5)]
+            	#spin_mode = "polarized"
+                #kwargs['nsym'] = 1
             elif symbol == 'Mn':
                 kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
 
