@@ -25,10 +25,10 @@ Re 75 10 4 4 psp8
 4 5 1.4 0.0
 # l nproj debl
 0 2 1.0
-1 2 1.0
-2 2 1.0
+1 2 1.8
+2 2 1.8
 # icmod fcfact
-1 0.5
+1 0.3
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl
