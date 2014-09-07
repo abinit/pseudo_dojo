@@ -21,7 +21,7 @@ Ti 22 3 4 4 psp8
 1 2 2.0
 2 2 1.5
 # icmod fcfact
-1 0.15
+1 0.08
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl
