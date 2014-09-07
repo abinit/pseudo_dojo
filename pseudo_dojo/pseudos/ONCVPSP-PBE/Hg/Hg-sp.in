@@ -18,17 +18,17 @@ Hg 80 10 4 4 psp8
 # lmax
 2
 # l rc ep ncon nbas qcut
-0 1.55 0.0 4 9 7.8
-1 1.6 0.0 4 9 8.0
+0 1.55 0.0 4 8 7.8
+1 1.6 0.0 4 8 8.0
 2 1.45 0.0 4 8 8.6
 # lloc lpopt rc5 dvloc0
 4 5 1.45 0.0
 # l nproj debl
 0 2 1.0
-1 2 2.5
-2 2 1.5
+1 2 2.8
+2 2 1.8
 # icmod fcfact
-1 0.35
+1 0.15
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl
