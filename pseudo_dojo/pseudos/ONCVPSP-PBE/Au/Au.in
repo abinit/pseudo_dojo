@@ -18,7 +18,7 @@ Au 79 12 2 4 psp8
 # lmax
 2
 # l rc ep ncon nbas qcut
-0 2.45 0.0 4 7 2.9
+0 2.5 0.0 4 7 2.9
 1 2.5 0.0 4 8 3.8
 2 2.25 0.0 4 7 6.4
 # lloc lpopt rc5 dvloc0
@@ -28,7 +28,7 @@ Au 79 12 2 4 psp8
 1 2 2.5
 2 2 1.0
 # icmod fcfact
-1 0.5
+1 1.1
 # epsh1 epsh2 depsh
 -14.0 12.0 0.02
 # rlmax drl

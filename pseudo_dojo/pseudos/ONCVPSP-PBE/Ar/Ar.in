@@ -19,7 +19,7 @@ Ar 18 3 2 4 psp8
 1 2 1.5
 2 2 1.0
 # icmod fcfact
-1 0.55
+1 0.45
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl

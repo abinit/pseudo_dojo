@@ -20,7 +20,7 @@ Ta 73 11 3 4 psp8
 # l rc ep ncon nbas qcut
 0 2.55 0.0 4 7 2.2
 1 1.95 0.0 4 7 5.6
-2 2.15 0.0 4 7 6.4
+2 2.15 0.0 4 9 6.6
 # lloc lpopt rc5 dvloc0
 4 5 1.85 0.0
 # l nproj debl

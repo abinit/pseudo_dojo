@@ -762,8 +762,8 @@ class OncvOuptputParser(PseudoGenOutputParser):
         hints = [int(h) + 1 for h in hints]
 
         hints = dict(
-            low={"ecut": hints[1], "aug_ratio": 1},
-            normal={"ecut": hints[2], "aug_ratio": 1},
+            low={"ecut": hints[2], "aug_ratio": 1},
+            normal={"ecut": hints[2] + 10, "aug_ratio": 1},
             high={"ecut": hints[2] + 20, "aug_ratio": 1})
 
         return hints
@@ -776,7 +776,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
         #if not self.run_completed:
         #    self.Results(info="Run is not completed")
 
-        # Get the ecut needed to converged within ... TODO
+        # Get the ecut needed to converge within ... TODO
         max_ecut = 0.0
         for l in range(self.lmax+1):
             max_ecut = max(max_ecut, self.ene_vs_ecut[l].energies[-1])

@@ -18,10 +18,10 @@ Hf 72 9 5 4 psp8
 # lmax
 3
 # l rc ep ncon nbas qcut
-0 1.55 0.0 4 7 7.5
-1 1.6 0.0 4 7 8.0
-2 1.4 0.0 4 7 9.2
-3 1.9 0.0 4 7 9.3
+0 1.55 0.0 4 8 7.5
+1 1.6 0.0 4 8 8.0
+2 1.4 0.0 4 8 9.2
+3 1.9 0.0 4 8 9.5
 # lloc lpopt rc5 dvloc0
 4 5 1.3 0.0
 # l nproj debl
@@ -30,7 +30,7 @@ Hf 72 9 5 4 psp8
 2 2 1.0
 3 2 1.5
 # icmod fcfact
-1 0.35
+1 0.15
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl
