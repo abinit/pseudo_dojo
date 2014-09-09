@@ -10,14 +10,6 @@ from pprint import pprint
 from pymatgen.io.abinitio import Pseudo
 
 
-#class DojoEntry(object):
-#    def __init_(self, path):
-#        self.path = os.path.abspath(path)
-#        self.name  = os.path.basename(path)
-#        self.table = os.path.basename(os.path.dirname(self.path))
-#        self.pseudo = Pseudo.from_file(self.path) 
-
-
 def main():
     try:
         top = sys.argv[1]
@@ -82,15 +74,17 @@ def main():
         + [acc + "_ecut" for acc in accuracies]
     ]
 
-    print("ALL DATA".center(80, "="))
+    print(" ONCVPSP TABLE ".center(80, "="))
     columns = [acc + "_dfact_meV" for acc in accuracies] 
     columns += [acc + "_ecut" for acc in accuracies] 
 
     print(data.to_string(columns=columns))
+
+    print(" STATS ".center(80, "="))
     print(data.describe())
 
     bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean()]
-    print("BAD".center(80, "*"))
+    print(" BAD PSEUDOS (high_dfact > mean) ".center(80, "*"))
     print(bad)
 
     if errors:
