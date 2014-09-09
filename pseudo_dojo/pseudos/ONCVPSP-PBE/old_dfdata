@@ -136,19 +136,6 @@ ERRORS:
  ('Li-s.psp8', 'no deltafactor')]
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 -------------------------
 TODO:
 -------------------------
@@ -160,4 +147,15 @@ hm_Hg.psp8               0.501441        0.480886           18         38
 Mg.psp8                  0.527403        0.541331           19         39
 Mn-sp.psp8              14.744533       14.264726           49         69
 Ni-sp.psp8              39.036481        0.175458           41         61
+
+# OLD VERSIONS WAS BETTER
+
+#	modified:   Ag/Ag-sp.in
+#	modified:   B/B.in
+#	modified:   Be/Be-s.in
+#	modified:   C/C.in
+#	modified:   F/F.in
+#	modified:   Ir/Ir-p.in
+#	modified:   Na/Na-sp.in
+#	modified:   Ne/Ne.in
 

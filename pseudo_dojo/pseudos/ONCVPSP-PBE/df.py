@@ -97,17 +97,17 @@ def main():
         print("ERRORS:")
         pprint(errors)
 
-    import matplotlib.pyplot as plt 
+    #import matplotlib.pyplot as plt 
     #bad.plot(kind="barh")
     #bad.plot(kind="kde")
     #bad.plot(kind="density")
     #bad["high_dfact_meV"].plot(kind="bar")
-    bad[[acc + "_dfact_meV" for acc in ["normal", "high"]]].plot(kind="bar")
+    ###bad[[acc + "_dfact_meV" for acc in ["normal", "high"]]].plot(kind="bar")
     #bad.plot(kind="bar", columns=["high_dfact_meV"])
     #bad["delta_normal"].hist(bins=200)
     #bad["delta_high"].hist(bins=200)
     #data["high_dfact_meV"].hist(bins=200)
-    plt.show()
+    #plt.show()
 
 
 if __name__ == "__main__":
