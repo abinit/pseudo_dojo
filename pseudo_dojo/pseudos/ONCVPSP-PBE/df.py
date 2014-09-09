@@ -36,8 +36,8 @@ def main():
             #if f.endswith(".psp8") and "-" in f])
     #print(pseudos)
 
-    #accuracies = ["low", "normal", "high"]
-    accuracies = ["normal", "high"]
+    accuracies = ["low", "normal", "high"]
+    #accuracies = ["normal", "high"]
     keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
     #print(columns)
