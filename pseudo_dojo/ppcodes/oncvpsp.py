@@ -3,12 +3,12 @@ from __future__ import print_function, division
 
 import os
 import abc
-import time
 import json
 import numpy as np
 
 from collections import namedtuple, OrderedDict
 from pymatgen.core.design_patterns import AttrDict
+from pymatgen.util.lazy import lazy_property
 from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
 
 import logging
@@ -179,6 +179,7 @@ class PseudoGenDataPlotter(object):
         ax.set_ylabel("$p(r)$")
         ax.set_title("Projector Wave Functions")
         ax.legend(lines, legends, loc="best", shadow=True)
+
         return lines
 
     @add_mpl_kwargs
@@ -299,9 +300,9 @@ class MultiPseudoGenDataPlotter(object):
         plotter.add_plotter("foo.nc", label="foo bands")
         plotter.plot()
     """
-    _LINE_COLORS = ["b", "r",]
-    _LINE_STYLES = ["-",":","--","-.",]
-    _LINE_WIDTHS = [2,]
+    _LINE_COLORS = ["b", "r"]
+    _LINE_STYLES = ["-", ":", "--", "-."]
+    _LINE_WIDTHS = [2]
 
     def __init__(self):
         self._plotters_odict = OrderedDict()
@@ -331,7 +332,7 @@ class MultiPseudoGenDataPlotter(object):
     def iter_lineopt(self):
         """Generates style options for lines."""
         import itertools
-        for o in itertools.product( self._LINE_WIDTHS,  self._LINE_STYLES, self._LINE_COLORS):
+        for o in itertools.product(self._LINE_WIDTHS,  self._LINE_STYLES, self._LINE_COLORS):
             yield {"linewidth": o[0], "linestyle": o[1], "color": o[2]}
 
     def add_psgen(self, label, psgen):
@@ -439,8 +440,17 @@ class PseudoGenResults(AttrDict):
                 self[k] = None
 
 
+class AtanLogDer(namedtuple("AtanLogDer", "l, energies, values")):
+    @property
+    def to_dict(self):
+        return dict(
+            l=self.l,
+            energies=list(self.energies),
+            values=list(self.values))
+
+
 class PseudoGenOutputParserError(Exception):
-    """Exceptions raised by OuptputParser instances."""
+    """Exceptions raised by OuptputParser."""
 
 
 class PseudoGenOutputParser(object):
@@ -533,19 +543,6 @@ class OncvOuptputParser(PseudoGenOutputParser):
     # Class used to instanciate the plotter.
     Plotter = PseudoGenDataPlotter
 
-    #def __init__(self, filepath):
-    #    """Initialize the object from the oncvpsp output."""
-    #    super(OncvOuptputParser, self).__init__(filepath)
-
-    #    try:
-    #        self.scan()
-    #    except:
-    #        time.sleep(1)
-    #        try:
-    #            self.scan()
-    #        except:
-    #            raise
-
     def scan(self):
         """
         Scan the output, set and returns `run_completed` attribute.
@@ -606,12 +603,12 @@ class OncvOuptputParser(PseudoGenOutputParser):
                 break
         else:
             raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
-        print("lmax", self.lmax)
+        #print("lmax", self.lmax)
 
     def __str__(self):
         lines = []
         app = lines.append
-        #app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
+        app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
         app("oncvpsp calculation: %s: " % self.calc_type)
         app("completed: %s" % self.run_completed)
 
@@ -621,7 +618,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
     def fully_relativistic(self):
         return self.calc_type == "fully-relativistic"
 
-    @property
+    @lazy_property
     def potentials(self):
         """Radial functions with the non-local and local potentials."""
         #radii, charge, pseudopotentials (ll=0, 1, lmax)
@@ -642,7 +639,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
         return ionpots_l
 
-    @property
+    @lazy_property
     def densities(self):
         """Dictionary with charge densities on the radial mesh."""
         # radii, charge, core charge, model core charge
@@ -654,7 +651,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
             rhoC=RadialFunction("Core charge", rho_data[:, 0], rho_data[:, 2]),
             rhoM=RadialFunction("Model charge", rho_data[:, 0], rho_data[:, 3]))
 
-    @property
+    @lazy_property
     def radial_wfs(self):
         """Read the radial wavefunctions."""
         #n= 1,  l= 0, all-electron wave function, pseudo w-f
@@ -685,7 +682,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
         return self.AePsNamedTuple(ae=ae_waves, ps=ps_waves)
 
-    @property
+    @lazy_property
     def projectors(self):
         """Read the projector wave functions."""
         #n= 1 2  l= 0, projecctor pseudo wave functions, well or 2nd valence
@@ -709,7 +706,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
         return projectors_nl
 
-    @property
+    @lazy_property
     def atan_logders(self):
         """Atan of the log derivatives for different l-values."""
         #log derivativve data for plotting, l= 0
@@ -717,34 +714,40 @@ class OncvOuptputParser(PseudoGenOutputParser):
         #l, energy, all-electron, pseudopotential
         #
         #!      0    2.000000    0.706765    0.703758
-        atan_logder = namedtuple("AtanLogDer", "energies values")
         ae_atan_logder_l, ps_atan_logder_l = OrderedDict(), OrderedDict()
 
         for l in range(self.lmax+1):
             data = self._grep(tag="!      %d" % l).data
             assert l == int(data[0, 0])
-            ae_atan_logder_l[l] = atan_logder(energies=data[:, 1], values=data[:, 2])
-            ps_atan_logder_l[l] = atan_logder(energies=data[:, 1], values=data[:, 3])
+            ae_atan_logder_l[l] = AtanLogDer(l=l, energies=data[:, 1], values=data[:, 2])
+            ps_atan_logder_l[l] = AtanLogDer(l=l, energies=data[:, 1], values=data[:, 3])
 
         return self.AePsNamedTuple(ae=ae_atan_logder_l, ps=ps_atan_logder_l)
 
-    @property
+    @lazy_property
     def ene_vs_ecut(self):
         """Convergence of energy versus ecut for different l-values."""
         #convergence profiles, (ll=0,lmax)
         #!C     0    5.019345    0.010000
         #...
         #!C     1   19.469226    0.010000
-        conv_data = namedtuple("ConvData", "energies values")
+        class ConvData(namedtuple("ConvData", "l energies values")):
+            @property
+            def to_dict(self):
+                return dict(
+                    l=self.l,
+                    energies=list(self.energies),
+                    values=list(self.values))
+
         conv_l = OrderedDict()
 
         for l in range(self.lmax+1):
             data = self._grep(tag="!C     %d" % l).data
-            conv_l[l] = conv_data(energies=data[:, 1], values=data[:, 2])
+            conv_l[l] = ConvData(l=l, energies=data[:, 1], values=data[:, 2])
 
         return conv_l
 
-    @property
+    @lazy_property
     def hints(self):
         # Extract the hints
         hints = 3 * [-np.inf]
@@ -759,9 +762,9 @@ class OncvOuptputParser(PseudoGenOutputParser):
         hints = [int(h) + 1 for h in hints]
 
         hints = dict(
-            low={"ecut": hints[0], "aug_ratio": 1},
-            normal={"ecut": hints[1], "aug_ratio": 1},
-            high={"ecut": hints[2], "aug_ratio": 1})
+            low={"ecut": hints[2], "aug_ratio": 1},
+            normal={"ecut": hints[2] + 10, "aug_ratio": 1},
+            high={"ecut": hints[2] + 20, "aug_ratio": 1})
 
         return hints
 
@@ -773,7 +776,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
         #if not self.run_completed:
         #    self.Results(info="Run is not completed")
 
-        # Get the ecut needed to converged within ... TODO
+        # Get the ecut needed to converge within ... TODO
         max_ecut = 0.0
         for l in range(self.lmax+1):
             max_ecut = max(max_ecut, self.ene_vs_ecut[l].energies[-1])
@@ -845,9 +848,46 @@ class OncvOuptputParser(PseudoGenOutputParser):
         kwargs = {k: getattr(self, k) for k in self.Plotter.all_keys}
         return self.Plotter(**kwargs)
 
+    @property
+    def to_dict(self):
+        """
+        Returns a dictionary with the radial functions and the other
+        important results produced by ONCVPSP in JSON format.
+        """
+        # Dimensions and basic info.
+        jdict = dict(
+            lmax=self.lmax,
+            ncore=self.nc,
+            nvalence=self.nv,
+            calc_type=self.calc_type)
+
+        # List of radial wavefunctions (AE and PS)
+        jdict["radial_wfs"] = d = {}
+        d["ae"] = [wave.to_dict for wave in self.radial_wfs.ae.values()]
+        d["ps"] = [wave.to_dict for wave in self.radial_wfs.ps.values()]
+
+        # List of projectors
+        jdict["projectors"] = [proj.to_dict for proj in self.projectors.values()]
+
+        # Charge densities
+        jdict["densities"] = dict(
+            rhoV=self.densities["rhoV"].to_dict,
+            rhoC=self.densities["rhoC"].to_dict,
+            rhoM=self.densities["rhoM"].to_dict)
+
+        # Logders (AE and PS)
+        jdict["atan_logders"] = d = {}
+        d["ae"] = [f.to_dict for f in self.atan_logders.ae.values()]
+        d["ps"] = [f.to_dict for f in self.atan_logders.ps.values()]
+
+        # Convergence of the different l-channels as function of ecut.
+        jdict["ene_vs_ecut"] = [f.to_dict for f in self.ene_vs_ecut.values()]
+
+        return jdict
+
     def _grep(self, tag, beg=0):
         """
-        This routine finds the first field in the file with the specified tag.
+        Finds the first field in the file with the specified tag.
         """
         data, stop, intag = [], None, -1
 
@@ -861,7 +901,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
                     intag = beg + i
                 data.append([float(c) for c in l.split()[1:]])
             else:
-                # Exit because we know there's only one section starting with tag'
+                # Exit because we know there's only one section starting with 'tag'
                 if intag != -1:
                     stop = beg + i
                     break

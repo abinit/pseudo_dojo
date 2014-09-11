@@ -4,12 +4,12 @@ from __future__ import print_function, division
 
 import sys
 import collections
+import argparse
 
 from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser, PseudoGenDataPlotter
 
 
 def main():
-    import argparse
     parser = argparse.ArgumentParser() #formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument('filename', default="", help="Path to the output file")
@@ -18,13 +18,22 @@ def main():
                         help=("Quantity to plot. Possible values: %s" %
                               str(["slide", "wp, dp, lc"] + PseudoGenDataPlotter.all_keys) + "\n"
                               "wp --> wavefunctions and projectors\n" +
-                              "dp --> densities and potentialss\n" +
+                              "dp --> densities and potentials\n" +
                               "lc --> atan(logder) and convergence wrt ecut"))
+
+    parser.add_argument("-j", "--json", action="store_true", default=False, 
+                        help="Produce a string with the results in a JSON dictionary and exit")
 
     options = parser.parse_args()
 
     onc_parser = OncvOuptputParser(options.filename)
-    print(onc_parser)
+    onc_parser.scan()
+    #print(onc_parser)
+
+    if options.json:
+        import json
+        print(json.dumps(onc_parser.to_dict, indent=4))
+        return 0
 
     # Build the plotter
     plotter = onc_parser.make_plotter()

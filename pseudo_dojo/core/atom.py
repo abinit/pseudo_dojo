@@ -72,6 +72,10 @@ class NlState(collections.namedtuple("NlState", "n, l")):
     def __str__(self):
         return "n=%i, l=%i" % self
 
+    @property
+    def to_dict(self):
+        return {"n": self.n, "l": self.l}
+
 
 class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
     """
@@ -304,6 +308,14 @@ class RadialFunction(object):
     def __abs__(self):
         return self.__class__(self.rmesh, np.abs(self.values))
 
+    @property
+    def to_dict(self):
+        return dict(
+            name=str(self.name), 
+            rmesh=list(self.rmesh),
+            values=list(self.values),
+        )
+
     def pprint(self, what="rmesh+values", stream=None):
         """pprint method (useful for debugging)"""
         from pprint import pprint
@@ -445,6 +457,12 @@ class RadialWaveFunction(RadialFunction):
         """True if self is a bound state."""
         back = min(10, len(self))
         return np.all(np.abs(self.values[-back:]) < self.TOL_BOUND)
+
+    @property
+    def to_dict(self):
+        d = super(RadialWaveFunction, self).to_dict
+        d.update(self.state.to_dict)
+        return d
 
 
 def plot_aepp(ae_funcs, pp_funcs=None, **kwargs): 
