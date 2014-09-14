@@ -19,9 +19,9 @@ class DeltaFactorDatabaseTest(PseudoDojoTest):
         e = database.get_entry("Si", code="VASP")
         self.assert_almost_equal([e.v0, e.b0_GPa, e.b1], [20.446, 88.790, 4.296])
 
-    def test_plot(self):
-        """Test plot_error_of_code."""
-        self.database.plot_error_of_code("VASP", show=False)
+    #def test_plot(self):
+    #    """Test plot_error_of_code."""
+    #    self.database.plot_error_of_code("VASP", show=False)
 
     def test_compute_deltaf(self):
         """Computation of the delta factor."""

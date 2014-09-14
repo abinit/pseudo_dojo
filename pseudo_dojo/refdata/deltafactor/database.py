@@ -285,8 +285,8 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
         # delta factor form version 1
         if b0_GPa:
             # Conversion GPa --> eV/A**3
-            b0w = FloatWithUnit(b0w, "GPa").to("eV Ang^-3")
-            b0f = FloatWithUnit(b0f, "GPa").to("eV Ang^-3")
+            b0w = FloatWithUnit(b0w, "GPa").to("eV ang^-3")
+            b0f = FloatWithUnit(b0f, "GPa").to("eV ang^-3")
 
         Vi = 0.94 * v0w
         Vf = 1.06 * v0w
@@ -325,8 +325,8 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
 
         if b0_GPa:
             # Conversion GPa --> eV/A**3
-            b0w = FloatWithUnit(b0w, "GPa").to("eV Ang^-3")
-            b0f = FloatWithUnit(b0f, "GPa").to("eV Ang^-3")
+            b0w = FloatWithUnit(b0w, "GPa").to("eV ang^-3")
+            b0f = FloatWithUnit(b0f, "GPa").to("eV ang^-3")
 
         if useasymm:
             Vi = 0.94 * v0w
