@@ -225,18 +225,6 @@ class PseudoGenerator(object):
 
         self._status = status
 
-        # Add new entry to history only if the status has changed.
-        #if changed:
-        #    if status == self.S_SUB:
-        #        self._submission_time = time.time()
-        #        self.history.append("Submitted on %s" % time.asctime())
-
-        #    if status == self.S_OK:
-        #        self.history.append("Completed on %s" % time.asctime())
-
-        #    if status == self.S_ABICRITICAL:
-        #        self.history.append("Error info:\n %s" % str(info_msg))
-
         if status == self.S_DONE:
             self.check_status()
 
@@ -299,8 +287,6 @@ class PseudoGenerator(object):
                 parser.scan()
             except parser.Error:
                 raise
-        #finally:
-        #    return parser
 
     @property
     def results(self):
@@ -409,71 +395,3 @@ class OncvGenerator(PseudoGenerator):
         # Build the plotter and plot data according to **kwargs
         plotter = parser.make_plotter()
         plotter.plot_atanlogder_econv()
-
-
-mock_input = """
-# ATOM AND REFERENCE CONFIGURATION
-# atsym, z, nc, nv, iexc   psfile
-    O    8     1   2   3   psp8
-#
-# n, l, f  (nc+nv lines)
-    1    0    2.0
-    2    0    2.0
-    2    1    4.0
-#
-# PSEUDOPOTENTIAL AND OPTIMIZATION
-# lmax
-    1
-#
-# l, rc, ep, ncon, nbas, qcut  (lmax+1 lines, l's must be in order)
-    0    1.60    0.00    4    7    8.00
-    1    1.60    0.00    4    7    8.00
-#
-# LOCAL POTENTIAL
-# lloc, lpopt, rc(5), dvloc0
-    4    5    1.4    0.0
-#
-# VANDERBILT-KLEINMAN-BYLANDER PROJECTORs
-# l, nproj, debl  (lmax+1 lines, l's in order)
-    0    2    1.50
-    1    2    1.00
-#
-# MODEL CORE CHARGE
-# icmod, fcfact
-    0    0.0
-#
-# LOG DERIVATIVE ANALYSIS
-# epsh1, epsh2, depsh
-   -2.0  2.0  0.02
-#
-# OUTPUT GRID
-# rlmax, drl
-    4.0  0.01
-#
-# TEST CONFIGURATIONS
-# ncnf
-    3
-#
-#   nvcnf (repeated ncnf times)
-#   n, l, f  (nvcnf lines, repeated follwing nvcnf's ncnf times)
-    2
-    2    0    2.0
-    2    1    3.0
-#
-    2
-    2    0    1.0
-    2    1    4.0
-#
-    2
-    2    0    1.0
-    2    1    3.0
-"""
-
-if __name__ == "__main__":
-    pgen = OncvGenerator(input_str=mock_input, calc_type="scalar-relativistic")
-    pgen.start()
-    pgen.wait()
-    print("retcode: %s: " % pgen.retcode)
-    #print(pget.get_stdout())
-    print(pgen.get_stderr())
-    pgen.plot_results()

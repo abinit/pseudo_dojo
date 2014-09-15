@@ -35,6 +35,9 @@ def test_oncvoutput_parser():
     assert rhoc.values[0] == 53.3293576
     assert all(rhom.values == 0.0)
 
+    # Conversion to JSON format.
+    p.to_dict
+
     # Build the plotter
     plotter = p.make_plotter()
 

@@ -12,17 +12,17 @@ Kr 36 5 3 4 psp8
 # lmax
 2
 # l rc ep ncon nbas qcut
-0 1.6 0.0 4 7 5.0
-1 1.45 0.0 4 7 6.5
-2 1.65 0.0 4 7 9.8
+0 1.7 0.0 4 8 6.1
+1 1.5 0.0 4 7 7.0
+2 1.75 0.0 4 8 9.6
 # lloc lpopt rc5 dvloc0
-4 5 1.45 0.0
+4 5 1.5 0.0
 # l nproj debl
-0 2 2.0
-1 2 2.0
+0 2 3.0
+1 2 3.0
 2 2 4.2
 # icmod fcfact
-1 0.45
+1 0.35
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl
