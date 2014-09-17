@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 """Script to validate/regenerate the database of md5 values."""
-from __future__ import division, print_function
+from __future__ import division, print_function, unicode_literals
 
 import sys
 
 from argparse import ArgumentParser
-
 from pseudo_dojo.pseudos.database import validate_checksums, regenerate_checksums
 
 __author__ = "Matteo Giantomassi"

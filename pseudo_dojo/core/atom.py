@@ -1,5 +1,5 @@
 """This module provides objects and helper functions for atomic calculations."""
-from __future__ import division, print_function
+from __future__ import division, print_function, unicode_literals
 
 import collections
 import numpy as np

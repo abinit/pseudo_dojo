@@ -1,11 +1,8 @@
 #!/usr/bin/env python
-from __future__ import division, print_function
+from __future__ import print_function, division, unicode_literals
 
 import os.path
 import sys
-#import json
-
-from pprint import pprint
 
 from pprint import pprint
 

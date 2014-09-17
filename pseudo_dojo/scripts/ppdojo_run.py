@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """This scripts drives the execution of the pseudo dojo tests."""
-from __future__ import division, print_function
+from __future__ import division, print_function, unicode_literals
 
 import sys
 import argparse

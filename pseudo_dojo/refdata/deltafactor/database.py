@@ -8,7 +8,7 @@ Example::
     wien2k = db.get_entry("Si")
     print(wien2k.v0, wien2k.b0, wien2k.b1)
 """
-from __future__ import division, print_function
+from __future__ import print_function, division, unicode_literals
 
 import os
 import os.path

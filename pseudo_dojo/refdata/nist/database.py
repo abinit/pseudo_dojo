@@ -1,4 +1,5 @@
 """Data taken from  http://www.physics.nist.gov/PhysRefData/DFTdata/"""
+from __future__ import print_function, division, unicode_literals
 from collections import namedtuple
 
 # Computer generated code
