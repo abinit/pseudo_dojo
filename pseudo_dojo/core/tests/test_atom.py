@@ -5,7 +5,7 @@ import collections
 import os
 
 from pseudo_dojo.core import *
-from pseudo_dojo.refdata.nist import nist_database
+from pseudo_dojo.refdata.nist import database as nist_database
 
 
 class AtomicConfigurationTest(PseudoDojoTest):

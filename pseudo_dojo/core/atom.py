@@ -3,8 +3,8 @@ from __future__ import division, print_function
 
 import collections
 import numpy as np
-import cStringIO as StringIO
 
+from six.moves import cStringIO
 from pseudo_dojo.refdata.nist import database as nist_database
 from scipy.interpolate import UnivariateSpline
 from scipy.integrate import cumtrapz
@@ -297,7 +297,7 @@ class RadialFunction(object):
         return "<%s, name=%s at %s>" % (self.__class__.__name__, self.name, id(self))
 
     def __str__(self):
-        stream = StringIO.StringIO()
+        stream = cStringIO()
         self.pprint(stream=stream)
         return stream.getvalue()
 
