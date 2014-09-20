@@ -79,16 +79,17 @@ def main():
     columns = [acc + "_dfact_meV" for acc in accuracies] 
     columns += [acc + "_ecut" for acc in accuracies] 
     #print(data.to_string(columns=columns))
-    print(tabulate(data[columns], headers="keys", tablefmt="rst"))
+    tablefmt = "grid"
+    print(tabulate(data[columns], headers="keys", tablefmt=tablefmt))
 
     print("\nSTATS:\n") #.center(80, "="))
     #print(data.describe())
-    print(tabulate(data.describe(), headers="keys", tablefmt="rst"))
+    print(tabulate(data.describe(), headers="keys", tablefmt=tablefmt))
 
     bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean()]
     print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
     #print(bad)
-    print(tabulate(bad, headers="keys", tablefmt="rst"))
+    print(tabulate(bad, headers="keys", tablefmt=tablefmt))
 
     if errors:
         print("ERRORS:")
