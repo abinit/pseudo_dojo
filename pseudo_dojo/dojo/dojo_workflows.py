@@ -5,8 +5,8 @@ import abc
 import sys
 import numpy as np
 
+from monty.collections import AttrDict
 from pymatgen.core.units import Ha_to_eV
-from pymatgen.core.design_patterns import AttrDict
 from pymatgen.util.num_utils import monotonic
 from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy

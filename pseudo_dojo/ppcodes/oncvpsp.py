@@ -8,7 +8,7 @@ import numpy as np
 
 from collections import namedtuple, OrderedDict
 from monty.functools import lazy_property
-from pymatgen.core.design_patterns import AttrDict
+from monty.collections import AttrDict
 from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
 
 import logging
