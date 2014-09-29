@@ -463,7 +463,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
             prtwf=0,
             paral_kgb=paral_kgb,
 			chkprim=0,
-			nstep=50,
+			nstep=80,
             #mem_test=0,
         )
 
