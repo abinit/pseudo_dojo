@@ -1,12 +1,12 @@
 """Base class for Dojo Workkflows."""
-from __future__ import division, print_function
+from __future__ import division, print_function, unicode_literals
 
 import abc
 import sys
 import numpy as np
 
+from monty.collections import AttrDict
 from pymatgen.core.units import Ha_to_eV
-from pymatgen.core.design_patterns import AttrDict
 from pymatgen.util.num_utils import monotonic
 from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
@@ -59,9 +59,9 @@ class DojoWorkflow(Workflow):
         # Update old report card with the new one and write new report
         old_report[dojo_trial][dojo_accuracy] = report
         try:
-           self.pseudo.write_dojo_report(old_report)
+            self.pseudo.write_dojo_report(old_report)
         except:
-			print("Something wrong in write_dojo_report")
+            print("Something wrong in write_dojo_report")
 
 
 def check_conv(values, tol, min_numpts=1, mode="abs", vinf=None):

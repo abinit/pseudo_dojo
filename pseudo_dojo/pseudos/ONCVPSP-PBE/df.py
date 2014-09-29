@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-from __future__ import print_function, division
+from __future__ import division, print_function, unicode_literals
 
 import sys
 import os
 import pandas as pd
 
+from tabulate import tabulate
 from collections import OrderedDict, namedtuple
 from pprint import pprint
 from pymatgen.io.abinitio import Pseudo
@@ -74,18 +75,21 @@ def main():
         + [acc + "_ecut" for acc in accuracies]
     ]
 
-    print(" ONCVPSP TABLE ".center(80, "="))
+    print("\nONCVPSP TABLE:\n") #.center(80, "="))
     columns = [acc + "_dfact_meV" for acc in accuracies] 
     columns += [acc + "_ecut" for acc in accuracies] 
+    #print(data.to_string(columns=columns))
+    tablefmt = "grid"
+    print(tabulate(data[columns], headers="keys", tablefmt=tablefmt))
 
-    print(data.to_string(columns=columns))
-
-    print(" STATS ".center(80, "="))
-    print(data.describe())
+    print("\nSTATS:\n") #.center(80, "="))
+    #print(data.describe())
+    print(tabulate(data.describe(), headers="keys", tablefmt=tablefmt))
 
     bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean()]
-    print(" BAD PSEUDOS (high_dfact > mean) ".center(80, "*"))
-    print(bad)
+    print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
+    #print(bad)
+    print(tabulate(bad, headers="keys", tablefmt=tablefmt))
 
     if errors:
         print("ERRORS:")

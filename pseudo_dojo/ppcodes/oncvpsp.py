@@ -1,5 +1,5 @@
 """Classes and functions for post-processing the results produced by ONCVPSP."""
-from __future__ import print_function, division
+from __future__ import division, print_function, unicode_literals
 
 import os
 import abc
@@ -7,8 +7,8 @@ import json
 import numpy as np
 
 from collections import namedtuple, OrderedDict
-from pymatgen.core.design_patterns import AttrDict
-from pymatgen.util.lazy import lazy_property
+from monty.functools import lazy_property
+from monty.collections import AttrDict
 from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
 
 import logging

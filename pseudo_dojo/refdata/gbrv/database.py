@@ -8,7 +8,7 @@ Example::
     fcc_si = db.get_fcc_entry("Si")
     print(fcc_si.ae, fcc_si.gbrv_uspp)
 """
-from __future__ import division, print_function
+from __future__ import print_function, division, unicode_literals
 
 import os
 import json

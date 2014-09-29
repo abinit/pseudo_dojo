@@ -90,6 +90,7 @@ def cleanup():
 # Note setup install will download them from Pypi if they are not available.
 install_requires = [
     "periodictable",
+    "six",
     "numpy>=1.5",
     "scipy>=0.10",
     "pymatgen>=2.9.0",

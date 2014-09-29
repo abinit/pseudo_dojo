@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Script to analyze and plot the results produced by ONCVPSP code."""
-from __future__ import print_function, division
+from __future__ import division, print_function, unicode_literals
 
 import sys
 import collections

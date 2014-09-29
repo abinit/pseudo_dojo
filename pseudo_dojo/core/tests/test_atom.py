@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-from __future__ import division, print_function
+from __future__ import division, print_function, unicode_literals
 
 import collections
 import os
 
 from pseudo_dojo.core import *
-from pseudo_dojo.refdata.nist import nist_database
+from pseudo_dojo.refdata.nist import database as nist_database
 
 
 class AtomicConfigurationTest(PseudoDojoTest):

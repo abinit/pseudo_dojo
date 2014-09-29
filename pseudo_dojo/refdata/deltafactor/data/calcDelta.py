@@ -133,7 +133,7 @@ python calcDelta.py --help displays the current instructions
     try:
         len(data_f['element'])
     except TypeError:
-        print 'Error: ' + argv[1] + ': at least two elements required'
+        print('Error: ' + argv[1] + ': at least two elements required')
         exit()
 
     eloverlap = list(set(data_f['element']) & set(data_w['element']))

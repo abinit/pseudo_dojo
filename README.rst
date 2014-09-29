@@ -1,5 +1,5 @@
 
-Pseudo_dojo is a open-source Python framework for generaring and validating  pseudo potentials.
+Pseudo_dojo is a open-source Python framework for generating and validating  pseudo potentials.
 
 pseudo_dojo is free to use. However, we also welcome your help to improve this
 library by making your own contributions.  These contributions can be in the
