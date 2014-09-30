@@ -154,9 +154,6 @@ class DojoReport(dict):
         plt.show()
 
 
-
-
-
 class Dojo(object):
     """
     This object build the flows for the analysis/validation of pseudopotentials
