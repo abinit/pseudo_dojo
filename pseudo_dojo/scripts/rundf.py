@@ -92,6 +92,7 @@ if __name__ == "__main__":
     my_options = {'test': False, 'strip': False}
 
     name = sys.argv[0]
+    my_options['name'] = name
     print(name, sys.argv)
     if not os.path.isfile(name):
         print('No such file: %s.\nThe the first argument should be the name of the pseudo.' % name)
