@@ -56,7 +56,7 @@ def build_flow(options):
     #extra = {}
 
     if options['test']:
-        workdir = 'df_run_test_'+ps_name
+        workdir = ps_name+'_df_run_test'
         flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
         kppa = 1000
         ecut = 40
@@ -66,7 +66,7 @@ def build_flow(options):
                                        toldfe=1.e-8, smearing="fermi_dirac:0.0005")
         flow.register_work(work, workdir='W'+str(ecut))
     else:
-        workdir = 'df_run_full_'+ps_name
+        workdir = ps_name+'_df_run_full'
         flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
         kppa = 6750  # Use this to have the official k-point sampling
         for ecut in [12, 16, 20, 24, 28, 32, 36, 40, 44, 48]:
