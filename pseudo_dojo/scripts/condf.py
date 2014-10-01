@@ -109,7 +109,7 @@ if __name__ == "__main__":
     my_df_data = DeltaFactorData(name)
     my_df_data.read()
     my_df_data.test_convergence()
-    print(my_df_data.pseudo.dojo_report)
+    pprint.pprint(my_df_data.pseudo.dojo_report)
     my_df_data.pseudo.write_dojo_report()
     my_df_data.print_results()
 
