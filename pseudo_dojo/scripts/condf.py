@@ -71,7 +71,7 @@ class DeltaFactorData(object):
         """
 
         """
-        print(self.df_data)
+        pprint.pprint(self.df_data)
 
     def print_results(self, stream=sys.stdout):
         """
