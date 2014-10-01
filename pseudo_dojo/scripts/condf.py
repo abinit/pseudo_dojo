@@ -18,7 +18,7 @@ class DeltaFactorData(object):
     class for delta factor data analisys
     """
 
-    def __init__(self):
+    def __init__(self, ps_name):
         """
 
         """
@@ -27,13 +27,14 @@ class DeltaFactorData(object):
         self.results = {}
         self.etotal_data = {}
         self.df_extra = np.inf
-        self.pseudo = Pseudo.from_file('totest')
+        self.name = ps_name
+        self.pseudo = Pseudo.from_file(ps_name+'.psp8')
 
     def read(self):
         """
 
         """
-        tree = os.walk('df_run_full')
+        tree = os.walk(self.ps_name+'_df_run_full')
         for dirs in tree:
             file_name = os.path.join(dirs[0], 'deltadata.txt')
             if os.path.isfile(file_name):
@@ -103,7 +104,8 @@ class DeltaFactorData(object):
 
 
 if __name__ == "__main__":
-    my_df_data = DeltaFactorData()
+    name = sys.argv[1]
+    my_df_data = DeltaFactorData(name)
     my_df_data.read()
     my_df_data.test_convergence()
     print(my_df_data.pseudo.dojo_report)
