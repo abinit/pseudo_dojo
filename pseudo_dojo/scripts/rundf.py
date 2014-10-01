@@ -91,7 +91,7 @@ def main(options):
 if __name__ == "__main__":
     my_options = {'test': False, 'strip': False}
 
-    name = sys.argv[0]
+    name = sys.argv[1]
     my_options['name'] = name
     print(name, sys.argv)
     if not os.path.isfile(name):
