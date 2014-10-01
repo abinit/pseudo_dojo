@@ -27,7 +27,7 @@ class DeltaFactorData(object):
         self.results = {}
         self.etotal_data = {}
         self.df_extra = np.inf
-        self.name = ps_name
+        self.ps_name = ps_name
         self.pseudo = Pseudo.from_file(ps_name+'.psp8')
 
     def read(self):
