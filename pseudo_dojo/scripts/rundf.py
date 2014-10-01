@@ -94,7 +94,7 @@ if __name__ == "__main__":
     name = sys.argv[1]
     my_options['name'] = name
     print(name, sys.argv)
-    if not os.path.isfile(name):
+    if not os.path.isfile(name+'.out'):
         print('No such file: %s.\nThe the first argument should be the name of the pseudo.' % name)
         raise RuntimeError
 
