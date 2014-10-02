@@ -8,7 +8,7 @@ import collections
 import numpy as np
 import pprint
 
-from pymatgen.io.gwwrapper.convergence import test_conv
+from pymatgen.io.gwwrapper.convergence import determine_convergence
 from pymatgen.io.abinitio.netcdf import NetcdfReader
 from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.pseudos import Pseudo
@@ -96,7 +96,7 @@ class DeltaFactorData(object):
             ys.append(self.df_data[x])
         #print ys
         for tol in [-10, -3.0, -1.0, -0.3, -0.1]:
-            test_res = test_conv(xs, ys, 'df'+str(abs(tol)), tol=tol, verbose=False, mode='extra_noise')
+            test_res = determine_convergence(xs, ys, 'df'+str(abs(tol)), tol=tol, verbose=False, mode='extra_noise')
             self.results.update({abs(tol): test_res[1]})
             self.df_extra = test_res[4]
         pprint.pprint(self.results)
