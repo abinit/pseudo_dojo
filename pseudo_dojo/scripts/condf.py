@@ -6,18 +6,20 @@ import os
 import sys
 import collections
 import numpy as np
+import pprint
 
 from pymatgen.io.gwwrapper.convergence import test_conv
 from pymatgen.io.abinitio.netcdf import NetcdfReader
 from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.pseudos import Pseudo
 
+
 class DeltaFactorData(object):
     """
     class for delta factor data analisys
     """
 
-    def __init__(self):
+    def __init__(self, ps_name):
         """
 
         """
@@ -26,13 +28,14 @@ class DeltaFactorData(object):
         self.results = {}
         self.etotal_data = {}
         self.df_extra = np.inf
-        self.pseudo = Pseudo.from_file('totest')
+        self.ps_name = ps_name
+        self.pseudo = Pseudo.from_file(ps_name+'.psp8')
 
     def read(self):
         """
 
         """
-        tree = os.walk('df_run_full')
+        tree = os.walk(self.ps_name+'_df_run_full')
         for dirs in tree:
             file_name = os.path.join(dirs[0], 'deltadata.txt')
             if os.path.isfile(file_name):
@@ -68,7 +71,7 @@ class DeltaFactorData(object):
         """
 
         """
-        print(self.df_data)
+        pprint.pprint(self.df_data)
 
     def print_results(self, stream=sys.stdout):
         """
@@ -96,16 +99,17 @@ class DeltaFactorData(object):
             test_res = test_conv(xs, ys, 'df'+str(abs(tol)), tol=tol, verbose=False, mode='extra_noise')
             self.results.update({abs(tol): test_res[1]})
             self.df_extra = test_res[4]
-        print(self.results)
+        pprint.pprint(self.results)
         self.pseudo.dojo_report.update({'hints': {'high': self.results[1.0], 'medium': self.results[3.0],
                                                   'low': self.results[10], 'based_on': 'delta_factor'}})
 
 
 if __name__ == "__main__":
-    my_df_data = DeltaFactorData()
+    name = sys.argv[1]
+    my_df_data = DeltaFactorData(name)
     my_df_data.read()
     my_df_data.test_convergence()
-    print(my_df_data.pseudo.dojo_report)
+    pprint.pprint(my_df_data.pseudo.dojo_report)
     my_df_data.pseudo.write_dojo_report()
     my_df_data.print_results()
 

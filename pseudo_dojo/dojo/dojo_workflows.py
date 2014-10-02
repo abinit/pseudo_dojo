@@ -394,7 +394,7 @@ class DeltaFactory(object):
                 kwargs['spinat'] = [(0, 0, 1.5), (0, 0, 1.5), (0, 0, -1.5), (0, 0, -1.5)]
             elif symbol == 'Cr':
                 kwargs['spinat'] = [(0, 0, 1.5), (0, 0, -1.5)]
-            	#spin_mode = "polarized"
+                #spin_mode = "polarized"
                 #kwargs['nsym'] = 1
             elif symbol == 'Mn':
                 kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
@@ -435,6 +435,8 @@ class DeltaFactorWorkflow(DojoWorkflow):
         """
         super(DeltaFactorWorkflow, self).__init__(workdir=workdir, manager=manager)
 
+        self.set_dojo_accuracy(accuracy)
+
         self._pseudo = Pseudo.as_pseudo(pseudo)
 
         if not isinstance(structure_or_cif, Structure):
@@ -462,8 +464,8 @@ class DeltaFactorWorkflow(DojoWorkflow):
             #nband=nband,
             prtwf=0,
             paral_kgb=paral_kgb,
-			chkprim=0,
-			nstep=50,
+            chkprim=0,
+            nstep=80,
             #mem_test=0,
         )
 

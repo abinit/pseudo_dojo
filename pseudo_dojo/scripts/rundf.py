@@ -8,8 +8,8 @@ __author__ = 'setten'
 import os
 import sys
 import abipy.abilab as abilab
-
-from pseudo_dojo.dojo.deltaworks import DeltaFactory
+from pseudo_dojo.dojo.dojo_workflows import DeltaFactorWorkflow
+from pseudo_dojo.dojo.dojo_workflows import DeltaFactory
 
 
 def build_flow(options):
@@ -17,15 +17,16 @@ def build_flow(options):
     #pseudo = data.pseudo("14si.pspnc")
     #pseudo = data.pseudo("Si.GGA_PBE-JTH-paw.xml")
     here = os.path.abspath(os.path.curdir)
+    ps_name = options['name']
 
     # the ocvpsps output file
-    pseudo = os.path.join(here, "totest.out")
+    pseudo = os.path.join(here, ps_name+".out")
     print(pseudo)
 
     with open(pseudo, 'r') as fi:
         lines = fi.readlines()
 
-    fo = open('totest', 'w')
+    fo = open(ps_name+'.psp8', 'w')
     data = False
     for line in lines:
         if data:
@@ -34,7 +35,7 @@ def build_flow(options):
             data = True
     fo.close()
 
-    pseudo = os.path.join(here, "totest")
+    pseudo = os.path.join(here, ps_name+'.psp8')
 
     if options['strip']:
         sys.exit()
@@ -55,7 +56,7 @@ def build_flow(options):
     #extra = {}
 
     if options['test']:
-        workdir = 'df_run_test'
+        workdir = ps_name+'_df_run_test'
         flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
         kppa = 1000
         ecut = 40
@@ -63,9 +64,9 @@ def build_flow(options):
         work = factory.work_for_pseudo(pseudo, accuracy="normal", kppa=kppa,
                                        ecut=ecut, pawecutdg=pawecutdg,
                                        toldfe=1.e-8, smearing="fermi_dirac:0.0005")
-
+        flow.register_work(work, workdir='W'+str(ecut))
     else:
-        workdir = 'df_run_full'
+        workdir = ps_name+'_df_run_full'
         flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
         kppa = 6750  # Use this to have the official k-point sampling
         for ecut in [12, 16, 20, 24, 28, 32, 36, 40, 44, 48]:
@@ -73,9 +74,9 @@ def build_flow(options):
             work = factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa,
                                            ecut=ecut, pawecutdg=pawecutdg,
                                            toldfe=1.e-10, smearing="fermi_dirac:0.0005")
+            #this needs to be done in the loop over ecut ...
+            flow.register_work(work, workdir='W'+str(ecut))
 
-    # Register the workflow.
-    flow.register_work(work, workdir='W'+str(ecut))
     flow.allocate()
 
     return flow.build_and_pickle_dump()
@@ -89,6 +90,13 @@ def main(options):
 
 if __name__ == "__main__":
     my_options = {'test': False, 'strip': False}
+
+    name = sys.argv[1]
+    my_options['name'] = name
+    print(name, sys.argv)
+    if not os.path.isfile(name+'.out'):
+        print('No such file: %s.\nThe the first argument should be the name of the pseudo.' % name)
+        raise RuntimeError
 
     for arg in sys.argv:
         my_options.update({arg: True})
