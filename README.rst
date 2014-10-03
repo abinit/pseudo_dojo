@@ -1,11 +1,10 @@
 
-Pseudo_dojo is a open-source Python framework for generating and validating  pseudo potentials.
+Pseudo_dojo is a open-source Python framework for generating and validating pseudo potentials.
 
 pseudo_dojo is free to use. However, we also welcome your help to improve this
 library by making your own contributions.  These contributions can be in the
-form of additional tools or modules you develop, or even simple things such
-as bug reports. Please report any bugs and issues at pseudo_dojo's `Github page
-<https://github.com/gmatteo/pseudo_dojo>`_. 
+form of additional tools or modules you develop, or even simple things such as bug reports. 
+Please report any bugs and issues at pseudo_dojo's `Github page <https://github.com/gmatteo/pseudo_dojo>`_. 
 
 Getting pseudo_dojo
 ================
@@ -43,10 +42,9 @@ install pseudo_dojo using easy_install or pip. Otherwise, these packages should
 be available on `PyPI <http://pypi.python.org>`_.
 
 1. Python 2.7+ required. 
-2. numpy 
-3. scipy 0.10+ 
-4. matplotlib 1.1+ 
-5. periodictable
+2. numpy  required
+3. scipy 0.10+  required
+4. matplotlib 1.1+  optional
 
 Using pseudo_dojo
 =================

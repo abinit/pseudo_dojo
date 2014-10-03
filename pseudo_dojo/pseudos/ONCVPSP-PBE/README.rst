@@ -1,3 +1,11 @@
+Deltafactor results computed with different cutoff energies.
+low_ecut is the value in Hartree at which the error in the electronic eigevalues reaches 1E-5. 
+normal_ecut = low_ecut + 10,  high_ecut  low_ecut + 20 
+
+These are preliminary results that will be used to improve the pseudization parameters.
+In particular, we would like to have pseudos that are reasonably smooth  (ecut < 40 Hartree even
+for d-electron pseudos) and a smooth convergence of the physical properties (delta factor, V0, B0, B1)
+
 
 ONCVPSP TABLE:
 
