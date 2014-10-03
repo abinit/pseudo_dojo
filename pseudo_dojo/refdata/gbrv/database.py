@@ -29,17 +29,14 @@ def count_species(formula):
     Assume chemical symbols start with a capital letter.
     The order of the symbols in formula is maintained.
 
-    >>> count_species("Sn")
-    OrderedDict([('Sn', 1)])
-
-    >>> count_species("OSn")
-    OrderedDict([('O', 1), ('Sn', 1)])
-
-    >>> count_species("SnO2")
-    OrderedDict([('Sn', 1), ('O', 2)])
-
-    >>> count_species("OSnO")
-    OrderedDict([('O', 2), ('Sn', 1)])
+    >>> count_species("Sn") == OrderedDict([('Sn', 1)])
+    True
+    >>> count_species("OSn") == OrderedDict([('O', 1), ('Sn', 1)])
+    True
+    >>> count_species("SnO2") == OrderedDict([('Sn', 1), ('O', 2)])
+    True
+    >>> count_species("OSnO") == OrderedDict([('O', 2), ('Sn', 1)])
+    True
     """
     # Find positions of chemical elements.
     count, inds = OrderedDict(), []
