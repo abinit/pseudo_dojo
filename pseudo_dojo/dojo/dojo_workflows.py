@@ -441,7 +441,8 @@ class DeltaFactorWorkflow(DojoWorkflow):
 
         if not isinstance(structure_or_cif, Structure):
             # Assume CIF file
-            structure = read_structure(structure_or_cif, primitive=False)
+            # structure  = read_structure(structure_or_cif, primitive=False)
+            structure = Structure.from_file(structure_or_cif, primitive=False)
         else:
             structure = structure_or_cif
         #print(structure)
