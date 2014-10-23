@@ -4,7 +4,7 @@ import sys
 import os
 import numpy as np
 
-from pymatgen.util.string_utils import pprint_table
+from monty.pprint import pprint_table
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.tasks import TaskManager
 from pymatgen.io.abinitio.flows import AbinitFlow

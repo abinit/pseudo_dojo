@@ -6,9 +6,9 @@ import sys
 import numpy as np
 
 from monty.collections import AttrDict
+from monty.pprint import pprint_table
 from pymatgen.core.units import Ha_to_eV
 from pymatgen.util.num_utils import monotonic
-from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo

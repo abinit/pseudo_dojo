@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import division, print_function, unicode_literals
+
 __author__ = 'setten'
 
 import os
@@ -7,9 +8,9 @@ import sys
 import collections
 import numpy as np
 
+from monty.pprint import pprint_table
 from pymatgen.io.gwwrapper.convergence import test_conv
 from pymatgen.io.abinitio.netcdf import NetcdfReader
-from pymatgen.util.string_utils import pprint_table
 from pymatgen.io.abinitio.pseudos import Pseudo
 
 class DeltaFactorData(object):
