@@ -69,7 +69,7 @@ def build_flow(options):
         workdir = ps_name+'_df_run_full'
         flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
         kppa = 6750  # Use this to have the official k-point sampling
-        for ecut in [12]:  # [12, 16, 20, 24, 28, 32, 36, 40, 44, 48]:
+        for ecut in [12, 16, 20, 24, 28, 32, 36, 40, 44, 48]:
             pawecutdg = ecut * 2
             work = factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa,
                                            ecut=ecut, pawecutdg=pawecutdg,
