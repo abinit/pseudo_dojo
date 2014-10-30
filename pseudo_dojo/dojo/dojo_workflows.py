@@ -842,6 +842,10 @@ class DFPTPhonoFactory(object):
 
         ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=0)
 
+        kwargs.pop('accuracy')
+        kwargs.pop('smearing')
+        print(kwargs)
+
         global_vars = dict(ksampling.to_abivars(), nband=4, ecut=3.0, tolvrs=1.0e-8, paral_kgb=0)
         global_vars.update(**kwargs)
 
@@ -896,9 +900,6 @@ class DFPTPhonoFactory(object):
         # Instantiate the TaskManager.
         manager = abilab.TaskManager.from_user_config() if not self.manager else \
             abilab.TaskManager.from_file(self.manager)
-
-        kwargs.pop('smearing')
-        print(kwargs)
 
         all_inps = self.scf_ph_inputs(pseudos=pseudos, structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
