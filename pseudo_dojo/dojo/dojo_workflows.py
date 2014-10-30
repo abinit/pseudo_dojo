@@ -825,7 +825,7 @@ class DFPTPhonoFactory(object):
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
     @staticmethod
-    def scf_ph_inputs(structure, pseudos):
+    def scf_ph_inputs(structure, pseudos, **kwargs):
         """
         This function constructs the input files for the phonon calculation:
         GS input + the input files for the phonon calculation.
@@ -838,6 +838,7 @@ class DFPTPhonoFactory(object):
 
         # Global variables used both for the GS and the DFPT run.
         global_vars = dict(nband=4, ecut=3.0, ngkpt=[4, 4, 4], shiftk=[0, 0, 0], tolvrs=1.0e-8, paral_kgb=0)
+        global_vars.update(**kwargs)
 
         inp = abilab.AbiInput(pseudos=pseudos, ndtset=1+len(qpoints))
 
@@ -860,7 +861,7 @@ class DFPTPhonoFactory(object):
         # Split input into gs_inp and ph_inputs
         return inp.split_datasets()
 
-    def work_for_pseudo(self, pseudo):
+    def work_for_pseudo(self, pseudo, **kwargs):
         """
         Create an `AbinitFlow` for phonon calculations:
 
@@ -877,13 +878,13 @@ class DFPTPhonoFactory(object):
         # Working directory (default is the name of the script with '.py' removed and "run_" replaced by "flow_")
         workdir = self.workdir
         if not self.workdir:
-            workdir = os.path.basename(__file__).replace(".py", "").replace("run_","flow_")
+            workdir = os.path.basename(__file__).replace(".py", "").replace("run_", "flow_")
 
         # Instantiate the TaskManager.
         manager = abilab.TaskManager.from_user_config() if not self.manager else \
-                  abilab.TaskManager.from_file(self.manager)
+            abilab.TaskManager.from_file(self.manager)
 
-        all_inps = self.scf_ph_inputs(pseudos=pseudos, structure=structure)
+        all_inps = self.scf_ph_inputs(pseudos=pseudos, structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
 
         return abilab.phonon_flow(workdir, manager, scf_input, ph_inputs)
