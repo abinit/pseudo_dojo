@@ -5,7 +5,7 @@ import abc
 import sys
 import os
 import numpy as np
-import abilab
+from abipy import abilab
 
 from monty.collections import AttrDict
 from monty.pprint import pprint_table
@@ -520,7 +520,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
 
             # Get reference results (Wien2K).
             wien2k = df_database().get_entry(self.pseudo.symbol)
-                                                                                                 
+
             # Compute deltafactor estimator.
             dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
                                eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
