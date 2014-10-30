@@ -834,10 +834,15 @@ class DFPTPhonoFactory(object):
         # List of q-points for the phonon calculation.
         qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00]
 
-        qpoints = np.reshape(qpoints, (-1,3))
+        qpoints = np.reshape(qpoints, (-1, 3))
 
         # Global variables used both for the GS and the DFPT run.
-        global_vars = dict(nband=4, ecut=3.0, ngkpt=[4, 4, 4], shiftk=[0, 0, 0], tolvrs=1.0e-8, paral_kgb=0)
+
+        kppa = kwargs.pop('kppa')
+
+        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=0)
+
+        global_vars = dict(ksampling.to_abivars(), nband=4, ecut=3.0, tolvrs=1.0e-8, paral_kgb=0)
         global_vars.update(**kwargs)
 
         inp = abilab.AbiInput(pseudos=pseudos, ndtset=1+len(qpoints))
