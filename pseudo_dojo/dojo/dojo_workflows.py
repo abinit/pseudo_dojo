@@ -898,6 +898,7 @@ class DFPTPhonoFactory(object):
             abilab.TaskManager.from_file(self.manager)
 
         kwargs.pop('smearing')
+        print(kwargs)
 
         all_inps = self.scf_ph_inputs(pseudos=pseudos, structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
