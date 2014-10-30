@@ -9,7 +9,7 @@ import os
 import sys
 import abipy.abilab as abilab
 from pseudo_dojo.dojo.dojo_workflows import DeltaFactorWorkflow
-from pseudo_dojo.dojo.dojo_workflows import DeltaFactory
+from pseudo_dojo.dojo.dojo_workflows import DeltaFactory, DFPTPhonoFactory
 
 
 def build_flow(options):
@@ -51,12 +51,20 @@ def build_flow(options):
     # and a file deltafactor.txt with the final results in the
     # outdir directory DELTAFACTOR/Wnn/outdir.
 
-    factory = DeltaFactory()
+    if options['df']:
+        factory = DeltaFactory()
+        name = '_df'
+    elif options['phonon']:
+        factory = DFPTPhonoFactory()
+        name = '_phon'
+    else:
+        print('no mode selected ...')
+        sys.exit()
 
     #extra = {}
 
     if options['test']:
-        workdir = ps_name+'_df_run_test'
+        workdir = ps_name+name+'_run_test'
         flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
         kppa = 1000
         ecut = 40
@@ -66,7 +74,7 @@ def build_flow(options):
                                        toldfe=1.e-8, smearing="fermi_dirac:0.0005")
         flow.register_work(work, workdir='W'+str(ecut))
     else:
-        workdir = ps_name+'_df_run_full'
+        workdir = ps_name+name+'_run_full'
         flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
         kppa = 6750  # Use this to have the official k-point sampling
         for ecut in [12, 16, 20, 24, 28, 32, 36, 40, 44, 48]:
@@ -89,11 +97,10 @@ def main(options):
 
 
 if __name__ == "__main__":
-    my_options = {'test': False, 'strip': False}
+    my_options = {'test': False, 'strip': False, 'df': True, 'phonon': False}
 
     name = sys.argv[1]
     my_options['name'] = name
-#    print(name, sys.argv)
     if not os.path.isfile(name+'.out'):
         print('No such file: %s.\nThe the first argument should be the name of the pseudo.' % name)
         raise RuntimeError
@@ -101,5 +108,4 @@ if __name__ == "__main__":
     for arg in sys.argv:
         my_options.update({arg: True})
 
-#    print(my_options)
     main(options=my_options)

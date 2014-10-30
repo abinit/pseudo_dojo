@@ -3,12 +3,13 @@ from __future__ import division, print_function, unicode_literals
 
 import abc
 import sys
+import os
 import numpy as np
+import abilab
 
 from monty.collections import AttrDict
 from monty.pprint import pprint_table
 from pymatgen.core.units import Ha_to_eV
-from pymatgen.util.num_utils import monotonic
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo
@@ -795,3 +796,94 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
             self.compute_eos()
 
         return super(GbrvRelaxAndEosWorkflow, self).on_all_ok()
+
+
+class DFPTError(Exception):
+    """Base Error class."""
+
+
+class DFPTPhonoFactory(object):
+    """
+    Factory class producing `Workflow` objects for DFPT Phonon calculations.
+    In particular to test if the acoustic modes are zero
+    """
+
+    Error = DFPTError
+
+    def __init__(self, manager=None, workdir=None):
+        # reference to the deltafactor database
+        # use the elemental solid in the gs configuration
+        self._dfdb = df_database()
+        self.manager = manager
+        self.workdir = workdir
+
+    def get_cif_path(self, symbol):
+        """Returns the path to the CIF file associated to the given symbol."""
+        try:
+            return self._dfdb.get_cif_path(symbol)
+        except KeyError:
+            raise self.Error("%s: cannot find CIF file for symbol" % symbol)
+
+    @staticmethod
+    def scf_ph_inputs(structure, pseudos):
+        """
+        This function constructs the input files for the phonon calculation:
+        GS input + the input files for the phonon calculation.
+        """
+
+        # List of q-points for the phonon calculation.
+        qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00]
+
+        qpoints = np.reshape(qpoints, (-1,3))
+
+        # Global variables used both for the GS and the DFPT run.
+        global_vars = dict(nband=4, ecut=3.0, ngkpt=[4, 4, 4], shiftk=[0, 0, 0], tolvrs=1.0e-8, paral_kgb=0)
+
+        inp = abilab.AbiInput(pseudos=pseudos, ndtset=1+len(qpoints))
+
+        inp.set_structure(structure)
+        inp.set_variables(**global_vars)
+
+        for i, qpt in enumerate(qpoints):
+            # Response-function calculation for phonons.
+            inp[i+2].set_variables(
+                nstep=20,
+                rfphon=1,        # Will consider phonon-type perturbation
+                nqpt=1,          # One wavevector is to be considered
+                qpt=qpt,         # This wavevector is q=0 (Gamma)
+                )
+
+                #rfatpol   1 1   # Only the first atom is displaced
+                #rfdir   1 0 0   # Along the first reduced coordinate axis
+                #kptopt   2      # Automatic generation of k points, taking
+
+        # Split input into gs_inp and ph_inputs
+        return inp.split_datasets()
+
+    def build_flow(self, pseudo):
+        """
+        Create an `AbinitFlow` for phonon calculations:
+
+            1) One workflow for the GS run.
+
+            2) nqpt workflows for phonon calculations. Each workflow contains
+               nirred tasks where nirred is the number of irreducible phonon perturbations
+               for that particular q-point.
+        """
+
+        pseudos = [pseudo]
+        structure = self.get_cif_path(pseudo.symbol)
+
+        # Working directory (default is the name of the script with '.py' removed and "run_" replaced by "flow_")
+        workdir = self.workdir
+        if not self.workdir:
+            workdir = os.path.basename(__file__).replace(".py", "").replace("run_","flow_")
+
+        # Instantiate the TaskManager.
+        manager = abilab.TaskManager.from_user_config() if not self.manager else \
+                  abilab.TaskManager.from_file(self.manager)
+
+        all_inps = self.scf_ph_inputs(pseudos=pseudos, structure=structure)
+        scf_input, ph_inputs = all_inps[0], all_inps[1:]
+
+        return abilab.phonon_flow(workdir, manager, scf_input, ph_inputs)
