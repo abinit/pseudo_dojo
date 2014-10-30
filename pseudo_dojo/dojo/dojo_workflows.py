@@ -844,10 +844,11 @@ class DFPTPhonoFactory(object):
 
         kwargs.pop('accuracy')
         kwargs.pop('smearing')
-        print(kwargs)
 
         global_vars = dict(ksampling.to_abivars(), nband=4, ecut=3.0, tolvrs=1.0e-8, paral_kgb=0)
         global_vars.update(**kwargs)
+
+        print(global_vars)
 
         inp = abilab.AbiInput(pseudos=pseudos, ndtset=1+len(qpoints))
 
