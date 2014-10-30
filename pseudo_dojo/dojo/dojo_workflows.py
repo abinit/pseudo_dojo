@@ -541,7 +541,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
                 fh.write("# Deltafactor = %s meV\n" % dfact)
                 fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
                 for v, e in zip(self.volumes, etotals):
-                   fh.write("%s %s\n" % (v/num_sites, e/num_sites))
+                    fh.write("%s %s\n" % (v/num_sites, e/num_sites))
 
         except EOS.Error as exc:
             results.push_exceptions(exc)

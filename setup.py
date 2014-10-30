@@ -93,7 +93,7 @@ install_requires = [
     "six",
     "numpy>=1.5",
     "scipy>=0.10",
-    "pymatgen>=3.0.6",
+    "pymatgen>=3.0.7",
     #"matplotlib>=1.1",
 ]
 
