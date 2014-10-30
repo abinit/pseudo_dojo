@@ -871,7 +871,7 @@ class DFPTPhonoFactory(object):
                nirred tasks where nirred is the number of irreducible phonon perturbations
                for that particular q-point.
         """
-
+        pseudo = Pseudo.as_pseudo(pseudo)
         pseudos = [pseudo]
         structure = self.get_cif_path(pseudo.symbol)
 
