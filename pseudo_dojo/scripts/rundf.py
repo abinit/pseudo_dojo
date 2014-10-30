@@ -97,7 +97,7 @@ def main(options):
 
 
 if __name__ == "__main__":
-    my_options = {'test': False, 'strip': False, 'df': True, 'phonon': False}
+    my_options = {'test': False, 'strip': False, 'df': False, 'phonon': False}
 
     name = sys.argv[1]
     my_options['name'] = name
