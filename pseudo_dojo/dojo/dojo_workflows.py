@@ -873,7 +873,15 @@ class DFPTPhonoFactory(object):
         """
         pseudo = Pseudo.as_pseudo(pseudo)
         pseudos = [pseudo]
-        structure = self.get_cif_path(pseudo.symbol)
+
+        structure_or_cif = self.get_cif_path(pseudo.symbol)
+        if not isinstance(structure_or_cif, Structure):
+            # Assume CIF file
+            structure = Structure.from_file(structure_or_cif, primitive=False)
+        else:
+            structure = structure_or_cif
+
+        structure = AbiStructure.asabistructure(structure)
 
         # Working directory (default is the name of the script with '.py' removed and "run_" replaced by "flow_")
         workdir = self.workdir
