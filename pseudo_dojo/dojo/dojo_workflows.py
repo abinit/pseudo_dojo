@@ -860,7 +860,7 @@ class DFPTPhonoFactory(object):
         # Split input into gs_inp and ph_inputs
         return inp.split_datasets()
 
-    def build_flow(self, pseudo):
+    def work_for_pseudo(self, pseudo):
         """
         Create an `AbinitFlow` for phonon calculations:
 
