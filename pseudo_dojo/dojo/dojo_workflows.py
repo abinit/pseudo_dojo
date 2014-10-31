@@ -464,7 +464,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
             prtwf=0,
             paral_kgb=paral_kgb,
             chkprim=0,
-            nstep=80,
+            nstep=200,
             #mem_test=0,
         )
 
@@ -931,7 +931,7 @@ class DFPTPhononWorkflow(DojoWorkflow):
         """
 
         # List of q-points for the phonon calculation.
-        qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00]
+        qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00, 0.234982364E+00,  0.349884598E+00,  0.0287234E+00]
 
         qpoints = np.reshape(qpoints, (-1, 3))
 
