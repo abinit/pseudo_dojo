@@ -15,7 +15,7 @@ from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.structure import Structure
 from pymatgen.io.abinitio.abiobjects import AbiStructure, SpinMode, Smearing, KSampling, Electrons, RelaxationMethod
-from pymatgen.io.abinitio.workflows import Workflow
+from pymatgen.io.abinitio.workflows import Workflow, build_oneshot_phononwork, OneShotPhononWorkflow
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
@@ -824,105 +824,6 @@ class DFPTPhononFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, pseudo, **kwargs):
-        """
-        Create an `AbinitFlow` for phonon calculations:
-
-            1) One workflow for the GS run.
-
-            2) nqpt workflows for phonon calculations. Each workflow contains
-               nirred tasks where nirred is the number of irreducible phonon perturbations
-               for that particular q-point.
-        """
-        pseudo = Pseudo.as_pseudo(pseudo)
-        pseudos = [pseudo]
-
-        structure_or_cif = self.get_cif_path(pseudo.symbol)
-
-
-        # Working directory (default is the name of the script with '.py' removed and "run_" replaced by "flow_")
-        workdir = self.workdir
-        if not self.workdir:
-            workdir = os.path.basename(__file__).replace(".py", "").replace("run_", "flow_")
-
-        # Instantiate the TaskManager.
-        manager = abilab.TaskManager.from_user_config() if not self.manager else \
-            abilab.TaskManager.from_file(self.manager)
-
-        return DFPTPhononWorkflow(structure_or_cif, pseudo, workdir, manager=manager, pseudo=pseudo, **kwargs)
-        #return abilab.phonon_flow(workdir, manager, scf_input, ph_inputs)
-
-
-class DFPTPhononWorkflow(DojoWorkflow):
-    """Workflow for the calculation of the deltafactor."""
-    def __init__(self, structure_or_cif, pseudo, ecut=None, pawecutdg=None, ecutsm=0.5,
-                 spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
-                 accuracy="normal",  chksymbreak=0, paral_kgb=0, workdir=None, manager=None, **kwargs):
-        """
-        Build a `Workflow` for the computation of the deltafactor.
-
-        Args:
-            structure_or_cif:
-                Structure object or string with the path of the CIF file.
-            pseudo:
-                String with the name of the pseudopotential file or `Pseudo` object.`
-            kppa:
-                Number of k-points per atom.
-            spin_mode:
-                Spin polarization mode.
-            toldfe:
-                Tolerance on the energy (Ha)
-            smearing:
-                Smearing technique.
-            workdir:
-                String specifing the working directory.
-            manager:
-                `TaskManager` responsible for the submission of the tasks.
-        """
-        super(DFPTPhononWorkflow, self).__init__(workdir=workdir, manager=manager)
-
-        self.set_dojo_accuracy(accuracy)
-        self._pseudo = Pseudo.as_pseudo(pseudo)
-
-        if not isinstance(structure_or_cif, Structure):
-            # Assume CIF file
-            structure = Structure.from_file(structure_or_cif, primitive=False)
-        else:
-            structure = structure_or_cif
-        #print(structure)
-
-        structure = AbiStructure.asabistructure(structure)
-        spin_mode = SpinMode.as_spinmode(spin_mode)
-
-        all_inps = self.scf_ph_inputs(pseudos=[self.pseudo], structure=structure, **kwargs)
-        scf_input, ph_inputs = all_inps[0], all_inps[1:]
-
-        # Set extra_abivars
-        extra_abivars = dict(
-            ecut=ecut,
-            pawecutdg=pawecutdg,
-            ecutsm=ecutsm,
-            toldfe=toldfe,
-            prtwf=0,
-            paral_kgb=paral_kgb,
-            chkprim=0,
-            nstep=80,
-        )
-
-        extra_abivars.update(**kwargs)
-
-        self.register_scf_task(scf_input)
-        for inp in ph_inputs:
-            self.register_ph_task(inp)
-
-    @property
-    def pseudo(self):
-        return self._pseudo
-
-    @property
-    def dojo_trial(self):
-        return "phonon"
-
     @staticmethod
     def scf_ph_inputs(structure, pseudos, **kwargs):
         """
@@ -972,63 +873,55 @@ class DFPTPhononWorkflow(DojoWorkflow):
         # Split input into gs_inp and ph_inputs
         return inp.split_datasets()
 
-    def get_results(self):
-        results = super(DeltaFactorWorkflow, self).get_results()
+    def work_for_pseudo(self, pseudo, **kwargs):
+        """
+        Create an `AbinitFlow` for phonon calculations:
 
-        num_sites = self._input_structure.num_sites
-        etotals = self.read_etotals(unit="eV")
+            1) One workflow for the GS run.
 
-        results.update(dict(
-            etotals=list(etotals),
-            volumes=list(self.volumes),
-            num_sites=num_sites))
+            2) nqpt workflows for phonon calculations. Each workflow contains
+               nirred tasks where nirred is the number of irreducible phonon perturbations
+               for that particular q-point.
+        """
+        accuracy = kwargs.pop('accuracy')
 
-        d = {}
-        try:
-            #eos_fit = EOS.Murnaghan().fit(self.volumes/num_sites, etotals/num_sites)
-            #eos_fit.plot(show=False, savefig=self.path_in_workdir("murn_eos.pdf"))
-            #print("murn",eos_fit)
+        pseudo = Pseudo.as_pseudo(pseudo)
 
-            # Use same fit as the one employed for the deltafactor.
-            eos_fit = EOS.DeltaFactor().fit(self.volumes/num_sites, etotals/num_sites)
-            #eos_fit.plot(show=False, savefig=self.outdir.path_in("eos.pdf"))
+        structure_or_cif = self.get_cif_path(pseudo.symbol)
 
-            # Get reference results (Wien2K).
-            wien2k = df_database().get_entry(self.pseudo.symbol)
+        if not isinstance(structure_or_cif, Structure):
+            # Assume CIF file
+            structure = Structure.from_file(structure_or_cif, primitive=False)
+        else:
+            structure = structure_or_cif
+        #print(structure)
 
-            # Compute deltafactor estimator.
-            dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
-                               eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
+        structure = AbiStructure.asabistructure(structure)
 
-            print("delta", eos_fit)
-            print("Deltafactor = %.3f meV" % dfact)
+        all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
+        scf_input, ph_inputs = all_inps[0], all_inps[1:]
 
-            results.update({
-                "dfact_meV": dfact,
-                "v0": eos_fit.v0,
-                "b0": eos_fit.b0,
-                "b0_GPa": eos_fit.b0_GPa,
-                "b1": eos_fit.b1})
+        # Working directory (default is the name of the script with '.py' removed and "run_" replaced by "flow_")
+        workdir = self.workdir
+        if not self.workdir:
+            workdir = os.path.basename(__file__).replace(".py", "").replace("run_", "flow_")
 
-            d = {k: results[k] for k in ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes", "num_sites")}
+        # Instantiate the TaskManager.
+        manager = abilab.TaskManager.from_user_config() if not self.manager else \
+            abilab.TaskManager.from_file(self.manager)
 
-            # Write data for the computation of the delta factor
-            with open(self.outdir.path_in("deltadata.txt"), "w") as fh:
-                fh.write("# Deltafactor = %s meV\n" % dfact)
-                fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
-                for v, e in zip(self.volumes, etotals):
-                   fh.write("%s %s\n" % (v/num_sites, e/num_sites))
+        work = build_oneshot_phononwork(workdir=workdir, manager=manager, scf_input=scf_input, ph_inputs=ph_inputs,
+                                        work_class=PhononDojoWorkflow)
+        work._pseudo = pseudo
+        work.set_dojo_accuracy(accuracy=accuracy)
+        return work
 
-        except EOS.Error as exc:
-            results.push_exceptions(exc)
 
-        if results.exceptions:
-            d["_exceptions"] = str(results.exceptions)
+class PhononDojoWorkflow(OneShotPhononWorkflow, DojoWorkflow):
+    @property
+    def dojo_trial(self):
+        return "phonon"
 
-        self.write_dojo_report(d)
-
-        return results
-
-    def on_all_ok(self):
-        """Callback executed when all tasks in self have reached S_OK."""
-        return self.get_results()
+    @property
+    def pseudo(self):
+        return self._pseudo
