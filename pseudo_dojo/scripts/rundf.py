@@ -54,7 +54,7 @@ def build_flow(options):
         factory = DeltaFactory()
         name = '_df'
     elif options['phonon']:
-        factory = DFPTPhonoFactory()
+        factory = DFPTPhononFactory()
         name = '_phon'
     else:
         print('no mode selected ...')
