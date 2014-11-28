@@ -14,7 +14,7 @@ from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.structure import Structure
 from pymatgen.io.abinitio.abiobjects import AbiStructure, SpinMode, Smearing, KSampling, Electrons, RelaxationMethod
-from pymatgen.io.abinitio.workflows import Workflow
+from pymatgen.io.abinitio.works import Work
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
@@ -22,7 +22,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DojoWorkflow(Workflow):
+class DojoWork(Work):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractproperty
@@ -149,7 +149,7 @@ def compute_hints(ecuts, etotals, atols_mev, min_numpts=1, stream=sys.stdout):
         high={"ecut": ecut_high, "aug_ratio": aug_ratio_high})
 
 
-class PseudoConvergence(DojoWorkflow):
+class PseudoConvergence(DojoWork):
 
     def __init__(self, pseudo, ecut_slice, nlaunch, atols_mev,
                  toldfe=1.e-8, spin_mode="polarized", acell=(8, 9, 10), 
@@ -295,13 +295,13 @@ class PseudoConvergence(DojoWorkflow):
 
 class PPConvergenceFactory(object):
     """
-    Factory object that constructs workflows for analyzing the converge of pseudopotentials.
+    Factory object that constructs works for analyzing the converge of pseudopotentials.
     """
     def work_for_pseudo(self, pseudo, ecut_slice, nlaunch,
                         toldfe=1.e-8, atols_mev=(10, 1, 0.1), spin_mode="polarized",
                         acell=(8, 9, 10), smearing="fermi_dirac:0.1 eV", workdir=None, manager=None):
         """
-        Return a `Workflow` object given the pseudopotential pseudo.
+        Return a `Work` object given the pseudopotential pseudo.
 
         Args:
             pseudo:
@@ -351,7 +351,7 @@ class DeltaFactory(object):
     def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, ecut=None, pawecutdg=None,
                         toldfe=1.e-8, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
-        Returns a `Workflow` object from the given pseudopotential.
+        Returns a `Work` object from the given pseudopotential.
 
         Args:
             kwargs:
@@ -397,21 +397,21 @@ class DeltaFactory(object):
             elif symbol == 'Mn':
                 kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
 
-        return DeltaFactorWorkflow(
+        return DeltaFactorWork(
             cif_path, pseudo, kppa,
             spin_mode=spin_mode, toldfe=toldfe, smearing=smearing,
             accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
 
 
-class DeltaFactorWorkflow(DojoWorkflow):
-    """Workflow for the calculation of the deltafactor."""
+class DeltaFactorWork(DojoWork):
+    """Work for the calculation of the deltafactor."""
     def __init__(self, structure_or_cif, pseudo, kppa,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
                  spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
                  accuracy="normal",  chksymbreak=0, paral_kgb=0, workdir=None, manager=None, **kwargs):
         """
-        Build a `Workflow` for the computation of the deltafactor.
+        Build a `Work` for the computation of the deltafactor.
 
         Args:   
             structure_or_cif:
@@ -431,7 +431,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
             manager:
                 `TaskManager` responsible for the submission of the tasks.
         """
-        super(DeltaFactorWorkflow, self).__init__(workdir=workdir, manager=manager)
+        super(DeltaFactorWork, self).__init__(workdir=workdir, manager=manager)
 
         self.set_dojo_accuracy(accuracy)
 
@@ -497,7 +497,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
         return "deltafactor"
 
     def get_results(self):
-        results = super(DeltaFactorWorkflow, self).get_results()
+        results = super(DeltaFactorWork, self).get_results()
 
         num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")
@@ -559,7 +559,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
 
 
 class GbrvFactory(object):
-    """Factory class producing `Workflow` objects for GBRV calculations."""
+    """Factory class producing `Work` objects for GBRV calculations."""
     def __init__(self):
         self._db = gbrv_database()
 
@@ -585,7 +585,7 @@ class GbrvFactory(object):
 
     def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, paral_kgb=0, ref="ae"):
         """
-        Returns a `Workflow` object from the given pseudopotential.
+        Returns a `Work` object from the given pseudopotential.
 
         Args:
             kwargs:
@@ -605,7 +605,7 @@ class GbrvFactory(object):
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
-        return GbrvRelaxAndEosWorkflow(
+        return GbrvRelaxAndEosWork(
             structure, struct_type, pseudo,
             ecut=ecut, pawecutdg=pawecutdg, paral_kgb=paral_kgb)
 
@@ -621,14 +621,14 @@ def gbrv_nband(pseudo):
     return nband
 
 
-class GbrvRelaxAndEosWorkflow(DojoWorkflow):
+class GbrvRelaxAndEosWork(DojoWork):
 
     def __init__(self, structure, struct_type, pseudo, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
                  spin_mode="unpolarized", toldfe=1.e-8, smearing="fermi_dirac:0.001 Ha",
                  accuracy="normal", paral_kgb=0, ecutsm=0.05, chksymbreak=0,
                  workdir=None, manager=None, **kwargs):
         """
-        Build a `Workflow` for the computation of the relaxed lattice parameter.
+        Build a `Work` for the computation of the relaxed lattice parameter.
 
         Args:   
             structure:
@@ -652,7 +652,7 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
             manager:
                 `TaskManager` responsible for the submission of the tasks.
         """
-        super(GbrvRelaxAndEosWorkflow, self).__init__(workdir=workdir, manager=manager)
+        super(GbrvRelaxAndEosWork, self).__init__(workdir=workdir, manager=manager)
         self.struct_type = struct_type
         self.accuracy = accuracy
 
@@ -784,7 +784,7 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
         """
         This method is called when self reaches S_OK.
         It reads the optimized structure from the netcdf file and build
-        a new workflow for the computation of the EOS with the GBRV parameters.
+        a new work for the computation of the EOS with the GBRV parameters.
         """
         if not self.add_eos_done:
             logger.info("Building EOS tasks")
@@ -794,4 +794,4 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
             logger.info("Computing EOS")
             self.compute_eos()
 
-        return super(GbrvRelaxAndEosWorkflow, self).on_all_ok()
+        return super(GbrvRelaxAndEosWork, self).on_all_ok()
