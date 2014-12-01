@@ -132,8 +132,7 @@ class PseudoGenDataPlotter(object):
         """
         Plot ae and ps radial wavefunctions on axis ax.
 
-        lselect:
-            List to select l channels
+        lselect: List to select l channels
         """
         ae_wfs, ps_wfs = self.radial_wfs.ae, self.radial_wfs.ps
         lselect = kwargs.get("lselect", [])
@@ -161,8 +160,7 @@ class PseudoGenDataPlotter(object):
         """
         Plot oncvpsp projectors on axis ax.
 
-        lselect:
-            List to select l channels
+        lselect: List to select l channels
         """
         lselect = kwargs.get("lselect", [])
 
@@ -345,10 +343,8 @@ class MultiPseudoGenDataPlotter(object):
         Adds a plotter.
 
         Args:
-            label:
-                label for the plotter. Must be unique.
-            plotter:
-                `PseudoGenDataPlotter` object.
+            label: label for the plotter. Must be unique.
+            plotter: :class:`PseudoGenDataPlotter` object.
         """
         if label in self.labels:
             raise ValueError("label %s is already in %s" % (label, self.labels))
@@ -360,8 +356,7 @@ class MultiPseudoGenDataPlotter(object):
         Plot the band structure and the DOS.
 
         Args:
-            klabels:
-                dictionary whose keys are tuple with the reduced
+            klabels: dictionary whose keys are tuple with the reduced
                 coordinates of the k-points. The values are the labels.
                 e.g. klabels = {(0.0,0.0,0.0): "$\Gamma$", (0.5,0,0): "L"}.
 
@@ -460,10 +455,9 @@ class PseudoGenOutputParser(object):
     a pseudopotential generator a.k.a. ppgen
 
     Attributes:
-        errors:
-            List of strings with errors reported by the pp generator
-        warnings:
-            List of strings with the warnings reported by the pp generator.
+
+        errors: List of strings with errors reported by the pp generator
+        warnings: List of strings with the warnings reported by the pp generator.
         results:
     """
     __metaclass__ = abc.ABCMeta

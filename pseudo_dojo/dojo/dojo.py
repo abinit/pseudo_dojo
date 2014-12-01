@@ -7,7 +7,7 @@ import numpy as np
 from monty.pprint import pprint_table
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.tasks import TaskManager
-from pymatgen.io.abinitio.flows import AbinitFlow
+from pymatgen.io.abinitio.flows import Flow
 from pymatgen.io.abinitio.pseudos import Pseudo, read_dojo_report
 from pseudo_dojo.dojo.dojo_workflows import PPConvergenceFactory, DeltaFactory, GbrvFactory
 
@@ -161,10 +161,8 @@ class Dojo(object):
     def __init__(self, workdir=None, manager=None, trials=ALL_TRIALS, accuracies=ALL_ACCURACIES):
         """
         Args:
-            workdir:
-                Working directory.
-            manager:
-                `TaskManager` object that will handle the sumbmission of the jobs.
+            workdir: Working directory.
+            manager: :class:`TaskManager` object that will handle the sumbmission of the jobs.
         """
         self.workdir = os.path.abspath(workdir) if workdir is not None else os.path.join(os.getcwd(), "DOJO")
         self.manager = TaskManager.from_user_config() if manager is None else manager
@@ -181,7 +179,7 @@ class Dojo(object):
 
         # Construct the flow 
         flow_workdir = os.path.join(self.workdir, pseudo.name)
-        flow = AbinitFlow(workdir=flow_workdir, manager=self.manager, pickle_protocol=0)
+        flow = Flow(workdir=flow_workdir, manager=self.manager, pickle_protocol=0)
 
         # Construct the flow according to the info found in the dojo report.
         if not pseudo.has_hints:
@@ -252,10 +250,8 @@ def plot_etotals(ecuts, etotals, aug_ratios, **kwargs):
     Uses Matplotlib to plot the energy curve as function of ecut
 
     Args:
-        ecuts:
-            List of cutoff energies
-        etotals:
-            Total energies in Hartree, see aug_ratios
+        ecuts: List of cutoff energies
+        etotals: Total energies in Hartree, see aug_ratios
         aug_ratios:
             List augmentation rations. [1,] for norm-conserving, [4, ...] for PAW
             The number of elements in aug_ration must equal the number of (sub)lists

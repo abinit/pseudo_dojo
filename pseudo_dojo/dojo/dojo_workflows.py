@@ -12,9 +12,9 @@ from pymatgen.util.num_utils import monotonic
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo
-from pymatgen.core.structure import Structure
-from pymatgen.io.abinitio.abiobjects import AbiStructure, SpinMode, Smearing, KSampling, Electrons, RelaxationMethod
+from pymatgen.io.abinitio.abiobjects import SpinMode, Smearing, KSampling, Electrons, RelaxationMethod
 from pymatgen.io.abinitio.works import Work
+from abipy.core.structure import Structure
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
@@ -27,7 +27,7 @@ class DojoWork(Work):
 
     @abc.abstractproperty
     def pseudo(self):
-        """Pseudo"""
+        """:class:`Pseudo` object"""
 
     @abc.abstractproperty
     def dojo_trial(self):
@@ -156,24 +156,16 @@ class PseudoConvergence(DojoWork):
                  smearing="fermi_dirac:0.1 eV", max_niter=300, workdir=None, manager=None):
         """
         Args:
-            pseudo:
-                string or Pseudo instance
-            ecut_slice:
-                List of cutoff energies or slice object (mainly used for infinite iterations).
+            pseudo: string or :class:`Pseudo` instance
+            ecut_slice: List of cutoff energies or slice object (mainly used for infinite iterations).
             nlaunch:
-            atols_mev:
-                List of absolute tolerances in meV (3 entries corresponding to accuracy ["low", "normal", "high"]
-            spin_mode:
-                Defined how the electronic spin will be treated.
-            acell:
-                Lengths of the periodic box in Bohr.
-            smearing:
-                Smearing instance or string in the form "mode:tsmear". Default: FemiDirac with T=0.1 eV
+            atols_mev: List of absolute tolerances in meV (3 entries corresponding to accuracy ["low", "normal", "high"]
+            spin_mode: Defined how the electronic spin will be treated.
+            acell: Lengths of the periodic box in Bohr.
+            smearing: :class:`Smearing` instance or string in the form "mode:tsmear". Default: FemiDirac with T=0.1 eV
             max_niter:
-            workdir:
-                Working directory.
-            manager:
-                `TaskManager` object.
+            workdir: Working directory.
+            manager: :class:`TaskManager` object.
         """
         super(PseudoConvergence, self).__init__(workdir, manager)
 
@@ -208,7 +200,7 @@ class PseudoConvergence(DojoWork):
     def add_task_with_ecut(self, ecut):
         """Register a new task with cutoff energy ecut."""
         # One atom in a box of lenghts acell.
-        boxed_atom = AbiStructure.boxed_atom(self.pseudo, acell=self.acell)
+        boxed_atom = Structure.boxed_atom(self.pseudo, acell=self.acell)
 
         # Gamma-only sampling.
         gamma_only = KSampling.gamma_only()
@@ -304,24 +296,15 @@ class PPConvergenceFactory(object):
         Return a `Work` object given the pseudopotential pseudo.
 
         Args:
-            pseudo:
-                Pseudo object.
-            ecut_slice:
-                cutoff energies in Ha units (accepts lists or slice objects)
-            toldfe:
-                Tolerance on the total energy (Ha).
-            atols_mev:
-                Tolerances in meV for accuracy in ["low", "normal", "high"]
-            spin_mode:
-                Spin polarization.
-            acell:
-                Length of the real space lattice (Bohr units)
-            smearing:
-                Smearing technique.
-            workdir:
-                Working directory.
-            manager:
-                `TaskManager` object.
+            pseudo: filepath or :class:`Pseudo` object.
+            ecut_slice: cutoff energies in Ha units (accepts lists or slice objects)
+            toldfe: Tolerance on the total energy (Ha).
+            atols_mev: Tolerances in meV for accuracy in ["low", "normal", "high"]
+            spin_mode: Spin polarization.
+            acell: Length of the real space lattice (Bohr units)
+            smearing: Smearing technique.
+            workdir: Working directory.
+            manager: :class:`TaskManager` object.
         """
         return PseudoConvergence(
             pseudo, ecut_slice, nlaunch, atols_mev,
@@ -351,11 +334,10 @@ class DeltaFactory(object):
     def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, ecut=None, pawecutdg=None,
                         toldfe=1.e-8, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
-        Returns a `Work` object from the given pseudopotential.
+        Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
-            kwargs:
-                Extra variables passed to Abinit.
+            kwargs: Extra variables passed to Abinit.
 
         .. note: 
             0.001 Rydberg is the value used with WIEN2K
@@ -411,25 +393,17 @@ class DeltaFactorWork(DojoWork):
                  spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
                  accuracy="normal",  chksymbreak=0, paral_kgb=0, workdir=None, manager=None, **kwargs):
         """
-        Build a `Work` for the computation of the deltafactor.
+        Build a :class:`Work` for the computation of the deltafactor.
 
         Args:   
-            structure_or_cif:
-                Structure object or string with the path of the CIF file.
-            pseudo:
-                String with the name of the pseudopotential file or `Pseudo` object.`
-            kppa:
-                Number of k-points per atom.
-            spin_mode:
-                Spin polarization mode.
-            toldfe:
-                Tolerance on the energy (Ha)
-            smearing:
-                Smearing technique.
-            workdir:
-                String specifing the working directory.
-            manager:
-                `TaskManager` responsible for the submission of the tasks.
+            structure_or_cif: Structure object or string with the path of the CIF file.
+            pseudo: String with the name of the pseudopotential file or `Pseudo` object.`
+            kppa: Number of k-points per atom.
+            spin_mode: Spin polarization mode.
+            toldfe: Tolerance on the energy (Ha)
+            smearing: Smearing technique.
+            workdir: String specifing the working directory.
+            manager: :class:`TaskManager` responsible for the submission of the tasks.
         """
         super(DeltaFactorWork, self).__init__(workdir=workdir, manager=manager)
 
@@ -439,12 +413,11 @@ class DeltaFactorWork(DojoWork):
 
         if not isinstance(structure_or_cif, Structure):
             # Assume CIF file
-            structure = Structure.from_file(structure_or_cif, primitive=False)
+            structure = Structure.from_file(structure_or_cif) #, primitive=False)
         else:
             structure = structure_or_cif
         #print(structure)
 
-        structure = AbiStructure.asabistructure(structure)
         spin_mode = SpinMode.as_spinmode(spin_mode)
 
         # Compute the number of bands from the pseudo and the spin-polarization.
@@ -478,7 +451,6 @@ class DeltaFactorWork(DojoWork):
             new_lattice = structure.lattice.scale(vol)
 
             new_structure = Structure(new_lattice, structure.species, structure.frac_coords)
-            new_structure = AbiStructure.asabistructure(new_structure)
 
             ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak)
 
@@ -585,13 +557,13 @@ class GbrvFactory(object):
 
     def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, paral_kgb=0, ref="ae"):
         """
-        Returns a `Work` object from the given pseudopotential.
+        Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
-            kwargs:
-                Extra variables passed to Abinit.
+            kwargs: Extra variables passed to Abinit.
 
-        .. note: 
+        .. note::
+
             GBRV tests are done with the following parameteres:
 
                 - No spin polarization for structural relaxation 
@@ -631,26 +603,16 @@ class GbrvRelaxAndEosWork(DojoWork):
         Build a `Work` for the computation of the relaxed lattice parameter.
 
         Args:   
-            structure:
-                Structure object 
-            structure_type:
-                fcc, bcc 
-            pseudo:
-                String with the name of the pseudopotential file or `Pseudo` object.
-            ecut:
-                Cutoff energy in Hartree
-            ngkpt:
-                MP divisions.
-            spin_mode:
-                Spin polarization mode.
-            toldfe:
-                Tolerance on the energy (Ha)
-            smearing:
-                Smearing technique.
-            workdir:
-                String specifing the working directory.
-            manager:
-                `TaskManager` responsible for the submission of the tasks.
+            structure: :class:`Structure` object 
+            structure_type: fcc, bcc 
+            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
+            ecut: Cutoff energy in Hartree
+            ngkpt: MP divisions.
+            spin_mode: Spin polarization mode.
+            toldfe: Tolerance on the energy (Ha)
+            smearing: Smearing technique.
+            workdir: String specifing the working directory.
+            manager: :class:`TaskManager` responsible for the submission of the tasks.
         """
         super(GbrvRelaxAndEosWork, self).__init__(workdir=workdir, manager=manager)
         self.struct_type = struct_type
@@ -708,7 +670,6 @@ class GbrvRelaxAndEosWork(DojoWork):
         for vol in self.volumes:
             new_lattice = relaxed_structure.lattice.scale(vol)
             new_structure = Structure(new_lattice, relaxed_structure.species, relaxed_structure.frac_coords)
-            new_structure = AbiStructure.asabistructure(new_structure)
 
             scf_input = ScfStrategy(new_structure, self.pseudo, self.ksampling,
                                     accuracy=self.accuracy, spin_mode=self.spin_mode,

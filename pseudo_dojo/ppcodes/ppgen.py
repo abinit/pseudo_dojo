@@ -46,7 +46,7 @@ class Status(int):
 
     @classmethod
     def from_string(cls, s):
-        """Return a `Status` instance from its string representation."""
+        """Return a :class:`Status` instance from its string representation."""
         for num, text in _STATUS2STR.items():
             if text == s:
                 return cls(num)
@@ -66,24 +66,17 @@ class PseudoGenerator(object):
         2) the object should have the input file stored in self.input_str
 
     Attributes:
-        workdir:
-            Working directory (output results are produced in workdir)
-        status:
-            Flag defining the status of the ps generator.
-        retcode:
-            Return code of the code
-        errors:
-            List of strings with errors.
-        warnings:
-            List of strings with warnings.
-        parser:
-            Output parser. None if results are not available because
+        workdir: Working directory (output results are produced in workdir)
+        status: Flag defining the status of the ps generator.
+        retcode: Return code of the code
+        errors: List of strings with errors.
+        warnings: List of strings with warnings.
+        parser: Output parser. None if results are not available because
             the calculations is still running or errors
-        results:
-            Dictionary with the most important results. None if results are not available because
+        results: Dictionary with the most important results. None if results are not available because
             the calculations is still running or errors
         pseudo:
-            PseudoPotential object. None if not available
+            :class:`Pseudo` object. None if not available
     """
     __metaclass__ = abc.ABCMeta
 
@@ -212,10 +205,8 @@ class PseudoGenerator(object):
         Set the status.
 
         Args:
-            status:
-                Status object or string representation of the status
-            info_msg:
-                string with human-readable message used in the case of errors (optional)
+            status: Status object or string representation of the status
+            info_msg: string with human-readable message used in the case of errors (optional)
         """
         assert status in _STATUS2STR
 
@@ -305,8 +296,8 @@ class OncvGenerator(PseudoGenerator):
     to validate/analyze/plot the final results.
 
     Attributes:
-        retcode:
-            Retcode of oncvpsp
+
+        retcode: Retcode of oncvpsp
     """
     from oncvpsp import OncvOuptputParser
     OutputParser = OncvOuptputParser
