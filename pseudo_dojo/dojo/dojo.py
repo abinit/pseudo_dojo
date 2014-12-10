@@ -9,7 +9,7 @@ from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.tasks import TaskManager
 from pymatgen.io.abinitio.flows import Flow
 from pymatgen.io.abinitio.pseudos import Pseudo, read_dojo_report
-from pseudo_dojo.dojo.dojo_workflows import PPConvergenceFactory, DeltaFactory, GbrvFactory
+from pseudo_dojo.dojo.works import PPConvergenceFactory, DeltaFactory, GbrvFactory
 
 import logging
 logger = logging.getLogger(__file__)

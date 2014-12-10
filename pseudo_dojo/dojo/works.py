@@ -397,7 +397,7 @@ class DeltaFactorWork(DojoWork):
 
         Args:   
             structure_or_cif: Structure object or string with the path of the CIF file.
-            pseudo: String with the name of the pseudopotential file or `Pseudo` object.`
+            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             kppa: Number of k-points per atom.
             spin_mode: Spin polarization mode.
             toldfe: Tolerance on the energy (Ha)
@@ -531,7 +531,7 @@ class DeltaFactorWork(DojoWork):
 
 
 class GbrvFactory(object):
-    """Factory class producing `Work` objects for GBRV calculations."""
+    """Factory class producing :class:`Work` objects for GBRV calculations."""
     def __init__(self):
         self._db = gbrv_database()
 

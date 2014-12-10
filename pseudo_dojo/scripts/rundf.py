@@ -8,6 +8,7 @@ __author__ = 'setten'
 import os
 import sys
 import abipy.abilab as abilab
+
 from pseudo_dojo.dojo.dojo_workflows import DeltaFactorWorkflow
 from pseudo_dojo.dojo.dojo_workflows import DeltaFactory
 
@@ -57,7 +58,7 @@ def build_flow(options):
 
     if options['test']:
         workdir = ps_name+'_df_run_test'
-        flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
+        flow = abilab.Flow(workdir=workdir, manager=manager, pickle_protocol=0)
         kppa = 1000
         ecut = 40
         pawecutdg = ecut * 2
@@ -67,7 +68,7 @@ def build_flow(options):
         flow.register_work(work, workdir='W'+str(ecut))
     else:
         workdir = ps_name+'_df_run_full'
-        flow = abilab.AbinitFlow(workdir=workdir, manager=manager, pickle_protocol=0)
+        flow = abilab.Flow(workdir=workdir, manager=manager, pickle_protocol=0)
         kppa = 6750  # Use this to have the official k-point sampling
         for ecut in [12, 16, 20, 24, 28, 32, 36, 40, 44, 48]:
             pawecutdg = ecut * 2
