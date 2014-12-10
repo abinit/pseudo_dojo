@@ -1,3 +1,4 @@
+# coding: utf-8
 """Pseudopotential Generators."""
 from __future__ import division, print_function, unicode_literals
 
@@ -21,8 +22,8 @@ _STATUS2STR = collections.OrderedDict([
     (1, "Initialized"),    # PseudoGenerator has been initialized
     (2, "Running"),        # PseudoGenerator is running.
     (3, "Done"),           # Calculation done, This does not imply that results are ok
-    (4, "Error"),           # Generator error.
-    (5, "Completed"),       # Execution completed successfully.
+    (4, "Error"),          # Generator error.
+    (5, "Completed"),      # Execution completed successfully.
 ])
 
 

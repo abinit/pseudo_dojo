@@ -1,3 +1,4 @@
+# coding: utf-8
 """Base class for Dojo Workkflows."""
 from __future__ import division, print_function, unicode_literals
 

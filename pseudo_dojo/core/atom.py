@@ -1,3 +1,4 @@
+# coding: utf-8
 """This module provides objects and helper functions for atomic calculations."""
 from __future__ import division, print_function, unicode_literals
 
@@ -83,6 +84,7 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
     associated to a single electron in a spherically symmetric atom.
 
     .. attributes:
+
         n: Principal quantum number.
         l: Angular momentum.
         occ: Occupancy of the atomic orbital.

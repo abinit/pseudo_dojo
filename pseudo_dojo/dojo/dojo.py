@@ -1,3 +1,4 @@
+# coding: utf-8
 from __future__ import division, print_function, unicode_literals
 
 import sys
@@ -5,6 +6,7 @@ import os
 import numpy as np
 
 from monty.pprint import pprint_table
+from pymatgen.util.plotting_utils import add_fig_kwargs
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.tasks import TaskManager
 from pymatgen.io.abinitio.flows import Flow
@@ -31,14 +33,15 @@ class DojoReport(dict):
         "gbrv_fcc": "a0",
     }
 
+    @classmethod
+    def from_file(cls, filepath):
+        """Read the DojoReport from file."""
+        return cls(filepath)
+
     def __init__(self, filepath): 
         super(dict, self).__init__()
         d = read_dojo_report(filepath)
         self.update(**d)
-
-    @classmethod
-    def from_file(cls, filepath):
-        return cls(filepath)
 
     def has_exceptions(self):
         problems = {}
@@ -56,19 +59,19 @@ class DojoReport(dict):
 
     @property
     def has_hints(self):
+        """True if hints are present."""
         return "hints" in self
 
+    @property
     def trials(self):
         return [k for k in self.keys() if  k != "hints"]
 
     def has_trial(self, dojo_trial, accuracy):
         """
-        True if the dojo_report contains an entry for the
-        given dojo_trial with the specified accuracy.
+        True if the dojo_report contains an entry for the given dojo_trial with the specified accuracy.
         If accuracy is None, we test if all accuracies are present
         """
-        if dojo_trial not in self:
-            return False
+        if dojo_trial not in self: return False
 
         if accuracy is not None:
             return accuracy in self[dojo_trial]
@@ -114,12 +117,66 @@ class DojoReport(dict):
     def print_table(self, stream=sys.stdout):
         pprint_table(self.to_table(), out=stream)
 
+    @add_fig_kwargs
     def plot_etotal_vs_ecut(self, **kwargs):
+        """
+        Uses Matplotlib to plot the energy curve as function of ecut
+
+        Returns:
+            `matplotlib` figure.
+        """
         d = self["hints"]
         ecuts, etotals, aug_ratios = np.array(d["ecuts"]), np.array(d["etotals"]), d["aug_ratio"]
-        plot_etotals(ecuts, etotals, aug_ratios, **kwargs)
 
+        import matplotlib.pyplot as plt
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1)
+
+        npts = len(ecuts)
+
+        if len(aug_ratios) != 1 and len(aug_ratios) != len(etotals):
+            raise ValueError("The number of sublists in etotal must equal the number of aug_ratios")
+
+        if len(aug_ratios) == 1: etotals = [etotals,]
+
+        lines, legends = [], []
+
+        #emax = -np.inf
+        for aratio, etot in zip(aug_ratios, etotals):
+            emev = np.array(etot) * Ha_to_eV * 1000
+            emev_inf = npts * [emev[-1]]
+            yy = emev - emev_inf
+            #print("emax", emax)
+            #print("yy", yy)
+            #emax = np.max(emax, np.max(yy))
+
+            line, = ax.plot(ecuts, yy, "-->", linewidth=3.0, markersize=10)
+
+            lines.append(line)
+            legends.append("aug_ratio = %s" % aratio)
+
+        ax.legend(lines, legends, 'upper right', shadow=True)
+
+        # Set xticks and labels.
+        ax.grid(True)
+        ax.set_title("$\Delta$ Etotal Vs Ecut")
+        ax.set_xlabel("Ecut [Ha]")
+        ax.set_ylabel("$\Delta$ Etotal [meV]")
+        ax.set_xticks(ecuts)
+
+        #ax.yaxis.set_view_interval(-10, emax + 0.01 * abs(emax))
+        ax.yaxis.set_view_interval(-10, 20)
+
+        return fig
+
+    @add_fig_kwargs
     def plot_gbrv_eos(self, struct_type, **kwargs):
+        """
+        Uses Matplotlib to plot the EOS computed with the GBRV setup
+
+        Returns:
+            `matplotlib` figure.
+        """
         import matplotlib.pyplot as plt
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
@@ -134,9 +191,16 @@ class DojoReport(dict):
             eos_fit = EOS.Quadratic().fit(volumes, etotals)
             eos_fit.plot(ax=ax, show=False) 
 
-        plt.show()
+        return fig
 
-    def plot_delta_factor_eos(self, **kwargs):
+    @add_fig_kwargs
+    def plot_deltafactor_eos(self, **kwargs):
+        """
+        Uses Matplotlib to plot the EOS computed with the deltafactor setup
+
+        Returns:
+            `matplotlib` figure.
+        """
         import matplotlib.pyplot as plt
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
@@ -151,13 +215,11 @@ class DojoReport(dict):
             eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
             eos_fit.plot(ax=ax, show=False)
 
-        plt.show()
+        return fig
 
 
 class Dojo(object):
-    """
-    This object build the flows for the analysis/validation of pseudopotentials
-    """
+    """This object build the flows for the analysis/validation of pseudopotentials"""
     def __init__(self, workdir=None, manager=None, trials=ALL_TRIALS, accuracies=ALL_ACCURACIES):
         """
         Args:
@@ -179,7 +241,7 @@ class Dojo(object):
 
         # Construct the flow 
         flow_workdir = os.path.join(self.workdir, pseudo.name)
-        flow = Flow(workdir=flow_workdir, manager=self.manager, pickle_protocol=0)
+        flow = Flow(workdir=flow_workdir, manager=self.manager)
 
         # Construct the flow according to the info found in the dojo report.
         if not pseudo.has_hints:
@@ -244,79 +306,3 @@ class HintsAndGbrvDojo(Dojo):
         Dojo.__init__(self, workdir=workdir, manager=manager,
                       trials=("gbrv_bcc", "gbrv_fcc"), accuracies=["normal"])
 
-
-def plot_etotals(ecuts, etotals, aug_ratios, **kwargs):
-    """
-    Uses Matplotlib to plot the energy curve as function of ecut
-
-    Args:
-        ecuts: List of cutoff energies
-        etotals: Total energies in Hartree, see aug_ratios
-        aug_ratios:
-            List augmentation rations. [1,] for norm-conserving, [4, ...] for PAW
-            The number of elements in aug_ration must equal the number of (sub)lists
-            in etotals. Example:
-
-                - NC: etotals = [3.4, 4,5 ...], aug_ratios = [1,]
-                - PAW: etotals = [[3.4, ...], [3.6, ...]], aug_ratios = [4,6]
-
-        =========     ==============================================================
-        kwargs        description
-        =========     ==============================================================
-        show          True to show the figure
-        savefig       'abc.png' or 'abc.eps'* to save the figure to a file.
-        =========     ==============================================================
-
-    Returns:
-        `matplotlib` figure.
-    """
-    show = kwargs.pop("show", True)
-    savefig = kwargs.pop("savefig", None)
-
-    import matplotlib.pyplot as plt
-    fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
-
-    npts = len(ecuts)
-
-    if len(aug_ratios) != 1 and len(aug_ratios) != len(etotals):
-        raise ValueError("The number of sublists in etotal must equal the number of aug_ratios")
-
-    if len(aug_ratios) == 1:
-        etotals = [etotals,]
-
-    lines, legends = [], []
-
-    #emax = -np.inf
-    for aratio, etot in zip(aug_ratios, etotals):
-        emev = np.array(etot) * Ha_to_eV * 1000
-        emev_inf = npts * [emev[-1]]
-        yy = emev - emev_inf
-        #print("emax", emax)
-        #print("yy", yy)
-        #emax = np.max(emax, np.max(yy))
-
-        line, = ax.plot(ecuts, yy, "-->", linewidth=3.0, markersize=10)
-
-        lines.append(line)
-        legends.append("aug_ratio = %s" % aratio)
-
-    ax.legend(lines, legends, 'upper right', shadow=True)
-
-    # Set xticks and labels.
-    ax.grid(True)
-    ax.set_title("$\Delta$ Etotal Vs Ecut")
-    ax.set_xlabel("Ecut [Ha]")
-    ax.set_ylabel("$\Delta$ Etotal [meV]")
-    ax.set_xticks(ecuts)
-
-    #ax.yaxis.set_view_interval(-10, emax + 0.01 * abs(emax))
-    ax.yaxis.set_view_interval(-10, 20)
-
-    if show:
-        plt.show()
-
-    if savefig is not None:
-        fig.savefig(savefig)
-
-    return fig

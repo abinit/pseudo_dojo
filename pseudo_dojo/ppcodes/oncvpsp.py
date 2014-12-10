@@ -1,3 +1,4 @@
+# coding: utf-8
 """Classes and functions for post-processing the results produced by ONCVPSP."""
 from __future__ import division, print_function, unicode_literals
 
