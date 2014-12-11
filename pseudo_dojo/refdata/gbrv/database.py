@@ -297,9 +297,13 @@ class GbrvDatabase(object):
 # Public API to access the database
 ###################################
 
-__GBRV_DATABASE = GbrvDatabase()
+#__GBRV_DATABASE = GbrvDatabase()
+__GBRV_DATABASE = None
 
 
 def gbrv_database():
     """Returns the GBRV database with the reference results."""
+    global __GBRV_DATABASE
+    if __GBRV_DATABASE is None:
+        __GBRV_DATABASE = GbrvDatabase()
     return __GBRV_DATABASE

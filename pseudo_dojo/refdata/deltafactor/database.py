@@ -243,11 +243,16 @@ class DeltaFactorDatabase(object):
 # Official API to access the database.
 ##########################################################################################
 
-__DELTAF_DATABASE = DeltaFactorDatabase()
+#__DELTAF_DATABASE = DeltaFactorDatabase()
+__DELTAF_DATABASE = None
 
 
 def df_database():
     """Returns the deltafactor database with the reference results."""
+    global __DELTAF_DATABASE
+    if __DELTAF_DATABASE is None:
+        __DELTAF_DATABASE = DeltaFactorDatabase()
+
     return __DELTAF_DATABASE
 
 
