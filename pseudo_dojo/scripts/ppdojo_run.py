@@ -30,8 +30,7 @@ Usage Example:\n
 
     parser = argparse.ArgumentParser(epilog=str_examples())
 
-    #parser.add_argument('-l', '--max-level', type=int, default=0, 
-    #                    help="Maximum DOJO level (default 0 i.e. ecut hints).")
+    #parser.add_argument('-l', '--max-level', type=int, default=0,  help="Maximum DOJO level (default 0 i.e. ecut hints).")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")

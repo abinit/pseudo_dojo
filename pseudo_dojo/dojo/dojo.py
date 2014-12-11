@@ -170,30 +170,6 @@ class DojoReport(dict):
         return fig
 
     @add_fig_kwargs
-    def plot_gbrv_eos(self, struct_type, **kwargs):
-        """
-        Uses Matplotlib to plot the EOS computed with the GBRV setup
-
-        Returns:
-            `matplotlib` figure.
-        """
-        import matplotlib.pyplot as plt
-        fig = plt.figure()
-        ax = fig.add_subplot(1,1,1)
-
-        trial = "gbrv_" + struct_type
-        for accuracy in ALL_ACCURACIES:
-            if not self.has_trial(trial, accuracy): continue
-            d = self[trial][accuracy]
-            #num_sites, volumes, etotals = d["num_sites"], np.array(d["volumes"]), np.array(d["etotals"])
-            volumes, etotals = np.array(d["volumes"]), np.array(d["etotals"])
-
-            eos_fit = EOS.Quadratic().fit(volumes, etotals)
-            eos_fit.plot(ax=ax, show=False) 
-
-        return fig
-
-    @add_fig_kwargs
     def plot_deltafactor_eos(self, **kwargs):
         """
         Uses Matplotlib to plot the EOS computed with the deltafactor setup
@@ -214,6 +190,30 @@ class DojoReport(dict):
             # Use same fit as the one employed for the deltafactor.
             eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
             eos_fit.plot(ax=ax, show=False)
+
+        return fig
+
+    @add_fig_kwargs
+    def plot_gbrv_eos(self, struct_type, **kwargs):
+        """
+        Uses Matplotlib to plot the EOS computed with the GBRV setup
+
+        Returns:
+            `matplotlib` figure.
+        """
+        import matplotlib.pyplot as plt
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1)
+
+        trial = "gbrv_" + struct_type
+        for accuracy in ALL_ACCURACIES:
+            if not self.has_trial(trial, accuracy): continue
+            d = self[trial][accuracy]
+            #num_sites, volumes, etotals = d["num_sites"], np.array(d["volumes"]), np.array(d["etotals"])
+            volumes, etotals = np.array(d["volumes"]), np.array(d["etotals"])
+
+            eos_fit = EOS.Quadratic().fit(volumes, etotals)
+            eos_fit.plot(ax=ax, show=False) 
 
         return fig
 

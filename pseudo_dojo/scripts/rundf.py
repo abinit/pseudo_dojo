@@ -27,7 +27,7 @@ def build_flow(options):
     with open(pseudo, 'r') as fi:
         lines = fi.readlines()
 
-    fo = open(ps_name+'.psp8', 'w')
+    fo = open(ps_name + '.psp8', 'w')
     data = False
     for line in lines:
         if data:
@@ -36,13 +36,13 @@ def build_flow(options):
             data = True
     fo.close()
 
-    pseudo = os.path.join(here, ps_name+'.psp8')
+    pseudo = os.path.join(here, ps_name + '.psp8')
 
     if options['strip']:
         sys.exit()
 
     # Instantiate the TaskManager.
-    manager = abilab.TaskManager.from_user_config()  # if not options.manager else options.manager
+    manager = abilab.TaskManager.from_user_config() 
 
     # Build the workflow for the computation of the deltafactor.
     # The calculation is done with the parameters and the cif files
@@ -83,7 +83,6 @@ def build_flow(options):
     return flow.build_and_pickle_dump()
 
 
-#abilab.flow_main
 def main(options):
     print(options)
     build_flow(options)
@@ -96,8 +95,7 @@ if __name__ == "__main__":
     my_options['name'] = name
     print(name, sys.argv)
     if not os.path.isfile(name+'.out'):
-        print('No such file: %s.\nThe the first argument should be the name of the pseudo.' % name)
-        raise RuntimeError
+        raise RuntimeError('No such file: %s.\nThe the first argument should be the name of the pseudo.' % name)
 
     for arg in sys.argv:
         my_options.update({arg: True})

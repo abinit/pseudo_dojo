@@ -380,8 +380,11 @@ class DeltaFactory(object):
             elif symbol == 'Mn':
                 kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
 
+        # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
+        structure = Structure.from_file(cif_path, primitive=False)
+
         return DeltaFactorWork(
-            cif_path, pseudo, kppa,
+            structure, pseudo, kppa,
             spin_mode=spin_mode, toldfe=toldfe, smearing=smearing,
             accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
@@ -389,7 +392,7 @@ class DeltaFactory(object):
 
 class DeltaFactorWork(DojoWork):
     """Work for the calculation of the deltafactor."""
-    def __init__(self, structure_or_cif, pseudo, kppa,
+    def __init__(self, structure, pseudo, kppa,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
                  spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
                  accuracy="normal",  chksymbreak=0, paral_kgb=0, workdir=None, manager=None, **kwargs):
@@ -397,7 +400,7 @@ class DeltaFactorWork(DojoWork):
         Build a :class:`Work` for the computation of the deltafactor.
 
         Args:   
-            structure_or_cif: Structure object or string with the path of the CIF file.
+            structure: :class:`Structure` object
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             kppa: Number of k-points per atom.
             spin_mode: Spin polarization mode.
@@ -412,11 +415,11 @@ class DeltaFactorWork(DojoWork):
 
         self._pseudo = Pseudo.as_pseudo(pseudo)
 
-        if not isinstance(structure_or_cif, Structure):
-            # Assume CIF file
-            structure = Structure.from_file(structure_or_cif) #, primitive=False)
-        else:
-            structure = structure_or_cif
+        #if not isinstance(structure_or_cif, Structure):
+        #    # Assume CIF file
+        #    structure = Structure.from_file(structure_or_cif) #, primitive=False)
+        #else:
+        #    structure = structure_or_cif
         #print(structure)
 
         spin_mode = SpinMode.as_spinmode(spin_mode)

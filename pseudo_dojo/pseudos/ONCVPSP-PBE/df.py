@@ -29,40 +29,48 @@ def main():
             #if f.endswith(".psp8") and "-" in f])
     #print(pseudos)
 
+    from pymatgen.io.abinitio.pseudos import PseudoTable
+    pseudos = PseudoTable(pseudos)
+    data, errors = pseudos.get_dojo_dataframe()
+    print(data)
+
+    if errors:
+        print("ERRORS:")
+        pprint(errors)
+
     accuracies = ["low", "normal", "high"]
-    #accuracies = ["normal", "high"]
     keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
     #print(columns)
 
-    rows, names, errors = [], [], []
-    for p in pseudos:
-        report = p.read_dojo_report()
-        df_entry = report.get("deltafactor", None)
-        if df_entry is None:
-            errors.append((p.name, "no deltafactor"))
-            continue
+    #rows, names, errors = [], [], []
+    #for p in pseudos:
+    #    report = p.read_dojo_report()
+    #    df_entry = report.get("deltafactor", None)
+    #    if df_entry is None:
+    #        errors.append((p.name, "no deltafactor"))
+    #        continue
 
-        try:
-            d = {"symbol": p.symbol}
-            for acc in accuracies:
-                d[acc + "_ecut"] = report["hints"][acc]["ecut"]
+    #    try:
+    #        d = {"symbol": p.symbol}
+    #        for acc in accuracies:
+    #            d[acc + "_ecut"] = report["hints"][acc]["ecut"]
 
-            for acc in accuracies:
-                for k in keys:
-                    if k == "ecut": continue
-                    d[acc + "_" + k] = float(df_entry[acc][k])
-            #print(d)
-            names.append(p.name)
-            rows.append(d)
+    #        for acc in accuracies:
+    #            for k in keys:
+    #                if k == "ecut": continue
+    #                d[acc + "_" + k] = float(df_entry[acc][k])
+    #        #print(d)
+    #        names.append(p.name)
+    #        rows.append(d)
 
-        except Exception as exc:
-            #raise
-            print(p.name, "exc", str(exc))
-            errors.append((p.name, str(exc)))
+    #    except Exception as exc:
+    #        #raise
+    #        print(p.name, "exc", str(exc))
+    #        errors.append((p.name, str(exc)))
 
-    #print(rows)
-    data = pd.DataFrame(rows, index=names, columns=columns)
+    ##print(rows)
+    #data = pd.DataFrame(rows, index=names, columns=columns)
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]
     #data = data[data["high_dfact_meV"] <= 9]
 
@@ -91,9 +99,9 @@ def main():
     #print(bad)
     print(tabulate(bad, headers="keys", tablefmt=tablefmt))
 
-    if errors:
-        print("ERRORS:")
-        pprint(errors)
+
+
+
 
     #import matplotlib.pyplot as plt 
     #bad.plot(kind="barh")
