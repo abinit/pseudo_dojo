@@ -21,7 +21,7 @@ Ni 28 3 4 4 psp8
 1 2 2.8
 2 2 1.0
 # icmod fcfact
-1 0.04
+1 0.06
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl

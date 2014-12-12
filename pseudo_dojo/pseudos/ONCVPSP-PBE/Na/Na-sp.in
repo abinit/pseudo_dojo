@@ -8,15 +8,15 @@ Na 11 1 3 4 psp8
 # lmax
 1
 # l rc ep ncon nbas qcut
-0 1.25 0.0 4 7 8.4
-1 1.65 0.0 4 7 8.4
+0 1.2 0.0 4 7 9.0
+1 1.55 0.0 4 7 9.0
 # lloc lpopt rc5 dvloc0
 4 5 1.2 0.0
 # l nproj debl
 0 2 1.0
 1 2 1.0
 # icmod fcfact
-1 0.02
+0 0.15
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl
