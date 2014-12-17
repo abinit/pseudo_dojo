@@ -50,19 +50,34 @@ def main():
 
     def calc_rerrors(data):
         # Relative error
+        data["low_dfact_aerr"] = data["low_dfact_meV"] - data["high_dfact_meV"]
+        data["normal_dfact_aerr"] =  data["normal_dfact_meV"] - data["high_dfact_meV"]
         data["low_dfact_rerr"] = 100 * (data["low_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
         data["normal_dfact_rerr"] = 100 * (data["normal_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
 
         for k in ["v0", "b0_GPa", "b1"]:
+            data["low_" + k + "_aerr"] = data["low_" + k] - data["high_" + k]
+            data["normal_" + k + "_aerr"] = data["normal_" + k] - data["high_" + k]
             data["low_" + k + "_rerr"] = 100 * (data["low_" + k] - data["high_" + k]) / data["high_" + k]
             data["normal_" + k + "_rerr"] = 100 * (data["normal_" + k] - data["high_" + k]) / data["high_" + k]
+
         return data
 
-    
-    #rerr = data[[k for k in data.columns if "dfact" in k]]
-    #print(rerr)
-    print(calc_rerrors(data))
-    #sys.exit(1)
+    #import seaborn as sns
+    #import matplotlib.pyplot as plt
+    #data = calc_rerrors(data)
+    #g = sns.PairGrid(data, x_vars="Z", y_vars=[
+    #    "low_ecut",
+    #    "low_dfact_meV",
+    #    #"normal_ecut",
+    #    #"low_dfact_meV",
+    #    #"high_dfact_meV", 
+    #    #"low_v0_rerr", "low_b0_GPa_rerr", "low_b1_rerr",
+    #    ]
+    #) #, hue="smoker")
+    #g.map(plt.scatter)
+    #g.add_legend()
+    #plt.show()
 
     wrong = data[data["high_b1"] < 0]
     if not wrong.empty:
