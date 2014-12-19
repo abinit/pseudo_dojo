@@ -10,7 +10,7 @@ from pymatgen.util.plotting_utils import add_fig_kwargs
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.tasks import TaskManager
 from pymatgen.io.abinitio.flows import Flow
-from pymatgen.io.abinitio.pseudos import Pseudo, read_dojo_report
+from pymatgen.io.abinitio.pseudos import Pseudo
 from pseudo_dojo.dojo.works import PPConvergenceFactory, DeltaFactory, GbrvFactory
 
 import logging
@@ -23,199 +23,6 @@ ALL_TRIALS = (
     "gbrv_bcc",
     "gbrv_fcc",
 )
-
-
-class DojoReport(dict):
-
-    _TRIALS2KEY = {
-        "deltafactor": "dfact_meV",
-        "gbrv_bcc": "a0",
-        "gbrv_fcc": "a0",
-    }
-
-    @classmethod
-    def from_file(cls, filepath):
-        """Read the DojoReport from file."""
-        return cls(filepath)
-
-    def __init__(self, filepath): 
-        super(dict, self).__init__()
-        d = read_dojo_report(filepath)
-        self.update(**d)
-
-    def has_exceptions(self):
-        problems = {}
-
-        for trial in self.ALL_TRIALS:
-            for accuracy in ALL_ACCURACIES:
-                excs = self[trial][accuracy].get("_exceptions", None)
-                if excs is not None:
-                    if trial not in problems:
-                        problems[trial] = {}
-
-                    problems[trial][accuracy] = excs
-
-        return problems
-
-    @property
-    def has_hints(self):
-        """True if hints are present."""
-        return "hints" in self
-
-    @property
-    def trials(self):
-        return [k for k in self.keys() if  k != "hints"]
-
-    def has_trial(self, dojo_trial, accuracy):
-        """
-        True if the dojo_report contains an entry for the given dojo_trial with the specified accuracy.
-        If accuracy is None, we test if all accuracies are present
-        """
-        if dojo_trial not in self: return False
-
-        if accuracy is not None:
-            return accuracy in self[dojo_trial]
-        else:
-            return all(acc in self[dojo_trial] for acc in ALL_ACCURACIES)
-
-    def to_table(self, **kwargs):
-        """
-        ===========  ===============  ===============   ===============
-        Trial             low              normal            high 
-        ===========  ===============  ===============   ===============
-        deltafactor  value (rel_err)  value (rel_err)   value (rel_err)
-        gbrv_fcc     ...              ...               ...
-        ===========  ===============  ===============   ===============
-        """
-        # Build the header
-        if kwargs.pop("with_hints", True):
-            ecut_acc = {acc: self["hints"][acc]["ecut"] for acc in ALL_ACCURACIES}
-            l = ["%s (%s Ha)" % (acc, ecut_acc[acc]) for acc in ALL_ACCURACIES]
-        else:
-            l = list(ALL_ACCURACIES)
-
-        table = [["Trial"] + l]
-        #row = ["%s (%s)" % (accuracy, ecut)]
-
-        for trial in ALL_TRIALS:
-            row = [trial]
-            for accuracy in ALL_ACCURACIES:
-                if not self.has_trial(trial, accuracy): 
-                    row.append("N/A")
-                else:
-                    d = self[trial][accuracy]
-                    #print(d.keys())
-                    #s = "%s (%s %%)" % (value, rel_err)
-                    value = d[self._TRIALS2KEY[trial]]
-                    s = "%.1f" % value
-                    row.append(s)
-
-            table.append(row)
-
-        return table
-
-    def print_table(self, stream=sys.stdout):
-        pprint_table(self.to_table(), out=stream)
-
-    @add_fig_kwargs
-    def plot_etotal_vs_ecut(self, **kwargs):
-        """
-        Uses Matplotlib to plot the energy curve as function of ecut
-
-        Returns:
-            `matplotlib` figure.
-        """
-        d = self["hints"]
-        ecuts, etotals, aug_ratios = np.array(d["ecuts"]), np.array(d["etotals"]), d["aug_ratio"]
-
-        import matplotlib.pyplot as plt
-        fig = plt.figure()
-        ax = fig.add_subplot(1,1,1)
-
-        npts = len(ecuts)
-
-        if len(aug_ratios) != 1 and len(aug_ratios) != len(etotals):
-            raise ValueError("The number of sublists in etotal must equal the number of aug_ratios")
-
-        if len(aug_ratios) == 1: etotals = [etotals,]
-
-        lines, legends = [], []
-
-        #emax = -np.inf
-        for aratio, etot in zip(aug_ratios, etotals):
-            emev = np.array(etot) * Ha_to_eV * 1000
-            emev_inf = npts * [emev[-1]]
-            yy = emev - emev_inf
-            #print("emax", emax)
-            #print("yy", yy)
-            #emax = np.max(emax, np.max(yy))
-
-            line, = ax.plot(ecuts, yy, "-->", linewidth=3.0, markersize=10)
-
-            lines.append(line)
-            legends.append("aug_ratio = %s" % aratio)
-
-        ax.legend(lines, legends, 'upper right', shadow=True)
-
-        # Set xticks and labels.
-        ax.grid(True)
-        ax.set_title("$\Delta$ Etotal Vs Ecut")
-        ax.set_xlabel("Ecut [Ha]")
-        ax.set_ylabel("$\Delta$ Etotal [meV]")
-        ax.set_xticks(ecuts)
-
-        #ax.yaxis.set_view_interval(-10, emax + 0.01 * abs(emax))
-        ax.yaxis.set_view_interval(-10, 20)
-
-        return fig
-
-    @add_fig_kwargs
-    def plot_deltafactor_eos(self, **kwargs):
-        """
-        Uses Matplotlib to plot the EOS computed with the deltafactor setup
-
-        Returns:
-            `matplotlib` figure.
-        """
-        import matplotlib.pyplot as plt
-        fig = plt.figure()
-        ax = fig.add_subplot(1,1,1)
-
-        trial = "deltafactor"
-        for accuracy in ALL_ACCURACIES:
-            if not self.has_trial(trial, accuracy): continue
-            d = self[trial][accuracy]
-            num_sites, volumes, etotals = d["num_sites"], np.array(d["volumes"]), np.array(d["etotals"])
-
-            # Use same fit as the one employed for the deltafactor.
-            eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
-            eos_fit.plot(ax=ax, show=False)
-
-        return fig
-
-    @add_fig_kwargs
-    def plot_gbrv_eos(self, struct_type, **kwargs):
-        """
-        Uses Matplotlib to plot the EOS computed with the GBRV setup
-
-        Returns:
-            `matplotlib` figure.
-        """
-        import matplotlib.pyplot as plt
-        fig = plt.figure()
-        ax = fig.add_subplot(1,1,1)
-
-        trial = "gbrv_" + struct_type
-        for accuracy in ALL_ACCURACIES:
-            if not self.has_trial(trial, accuracy): continue
-            d = self[trial][accuracy]
-            #num_sites, volumes, etotals = d["num_sites"], np.array(d["volumes"]), np.array(d["etotals"])
-            volumes, etotals = np.array(d["volumes"]), np.array(d["etotals"])
-
-            eos_fit = EOS.Quadratic().fit(volumes, etotals)
-            eos_fit.plot(ax=ax, show=False) 
-
-        return fig
 
 
 class Dojo(object):
@@ -237,7 +44,9 @@ class Dojo(object):
         """Add a pseudo to the Dojo."""
         pseudo = Pseudo.as_pseudo(pseudo)
 
-        dojo_report = DojoReport.from_file(pseudo.filepath)
+        dojo_report = pseudo.dojo_report
+        #from pymatgen.io.abinitio.pseudos import DojoReport
+        #dojo_report = DojoReport.from_file(pseudo.filepath)
 
         # Construct the flow 
         flow_workdir = os.path.join(self.workdir, pseudo.name)
