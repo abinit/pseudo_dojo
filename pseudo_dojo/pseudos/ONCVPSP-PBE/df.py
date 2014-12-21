@@ -50,14 +50,14 @@ def main():
 
     def calc_rerrors(data):
         # Relative error
-        data["low_dfact_aerr"] = data["low_dfact_meV"] - data["high_dfact_meV"]
-        data["normal_dfact_aerr"] =  data["normal_dfact_meV"] - data["high_dfact_meV"]
+        data["low_dfact_abserr"] = data["low_dfact_meV"] - data["high_dfact_meV"]
+        data["normal_dfact_abserr"] =  data["normal_dfact_meV"] - data["high_dfact_meV"]
         data["low_dfact_rerr"] = 100 * (data["low_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
         data["normal_dfact_rerr"] = 100 * (data["normal_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
 
         for k in ["v0", "b0_GPa", "b1"]:
-            data["low_" + k + "_aerr"] = data["low_" + k] - data["high_" + k]
-            data["normal_" + k + "_aerr"] = data["normal_" + k] - data["high_" + k]
+            data["low_" + k + "_abserr"] = data["low_" + k] - data["high_" + k]
+            data["normal_" + k + "_abserr"] = data["normal_" + k] - data["high_" + k]
             data["low_" + k + "_rerr"] = 100 * (data["low_" + k] - data["high_" + k]) / data["high_" + k]
             data["normal_" + k + "_rerr"] = 100 * (data["normal_" + k] - data["high_" + k]) / data["high_" + k]
 
