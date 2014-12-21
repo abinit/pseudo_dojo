@@ -17,6 +17,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def decorate_ax(ax, xlabel, ylabel, title, lines, legends):
+    """Decorate a `matplotlib` Axis adding xlabel, ylabel, title, grid and legend"""
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.grid(True)
+    ax.legend(lines, legends, loc="best", shadow=True)
+
+
 class PseudoGenDataPlotter(object):
     """
     Plots the results produced by a pseudopotential generator.
@@ -92,10 +101,8 @@ class PseudoGenDataPlotter(object):
             lines.extend([ae_line, ps_line])
             legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
 
-        ax.set_xlabel("Energy [Ha]")
-        ax.grid(True)
-        ax.set_title("ATAN(Log Derivative)")
-        ax.legend(lines, legends, loc="best", shadow=True)
+        decorate_ax(ax, xlabel="Energy [Ha]", ylabel="ATAN(LogDer)", title="ATAN(Log Derivative)", 
+                    lines=lines, legends=legends)
 
         return lines
 
@@ -119,11 +126,8 @@ class PseudoGenDataPlotter(object):
             lines.extend([ae_line, ps_line])
             legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
 
-        ax.set_xlabel("r [Bohr]")
-        ax.set_ylabel("$\phi(r)$")
-        ax.grid(True)
-        ax.set_title("Wave Functions")
-        ax.legend(lines, legends, loc="best", shadow=True)
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$\phi(r)$", title="Wave Functions", 
+                    lines=lines, legends=legends)
 
         return lines
 
@@ -144,11 +148,8 @@ class PseudoGenDataPlotter(object):
             lines.append(line)
             legends.append("Proj %s" % str(nl))
 
-        ax.set_xlabel("r [Bohr]")
-        ax.set_ylabel("$p(r)$")
-        ax.grid(True)
-        ax.set_title("Projector Wave Functions")
-        ax.legend(lines, legends, loc="best", shadow=True)
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$p(r)$", title="Projector Wave Functions", 
+                    lines=lines, legends=legends)
 
         return lines
 
@@ -162,11 +163,8 @@ class PseudoGenDataPlotter(object):
             lines.append(line)
             legends.append(name)
 
-        ax.legend(lines, legends, loc="best", shadow=True)
-        ax.set_xlabel("r [Bohr]")
-        ax.set_ylabel("$n(r)$")
-        ax.set_title("Charge densities")
-        ax.grid(True)
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$n(r)$", title="Charge densities", 
+                    lines=lines, legends=legends)
 
         return lines
 
@@ -182,11 +180,8 @@ class PseudoGenDataPlotter(object):
             else:
                 legends.append("PS l=%s" % str(l))
 
-        ax.set_xlabel("r [Bohr]")
-        ax.set_ylabel("$v_l(r)$")
-        ax.set_title("Ion Pseudopotentials")
-        ax.grid(True)
-        ax.legend(lines, legends, loc="best", shadow=True)
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$v_l(r)$", title="Ion Pseudopotentials", 
+                    lines=lines, legends=legends)
 
         return lines
 
@@ -199,12 +194,9 @@ class PseudoGenDataPlotter(object):
             lines.append(line)
             legends.append("Conv l=%s" % str(l))
 
-        ax.set_xlabel("Ecut [Ha]")
-        ax.set_ylabel("$\Delta E$")
-        ax.set_title("Energy error per electron (Ha)")
-        ax.grid(True)
+        decorate_ax(ax, xlabel="Ecut [Ha]", ylabel="$\Delta E$", title="Energy error per electron [Ha]", 
+                    lines=lines, legends=legends)
 
-        ax.legend(lines, legends, loc="best", shadow=True)
         ax.set_yscale("log")
 
         return lines
@@ -311,6 +303,7 @@ class MultiPseudoGenDataPlotter(object):
 
         self._plotters_odict[label] = plotter
 
+    @add_fig_kwargs
     def plot_key(self, key, **kwargs):
         """
         Plot the band structure and the DOS.
@@ -323,9 +316,6 @@ class MultiPseudoGenDataPlotter(object):
         ==============  ==============================================================
         kwargs          Meaning
         ==============  ==============================================================
-        title           Title of the plot (Default: None).
-        show            True to show the figure (Default).
-        savefig         'abc.png' or 'abc.eps'* to save the figure to a file.
         sharex          True if subplots should share the x axis
         ==============  ==============================================================
 
@@ -333,16 +323,10 @@ class MultiPseudoGenDataPlotter(object):
             matplotlib figure.
         """
         import matplotlib.pyplot as plt
-        title = kwargs.pop("title", None)
-        show = kwargs.pop("show", True)
-        savefig = kwargs.pop("savefig", None)
 
         # Build grid of plots.
         fig, ax_list = plt.subplots(nrows=len(self), ncols=1, sharex=kwargs.pop("sharex", True), squeeze=False)
         ax_list = ax_list.ravel()
-
-        if title is not None:
-            fig.suptitle(title)
 
         for ax in ax_list:
             ax.grid(True)
@@ -372,12 +356,6 @@ class MultiPseudoGenDataPlotter(object):
             #    bands.decorate_ax(ax)
 
             #ax.legend(lines, legends, 'best', shadow=True)
-
-        if show:
-            plt.show()
-
-        if savefig is not None:
-            fig.savefig(savefig)
 
         return fig
 
@@ -461,7 +439,7 @@ class PseudoGenOutputParser(object):
         """Returns a string with the pseudopotential file."""
 
 
-class OncvOuptputParser(PseudoGenOutputParser):
+class OncvOutputParser(PseudoGenOutputParser):
     """
     Object to read and extract data from the output file of oncvpsp.
 
@@ -499,8 +477,10 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
     def scan(self):
         """
-        Scan the output, set and returns `run_completed` attribute.
-        Return exit status or raise.
+        Scan the output, set and set `run_completed` attribute.
+
+        Raises:
+            self.Error if invalid file.
         """
         if not os.path.exists(self.filepath):
             raise self.Error("File %s does not exist" % self.filepath)
@@ -560,6 +540,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
         #print("lmax", self.lmax)
 
     def __str__(self):
+        """String representation."""
         lines = []
         app = lines.append
         app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
@@ -570,6 +551,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
     @property
     def fully_relativistic(self):
+        """True if fully-relativistic calculation."""
         return self.calc_type == "fully-relativistic"
 
     @lazy_property
@@ -703,6 +685,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
     @lazy_property
     def hints(self):
+        """Hints for the cutoff energy."""
         # Extract the hints
         hints = 3 * [-np.inf]
         ene_vs_ecut = self.ene_vs_ecut
@@ -725,7 +708,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
     def get_results(self):
         """"
         Return the most important results reported by the pp generator.
-        Set the valu of self.results
+        Set the value of self.results
         """
         #if not self.run_completed:
         #    self.Results(info="Run is not completed")
@@ -768,7 +751,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
 
     def find_string(self, s):
         """
-        Returns the index of the first line that contains string s.
+        Returns the index of the first line containing string s.
         Raise self.Error if s cannot be found.
         """
         for i, line in enumerate(self.lines):
@@ -798,7 +781,7 @@ class OncvOuptputParser(PseudoGenOutputParser):
         return ps_data
 
     def make_plotter(self):
-        """Builds an instance of PseudoGenDataPlotter."""
+        """Builds an instance of :class:`PseudoGenDataPlotter`."""
         kwargs = {k: getattr(self, k) for k in self.Plotter.all_keys}
         return self.Plotter(**kwargs)
 
@@ -842,6 +825,10 @@ class OncvOuptputParser(PseudoGenOutputParser):
     def _grep(self, tag, beg=0):
         """
         Finds the first field in the file with the specified tag.
+        beg gives the initial position in the file.
+
+        Returns:
+            :class:`GrepResult` object
         """
         data, stop, intag = [], None, -1
 

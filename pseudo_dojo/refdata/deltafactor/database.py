@@ -132,8 +132,8 @@ class DeltaFactorDatabase(object):
     Error = DeltaFactorDatabaseError
 
     def __init__(self):
-        self.dirpath = os.path.abspath(os.path.dirname(__file__))
-        self.dirpath = os.path.join(self.dirpath, "data")
+        dirpath = os.path.abspath(os.path.dirname(__file__))
+        self.dirpath = os.path.join(dirpath, "data")
 
         self._data = d = {}
         #for entry in os.listdir(self.dirpath):
@@ -163,13 +163,11 @@ class DeltaFactorDatabase(object):
 
     def get_entry(self, symbol, code=None):
         """
-        Return the `DeltaFactorEntry` for the given chemical symbol.
+        Return a :class:`DeltaFactorEntry` for the given chemical symbol.
 
         Args:
-            symbol:
-                Chemical symbol
-            code:
-                String identifying the code used to compute the entry. 
+            symbol: Chemical symbol
+            code: String identifying the code used to compute the entry. 
                 Default is self._REF_CODE (Wien2K)
         """
         if code is None:
@@ -243,7 +241,6 @@ class DeltaFactorDatabase(object):
 # Official API to access the database.
 ##########################################################################################
 
-#__DELTAF_DATABASE = DeltaFactorDatabase()
 __DELTAF_DATABASE = None
 
 
@@ -273,14 +270,11 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
     Compute the deltafactor. Based on the code of the offical calcDelta.py script.
 
     Args:
-        v0w, b0w, b1w: 
-            Volume, bulk-modulus and pressure derivative of b0w (reference values).
-        v0f, b0f, b1f:
-            Volume, bulk-modulus and pressure derivative of b0f (computed values).
-        v:
-            version of delta factor, current version is 3, 1 for symmetrical old version
+        v0w, b0w, b1w:  Volume, bulk-modulus and pressure derivative of b0w (reference values).
+        v0f, b0f, b1f: Volume, bulk-modulus and pressure derivative of b0f (computed values).
+        v: version of delta factor, current version is 3, 1 for symmetrical old version
 
-    .. note:
+    .. note::
 
         v0 is A**3/natom, by default b0 is in eV/A**3, GPa units are used if b0_GPa is True.
     """

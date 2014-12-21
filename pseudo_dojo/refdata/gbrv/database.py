@@ -81,23 +81,16 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
     Missing values are replaced by None
 
     Attributes:
-        symbol:
-            Chemical symbol of formula.
-        ae: 
-            AE results
-        gbrb_uspp: 
-            Ultra-soft PP results (Espresso code)
-        vasp: 
-            VASP PAW results
-        pslib: 
-            Espresso PAW results
-        gbrv_paw: 
-            PAW results (Abinit code)
-        struct_type: 
-            Structure type used to select the appropriate table 
+        symbol: Chemical symbol of formula.
+        ae:  AE results
+        gbrb_uspp:  Ultra-soft PP results (Espresso code)
+        vasp:  VASP PAW results
+        pslib:  Espresso PAW results
+        gbrv_paw:  PAW results (Abinit code)
+        struct_type:  Structure type used to select the appropriate table 
             possible values are listed in GbrvDatabase.all_struct_types.
 
-    .. note:
+    .. note::
         Lattice parameters are in Angstrom
     """
     def __new__(cls, **kwargs):
@@ -168,7 +161,7 @@ def read_table_from_file(filename):
     """
     Reads GBRV data from file filename.
 
-    Returns a dict of `GbrvEntry` objects indexed by element symbol or chemical formula.
+    Returns a dict of :class:`GbrvEntry` objects indexed by element symbol or chemical formula.
 
     File Format:
         0) Dict with structure type
@@ -260,21 +253,18 @@ class GbrvDatabase(object):
 
     def get_entry(self, symbol, stype):
         """
-        Return `GbrvEntry` in the table associated to structure type stype 
+        Return :class:`GbrvEntry` in the table associated to structure type stype 
         and with the given symbol. Return None if symbol is not present.
 
         Args:
-            symbol:
-                Chemical symbol or chemical formula
-            stype:
-                Structure type identifying the GBRV table
+            symbol: Chemical symbol or chemical formula
+            stype: Structure type identifying the GBRV table
         """
         return self.tables[stype].get(symbol, None)
 
     def get_all_entries(self, symbol):
         """
-        Return a list with all the entries in the database 
-        with the given symbol.
+        Return a list with all the entries in the database with the given symbol.
         """
         entries = []
         for stype in self.all_struct_types:
@@ -297,7 +287,6 @@ class GbrvDatabase(object):
 # Public API to access the database
 ###################################
 
-#__GBRV_DATABASE = GbrvDatabase()
 __GBRV_DATABASE = None
 
 

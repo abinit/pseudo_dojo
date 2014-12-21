@@ -1,13 +1,8 @@
 # coding: utf-8
 from __future__ import division, print_function, unicode_literals
 
-import sys
 import os
-import numpy as np
 
-from monty.pprint import pprint_table
-from pymatgen.util.plotting_utils import add_fig_kwargs
-from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.tasks import TaskManager
 from pymatgen.io.abinitio.flows import Flow
 from pymatgen.io.abinitio.pseudos import Pseudo
@@ -43,10 +38,7 @@ class Dojo(object):
     def add_pseudo(self, pseudo):
         """Add a pseudo to the Dojo."""
         pseudo = Pseudo.as_pseudo(pseudo)
-
         dojo_report = pseudo.dojo_report
-        #from pymatgen.io.abinitio.pseudos import DojoReport
-        #dojo_report = DojoReport.from_file(pseudo.filepath)
 
         # Construct the flow 
         flow_workdir = os.path.join(self.workdir, pseudo.name)

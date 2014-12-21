@@ -10,7 +10,7 @@ import shutil
 import time
 
 from monty.os.path import which
-from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser
+from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pymatgen.io.abinitio.pseudos import Pseudo
 
 import logging
@@ -300,8 +300,7 @@ class OncvGenerator(PseudoGenerator):
 
         retcode: Retcode of oncvpsp
     """
-    from oncvpsp import OncvOuptputParser
-    OutputParser = OncvOuptputParser
+    OutputParser = OncvOutputParser
 
     def __init__(self, input_str, calc_type):
         super(OncvGenerator, self).__init__()
@@ -319,10 +318,11 @@ class OncvGenerator(PseudoGenerator):
             raise RuntimeError(msg)
 
     def check_status(self):
+        """Check the status of the run, set and return self.status attribute."""
         if self.status == self.S_OK:
             return self._status
 
-        parser = OncvOuptputParser(self.stdout_path)
+        parser = self.OutputParser(self.stdout_path)
         try:
             parser.scan()
         except parser.Error:
@@ -363,7 +363,6 @@ class OncvGenerator(PseudoGenerator):
             # Initialize self.pseudo from file.
             with open(filepath, "w") as fh:
                 fh.write(parser.get_pseudo_str())
-                #fh.write(parser.get_ecut_hints())
 
             self._pseudo = Pseudo.from_file(filepath)
 
@@ -381,7 +380,7 @@ class OncvGenerator(PseudoGenerator):
         #    return
 
         # Call the output parser to get the results.
-        parser = OncvOuptputParser(self.stdout_path)
+        parser = self.OutputParser(self.stdout_path)
         parser.scan()
 
         # Build the plotter and plot data according to **kwargs
