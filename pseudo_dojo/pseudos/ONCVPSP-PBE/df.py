@@ -101,7 +101,6 @@ def main():
 
     bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean()]
     print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
-    #print(bad)
     print(tabulate(bad, headers="keys", tablefmt=tablefmt))
 
     #import matplotlib.pyplot as plt 
