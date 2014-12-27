@@ -12,6 +12,7 @@ from pymatgen.io.abinitio import Pseudo
 
 
 def main():
+    top = "."
     try:
         top = sys.argv[1]
     except IndexError:

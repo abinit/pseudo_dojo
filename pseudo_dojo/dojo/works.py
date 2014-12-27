@@ -415,13 +415,6 @@ class DeltaFactorWork(DojoWork):
 
         self._pseudo = Pseudo.as_pseudo(pseudo)
 
-        #if not isinstance(structure_or_cif, Structure):
-        #    # Assume CIF file
-        #    structure = Structure.from_file(structure_or_cif) #, primitive=False)
-        #else:
-        #    structure = structure_or_cif
-        #print(structure)
-
         spin_mode = SpinMode.as_spinmode(spin_mode)
 
         # Compute the number of bands from the pseudo and the spin-polarization.
@@ -508,9 +501,12 @@ class DeltaFactorWork(DojoWork):
                 "v0": eos_fit.v0,
                 "b0": eos_fit.b0,
                 "b0_GPa": eos_fit.b0_GPa,
-                "b1": eos_fit.b1})
+                "b1": eos_fit.b1,
+                "dfactprime_meV": dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa),
+            })
 
-            d = {k: results[k] for k in ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes", "num_sites")}
+            d = {k: results[k] for k in 
+                ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes", "num_sites", "dfactprime_meV")}
 
             # Write data for the computation of the delta factor
             with open(self.outdir.path_in("deltadata.txt"), "w") as fh:
@@ -546,7 +542,7 @@ class GbrvFactory(object):
         """
         # Get the entry in the database
         entry = self._db.get_entry(symbol, struct_type)
-                                                                                         
+
         # Build the structure and handle a possibly missing value.
         structure = entry.build_structure(ref=ref)
 
@@ -604,7 +600,7 @@ class GbrvRelaxAndEosWork(DojoWork):
                  accuracy="normal", paral_kgb=0, ecutsm=0.05, chksymbreak=0,
                  workdir=None, manager=None, **kwargs):
         """
-        Build a `Work` for the computation of the relaxed lattice parameter.
+        Build a :class:`Work` for the computation of the relaxed lattice parameter.
 
         Args:   
             structure: :class:`Structure` object 
@@ -719,7 +715,8 @@ class GbrvRelaxAndEosWork(DojoWork):
             b0=eos_fit.b0,
             b1=eos_fit.b1,
             a0=a0,
-            struct_type=self.struct_type))
+            struct_type=self.struct_type
+        ))
 
         db = gbrv_database()
         entry = db.get_entry(self.pseudo.symbol, stype=self.struct_type)

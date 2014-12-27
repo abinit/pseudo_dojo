@@ -15,7 +15,9 @@ import os.path
 import collections
 import numpy as np
 
+from monty.functools import lazy_property
 from pymatgen.core.units import FloatWithUnit
+from pymatgen.util.plotting_utils import add_fig_kwargs
 
 
 class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 b1")):
@@ -44,6 +46,16 @@ class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 
     def b0_GPa(self):
         """b0 in GPa units."""
         return self.b0.to("GPa") 
+
+    @lazy_property
+    def dfact_meV(self):
+        """Deltafactor in meV"""
+        return df_wien2k(self.symbol, self.v0, self.b0_GPa, self.b1, b0_GPa=True)
+
+    @property
+    def dfactprime_meV(self):
+        """Renormalized deltafactor proposed by Jollet."""
+        return self.dfact_meV * (30 * 100) / (self.v0 * self.b0_GPa),
 
 
 def read_data_from_filepath(filepath):
@@ -141,8 +153,7 @@ class DeltaFactorDatabase(object):
             file_path = os.path.join(self.dirpath, entry)
             if os.path.isfile(file_path) and file_path.endswith(".txt"):
                 code, ext = os.path.splitext(entry)
-                if code == "README":
-                    continue
+                if code == "README": continue
                 d[code] = read_data_from_filepath(file_path)
 
         self._cif_paths = d = {}
@@ -177,16 +188,11 @@ class DeltaFactorDatabase(object):
         except KeyError:
             raise self.Error("No entry found for code %s, symbol %s" % (code, symbol))
 
+    @add_fig_kwargs
     def plot_error_of_code(self, codename_or_data, values=("v0", "b0", "b1"), ref_code=None, **kwargs):
         import matplotlib.pyplot as plt
 
-        # Extract keyword arguments.
-        show = kwargs.pop("show", True)
-        savefig = kwargs.pop("savefig",None)
-        title = kwargs.pop("title", None)
-
-        if ref_code is None:
-            ref_code = self._REF_CODE 
+        if ref_code is None: ref_code = self._REF_CODE 
 
         ref_data = self._data[ref_code]
 
@@ -199,9 +205,6 @@ class DeltaFactorDatabase(object):
         # Build grid of plots.
         fig, ax_list = plt.subplots(nrows=len(values), ncols=1, sharex=True, squeeze=False)
         ax_list = ax_list.ravel()
-
-        if title:
-            fig.suptitle(title)
 
         for aname, ax in zip(values, ax_list):
             # Sort entries according to the value of the attribute aname.
@@ -229,12 +232,6 @@ class DeltaFactorDatabase(object):
             ax.set_ylabel("Relative error %s" % aname)
             #ax.set_xlabel("Ecut [Ha]")
 
-        if show:
-            plt.show()
-
-        if savefig is not None:
-            fig.savefig(savefig)
-                         
         return fig
 
 ##########################################################################################
@@ -254,15 +251,13 @@ def df_database():
 
 
 def df_wien2k(symbol, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
-    wien2k = __DELTAF_DATABASE.get_entry(symbol)
+    """Compute the deltafactor wrt to WIEN2k"""
+    wien2k = df_database().get_entry(symbol)
     b0 = wien2k.b0
     if b0_GPa: b0 = wien2k.b0_GPa
-    #print(v0f, b0f, b1f)
-    #print(wien2k.v0, b0, wien2k.b1)
+    #print(v0f, b0f, b1f, wien2k.v0, b0, wien2k.b1)
 
-    df = df_compute(float(wien2k.v0), float(b0), wien2k.b1, v0f, b0f, b1f, b0_GPa=b0_GPa, v=v, useasymm=useasymm)
-    #print(df)
-    return df
+    return df_compute(float(wien2k.v0), float(b0), wien2k.b1, float(v0f), b0f, b1f, b0_GPa=b0_GPa, v=v, useasymm=useasymm)
 
 
 def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
