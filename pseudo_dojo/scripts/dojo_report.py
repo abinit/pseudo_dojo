@@ -66,7 +66,7 @@ def dojo_table(options):
                 #if f.endswith(".psp8") and "-" not in f])
                 #if f.endswith(".psp8") and "-" in f])
 
-    print(pseudos)
+    #print(pseudos)
     pseudos = PseudoTable(pseudos)
     data, errors = pseudos.get_dojo_dataframe()
     print(data)
@@ -98,18 +98,18 @@ def dojo_table(options):
 
         return data
 
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    data = calc_rerrors(data)
-    g = sns.PairGrid(data, x_vars="Z", y_vars=[
-        "low_ecut",
-        "low_dfact_meV",
-        #"normal_ecut",
-        #"low_dfact_meV",
-        #"high_dfact_meV", 
-        "low_v0_rerr", "low_b0_GPa_rerr", "low_b1_rerr",
-        ]
-    ) #, hue="smoker")
+    #import seaborn as sns
+    #import matplotlib.pyplot as plt
+    #data = calc_rerrors(data)
+    #g = sns.PairGrid(data, x_vars="Z", y_vars=[
+    #    "low_ecut",
+    #    "low_dfact_meV",
+    #    #"normal_ecut",
+    #    #"low_dfact_meV",
+    #    #"high_dfact_meV", 
+    #    "low_v0_rerr", "low_b0_GPa_rerr", "low_b1_rerr",
+    #    ]
+    #) #, hue="smoker")
     #g.map(plt.scatter)
     #g.add_legend()
     #plt.show()
