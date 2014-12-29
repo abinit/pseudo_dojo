@@ -6,10 +6,11 @@ import os
 import argparse
 import pandas as pd
 
+from warnings import warn
 from collections import OrderedDict, namedtuple
 from pprint import pprint
 from tabulate import tabulate
-from pymatgen.io.abinitio.pseudos import Pseudo, PseudoTable
+from pymatgen.io.abinitio.pseudos import PseudoTable #Pseudo
 
 
 def dojo_plot(options):
@@ -27,9 +28,13 @@ def dojo_plot(options):
                 if filename.endswith(ext): 
                     paths.append(os.path.join(dirpath, filename))
 
-    pseudos = [Pseudo.as_pseudo(path) for path in paths]
+    pseudos = PseudoTable(paths).sort_by_z()
 
     for pseudo in pseudos:
+        if not pseudo.has_dojo_report:
+            warn("pseudo %s does not contain the DOJO_REPORT section" % pseudo.filepath)
+            continue
+
         report = pseudo.dojo_report
         # FIXME add symbol
         report.symbol = pseudo.symbol
@@ -42,8 +47,8 @@ def dojo_plot(options):
         report.print_table()
 
         if report.has_trial("deltafactor"):
-            report.plot_deltafactor_convergence(title=pseudo.basename)
             report.plot_deltafactor_eos(title=pseudo.basename)
+            report.plot_deltafactor_convergence(title=pseudo.basename)
             #report.plot_etotal_vs_ecut()
 
         for struct_type in ("fcc", "bcc"):
@@ -55,19 +60,19 @@ def dojo_table(options):
     top = options.path
     
     if not os.path.isdir(top):
-        pseudos = [Pseudo.from_file(top)]
+        pseudos = [top]
     else:
         pseudos = []
         for dirpath, dirnames, filenames in os.walk(top):
             # Exclude pseudos in _inputs
             if os.path.basename(dirpath) == "_inputs": continue
-            pseudos.extend([Pseudo.from_file(os.path.join(dirpath, f)) for f in filenames 
+            pseudos.extend([os.path.join(dirpath, f) for f in filenames 
                 if f.endswith(".psp8")])
                 #if f.endswith(".psp8") and "-" not in f])
                 #if f.endswith(".psp8") and "-" in f])
 
     #print(pseudos)
-    pseudos = PseudoTable(pseudos)
+    pseudos = PseudoTable(pseudos).sort_by_z()
     data, errors = pseudos.get_dojo_dataframe()
     print(data)
 
@@ -182,9 +187,6 @@ Usage example:\n
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
-
-    #parser.add_argument('path', nargs="?", help=("File or directory containing the ABINIT flow\n" +
-    #                                             "If not given, the first flow in the current workdir is selected"))
 
     # Create the parsers for the sub-commands
     subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
