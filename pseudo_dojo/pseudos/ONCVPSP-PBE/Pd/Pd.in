@@ -15,11 +15,11 @@ Pd 46 8 1 4 psp8
 # l rc ep ncon nbas qcut
 0 2.05 0.0 4 7 2.6
 1 2.3 0.0 4 7 3.2
-2 1.7 0.0 4 9 9.4
+2 1.45 0.0 4 9 9.0
 # lloc lpopt rc5 dvloc0
-4 5 1.7 0.0
+4 5 1.4 0.0
 # l nproj debl
-0 2 4.4
+0 2 2.5
 1 2 2.5
 2 2 1.0
 # icmod fcfact
