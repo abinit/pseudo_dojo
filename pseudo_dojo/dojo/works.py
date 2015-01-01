@@ -463,9 +463,10 @@ class DeltaFactorWork(DojoWork):
             self.register_scf_task(scf_input)
 
         if connect:
+            from pymatgen.io.abinitio.tasks import Dependency
             print("connecting SCF tasks")
             for i, task in enumerate(self[1:]):
-                task.add_deps({self[i]: "DEN"})
+                task.add_deps(Dependency(self[i], "DEN"))
             
 
     @property
