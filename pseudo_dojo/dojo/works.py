@@ -383,8 +383,12 @@ class DeltaFactory(object):
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
 
+        # Magnetic elements:
+        # Start from previous SCF run to avoid getting trapped in local minima 
+        connect = symbol in ("Fe", "Co", "Ni", "Cr", "Mn", "O")
+
         return DeltaFactorWork(
-            structure, pseudo, kppa,
+            structure, pseudo, kppa, connect,
             spin_mode=spin_mode, toldfe=toldfe, smearing=smearing,
             accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
@@ -392,7 +396,7 @@ class DeltaFactory(object):
 
 class DeltaFactorWork(DojoWork):
     """Work for the calculation of the deltafactor."""
-    def __init__(self, structure, pseudo, kppa,
+    def __init__(self, structure, pseudo, kppa, connect,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
                  spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
                  accuracy="normal",  chksymbreak=0, paral_kgb=0, workdir=None, manager=None, **kwargs):
@@ -403,6 +407,7 @@ class DeltaFactorWork(DojoWork):
             structure: :class:`Structure` object
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             kppa: Number of k-points per atom.
+            connect: True if the SCF run should be initialized from the previous run.
             spin_mode: Spin polarization mode.
             toldfe: Tolerance on the energy (Ha)
             smearing: Smearing technique.
@@ -456,6 +461,12 @@ class DeltaFactorWork(DojoWork):
                                     smearing=smearing, **extra_abivars)
 
             self.register_scf_task(scf_input)
+
+        if connect:
+            print("connecting SCF tasks")
+            for i, task in enumerate(self[1:]):
+                task.add_deps({self[i]: "DEN"})
+            
 
     @property
     def pseudo(self):
