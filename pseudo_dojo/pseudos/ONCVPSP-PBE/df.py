@@ -47,7 +47,7 @@ def main():
     ##print(rows)
     #data = pd.DataFrame(rows, index=names, columns=columns)
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]
-    #data = data[data["high_dfact_meV"] <= 9]
+    data = data[data["high_dfact_meV"] <= 9]
 
     def calc_rerrors(data):
         # Relative error
