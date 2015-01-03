@@ -463,15 +463,13 @@ class DeltaFactorWork(DojoWork):
             self.register_scf_task(scf_input)
 
         if connect:
-            #from pymatgen.io.abinitio.tasks import Dependency
-            #task.add_deps(Dependency(self[i], "DEN"))
-            print("connecting SCF tasks")
+            #print("connecting SCF tasks")
             middle = len(self.volumes) // 2
             for i, task in enumerate(self[1:middle]):
-                task.add_deps({self[i+1]: "DEN"})
+                task.add_deps({self[task.pos + 1]: "DEN"})
 
             for i, task in enumerate(self[middle+1:]):
-                task.add_deps({self[middle+i]: "DEN"})
+                task.add_deps({self[task.pos - 1]: "DEN"})
 
     @property
     def pseudo(self):
