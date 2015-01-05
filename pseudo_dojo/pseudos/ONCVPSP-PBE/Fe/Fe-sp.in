@@ -11,8 +11,8 @@ Fe 26 3 4 4 psp8
 # lmax
 2
 # l rc ep ncon nbas qcut
-0 1.2 0.0 3 7 9.6
-1 1.2 0.0 3 7 9.4
+0 1.2 0.0 3 7 9.4
+1 1.2 0.0 3 7 9.2
 2 1.55 0.0 3 7 9.4
 # lloc lpopt rc5 dvloc0
 4 5 1.2 0.0
@@ -21,7 +21,7 @@ Fe 26 3 4 4 psp8
 1 2 0.8
 2 2 0.8
 # icmod fcfact
-1 0.035
+1 0.03
 # epsh1 epsh2 depsh
 -24.0 12.0 0.02
 # rlmax drl
