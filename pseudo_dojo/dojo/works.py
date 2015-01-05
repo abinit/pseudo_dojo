@@ -385,7 +385,7 @@ class DeltaFactory(object):
 
         # Magnetic elements:
         # Start from previous SCF run to avoid getting trapped in local minima 
-        connect = symbol in ("Fe", "Co", "Ni", "Cr", "Mn", "O")
+        connect = symbol in ("Fe", "Co", "Ni", "Cr", "Mn", "O", "Zn", "Cu")
 
         return DeltaFactorWork(
             structure, pseudo, kppa, connect,
@@ -466,11 +466,11 @@ class DeltaFactorWork(DojoWork):
             #print("connecting SCF tasks")
             middle = len(self.volumes) // 2
             filetype = "WFK"
-            for i, task in enumerate(self[1:middle]):
-                task.add_deps({self[task.pos + 1]: filetype})
+            for i, task in enumerate(self[:middle]):
+                task.add_deps({self[i + 1]: filetype})
 
             for i, task in enumerate(self[middle+1:]):
-                task.add_deps({self[task.pos - 1]: filetype})
+                task.add_deps({self[middle + i]: filetype})
 
     @property
     def pseudo(self):
