@@ -13,7 +13,7 @@ Fe 26 3 4 4 psp8
 # l rc ep ncon nbas qcut
 0 1.15 0.0 3 7 9.9
 1 1.1 0.0 3 7 9.2
-2 1.5 0.0 3 7 9.9
+2 1.3 0.0 3 7 11.8
 # lloc lpopt rc5 dvloc0
 4 5 1.1 0.0
 # l nproj debl
