@@ -435,7 +435,7 @@ class DeltaFactorWork(DojoWork):
             ecutsm=ecutsm,
             toldfe=toldfe,
             #nband=nband,
-            prtwf=0,
+            prtwf=0 if not connect else 1,
             paral_kgb=paral_kgb,
             chkprim=0,
             nstep=80,
@@ -465,11 +465,12 @@ class DeltaFactorWork(DojoWork):
         if connect:
             #print("connecting SCF tasks")
             middle = len(self.volumes) // 2
+            filetype = "WFK"
             for i, task in enumerate(self[1:middle]):
-                task.add_deps({self[task.pos + 1]: "DEN"})
+                task.add_deps({self[task.pos + 1]: filetype})
 
             for i, task in enumerate(self[middle+1:]):
-                task.add_deps({self[task.pos - 1]: "DEN"})
+                task.add_deps({self[task.pos - 1]: filetype})
 
     @property
     def pseudo(self):
@@ -644,7 +645,8 @@ class GbrvRelaxAndEosWork(DojoWork):
             prtwf=0,
             #ecutsm=ecutsm,
             nband=self.nband,
-            paral_kgb=paral_kgb)
+            paral_kgb=paral_kgb
+        )
                                        
         self.extra_abivars.update(**kwargs)
         self.ecut = ecut
