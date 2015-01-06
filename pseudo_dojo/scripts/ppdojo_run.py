@@ -7,7 +7,8 @@ import argparse
 
 from pprint import pprint
 from pymatgen.io.abinitio import TaskManager
-from pseudo_dojo.dojo import Dojo, HintsAndGbrvDojo, DojoReport
+from pymatgen.io.abinitio.pseudos import PseudoTable 
+from pseudo_dojo.dojo import Dojo, HintsAndGbrvDojo
 
 __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
@@ -41,10 +42,10 @@ Usage Example:\n
     subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
 
     # Subparser for single command.
-    p_build = subparsers.add_parser('build', aliases=["b"], help="Build dojo.")
+    p_build = subparsers.add_parser('build', help="Build dojo.")
 
     # Subparser for single command.
-    p_report = subparsers.add_parser('report', aliases=["r"], help="Show DOJO_REPORT.")
+    p_report = subparsers.add_parser('report', help="Show DOJO_REPORT.")
 
     try:
         options = parser.parse_args()
@@ -59,12 +60,12 @@ Usage Example:\n
         raise ValueError('Invalid log level: %s' % options.loglevel)
     logging.basicConfig(level=numeric_level)
 
-    pseudos = options.pseudos
+    pseudos = PseudoTable(options.pseudos) 
     manager = TaskManager.from_user_config()
 
     if options.command == "build":
-        #dojo = Dojo(manager=manager)
         dojo = HintsAndGbrvDojo(manager=manager)
+        #dojo = Dojo(manager=manager)
 
         for pseudo in pseudos:
             dojo.add_pseudo(pseudo)
@@ -73,7 +74,7 @@ Usage Example:\n
 
     elif options.command == "report":
         for pseudo in pseudos:
-            report = DojoReport.from_file(pseudo)
+            report = pseudo.report
             report.print_table()
 
     return 0

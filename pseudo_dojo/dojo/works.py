@@ -761,7 +761,7 @@ class GbrvRelaxAndEosWork(DojoWork):
     def on_all_ok(self):
         """
         This method is called when self reaches S_OK.
-        It reads the optimized structure from the netcdf file and build
+        It reads the optimized structure from the netcdf file and builds
         a new work for the computation of the EOS with the GBRV parameters.
         """
         if not self.add_eos_done:

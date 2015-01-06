@@ -41,7 +41,7 @@ class Dojo(object):
         dojo_report = pseudo.dojo_report
 
         # Construct the flow 
-        flow_workdir = os.path.join(self.workdir, pseudo.name)
+        flow_workdir = os.path.join(self.workdir, pseudo.basename)
         flow = Flow(workdir=flow_workdir, manager=self.manager)
 
         # Construct the flow according to the info found in the dojo report.
@@ -105,5 +105,5 @@ class Dojo(object):
 class HintsAndGbrvDojo(Dojo):
     def __init__(self, workdir=None, manager=None):
         Dojo.__init__(self, workdir=workdir, manager=manager,
-                      trials=("gbrv_bcc", "gbrv_fcc"), accuracies=["normal"])
+                      trials=("gbrv_bcc", "gbrv_fcc"), accuracies=["low", "normal", "high"])
 

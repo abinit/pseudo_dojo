@@ -10,7 +10,7 @@ from warnings import warn
 from collections import OrderedDict, namedtuple
 from pprint import pprint
 from tabulate import tabulate
-from pymatgen.io.abinitio.pseudos import PseudoTable #Pseudo
+from pymatgen.io.abinitio.pseudos import PseudoTable 
 
 
 def dojo_plot(options):
