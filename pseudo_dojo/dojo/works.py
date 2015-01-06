@@ -652,6 +652,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.ecut = ecut
         self.smearing = smearing
 
+        #ngkpt = (1,1,1)
         self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak)
         self.spin_mode = spin_mode
         relax_algo = RelaxationMethod.atoms_and_cell()
@@ -699,7 +700,8 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.flow.build_and_pickle_dump()
 
     def compute_eos(self):
-        results = self.Results()
+        #results = self.Results()
+        results = self.get_results()
 
         # Read etotals and fit E(V) with a parabola to find minimum
         #num_sites = self._input_structure.num_sites
@@ -747,6 +749,8 @@ class GbrvRelaxAndEosWork(DojoWork):
         print("GBRV-PAW - THIS: abs_err = %f, rel_err = %f %%" % (pawabs_err, pawrel_err))
 
         d = {k: results[k] for k in ("a0", "etotals", "volumes")}
+        d["a0_abs_err"] = abs_err
+        d["a0_rel_err"] = rel_err
         if results.exceptions:
             d["_exceptions"] = str(results.exceptions)
 
