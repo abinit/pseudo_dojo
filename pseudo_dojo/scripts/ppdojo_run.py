@@ -33,6 +33,8 @@ Usage Example:\n
 
     #parser.add_argument('-l', '--max-level', type=int, default=0,  help="Maximum DOJO level (default 0 i.e. ecut hints).")
 
+    parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
+
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
 
@@ -61,7 +63,10 @@ Usage Example:\n
     logging.basicConfig(level=numeric_level)
 
     pseudos = PseudoTable(options.pseudos) 
-    manager = TaskManager.from_user_config()
+    if options.manager is None:
+        manager = TaskManager.from_user_config()
+    else:
+        manager = TaskManager.from_file(options.manager)
 
     if options.command == "build":
         dojo = HintsAndGbrvDojo(manager=manager)
@@ -70,7 +75,8 @@ Usage Example:\n
         for pseudo in pseudos:
             dojo.add_pseudo(pseudo)
 
-        dojo.build()
+        #dojo.build()
+        dojo.start()
 
     elif options.command == "report":
         for pseudo in pseudos:

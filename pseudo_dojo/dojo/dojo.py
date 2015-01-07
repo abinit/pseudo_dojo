@@ -101,6 +101,10 @@ class Dojo(object):
         for flow in self.flows:
             flow.build_and_pickle_dump()
 
+    def start(self):
+        for flow in self.flows:
+            flow.make_scheduler().start()
+
 
 class HintsAndGbrvDojo(Dojo):
     def __init__(self, workdir=None, manager=None):
