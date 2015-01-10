@@ -83,7 +83,12 @@ def main():
     #data["high_fcc_a0_rel_err"].hist(bins=200)
     #data["high_bcc_a0_rel_err"].hist(bins=200)
 
-    keys = ["dfact_meV", "bcc_a0_rel_err", "fcc_a0_rel_err"]
+    keys = [
+        "dfact_meV", 
+        #"dfactprime_meV", 
+        "bcc_a0_rel_err", "fcc_a0_rel_err", 
+        #"ecut",
+    ]
 
     fig, ax_list = plt.subplots(nrows=len(keys), ncols=1, sharex=False, squeeze=False)
     ax_list = ax_list.ravel()

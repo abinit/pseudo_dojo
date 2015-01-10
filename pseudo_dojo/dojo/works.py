@@ -74,14 +74,10 @@ def check_conv(values, tol, min_numpts=1, mode="abs", vinf=None):
     returns -1 if convergence is not achieved. By default, vinf = values[-1]
 
     Args:
-        tol:
-            Tolerance
-        min_numpts:
-            Minimum number of points that must be converged.
-        mode:
-            "abs" for absolute convergence, "rel" for relative convergence.
-        vinf:
-            Used to specify an alternative value instead of values[-1].
+        tol: Tolerance
+        min_numpts: Minimum number of points that must be converged.
+        mode: "abs" for absolute convergence, "rel" for relative convergence.
+        vinf: Used to specify an alternative value instead of values[-1].
     """
     vinf = values[-1] if vinf is None else vinf
 
@@ -322,7 +318,7 @@ class DeltaFactory(object):
     Error = DeltaFactoryError
 
     def __init__(self):
-        # reference to the deltafactor database
+        # Get a reference to the deltafactor database
         self._dfdb = df_database()
 
     def get_cif_path(self, symbol):
@@ -340,7 +336,8 @@ class DeltaFactory(object):
         Args:
             kwargs: Extra variables passed to Abinit.
 
-        .. note: 
+        .. note::
+
             0.001 Rydberg is the value used with WIEN2K
         """
         pseudo = Pseudo.as_pseudo(pseudo)
@@ -463,7 +460,7 @@ class DeltaFactorWork(DojoWork):
             self.register_scf_task(scf_input)
 
         if connect:
-            #print("connecting SCF tasks")
+            logger.info("Connecting SCF tasks using previous WFK file")
             middle = len(self.volumes) // 2
             filetype = "WFK"
             for i, task in enumerate(self[:middle]):
@@ -493,13 +490,8 @@ class DeltaFactorWork(DojoWork):
 
         d = {}
         try:
-            #eos_fit = EOS.Murnaghan().fit(self.volumes/num_sites, etotals/num_sites)
-            #eos_fit.plot(show=False, savefig=self.path_in_workdir("murn_eos.pdf"))
-            #print("murn",eos_fit)
-
             # Use same fit as the one employed for the deltafactor.
             eos_fit = EOS.DeltaFactor().fit(self.volumes/num_sites, etotals/num_sites)
-            #eos_fit.plot(show=False, savefig=self.outdir.path_in("eos.pdf"))
 
             # Get reference results (Wien2K).
             wien2k = df_database().get_entry(self.pseudo.symbol)
@@ -766,8 +758,7 @@ class GbrvRelaxAndEosWork(DojoWork):
 
     def on_all_ok(self):
         """
-        This method is called when self reaches S_OK.
-        It reads the optimized structure from the netcdf file and builds
+        This method is called when self reaches S_OK. It reads the optimized structure from the netcdf file and builds
         a new work for the computation of the EOS with the GBRV parameters.
         """
         if not self.add_eos_done:
