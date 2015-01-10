@@ -74,14 +74,10 @@ def check_conv(values, tol, min_numpts=1, mode="abs", vinf=None):
     returns -1 if convergence is not achieved. By default, vinf = values[-1]
 
     Args:
-        tol:
-            Tolerance
-        min_numpts:
-            Minimum number of points that must be converged.
-        mode:
-            "abs" for absolute convergence, "rel" for relative convergence.
-        vinf:
-            Used to specify an alternative value instead of values[-1].
+        tol: Tolerance
+        min_numpts: Minimum number of points that must be converged.
+        mode: "abs" for absolute convergence, "rel" for relative convergence.
+        vinf: Used to specify an alternative value instead of values[-1].
     """
     vinf = values[-1] if vinf is None else vinf
 
@@ -322,7 +318,7 @@ class DeltaFactory(object):
     Error = DeltaFactoryError
 
     def __init__(self):
-        # reference to the deltafactor database
+        # Get a reference to the deltafactor database
         self._dfdb = df_database()
 
     def get_cif_path(self, symbol):
@@ -340,7 +336,8 @@ class DeltaFactory(object):
         Args:
             kwargs: Extra variables passed to Abinit.
 
-        .. note: 
+        .. note::
+
             0.001 Rydberg is the value used with WIEN2K
         """
         pseudo = Pseudo.as_pseudo(pseudo)
@@ -463,7 +460,7 @@ class DeltaFactorWork(DojoWork):
             self.register_scf_task(scf_input)
 
         if connect:
-            #print("connecting SCF tasks")
+            logger.info("Connecting SCF tasks using previous WFK file")
             middle = len(self.volumes) // 2
             filetype = "WFK"
             for i, task in enumerate(self[:middle]):
@@ -493,13 +490,8 @@ class DeltaFactorWork(DojoWork):
 
         d = {}
         try:
-            #eos_fit = EOS.Murnaghan().fit(self.volumes/num_sites, etotals/num_sites)
-            #eos_fit.plot(show=False, savefig=self.path_in_workdir("murn_eos.pdf"))
-            #print("murn",eos_fit)
-
             # Use same fit as the one employed for the deltafactor.
             eos_fit = EOS.DeltaFactor().fit(self.volumes/num_sites, etotals/num_sites)
-            #eos_fit.plot(show=False, savefig=self.outdir.path_in("eos.pdf"))
 
             # Get reference results (Wien2K).
             wien2k = df_database().get_entry(self.pseudo.symbol)
@@ -592,9 +584,8 @@ class GbrvFactory(object):
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
-        return GbrvRelaxAndEosWork(
-            structure, struct_type, pseudo,
-            ecut=ecut, pawecutdg=pawecutdg, paral_kgb=paral_kgb)
+        return GbrvRelaxAndEosWork(structure, struct_type, pseudo,
+                                   ecut=ecut, pawecutdg=pawecutdg, paral_kgb=paral_kgb)
 
 
 def gbrv_nband(pseudo):
@@ -678,7 +669,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         a new list of ScfTask for the computation of the EOS with the GBRV parameters.
         """
         # Get the relaxed structure.
-        relaxed_structure = self.relax_task.read_final_structure()
+        self.relaxed_structure = relaxed_strucure = self.relax_task.read_final_structure()
 
         # GBRV use nine points from -1% to 1% of the initial guess and fitting the results to a parabola.
         # Note that it's not clear to me if they change the volume or the lattice parameter!
@@ -700,24 +691,20 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.flow.build_and_pickle_dump()
 
     def compute_eos(self):
-        #results = self.Results()
         results = self.get_results()
 
         # Read etotals and fit E(V) with a parabola to find minimum
-        #num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")[1:]
         assert len(etotals) == len(self.volumes)
 
         results.update(dict(
             etotals=list(etotals),
             volumes=list(self.volumes),
-            #num_sites=num_sites,
+            num_sites=len(self.relaxed_structure),
         ))
 
         try:
             eos_fit = EOS.Quadratic().fit(self.volumes, etotals)
-            #eos_fit.plot(show=False, savefig=self.outdir.path_in("eos.pdf"))
-
         except EOS.Error as exc:
             results.push_exceptions(exc)
 
@@ -738,11 +725,18 @@ class GbrvRelaxAndEosWork(DojoWork):
 
         db = gbrv_database()
         entry = db.get_entry(self.pseudo.symbol, stype=self.struct_type)
-        abs_err = a0 - entry.ae
-        rel_err = 100 * (a0 - entry.ae) / entry.ae
 
         pawabs_err = a0 - entry.gbrv_paw
         pawrel_err = 100 * (a0 - entry.gbrv_paw) / entry.gbrv_paw
+
+        # AE results for P and Hg are missing.
+        if entry.ae is not None:
+            abs_err = a0 - entry.ae
+            rel_err = 100 * (a0 - entry.ae) / entry.ae
+        else:
+            # Use GBRV_PAW as reference.
+            abs_err = pawabs_err
+            rel_err = pawrel_err
 
         print("for GBRV struct_type: ", self.struct_type, "a0= ", a0, "Angstrom")
         print("AE - THIS: abs_err = %f, rel_err = %f %%" % (abs_err, rel_err))
@@ -764,8 +758,7 @@ class GbrvRelaxAndEosWork(DojoWork):
 
     def on_all_ok(self):
         """
-        This method is called when self reaches S_OK.
-        It reads the optimized structure from the netcdf file and builds
+        This method is called when self reaches S_OK. It reads the optimized structure from the netcdf file and builds
         a new work for the computation of the EOS with the GBRV parameters.
         """
         if not self.add_eos_done:

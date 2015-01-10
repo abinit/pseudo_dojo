@@ -40,7 +40,7 @@ def main():
         pprint(errors)
 
     accuracies = ["low", "normal", "high"]
-    keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut"]
+    keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut", "fcc_a0_rel_err", "bcc_a0_rel_err"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
     #print(columns)
 
@@ -65,7 +65,7 @@ def main():
         return data
 
     #import seaborn as sns
-    #import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt
     #data = calc_rerrors(data)
     #g = sns.PairGrid(data, x_vars="Z", y_vars=[
     #    "low_ecut",
@@ -78,7 +78,30 @@ def main():
     #) #, hue="smoker")
     #g.map(plt.scatter)
     #g.add_legend()
-    #plt.show()
+
+    #data["high_dfact_meV"].hist(bins=200)
+    #data["high_fcc_a0_rel_err"].hist(bins=200)
+    #data["high_bcc_a0_rel_err"].hist(bins=200)
+
+    keys = [
+        "dfact_meV", 
+        #"dfactprime_meV", 
+        "bcc_a0_rel_err", "fcc_a0_rel_err", 
+        #"ecut",
+    ]
+
+    fig, ax_list = plt.subplots(nrows=len(keys), ncols=1, sharex=False, squeeze=False)
+    ax_list = ax_list.ravel()
+
+    #kind = "density"
+    kind = "scatter"
+    kind = "line"
+    for ax, key in zip(ax_list, keys):
+        for acc in accuracies:
+            data[acc + "_" + key].plot(kind=kind, ax=ax, legend=True)
+            #data[acc + "_" + key].hist(ax=ax, bins=200)
+
+    plt.show()
 
     wrong = data[data["high_b1"] < 0]
     if not wrong.empty:
@@ -87,6 +110,8 @@ def main():
     data = data[
         [acc + "_dfact_meV" for acc in accuracies]
         + [acc + "_ecut" for acc in accuracies]
+        #+ [acc + "_fcc_a0_rel_err" for acc in accuracies]
+        #+ [acc + "_bcc_a0_rel_err" for acc in accuracies]
     ]
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))

@@ -71,7 +71,6 @@ class PseudoGenDataPlotter(object):
 
         # key --> self.plot_key()
         getattr(self, "plot_" + key)(ax, **kwargs)
-
         self._mplt.show()
 
     #def plot_all(self, **kwargs):
@@ -183,6 +182,33 @@ class PseudoGenDataPlotter(object):
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$v_l(r)$", title="Ion Pseudopotentials", 
                     lines=lines, legends=legends)
 
+        return lines
+
+    def plot_der_potentials(self, ax, **kwargs):
+        """
+        Plot the derivatives of vl and vloc potentials on axis ax
+        Used to analyze the derivative discontinuity introduced by the RRKJ method at rc.
+        """
+        from abipy.tools.derivatives import finite_diff
+        from scipy.interpolate import UnivariateSpline
+        lines, legends = [], []
+        for l, pot in self.potentials.items():
+            # Need linear mesh for finite_difference --> Spline input potentials on lin_rmesh
+            lin_rmesh, h = np.linspace(pot.rmesh[0], pot.rmesh[-1], num=len(pot.rmesh) * 4, retstep=True)
+            spline = UnivariateSpline(pot.rmesh, pot.values, s=0)
+            lin_values = spline(lin_rmesh)
+            vder = finite_diff(lin_values, h, order=1, acc=4)
+            line, = ax.plot(lin_rmesh, vder, **self._wf_pltopts(l, "ae"))
+            lines.append(line)
+                                                                                             
+            if l == -1:
+                legends.append("Derivative Vloc")
+            else:
+                legends.append("Derivative PS l=%s" % str(l))
+                                                                                             
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="${d v_l(r)}{d r}$", title="Ion Pseudopotentials", 
+                    lines=lines, legends=legends)
+                                                                                             
         return lines
 
     def plot_ene_vs_ecut(self, ax, **kwargs):
@@ -337,25 +363,7 @@ class MultiPseudoGenDataPlotter(object):
         i = -1
         for (label, plotter), lineopt in zip(self._plotters_odict.items(), self.iter_lineopt()):
             i += 1
-            #my_kwargs.update(lineopt)
-            #opts_label[label] = my_kwargs.copy()
-
             plotter.plot_key(key, ax=ax_list[i])
-
-            #l = bands.plot_ax(ax1, spin=None, band=None, **my_kwargs)
-            #lines.append(l[0])
-
-            # Use relative paths if label is a file.
-            #if os.path.isfile(label):
-            #    legends.append("%s" % os.path.relpath(label))
-            #else:
-            #    legends.append("%s" % label)
-
-            # Set ticks and labels, legends.
-            #if i == 0:
-            #    bands.decorate_ax(ax)
-
-            #ax.legend(lines, legends, 'best', shadow=True)
 
         return fig
 
