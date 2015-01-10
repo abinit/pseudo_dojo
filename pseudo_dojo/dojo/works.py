@@ -592,9 +592,8 @@ class GbrvFactory(object):
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
-        return GbrvRelaxAndEosWork(
-            structure, struct_type, pseudo,
-            ecut=ecut, pawecutdg=pawecutdg, paral_kgb=paral_kgb)
+        return GbrvRelaxAndEosWork(structure, struct_type, pseudo,
+                                   ecut=ecut, pawecutdg=pawecutdg, paral_kgb=paral_kgb)
 
 
 def gbrv_nband(pseudo):
@@ -678,7 +677,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         a new list of ScfTask for the computation of the EOS with the GBRV parameters.
         """
         # Get the relaxed structure.
-        relaxed_structure = self.relax_task.read_final_structure()
+        self.relaxed_structure = relaxed_strucure = self.relax_task.read_final_structure()
 
         # GBRV use nine points from -1% to 1% of the initial guess and fitting the results to a parabola.
         # Note that it's not clear to me if they change the volume or the lattice parameter!
@@ -700,24 +699,20 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.flow.build_and_pickle_dump()
 
     def compute_eos(self):
-        #results = self.Results()
         results = self.get_results()
 
         # Read etotals and fit E(V) with a parabola to find minimum
-        #num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")[1:]
         assert len(etotals) == len(self.volumes)
 
         results.update(dict(
             etotals=list(etotals),
             volumes=list(self.volumes),
-            #num_sites=num_sites,
+            num_sites=len(self.relaxed_structure),
         ))
 
         try:
             eos_fit = EOS.Quadratic().fit(self.volumes, etotals)
-            #eos_fit.plot(show=False, savefig=self.outdir.path_in("eos.pdf"))
-
         except EOS.Error as exc:
             results.push_exceptions(exc)
 
@@ -738,11 +733,18 @@ class GbrvRelaxAndEosWork(DojoWork):
 
         db = gbrv_database()
         entry = db.get_entry(self.pseudo.symbol, stype=self.struct_type)
-        abs_err = a0 - entry.ae
-        rel_err = 100 * (a0 - entry.ae) / entry.ae
 
         pawabs_err = a0 - entry.gbrv_paw
         pawrel_err = 100 * (a0 - entry.gbrv_paw) / entry.gbrv_paw
+
+        # AE results for P and Hg are missing.
+        if entry.ae is not None:
+            abs_err = a0 - entry.ae
+            rel_err = 100 * (a0 - entry.ae) / entry.ae
+        else:
+            # Use GBRV_PAW as reference.
+            abs_err = pawabs_err
+            rel_err = pawrel_err
 
         print("for GBRV struct_type: ", self.struct_type, "a0= ", a0, "Angstrom")
         print("AE - THIS: abs_err = %f, rel_err = %f %%" % (abs_err, rel_err))

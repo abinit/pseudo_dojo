@@ -46,14 +46,14 @@ def dojo_plot(options):
         #report.has_exceptions
         report.print_table()
 
-        if report.has_trial("deltafactor"):
+        if False and report.has_trial("deltafactor"):
             report.plot_deltafactor_eos(title=pseudo.basename)
             report.plot_deltafactor_convergence(title=pseudo.basename)
             #report.plot_etotal_vs_ecut()
 
         for struct_type in ("fcc", "bcc"):
             if report.has_trial("gbrv_" + struct_type):
-                report.plot_gbrv_eos(struct_type=struct_type)
+                report.plot_gbrv_eos(struct_type=struct_type, title=pseudo.basename)
 
 
 def dojo_table(options):
@@ -103,8 +103,9 @@ def dojo_table(options):
 
         return data
 
+    import matplotlib.pyplot as plt
     #import seaborn as sns
-    #import matplotlib.pyplot as plt
+    #data.plot(x="symbol", y="high_dfact_meV", use_index=True)
     #data = calc_rerrors(data)
     #g = sns.PairGrid(data, x_vars="Z", y_vars=[
     #    "low_ecut",
