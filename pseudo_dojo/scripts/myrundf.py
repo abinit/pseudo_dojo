@@ -13,7 +13,7 @@ from pymatgen.core.periodic_table import PeriodicTable
 
 
 def build_flow(pseudo, manager):
-    pseudo = Pseudo.from_file(pseudo)
+    pseudo = Pseudo.as_pseudo(pseudo)
     # Instantiate the TaskManager.
 
     factory = DeltaFactory()
@@ -21,7 +21,7 @@ def build_flow(pseudo, manager):
     #if os.path.exists(workdir):
     #   raise ValueError("%s exists" % workdir)
 
-    flow = abilab.Flow(workdir=workdir, manager=manager, pickle_protocol=0)
+    flow = abilab.Flow(workdir=workdir, manager=manager)
     # Use this to have the official k-point sampling
     kppa = 6750  
 
@@ -40,7 +40,6 @@ def build_flow(pseudo, manager):
     #print(report)
     #hints = report["hints"]
     ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
-    #ppgen_ecut = 10
 
     #dense_right = np.linspace(ppgen_ecut, ppgen_ecut + 10, num=6)
     #dense_left = np.linspace(ppgen_ecut-8, ppgen_ecut, num=4, endpoint=False)
@@ -83,8 +82,7 @@ def main():
         flow.build_and_pickle_dump()
         #flow.rapidfire()
         #print("nlaunch: %d" % flow.rapidfire())
-        #fireflow(flow)
-        #flow.make_scheduler().start()
+        flow.make_scheduler().start()
     else:
         table = PeriodicTable()
         all_symbols = [element.symbol for element in table.all_elements]
