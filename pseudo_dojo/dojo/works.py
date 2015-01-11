@@ -684,6 +684,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             new_lattice = relaxed_structure.lattice.scale(vol)
             new_structure = Structure(new_lattice, relaxed_structure.species, relaxed_structure.frac_coords)
 
+            # Add ecutsm
             extra = self.extra_abivars.copy() 
             extra["ecutsm"] = 0.5
 
