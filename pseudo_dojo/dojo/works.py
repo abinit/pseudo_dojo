@@ -502,10 +502,10 @@ class DeltaFactorWork(DojoWork):
             dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
                                eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
 
-            dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa),
+            dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa)
 
             print("delta", eos_fit)
-            print("Ecut %.1f, dfact = %.3f meV, dfactprint %.3f meV" % (self.ecut, dfact, dfactprime_meV))
+            print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
 
             results.update({
                 "dfact_meV": dfact,
