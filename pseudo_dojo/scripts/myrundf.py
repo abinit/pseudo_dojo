@@ -4,10 +4,11 @@ from __future__ import division, print_function, unicode_literals
 
 import sys
 import os
+import argparse
 import numpy as np
 import abipy.abilab as abilab
 
-from pseudo_dojo.dojo.works import DeltaFactory
+from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 
@@ -16,14 +17,12 @@ def build_flow(pseudo, manager):
     pseudo = Pseudo.as_pseudo(pseudo)
     # Instantiate the TaskManager.
 
-    factory = DeltaFactory()
+
     workdir = pseudo.basename + "_DFLOW"
     #if os.path.exists(workdir):
     #   raise ValueError("%s exists" % workdir)
 
     flow = abilab.Flow(workdir=workdir, manager=manager)
-    # Use this to have the official k-point sampling
-    kppa = 6750  
 
     extra_abivars = {
             "mem_test": 0,
@@ -51,34 +50,78 @@ def build_flow(pseudo, manager):
 
     ecut_list = list(dense_left) + list(dense_right) + list(coarse_high)
 
+    factory = DeltaFactory()
     for ecut in ecut_list:
         pawecutdg = 2 * ecut 
         # Build and register the workflow.
-        work = factory.work_for_pseudo(pseudo, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, toldfe=1.e-8, **extra_abivars)
-        flow.register_work(work, workdir='W' + str(ecut))
+        work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg, toldfe=1.e-8, **extra_abivars)
+        flow.register_work(work, workdir='WDF' + str(ecut))
+
+    gbrv_factory = GbrvFactory()
+    gbrv_structs = ("fcc", "bcc")
+    for struct_type in gbrv_structs:
+        #dojo_trial = "gbrv_" + struct_type
+        for ecut in ecut_list:
+            pawecutdg = 2 * ecut 
+            work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg)
+            flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
     return flow.allocate()
 
 
 def main():
-    # lglevel is bound to the string value obtained from the command line argument.
+    def str_examples():
+        examples = """
+Usage Example:\n
+    ppdojo_run.py build Si.fhi  => Build pseudo_dojo flow for Si.fhi
+\n"""
+        return examples
+
+    def show_examples_and_exit(error_code=1):
+        """Display the usage of the script."""
+        sys.stderr.write(str_examples())
+        sys.exit(error_code)
+
+    parser = argparse.ArgumentParser(epilog=str_examples())
+
+    #parser.add_argument('-l', '--max-level', type=int, default=0,  help="Maximum DOJO level (default 0 i.e. ecut hints).")
+
+    parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
+
+    parser.add_argument('--loglevel', default="ERROR", type=str,
+                        help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
+
+    parser.add_argument('pseudos', nargs='+', help='List of pseudopotential files.')
+
+    # Create the parsers for the sub-commands
+    #subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
+
+    # Subparser for single command.
+    #p_build = subparsers.add_parser('build', help="Build dojo.")
+
+    # Subparser for single command.
+    #p_report = subparsers.add_parser('report', help="Show DOJO_REPORT.")
+
+    try:
+        options = parser.parse_args()
+    except:
+        show_examples_and_exit(1)
+
+    # loglevel is bound to the string value obtained from the command line argument. 
     # Convert to upper case to allow the user to specify --loglevel=DEBUG or --loglevel=debug
     import logging
-    #numeric_level = getattr(logging, options.loglevel.upper(), None)
-    numeric_level = getattr(logging, "ERROR", None)
+    numeric_level = getattr(logging, options.loglevel.upper(), None)
     if not isinstance(numeric_level, int):
         raise ValueError('Invalid log level: %s' % options.loglevel)
     logging.basicConfig(level=numeric_level)
 
-    path = sys.argv[1]
-    if len(sys.argv) >= 3:
-        manager = abilab.TaskManager.from_file(sys.argv[2])
+    if options.manager is None:
+        options.manager = abilab.TaskManager.from_user_config()
     else:
-        manager = abilab.TaskManager.from_user_config()
-        #print(manager)
+        options.manager = abilab.TaskManager.from_file(options.manager)
 
-    if os.path.isfile(path):
-        flow = build_flow(path, manager)
+    if os.path.isfile(options.pseudos):
+        flow = build_flow(options.pseudos, options.manager)
         flow.build_and_pickle_dump()
         #flow.rapidfire()
         #print("nlaunch: %d" % flow.rapidfire())
@@ -86,6 +129,7 @@ def main():
     else:
         table = PeriodicTable()
         all_symbols = [element.symbol for element in table.all_elements]
+        path = options.pseudos
         dirs = [os.path.join(path, d) for d in os.listdir(path) if d in all_symbols]
         #print("dirs", dirs)
         pseudos = []
@@ -96,7 +140,7 @@ def main():
 
         nflows, nlaunch = 0, 0
         for pseudo in pseudos:
-            flow = build_flow(pseudo, manager)
+            flow = build_flow(pseudo, options.manager)
             if os.path.exists(flow.workdir) or nflows >= 4: continue
             nflows += 1
             flow.build_and_pickle_dump()

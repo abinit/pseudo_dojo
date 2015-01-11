@@ -51,9 +51,13 @@ def dojo_plot(options):
             report.plot_deltafactor_eos(title=pseudo.basename)
             report.plot_deltafactor_convergence(title=pseudo.basename)
 
+        count = 0
         for struct_type in ("fcc", "bcc"):
             if report.has_trial("gbrv_" + struct_type):
+                count += 1
                 report.plot_gbrv_eos(struct_type=struct_type, title=pseudo.basename)
+        if count:
+            report.plot_gbrv_convergence(title=pseudo.basename)
 
 
 def dojo_table(options):

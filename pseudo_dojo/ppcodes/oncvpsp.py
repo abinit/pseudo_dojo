@@ -703,15 +703,10 @@ class OncvOutputParser(PseudoGenOutputParser):
         hints.reverse()
 
         print("hints:", hints)
-        # Convert to int and truncate upwards
-        #hints = [int(h) + 1 for h in hints]
-        # Convert to int and truncate downards
-        hints = [np.floor(h) for h in hints]
+        # Truncate to the nearest int
+        hints = [np.rint(h) for h in hints]
 
         hints = dict(
-            #low={"ecut": hints[2], "aug_ratio": 1},
-            #normal={"ecut": hints[2] + 10, "aug_ratio": 1},
-            #high={"ecut": hints[2] + 20, "aug_ratio": 1})
             low={"ecut": hints[0], "aug_ratio": 1},
             normal={"ecut": hints[1], "aug_ratio": 1},
             high={"ecut": hints[2], "aug_ratio": 1})
