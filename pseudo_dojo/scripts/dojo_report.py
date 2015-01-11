@@ -46,18 +46,19 @@ def dojo_plot(options):
         #report.has_exceptions
         #report.print_table()
 
-        if False and report.has_trial("deltafactor"):
+        if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
             report.plot_etotal_vs_ecut(title=pseudo.basename)
             report.plot_deltafactor_eos(title=pseudo.basename)
             report.plot_deltafactor_convergence(title=pseudo.basename)
 
-        count = 0
-        for struct_type in ("fcc", "bcc"):
-            if report.has_trial("gbrv_" + struct_type):
-                count += 1
-                report.plot_gbrv_eos(struct_type=struct_type, title=pseudo.basename)
-        if count:
-            report.plot_gbrv_convergence(title=pseudo.basename)
+        if any(k in options.what_plot for k in ("all", "gbrv")):
+            count = 0
+            for struct_type in ("fcc", "bcc"):
+                if report.has_trial("gbrv_" + struct_type):
+                    count += 1
+                    report.plot_gbrv_eos(struct_type=struct_type, title=pseudo.basename)
+            if count:
+                report.plot_gbrv_convergence(title=pseudo.basename)
 
 
 def dojo_table(options):
@@ -198,6 +199,7 @@ Usage example:\n
 
     # Subparser for plot command.
     p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser], help="Plot data.")
+    p_plot.add_argument("-w", "--what-plot", type=str, default="all", help="Quantity to plot e.g df, gbrv")
 
     # Subparser for table command.
     p_plot = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
