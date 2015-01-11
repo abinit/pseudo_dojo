@@ -47,8 +47,8 @@ def build_flow(pseudo, manager):
     #coarse_high = np.linspace(ppgen_ecut + 15, ppgen_ecut + 40, num=4)
 
     dense_right = np.arange(ppgen_ecut, ppgen_ecut + 6*2, step=2)
-    dense_left = np.arange(max(ppgen_ecut-8, 2), ppgen_ecut, step=2)
-    coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 45, step=5)
+    dense_left = np.arange(max(ppgen_ecut-6, 2), ppgen_ecut, step=2)
+    coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 45, step=3)
 
     ecut_list = list(dense_left) + list(dense_right) + list(coarse_high)
 

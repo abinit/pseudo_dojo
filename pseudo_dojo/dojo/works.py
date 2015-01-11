@@ -503,7 +503,7 @@ class DeltaFactorWork(DojoWork):
                                eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
 
             print("delta", eos_fit)
-            print("Deltafactor = %.3f meV" % dfact)
+            print("Ecut %.1f, Deltafactor = %.3f meV" % (self.ecut, dfact))
 
             results.update({
                 "dfact_meV": dfact,
