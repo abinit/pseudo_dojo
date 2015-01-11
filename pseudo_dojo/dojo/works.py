@@ -684,12 +684,12 @@ class GbrvRelaxAndEosWork(DojoWork):
             new_lattice = relaxed_structure.lattice.scale(vol)
             new_structure = Structure(new_lattice, relaxed_structure.species, relaxed_structure.frac_coords)
 
-            extra = self.extra_abivars 
+            extra = self.extra_abivars.copy() 
             extra["ecutsm"] = 0.5
 
             scf_input = ScfStrategy(new_structure, self.pseudo, self.ksampling,
                                     accuracy=self.accuracy, spin_mode=self.spin_mode,
-                                    smearing=self.smearing, **self.extra_abivars)
+                                    smearing=self.smearing, **extra)
 
             # Register new task
             self.register_scf_task(scf_input)
