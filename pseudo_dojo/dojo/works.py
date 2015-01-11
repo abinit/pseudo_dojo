@@ -638,7 +638,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             pawecutdg=pawecutdg,
             toldfe=toldfe,
             prtwf=0,
-            ecutsm=0.5,
+            #ecutsm=0.5,
             nband=self.nband,
             paral_kgb=paral_kgb
         )
@@ -655,8 +655,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         relax_algo = RelaxationMethod.atoms_and_cell()
 
         self.relax_input = RelaxStrategy(structure, pseudo, self.ksampling, relax_algo, 
-                                         accuracy=accuracy, spin_mode=spin_mode,
-                                         smearing=smearing, **self.extra_abivars)
+                                         accuracy=accuracy, spin_mode=spin_mode, smearing=smearing, **self.extra_abivars)
 
         # Register structure relaxation task.
         self.relax_task = self.register_relax_task(self.relax_input)
@@ -684,6 +683,9 @@ class GbrvRelaxAndEosWork(DojoWork):
         for vol in self.volumes:
             new_lattice = relaxed_structure.lattice.scale(vol)
             new_structure = Structure(new_lattice, relaxed_structure.species, relaxed_structure.frac_coords)
+
+            extra = self.extra_abivars 
+            extra["ecutsm"] = 0.5
 
             scf_input = ScfStrategy(new_structure, self.pseudo, self.ksampling,
                                     accuracy=self.accuracy, spin_mode=self.spin_mode,
