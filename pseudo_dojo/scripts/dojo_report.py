@@ -46,12 +46,10 @@ def dojo_plot(options):
         #report.has_exceptions
         #report.print_table()
 
-        report.plot_etotal_vs_ecut(title=pseudo.basename)
-
-        if False and report.has_trial("deltafactor"):
+        if report.has_trial("deltafactor"):
+            report.plot_etotal_vs_ecut(title=pseudo.basename)
             report.plot_deltafactor_eos(title=pseudo.basename)
             report.plot_deltafactor_convergence(title=pseudo.basename)
-            #report.plot_etotal_vs_ecut()
 
         for struct_type in ("fcc", "bcc"):
             if report.has_trial("gbrv_" + struct_type):
