@@ -38,13 +38,15 @@ def dojo_plot(options):
         report = pseudo.dojo_report
         # FIXME add symbol
         report.symbol = pseudo.symbol
-        print(pseudo)
-        print(report)
+        #print(pseudo)
+        #print(report)
 
-        print("trials passed: ", report.trials)
-        report.has_hints
+        #print("trials passed: ", report.trials)
+        #report.has_hints
         #report.has_exceptions
-        report.print_table()
+        #report.print_table()
+
+        report.plot_etotal_vs_ecut(title=pseudo.basename)
 
         if False and report.has_trial("deltafactor"):
             report.plot_deltafactor_eos(title=pseudo.basename)

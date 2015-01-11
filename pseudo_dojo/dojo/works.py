@@ -502,8 +502,10 @@ class DeltaFactorWork(DojoWork):
             dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
                                eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
 
+            dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa),
+
             print("delta", eos_fit)
-            print("Ecut %.1f, Deltafactor = %.3f meV" % (self.ecut, dfact))
+            print("Ecut %.1f, dfact = %.3f meV, dfactprint %.3f meV" % (self.ecut, dfact, dfactprime_meV))
 
             results.update({
                 "dfact_meV": dfact,
@@ -511,7 +513,7 @@ class DeltaFactorWork(DojoWork):
                 "b0": eos_fit.b0,
                 "b0_GPa": eos_fit.b0_GPa,
                 "b1": eos_fit.b1,
-                "dfactprime_meV": dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa),
+                "dfactprime_meV": dfactprime_meV
             })
 
             d = {k: results[k] for k in 
@@ -636,7 +638,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             pawecutdg=pawecutdg,
             toldfe=toldfe,
             prtwf=0,
-            #ecutsm=ecutsm,
+            ecutsm=0.5,
             nband=self.nband,
             paral_kgb=paral_kgb
         )
@@ -645,8 +647,10 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.ecut = ecut
         self.smearing = smearing
 
+        # Kpoint sampling: shiftk depends on struct_type
+        shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
         #ngkpt = (1,1,1)
-        self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak)
+        self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk)
         self.spin_mode = spin_mode
         relax_algo = RelaxationMethod.atoms_and_cell()
 
