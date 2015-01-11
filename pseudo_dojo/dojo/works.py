@@ -34,19 +34,19 @@ class DojoWork(Work):
     def dojo_trial(self):
         """String identifying the DOJO trial. Used to write results in the DOJO_REPORT."""
 
-    @property
-    def dojo_accuracy(self):
-        return self._dojo_accuracy
+    #@property
+    #def dojo_accuracy(self):
+    #    return self._dojo_accuracy
 
-    def set_dojo_accuracy(self, accuracy):
-        self._dojo_accuracy = accuracy
+    #def set_dojo_accuracy(self, accuracy):
+    #    self._dojo_accuracy = accuracy
 
     def write_dojo_report(self, report, overwrite_data=False):
         """Write/update the DOJO_REPORT section of the pseudopotential."""
         # Read old_report from pseudo.
         old_report = self.pseudo.read_dojo_report()
 
-        dojo_trial, dojo_accuracy = self.dojo_trial, self.dojo_accuracy
+        dojo_trial = self.dojo_trial
         if dojo_trial not in old_report:
         	# Create new entry
         	old_report[dojo_trial] = {}
@@ -56,7 +56,8 @@ class DojoWork(Work):
         #        raise RuntimeError("%s already exists in DOJO_REPORT. Cannot overwrite data" % dojo_trial)
 
         # Update old report card with the new one and write new report
-        old_report[dojo_trial][dojo_accuracy] = report
+        dojo_ecut = "%.1f" % self.ecut
+        old_report[dojo_trial][dojo_ecut] = report
         try:
             self.pseudo.write_dojo_report(old_report)
         except:
@@ -343,6 +344,7 @@ class DeltaFactory(object):
         pseudo = Pseudo.as_pseudo(pseudo)
         symbol = pseudo.symbol
 
+
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
@@ -413,8 +415,6 @@ class DeltaFactorWork(DojoWork):
         """
         super(DeltaFactorWork, self).__init__(workdir=workdir, manager=manager)
 
-        self.set_dojo_accuracy(accuracy)
-
         self._pseudo = Pseudo.as_pseudo(pseudo)
 
         spin_mode = SpinMode.as_spinmode(spin_mode)
@@ -426,6 +426,8 @@ class DeltaFactorWork(DojoWork):
         #nband = int(nval / spin_fact) + 6
 
         # Set extra_abivars
+        self.ecut, self.pawecutdg = ecut, pawecutdg
+
         extra_abivars = dict(
             ecut=ecut,
             pawecutdg=pawecutdg,

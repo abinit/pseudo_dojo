@@ -704,12 +704,17 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         print("hints:", hints)
         # Convert to int and truncate upwards
-        hints = [int(h) + 1 for h in hints]
+        #hints = [int(h) + 1 for h in hints]
+        # Convert to int and truncate downards
+        hints = [np.floor(h) for h in hints]
 
         hints = dict(
-            low={"ecut": hints[2], "aug_ratio": 1},
-            normal={"ecut": hints[2] + 10, "aug_ratio": 1},
-            high={"ecut": hints[2] + 20, "aug_ratio": 1})
+            #low={"ecut": hints[2], "aug_ratio": 1},
+            #normal={"ecut": hints[2] + 10, "aug_ratio": 1},
+            #high={"ecut": hints[2] + 20, "aug_ratio": 1})
+            low={"ecut": hints[0], "aug_ratio": 1},
+            normal={"ecut": hints[1], "aug_ratio": 1},
+            high={"ecut": hints[2], "aug_ratio": 1})
 
         return hints
 
@@ -783,7 +788,8 @@ class OncvOutputParser(PseudoGenOutputParser):
         ps_data += "\n\n<INPUT>\n" + self.get_input_str() + "</INPUT>\n"
 
         # Add the initial DOJO_REPORT with the hints:
-        d = {"hints": self.hints}
+        #d = {"hints": self.hints}
+        d = {"ppgen_hints": self.hints}
         ps_data += "\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
 
         return ps_data

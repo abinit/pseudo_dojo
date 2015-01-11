@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 """Compute the deltafactor for a given pseudopotential."""
-from __future__ import division, print_function
+from __future__ import division, print_function, unicode_literals
 
-__author__ = 'setten'
-
-import os
 import sys
+import os
+import numpy as np
 import abipy.abilab as abilab
 
 from pseudo_dojo.dojo.works import DeltaFactory
@@ -13,18 +12,18 @@ from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 
 
-def build_flow(pseudo, manager, accuracies=None):
+def build_flow(pseudo, manager):
     pseudo = Pseudo.from_file(pseudo)
     # Instantiate the TaskManager.
 
     factory = DeltaFactory()
-    #extra = {}
     workdir = pseudo.basename + "_DFLOW"
     #if os.path.exists(workdir):
-    #       raise ValueError("%s exists" % workdir)
+    #   raise ValueError("%s exists" % workdir)
 
     flow = abilab.Flow(workdir=workdir, manager=manager, pickle_protocol=0)
-    kppa = 6750  # Use this to have the official k-point sampling
+    # Use this to have the official k-point sampling
+    kppa = 6750  
 
     extra_abivars = {
             "mem_test": 0,
@@ -38,50 +37,30 @@ def build_flow(pseudo, manager, accuracies=None):
     }
 
     report = pseudo.read_dojo_report()
-    hints = report["hints"]
     #print(report)
+    #hints = report["hints"]
+    ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
+    #ppgen_ecut = 10
 
-    if accuracies is None:
-        accuracies = ["normal", "high",]
+    #dense_right = np.linspace(ppgen_ecut, ppgen_ecut + 10, num=6)
+    #dense_left = np.linspace(ppgen_ecut-8, ppgen_ecut, num=4, endpoint=False)
+    #coarse_high = np.linspace(ppgen_ecut + 15, ppgen_ecut + 40, num=4)
 
-    for accuracy in accuracies:
-        ecut = hints[accuracy]["ecut"]
-        pawecutdg = ecut * 2
+    dense_right = np.arange(ppgen_ecut, ppgen_ecut + 6*2, step=2)
+    dense_left = np.arange(max(ppgen_ecut-8, 2), ppgen_ecut, step=2)
+    coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 45, step=5)
+
+    ecut_list = list(dense_left) + list(dense_right) + list(coarse_high)
+
+    for ecut in ecut_list:
+        pawecutdg = 2 * ecut 
+        # Build and register the workflow.
         work = factory.work_for_pseudo(pseudo, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, toldfe=1.e-8, **extra_abivars)
-        work.set_dojo_accuracy(accuracy)
-
-        # Register the workflow.
         flow.register_work(work, workdir='W' + str(ecut))
 
     return flow.allocate()
 
 
-def fireflow(flow):
-    from fireworks import FireTaskBase, FWAction, Firework, LaunchPad, ScriptTask
-    from fireworks.utilities.fw_serializers import FWSerializable
-    from fireworks.core.rocket_launcher import launch_rocket
-    from abipy.fworks.tasks import FireTaskWithFlow
-
-    # set up the LaunchPad and reset it
-    launchpad = LaunchPad()
-    launchpad.reset('', require_password=False)
-
-    # Build the flow
-    #flow = build_flow()
-    flow.build_and_pickle_dump()
-
-    # create the Firework consisting of a single task
-    firework = Firework(FireTaskWithFlow(flow=flow))
-
-    # store workflow
-    launchpad.add_wf(firework)
-
-    #launch it locally
-    #launch_rocket(launchpad)
-
-    return 0
-
-#@abilab.flow_main
 def main():
     # lglevel is bound to the string value obtained from the command line argument.
     # Convert to upper case to allow the user to specify --loglevel=DEBUG or --loglevel=debug
@@ -100,11 +79,7 @@ def main():
         #print(manager)
 
     if os.path.isfile(path):
-        #accuracies = ["normal",]
-        accuracies = ["normal", "high",]
-        accuracies = ["low", "normal", "high",]
-        #accuracies = ["low",]
-        flow = build_flow(path, manager, accuracies=accuracies)
+        flow = build_flow(path, manager)
         flow.build_and_pickle_dump()
         #flow.rapidfire()
         #print("nlaunch: %d" % flow.rapidfire())
@@ -123,7 +98,7 @@ def main():
 
         nflows, nlaunch = 0, 0
         for pseudo in pseudos:
-            flow = build_flow(pseudo, manager, accuracies=["normal", "high",])
+            flow = build_flow(pseudo, manager)
             if os.path.exists(flow.workdir) or nflows >= 4: continue
             nflows += 1
             flow.build_and_pickle_dump()
@@ -132,6 +107,8 @@ def main():
         print("nlaunch: %d" % nlaunch)
         print("nflows: %d" % nflows)
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

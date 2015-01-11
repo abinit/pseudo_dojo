@@ -96,10 +96,13 @@ def main():
     #kind = "density"
     kind = "scatter"
     kind = "line"
+    zmin, zmax = 1, 110
     for ax, key in zip(ax_list, keys):
         for acc in accuracies:
-            data[acc + "_" + key].plot(kind=kind, ax=ax, legend=True)
-            #data[acc + "_" + key].hist(ax=ax, bins=200)
+            c = data[acc + "_" + key][data.Z <= zmax]
+            c = c[data.Z >= zmin]
+            c.plot(kind=kind, ax=ax, style="o-", legend=True)
+            #c.hist(ax=ax, bins=200)
 
     plt.show()
 
