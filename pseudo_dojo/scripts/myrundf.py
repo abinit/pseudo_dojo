@@ -29,8 +29,8 @@ def build_flow(pseudo, manager):
             "mem_test": 0,
             "fband": 2,
             "nstep": 100,
-            "paral_kgb": 0,
-            #"paral_kgb": 1,
+            #"paral_kgb": 0,
+            "paral_kgb": 1,
             #"nsym": 1,
             #"nsppol": 2,
             #"nspden": 2,
@@ -48,7 +48,7 @@ def build_flow(pseudo, manager):
 
     dense_right = np.arange(ppgen_ecut, ppgen_ecut + 6*2, step=2)
     dense_left = np.arange(max(ppgen_ecut-6, 2), ppgen_ecut, step=2)
-    coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 45, step=3)
+    coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 35, step=5)
 
     ecut_list = list(dense_left) + list(dense_right) + list(coarse_high)
 
