@@ -91,7 +91,7 @@ Usage Example:\n
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
 
-    parser.add_argument('pseudos', nargs='+', help='List of pseudopotential files.')
+    parser.add_argument('path', help='pseudopotential file.')
 
     # Create the parsers for the sub-commands
     #subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
@@ -120,8 +120,8 @@ Usage Example:\n
     else:
         options.manager = abilab.TaskManager.from_file(options.manager)
 
-    if os.path.isfile(options.pseudos):
-        flow = build_flow(options.pseudos, options.manager)
+    if os.path.isfile(options.path):
+        flow = build_flow(options.path, options.manager)
         flow.build_and_pickle_dump()
         #flow.rapidfire()
         #print("nlaunch: %d" % flow.rapidfire())
@@ -129,8 +129,7 @@ Usage Example:\n
     else:
         table = PeriodicTable()
         all_symbols = [element.symbol for element in table.all_elements]
-        path = options.pseudos
-        dirs = [os.path.join(path, d) for d in os.listdir(path) if d in all_symbols]
+        dirs = [os.path.join(options.path, d) for d in os.listdir(options.path) if d in all_symbols]
         #print("dirs", dirs)
         pseudos = []
         for d in dirs:
