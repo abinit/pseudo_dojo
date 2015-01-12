@@ -15,12 +15,9 @@ from pymatgen.core.periodic_table import PeriodicTable
 
 def build_flow(pseudo, manager):
     pseudo = Pseudo.as_pseudo(pseudo)
-    # Instantiate the TaskManager.
 
-
-    workdir = pseudo.basename + "_DFLOW"
-    #if os.path.exists(workdir):
-    #   raise ValueError("%s exists" % workdir)
+    workdir = pseudo.basename + "_DOJO"
+    if os.path.exists(workdir): raise ValueError("%s exists" % workdir)
 
     flow = abilab.Flow(workdir=workdir, manager=manager)
 
@@ -87,6 +84,7 @@ Usage Example:\n
     #parser.add_argument('-l', '--max-level', type=int, default=0,  help="Maximum DOJO level (default 0 i.e. ecut hints).")
 
     parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
+    parser.add_argument('-d', '--dry-run', type=bool, default=False,  help="Dry run, build the flow without submitting it")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
@@ -115,17 +113,18 @@ Usage Example:\n
         raise ValueError('Invalid log level: %s' % options.loglevel)
     logging.basicConfig(level=numeric_level)
 
-    if options.manager is None:
-        options.manager = abilab.TaskManager.from_user_config()
-    else:
-        options.manager = abilab.TaskManager.from_file(options.manager)
+    
+    options.manager = abilab.TaskManager.from_user_config() if options.manager is None else \
+                      abilab.TaskManager.from_file(options.manager)
 
     if os.path.isfile(options.path):
         flow = build_flow(options.path, options.manager)
         flow.build_and_pickle_dump()
-        #flow.rapidfire()
-        #print("nlaunch: %d" % flow.rapidfire())
-        flow.make_scheduler().start()
+        if not options.dry_run:
+            # Run the flow with the scheduler.
+            #print("nlaunch: %d" % flow.rapidfire())
+            flow.make_scheduler().start()
+
     else:
         table = PeriodicTable()
         all_symbols = [element.symbol for element in table.all_elements]

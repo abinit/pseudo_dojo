@@ -13,22 +13,25 @@ from tabulate import tabulate
 from pymatgen.io.abinitio.pseudos import PseudoTable 
 
 
-def dojo_plot(options):
-    top = options.path
-    if not os.path.isdir(top):
-        paths = [top]
+def pseudos_from_path(path):
+    if not os.path.isdir(path):
+        paths = [path]
     else:
         # directory: find all pseudos with the psp8 extensions.
         # ignore directories starting with _
         paths, ext = [], ".psp8"
-        for dirpath, dirnames, filenames in os.walk(top):
+        for dirpath, dirnames, filenames in os.walk(path):
             if os.path.basename(dirpath).startswith("_"): continue
             dirpath = os.path.abspath(dirpath)
             for filename in filenames:
                 if filename.endswith(ext): 
                     paths.append(os.path.join(dirpath, filename))
 
-    pseudos = PseudoTable(paths).sort_by_z()
+    return PseudoTable(paths).sort_by_z()
+
+
+def dojo_plot(options):
+    pseudos = pseudos_from_path(options.path)
 
     for pseudo in pseudos:
         if not pseudo.has_dojo_report:
@@ -48,36 +51,25 @@ def dojo_plot(options):
 
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
             report.plot_etotal_vs_ecut(title=pseudo.basename)
-            report.plot_deltafactor_eos(title=pseudo.basename)
+            if options.eos:
+                report.plot_deltafactor_eos(title=pseudo.basename)
             report.plot_deltafactor_convergence(title=pseudo.basename)
 
         if any(k in options.what_plot for k in ("all", "gbrv")):
             count = 0
             for struct_type in ("fcc", "bcc"):
-                if report.has_trial("gbrv_" + struct_type):
+                trial = "gbrv_" + struct_type
+                if report.has_trial(trial):
                     count += 1
-                    report.plot_gbrv_eos(struct_type=struct_type, title=pseudo.basename)
+                    if options.eos:
+                        report.plot_gbrv_eos(struct_type=struct_type, title=pseudo.basename)
             if count:
                 report.plot_gbrv_convergence(title=pseudo.basename)
 
 
 def dojo_table(options):
-    top = options.path
-    
-    if not os.path.isdir(top):
-        pseudos = [top]
-    else:
-        pseudos = []
-        for dirpath, dirnames, filenames in os.walk(top):
-            # Exclude pseudos in _inputs
-            if os.path.basename(dirpath) == "_inputs": continue
-            pseudos.extend([os.path.join(dirpath, f) for f in filenames 
-                if f.endswith(".psp8")])
-                #if f.endswith(".psp8") and "-" not in f])
-                #if f.endswith(".psp8") and "-" in f])
+    pseudos = pseudos_from_path(options.path)
 
-    #print(pseudos)
-    pseudos = PseudoTable(pseudos).sort_by_z()
     data, errors = pseudos.get_dojo_dataframe()
     print(data)
 
@@ -198,8 +190,9 @@ Usage example:\n
     subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
 
     # Subparser for plot command.
-    p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser], help="Plot data.")
-    p_plot.add_argument("-w", "--what-plot", type=str, default="all", help="Quantity to plot e.g df, gbrv")
+    p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser], help="Plot DOJO_REPORT data.")
+    p_plot.add_argument("-w", "--what-plot", type=str, default="all", help="Quantity to plot e.g df for deltafactor, gbrv for GBRV tests")
+    p_plot.add_argument("-e", "--eos", type=bool, default=False, help="Plot EOS curve")
 
     # Subparser for table command.
     p_plot = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
