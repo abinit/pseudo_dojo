@@ -28,8 +28,6 @@ def build_flow(pseudo, manager):
             "paral_kgb": 0,
             #"paral_kgb": 1,
             #"nsym": 1,
-            #"nsppol": 2,
-            #"nspden": 2,
     }
 
     report = pseudo.read_dojo_report()
