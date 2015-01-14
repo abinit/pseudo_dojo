@@ -12,6 +12,7 @@ from pymatgen.io.abinitio import Pseudo
 
 
 def main():
+    top = "."
     try:
         top = sys.argv[1]
     except IndexError:
@@ -29,42 +30,55 @@ def main():
             #if f.endswith(".psp8") and "-" in f])
     #print(pseudos)
 
+    from pymatgen.io.abinitio.pseudos import PseudoTable
+    pseudos = PseudoTable(pseudos)
+    data, errors = pseudos.get_dojo_dataframe()
+    print(data)
+
+    if errors:
+        print("ERRORS:")
+        pprint(errors)
+
     accuracies = ["low", "normal", "high"]
-    #accuracies = ["normal", "high"]
     keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
     #print(columns)
 
-    rows, names, errors = [], [], []
-    for p in pseudos:
-        report = p.read_dojo_report()
-        df_entry = report.get("deltafactor", None)
-        if df_entry is None:
-            errors.append((p.name, "no deltafactor"))
-            continue
-
-        try:
-            d = {"symbol": p.symbol}
-            for acc in accuracies:
-                d[acc + "_ecut"] = report["hints"][acc]["ecut"]
-
-            for acc in accuracies:
-                for k in keys:
-                    if k == "ecut": continue
-                    d[acc + "_" + k] = float(df_entry[acc][k])
-            #print(d)
-            names.append(p.name)
-            rows.append(d)
-
-        except Exception as exc:
-            #raise
-            print(p.name, "exc", str(exc))
-            errors.append((p.name, str(exc)))
-
-    #print(rows)
-    data = pd.DataFrame(rows, index=names, columns=columns)
+    ##print(rows)
+    #data = pd.DataFrame(rows, index=names, columns=columns)
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]
     #data = data[data["high_dfact_meV"] <= 9]
+
+    def calc_rerrors(data):
+        # Relative error
+        data["low_dfact_abserr"] = data["low_dfact_meV"] - data["high_dfact_meV"]
+        data["normal_dfact_abserr"] =  data["normal_dfact_meV"] - data["high_dfact_meV"]
+        data["low_dfact_rerr"] = 100 * (data["low_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
+        data["normal_dfact_rerr"] = 100 * (data["normal_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
+
+        for k in ["v0", "b0_GPa", "b1"]:
+            data["low_" + k + "_abserr"] = data["low_" + k] - data["high_" + k]
+            data["normal_" + k + "_abserr"] = data["normal_" + k] - data["high_" + k]
+            data["low_" + k + "_rerr"] = 100 * (data["low_" + k] - data["high_" + k]) / data["high_" + k]
+            data["normal_" + k + "_rerr"] = 100 * (data["normal_" + k] - data["high_" + k]) / data["high_" + k]
+
+        return data
+
+    #import seaborn as sns
+    #import matplotlib.pyplot as plt
+    #data = calc_rerrors(data)
+    #g = sns.PairGrid(data, x_vars="Z", y_vars=[
+    #    "low_ecut",
+    #    "low_dfact_meV",
+    #    #"normal_ecut",
+    #    #"low_dfact_meV",
+    #    #"high_dfact_meV", 
+    #    #"low_v0_rerr", "low_b0_GPa_rerr", "low_b1_rerr",
+    #    ]
+    #) #, hue="smoker")
+    #g.map(plt.scatter)
+    #g.add_legend()
+    #plt.show()
 
     wrong = data[data["high_b1"] < 0]
     if not wrong.empty:
@@ -88,12 +102,7 @@ def main():
 
     bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean()]
     print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
-    #print(bad)
     print(tabulate(bad, headers="keys", tablefmt=tablefmt))
-
-    if errors:
-        print("ERRORS:")
-        pprint(errors)
 
     #import matplotlib.pyplot as plt 
     #bad.plot(kind="barh")

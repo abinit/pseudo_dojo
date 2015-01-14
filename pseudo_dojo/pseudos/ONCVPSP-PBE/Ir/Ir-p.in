@@ -28,7 +28,7 @@ Ir 77 11 3 4 psp8
 1 2 2.5
 2 2 1.0
 # icmod fcfact
-1 0.7
+1 0.35
 # epsh1 epsh2 depsh
 -14.0 12.0 0.02
 # rlmax drl

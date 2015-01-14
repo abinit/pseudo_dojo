@@ -1,3 +1,4 @@
+# coding: utf-8
 """This module provides objects and helper functions for atomic calculations."""
 from __future__ import division, print_function, unicode_literals
 
@@ -83,18 +84,13 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
     associated to a single electron in a spherically symmetric atom.
 
     .. attributes:
-        n:
-            Principal quantum number.
-        l:
-            Angular momentum.
-        occ:
-            Occupancy of the atomic orbital.
-        eig:
-            Eigenvalue of the atomic orbital.
-        j:
-            J quantum number. None if spin is a good quantum number.
-        s:
-            Spin polarization. None if spin is not taken into account.
+
+        n: Principal quantum number.
+        l: Angular momentum.
+        occ: Occupancy of the atomic orbital.
+        eig: Eigenvalue of the atomic orbital.
+        j: J quantum number. None if spin is a good quantum number.
+        s: Spin polarization. None if spin is not taken into account.
     """
     # TODO
     #Spin +1, -1 or 1,2 or 0,1?
@@ -147,10 +143,8 @@ class AtomicConfiguration(object):
     def __init__(self, Z, states):
         """
         Args:
-            Z:
-                Atomic number.
-            states:
-                List of `QState` instances.
+            Z: Atomic number.
+            states: List of :class:`QState` instances.
         """
         self.Z = Z
         self.states = states
@@ -228,7 +222,7 @@ class AtomicConfiguration(object):
         return abs(self.echarge + self.Z) < 1.e-8
 
     def add_state(self, **qnumbers):
-        """Add a list of `QState` instances to self."""
+        """Add a list of :class:`QState` instances to self."""
         self._push(QState(**qnumbers))
 
     def remove_state(self, **qnumbers):
@@ -253,12 +247,9 @@ class RadialFunction(object):
     def __init__(self, name, rmesh, values):
         """
         Args:
-            name:
-                Name of the function (string).
-            rmesh:
-                Iterable with the points of the radial mesh. 
-            values:
-                Iterable with the values of the function on the radial mesh.
+            name: Name of the function (string).
+            rmesh: Iterable with the points of the radial mesh. 
+            values: Iterable with the values of the function on the radial mesh.
         """
         self.name = name 
         self.rmesh = np.ascontiguousarray(rmesh)
@@ -271,12 +262,9 @@ class RadialFunction(object):
         Initialize the object reading data from filename (txt format).
 
         Args:
-            filename:
-                Path to the file containing data.
-            rfunc_name:
-                Optional name for the RadialFunction (defaults to filename)
-            cols:
-                List with the index of the columns containing the radial mesh and the values.
+            filename: Path to the file containing data.
+            rfunc_name: Optional name for the RadialFunction (defaults to filename)
+            cols: List with the index of the columns containing the radial mesh and the values.
         """
         data = np.loadtxt(filename)
         rmesh, values = data[:,cols[0]], data[:,cols[1]]
@@ -391,10 +379,8 @@ class RadialFunction(object):
         """
         Return definite integral of the spline of (r**2 values**2) between two given points a and b
         Args:
-            a:
-                First point. rmesh[0] if a is None
-            b:
-                Last point. rmesh[-1] if a is None
+            a: First point. rmesh[0] if a is None
+            b: Last point. rmesh[-1] if a is None
         """
         a = self.rmesh[0] if a is None else a
         b = self.rmesh[-1] if b is None else b
@@ -418,10 +404,9 @@ class RadialFunction(object):
         Returns the rightmost index where the abs value of the wf becomes greater than abs_tol 
 
         Args:
-            abs_tol:
-                Absolute tolerance.
+            abs_tol: Absolute tolerance.
 
-        .. warning:
+        .. warning::
 
             Assumes that self.values are tending to zero for r --> infinity.
         """
@@ -443,7 +428,7 @@ class RadialFunction(object):
 
 class RadialWaveFunction(RadialFunction):
     """
-    Extends `RadialFunction` adding info on the set of quantum numbers.
+    Extends :class:`RadialFunction` adding info on the set of quantum numbers.
     and methods specialized for electronic wavefunctions.
     """
     TOL_BOUND = 1.e-10
@@ -470,10 +455,8 @@ def plot_aepp(ae_funcs, pp_funcs=None, **kwargs):
     Uses Matplotlib to plot the radial wavefunction (AE only or AE vs PP)
 
     Args:
-        ae_funcs:
-            All-electron radial functions.
-        pp_funcs:
-            Pseudo radial functions.
+        ae_funcs: All-electron radial functions.
+        pp_funcs: Pseudo radial functions.
 
     ==============  ==============================================================
     kwargs          Meaning
@@ -578,10 +561,8 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
     Uses matplotlib to plot the logarithmic derivatives.
                                                                                          
     Args:
-        ae_logders:
-            AE logarithmic derivatives.
-        pp_logders:
-            PP logarithmic derivatives.
+        ae_logders: AE logarithmic derivatives.
+        pp_logders: PP logarithmic derivatives.
 
     ==============  ==============================================================
     kwargs          Meaning

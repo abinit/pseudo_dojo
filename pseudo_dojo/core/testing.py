@@ -1,3 +1,4 @@
+# coding: utf-8
 """
 Common test support for pseudo_dojo.
 

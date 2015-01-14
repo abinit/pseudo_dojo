@@ -1,3 +1,4 @@
+# coding: utf-8
 """Pseudopotential Generators."""
 from __future__ import division, print_function, unicode_literals
 
@@ -9,7 +10,7 @@ import shutil
 import time
 
 from monty.os.path import which
-from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser
+from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pymatgen.io.abinitio.pseudos import Pseudo
 
 import logging
@@ -21,8 +22,8 @@ _STATUS2STR = collections.OrderedDict([
     (1, "Initialized"),    # PseudoGenerator has been initialized
     (2, "Running"),        # PseudoGenerator is running.
     (3, "Done"),           # Calculation done, This does not imply that results are ok
-    (4, "Error"),           # Generator error.
-    (5, "Completed"),       # Execution completed successfully.
+    (4, "Error"),          # Generator error.
+    (5, "Completed"),      # Execution completed successfully.
 ])
 
 
@@ -46,7 +47,7 @@ class Status(int):
 
     @classmethod
     def from_string(cls, s):
-        """Return a `Status` instance from its string representation."""
+        """Return a :class:`Status` instance from its string representation."""
         for num, text in _STATUS2STR.items():
             if text == s:
                 return cls(num)
@@ -66,24 +67,17 @@ class PseudoGenerator(object):
         2) the object should have the input file stored in self.input_str
 
     Attributes:
-        workdir:
-            Working directory (output results are produced in workdir)
-        status:
-            Flag defining the status of the ps generator.
-        retcode:
-            Return code of the code
-        errors:
-            List of strings with errors.
-        warnings:
-            List of strings with warnings.
-        parser:
-            Output parser. None if results are not available because
+        workdir: Working directory (output results are produced in workdir)
+        status: Flag defining the status of the ps generator.
+        retcode: Return code of the code
+        errors: List of strings with errors.
+        warnings: List of strings with warnings.
+        parser: Output parser. None if results are not available because
             the calculations is still running or errors
-        results:
-            Dictionary with the most important results. None if results are not available because
+        results: Dictionary with the most important results. None if results are not available because
             the calculations is still running or errors
         pseudo:
-            PseudoPotential object. None if not available
+            :class:`Pseudo` object. None if not available
     """
     __metaclass__ = abc.ABCMeta
 
@@ -212,10 +206,8 @@ class PseudoGenerator(object):
         Set the status.
 
         Args:
-            status:
-                Status object or string representation of the status
-            info_msg:
-                string with human-readable message used in the case of errors (optional)
+            status: Status object or string representation of the status
+            info_msg: string with human-readable message used in the case of errors (optional)
         """
         assert status in _STATUS2STR
 
@@ -305,11 +297,10 @@ class OncvGenerator(PseudoGenerator):
     to validate/analyze/plot the final results.
 
     Attributes:
-        retcode:
-            Retcode of oncvpsp
+
+        retcode: Retcode of oncvpsp
     """
-    from oncvpsp import OncvOuptputParser
-    OutputParser = OncvOuptputParser
+    OutputParser = OncvOutputParser
 
     def __init__(self, input_str, calc_type):
         super(OncvGenerator, self).__init__()
@@ -327,10 +318,11 @@ class OncvGenerator(PseudoGenerator):
             raise RuntimeError(msg)
 
     def check_status(self):
+        """Check the status of the run, set and return self.status attribute."""
         if self.status == self.S_OK:
             return self._status
 
-        parser = OncvOuptputParser(self.stdout_path)
+        parser = self.OutputParser(self.stdout_path)
         try:
             parser.scan()
         except parser.Error:
@@ -371,7 +363,6 @@ class OncvGenerator(PseudoGenerator):
             # Initialize self.pseudo from file.
             with open(filepath, "w") as fh:
                 fh.write(parser.get_pseudo_str())
-                #fh.write(parser.get_ecut_hints())
 
             self._pseudo = Pseudo.from_file(filepath)
 
@@ -389,7 +380,7 @@ class OncvGenerator(PseudoGenerator):
         #    return
 
         # Call the output parser to get the results.
-        parser = OncvOuptputParser(self.stdout_path)
+        parser = self.OutputParser(self.stdout_path)
         parser.scan()
 
         # Build the plotter and plot data according to **kwargs

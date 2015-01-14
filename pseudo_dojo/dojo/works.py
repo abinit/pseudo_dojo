@@ -1,3 +1,4 @@
+# coding: utf-8
 """Base class for Dojo Workkflows."""
 from __future__ import division, print_function, unicode_literals
 
@@ -13,9 +14,9 @@ from pymatgen.core.units import Ha_to_eV
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo
-from pymatgen.core.structure import Structure
-from pymatgen.io.abinitio.abiobjects import AbiStructure, SpinMode, Smearing, KSampling, Electrons, RelaxationMethod
-from pymatgen.io.abinitio.workflows import Workflow, build_oneshot_phononwork, OneShotPhononWorkflow
+from pymatgen.io.abinitio.abiobjects import SpinMode, Smearing, KSampling, Electrons, RelaxationMethod
+from pymatgen.io.abinitio.works import Work
+from abipy.core.structure import Structure
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
@@ -23,12 +24,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DojoWorkflow(Workflow):
+class DojoWork(Work):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractproperty
     def pseudo(self):
-        """Pseudo"""
+        """:class:`Pseudo` object"""
 
     @abc.abstractproperty
     def dojo_trial(self):
@@ -150,31 +151,23 @@ def compute_hints(ecuts, etotals, atols_mev, min_numpts=1, stream=sys.stdout):
         high={"ecut": ecut_high, "aug_ratio": aug_ratio_high})
 
 
-class PseudoConvergence(DojoWorkflow):
+class PseudoConvergence(DojoWork):
 
     def __init__(self, pseudo, ecut_slice, nlaunch, atols_mev,
                  toldfe=1.e-8, spin_mode="polarized", acell=(8, 9, 10), 
                  smearing="fermi_dirac:0.1 eV", max_niter=300, workdir=None, manager=None):
         """
         Args:
-            pseudo:
-                string or Pseudo instance
-            ecut_slice:
-                List of cutoff energies or slice object (mainly used for infinite iterations).
+            pseudo: string or :class:`Pseudo` instance
+            ecut_slice: List of cutoff energies or slice object (mainly used for infinite iterations).
             nlaunch:
-            atols_mev:
-                List of absolute tolerances in meV (3 entries corresponding to accuracy ["low", "normal", "high"]
-            spin_mode:
-                Defined how the electronic spin will be treated.
-            acell:
-                Lengths of the periodic box in Bohr.
-            smearing:
-                Smearing instance or string in the form "mode:tsmear". Default: FemiDirac with T=0.1 eV
+            atols_mev: List of absolute tolerances in meV (3 entries corresponding to accuracy ["low", "normal", "high"]
+            spin_mode: Defined how the electronic spin will be treated.
+            acell: Lengths of the periodic box in Bohr.
+            smearing: :class:`Smearing` instance or string in the form "mode:tsmear". Default: FemiDirac with T=0.1 eV
             max_niter:
-            workdir:
-                Working directory.
-            manager:
-                `TaskManager` object.
+            workdir: Working directory.
+            manager: :class:`TaskManager` object.
         """
         super(PseudoConvergence, self).__init__(workdir, manager)
 
@@ -209,7 +202,7 @@ class PseudoConvergence(DojoWorkflow):
     def add_task_with_ecut(self, ecut):
         """Register a new task with cutoff energy ecut."""
         # One atom in a box of lenghts acell.
-        boxed_atom = AbiStructure.boxed_atom(self.pseudo, acell=self.acell)
+        boxed_atom = Structure.boxed_atom(self.pseudo, acell=self.acell)
 
         # Gamma-only sampling.
         gamma_only = KSampling.gamma_only()
@@ -296,33 +289,24 @@ class PseudoConvergence(DojoWorkflow):
 
 class PPConvergenceFactory(object):
     """
-    Factory object that constructs workflows for analyzing the converge of pseudopotentials.
+    Factory object that constructs works for analyzing the converge of pseudopotentials.
     """
     def work_for_pseudo(self, pseudo, ecut_slice, nlaunch,
                         toldfe=1.e-8, atols_mev=(10, 1, 0.1), spin_mode="polarized",
                         acell=(8, 9, 10), smearing="fermi_dirac:0.1 eV", workdir=None, manager=None):
         """
-        Return a `Workflow` object given the pseudopotential pseudo.
+        Return a `Work` object given the pseudopotential pseudo.
 
         Args:
-            pseudo:
-                Pseudo object.
-            ecut_slice:
-                cutoff energies in Ha units (accepts lists or slice objects)
-            toldfe:
-                Tolerance on the total energy (Ha).
-            atols_mev:
-                Tolerances in meV for accuracy in ["low", "normal", "high"]
-            spin_mode:
-                Spin polarization.
-            acell:
-                Length of the real space lattice (Bohr units)
-            smearing:
-                Smearing technique.
-            workdir:
-                Working directory.
-            manager:
-                `TaskManager` object.
+            pseudo: filepath or :class:`Pseudo` object.
+            ecut_slice: cutoff energies in Ha units (accepts lists or slice objects)
+            toldfe: Tolerance on the total energy (Ha).
+            atols_mev: Tolerances in meV for accuracy in ["low", "normal", "high"]
+            spin_mode: Spin polarization.
+            acell: Length of the real space lattice (Bohr units)
+            smearing: Smearing technique.
+            workdir: Working directory.
+            manager: :class:`TaskManager` object.
         """
         return PseudoConvergence(
             pseudo, ecut_slice, nlaunch, atols_mev,
@@ -352,11 +336,10 @@ class DeltaFactory(object):
     def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, ecut=None, pawecutdg=None,
                         toldfe=1.e-8, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
-        Returns a `Workflow` object from the given pseudopotential.
+        Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
-            kwargs:
-                Extra variables passed to Abinit.
+            kwargs: Extra variables passed to Abinit.
 
         .. note: 
             0.001 Rydberg is the value used with WIEN2K
@@ -398,54 +381,46 @@ class DeltaFactory(object):
             elif symbol == 'Mn':
                 kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
 
-        return DeltaFactorWorkflow(
-            cif_path, pseudo, kppa,
+        # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
+        structure = Structure.from_file(cif_path, primitive=False)
+
+        # Magnetic elements:
+        # Start from previous SCF run to avoid getting trapped in local minima 
+        connect = symbol in ("Fe", "Co", "Ni", "Cr", "Mn", "O", "Zn", "Cu")
+
+        return DeltaFactorWork(
+            structure, pseudo, kppa, connect,
             spin_mode=spin_mode, toldfe=toldfe, smearing=smearing,
             accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
 
 
-class DeltaFactorWorkflow(DojoWorkflow):
-    """Workflow for the calculation of the deltafactor."""
-    def __init__(self, structure_or_cif, pseudo, kppa,
+class DeltaFactorWork(DojoWork):
+    """Work for the calculation of the deltafactor."""
+    def __init__(self, structure, pseudo, kppa, connect,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
                  spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
                  accuracy="normal",  chksymbreak=0, paral_kgb=0, workdir=None, manager=None, **kwargs):
         """
-        Build a `Workflow` for the computation of the deltafactor.
+        Build a :class:`Work` for the computation of the deltafactor.
 
         Args:   
-            structure_or_cif:
-                Structure object or string with the path of the CIF file.
-            pseudo:
-                String with the name of the pseudopotential file or `Pseudo` object.`
-            kppa:
-                Number of k-points per atom.
-            spin_mode:
-                Spin polarization mode.
-            toldfe:
-                Tolerance on the energy (Ha)
-            smearing:
-                Smearing technique.
-            workdir:
-                String specifing the working directory.
-            manager:
-                `TaskManager` responsible for the submission of the tasks.
+            structure: :class:`Structure` object
+            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
+            kppa: Number of k-points per atom.
+            connect: True if the SCF run should be initialized from the previous run.
+            spin_mode: Spin polarization mode.
+            toldfe: Tolerance on the energy (Ha)
+            smearing: Smearing technique.
+            workdir: String specifing the working directory.
+            manager: :class:`TaskManager` responsible for the submission of the tasks.
         """
-        super(DeltaFactorWorkflow, self).__init__(workdir=workdir, manager=manager)
+        super(DeltaFactorWork, self).__init__(workdir=workdir, manager=manager)
 
         self.set_dojo_accuracy(accuracy)
 
         self._pseudo = Pseudo.as_pseudo(pseudo)
 
-        if not isinstance(structure_or_cif, Structure):
-            # Assume CIF file
-            structure = Structure.from_file(structure_or_cif, primitive=False)
-        else:
-            structure = structure_or_cif
-        #print(structure)
-
-        structure = AbiStructure.asabistructure(structure)
         spin_mode = SpinMode.as_spinmode(spin_mode)
 
         # Compute the number of bands from the pseudo and the spin-polarization.
@@ -461,7 +436,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
             ecutsm=ecutsm,
             toldfe=toldfe,
             #nband=nband,
-            prtwf=0,
+            prtwf=0 if not connect else 1,
             paral_kgb=paral_kgb,
             chkprim=0,
             nstep=200,
@@ -479,7 +454,6 @@ class DeltaFactorWorkflow(DojoWorkflow):
             new_lattice = structure.lattice.scale(vol)
 
             new_structure = Structure(new_lattice, structure.species, structure.frac_coords)
-            new_structure = AbiStructure.asabistructure(new_structure)
 
             ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak)
 
@@ -488,6 +462,16 @@ class DeltaFactorWorkflow(DojoWorkflow):
                                     smearing=smearing, **extra_abivars)
 
             self.register_scf_task(scf_input)
+
+        if connect:
+            #print("connecting SCF tasks")
+            middle = len(self.volumes) // 2
+            filetype = "WFK"
+            for i, task in enumerate(self[:middle]):
+                task.add_deps({self[i + 1]: filetype})
+
+            for i, task in enumerate(self[middle+1:]):
+                task.add_deps({self[middle + i]: filetype})
 
     @property
     def pseudo(self):
@@ -498,7 +482,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
         return "deltafactor"
 
     def get_results(self):
-        results = super(DeltaFactorWorkflow, self).get_results()
+        results = super(DeltaFactorWork, self).get_results()
 
         num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")
@@ -533,16 +517,19 @@ class DeltaFactorWorkflow(DojoWorkflow):
                 "v0": eos_fit.v0,
                 "b0": eos_fit.b0,
                 "b0_GPa": eos_fit.b0_GPa,
-                "b1": eos_fit.b1})
+                "b1": eos_fit.b1,
+                "dfactprime_meV": dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa),
+            })
 
-            d = {k: results[k] for k in ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes", "num_sites")}
+            d = {k: results[k] for k in 
+                ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes", "num_sites", "dfactprime_meV")}
 
             # Write data for the computation of the delta factor
             with open(self.outdir.path_in("deltadata.txt"), "w") as fh:
                 fh.write("# Deltafactor = %s meV\n" % dfact)
                 fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
                 for v, e in zip(self.volumes, etotals):
-                   fh.write("%s %s\n" % (v/num_sites, e/num_sites))
+                    fh.write("%s %s\n" % (v/num_sites, e/num_sites))
 
         except EOS.Error as exc:
             results.push_exceptions(exc)
@@ -560,7 +547,7 @@ class DeltaFactorWorkflow(DojoWorkflow):
 
 
 class GbrvFactory(object):
-    """Factory class producing `Workflow` objects for GBRV calculations."""
+    """Factory class producing :class:`Work` objects for GBRV calculations."""
     def __init__(self):
         self._db = gbrv_database()
 
@@ -571,7 +558,7 @@ class GbrvFactory(object):
         """
         # Get the entry in the database
         entry = self._db.get_entry(symbol, struct_type)
-                                                                                         
+
         # Build the structure and handle a possibly missing value.
         structure = entry.build_structure(ref=ref)
 
@@ -586,13 +573,13 @@ class GbrvFactory(object):
 
     def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, paral_kgb=0, ref="ae"):
         """
-        Returns a `Workflow` object from the given pseudopotential.
+        Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
-            kwargs:
-                Extra variables passed to Abinit.
+            kwargs: Extra variables passed to Abinit.
 
-        .. note: 
+        .. note::
+
             GBRV tests are done with the following parameteres:
 
                 - No spin polarization for structural relaxation 
@@ -606,7 +593,7 @@ class GbrvFactory(object):
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
-        return GbrvRelaxAndEosWorkflow(
+        return GbrvRelaxAndEosWork(
             structure, struct_type, pseudo,
             ecut=ecut, pawecutdg=pawecutdg, paral_kgb=paral_kgb)
 
@@ -622,38 +609,28 @@ def gbrv_nband(pseudo):
     return nband
 
 
-class GbrvRelaxAndEosWorkflow(DojoWorkflow):
+class GbrvRelaxAndEosWork(DojoWork):
 
     def __init__(self, structure, struct_type, pseudo, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
                  spin_mode="unpolarized", toldfe=1.e-8, smearing="fermi_dirac:0.001 Ha",
                  accuracy="normal", paral_kgb=0, ecutsm=0.05, chksymbreak=0,
                  workdir=None, manager=None, **kwargs):
         """
-        Build a `Workflow` for the computation of the relaxed lattice parameter.
+        Build a :class:`Work` for the computation of the relaxed lattice parameter.
 
         Args:   
-            structure:
-                Structure object 
-            structure_type:
-                fcc, bcc 
-            pseudo:
-                String with the name of the pseudopotential file or `Pseudo` object.
-            ecut:
-                Cutoff energy in Hartree
-            ngkpt:
-                MP divisions.
-            spin_mode:
-                Spin polarization mode.
-            toldfe:
-                Tolerance on the energy (Ha)
-            smearing:
-                Smearing technique.
-            workdir:
-                String specifing the working directory.
-            manager:
-                `TaskManager` responsible for the submission of the tasks.
+            structure: :class:`Structure` object 
+            structure_type: fcc, bcc 
+            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
+            ecut: Cutoff energy in Hartree
+            ngkpt: MP divisions.
+            spin_mode: Spin polarization mode.
+            toldfe: Tolerance on the energy (Ha)
+            smearing: Smearing technique.
+            workdir: String specifing the working directory.
+            manager: :class:`TaskManager` responsible for the submission of the tasks.
         """
-        super(GbrvRelaxAndEosWorkflow, self).__init__(workdir=workdir, manager=manager)
+        super(GbrvRelaxAndEosWork, self).__init__(workdir=workdir, manager=manager)
         self.struct_type = struct_type
         self.accuracy = accuracy
 
@@ -669,12 +646,14 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
             prtwf=0,
             #ecutsm=ecutsm,
             nband=self.nband,
-            paral_kgb=paral_kgb)
+            paral_kgb=paral_kgb
+        )
                                        
         self.extra_abivars.update(**kwargs)
         self.ecut = ecut
         self.smearing = smearing
 
+        #ngkpt = (1,1,1)
         self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak)
         self.spin_mode = spin_mode
         relax_algo = RelaxationMethod.atoms_and_cell()
@@ -709,7 +688,6 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
         for vol in self.volumes:
             new_lattice = relaxed_structure.lattice.scale(vol)
             new_structure = Structure(new_lattice, relaxed_structure.species, relaxed_structure.frac_coords)
-            new_structure = AbiStructure.asabistructure(new_structure)
 
             scf_input = ScfStrategy(new_structure, self.pseudo, self.ksampling,
                                     accuracy=self.accuracy, spin_mode=self.spin_mode,
@@ -723,7 +701,8 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
         self.flow.build_and_pickle_dump()
 
     def compute_eos(self):
-        results = self.Results()
+        #results = self.Results()
+        results = self.get_results()
 
         # Read etotals and fit E(V) with a parabola to find minimum
         #num_sites = self._input_structure.num_sites
@@ -755,7 +734,8 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
             b0=eos_fit.b0,
             b1=eos_fit.b1,
             a0=a0,
-            struct_type=self.struct_type))
+            struct_type=self.struct_type
+        ))
 
         db = gbrv_database()
         entry = db.get_entry(self.pseudo.symbol, stype=self.struct_type)
@@ -770,6 +750,8 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
         print("GBRV-PAW - THIS: abs_err = %f, rel_err = %f %%" % (pawabs_err, pawrel_err))
 
         d = {k: results[k] for k in ("a0", "etotals", "volumes")}
+        d["a0_abs_err"] = abs_err
+        d["a0_rel_err"] = rel_err
         if results.exceptions:
             d["_exceptions"] = str(results.exceptions)
 
@@ -784,8 +766,8 @@ class GbrvRelaxAndEosWorkflow(DojoWorkflow):
     def on_all_ok(self):
         """
         This method is called when self reaches S_OK.
-        It reads the optimized structure from the netcdf file and build
-        a new workflow for the computation of the EOS with the GBRV parameters.
+        It reads the optimized structure from the netcdf file and builds
+        a new work for the computation of the EOS with the GBRV parameters.
         """
         if not self.add_eos_done:
             logger.info("Building EOS tasks")
@@ -925,3 +907,5 @@ class PhononDojoWorkflow(OneShotPhononWorkflow, DojoWorkflow):
     @property
     def pseudo(self):
         return self._pseudo
+
+#        return super(GbrvRelaxAndEosWork, self).on_all_ok()

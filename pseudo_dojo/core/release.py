@@ -1,3 +1,4 @@
+# coding: utf-8
 """Release data for the pseudo_dojo project."""
 from __future__ import division, print_function, unicode_literals
 

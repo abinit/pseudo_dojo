@@ -9,9 +9,9 @@ Ar 18 3 2 4 psp8
 # lmax
 2
 # l rc ep ncon nbas qcut
-0 1.55 0.0 4 8 7.6
-1 1.55 0.0 4 8 8.0
-2 1.55 0.1 4 8 7.8
+0 1.55 0.0 4 8 8.2
+1 1.55 0.0 4 8 8.2
+2 1.55 0.1 4 8 8.2
 # lloc lpopt rc5 dvloc0
 4 5 1.5 0.0
 # l nproj debl
@@ -19,7 +19,7 @@ Ar 18 3 2 4 psp8
 1 2 1.5
 2 2 1.0
 # icmod fcfact
-1 0.45
+1 0.085
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl

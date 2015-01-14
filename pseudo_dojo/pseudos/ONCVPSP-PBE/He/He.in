@@ -6,9 +6,9 @@ He 2 0 1 4 psp8
 1
 # l rc ep ncon nbas qcut
 0 1.25 0.0 4 8 8.4
-1 1.2 0.05 4 7 5.0
+1 1.0 0.05 4 7 6.2
 # lloc lpopt rc5 dvloc0
-4 5 1.1 0.0
+4 5 1.0 0.0
 # l nproj debl
 0 2 1.0
 1 1 1.0
