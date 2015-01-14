@@ -13,34 +13,17 @@ from tabulate import tabulate
 from pymatgen.io.abinitio.pseudos import PseudoTable 
 
 
-def pseudos_from_path(path):
-    if not os.path.isdir(path):
-        paths = [path]
-    else:
-        # directory: find all pseudos with the psp8 extensions.
-        # ignore directories starting with _
-        paths, ext = [], ".psp8"
-        for dirpath, dirnames, filenames in os.walk(path):
-            if os.path.basename(dirpath).startswith("_"): continue
-            dirpath = os.path.abspath(dirpath)
-            for filename in filenames:
-                if filename.endswith(ext): 
-                    paths.append(os.path.join(dirpath, filename))
-
-    return PseudoTable(paths).sort_by_z()
-
-
 def dojo_plot(options):
-    pseudos = pseudos_from_path(options.path)
-
+    pseudos = options.pseudos
     for pseudo in pseudos:
+        #print(pseudos)
         if not pseudo.has_dojo_report:
             warn("pseudo %s does not contain the DOJO_REPORT section" % pseudo.filepath)
             continue
 
         report = pseudo.dojo_report
-        # FIXME add symbol
-        report.symbol = pseudo.symbol
+        #FIXME add symbol
+        #report.symbol = pseudo.symbol
         #print(pseudo)
         #print(report)
 
@@ -49,12 +32,14 @@ def dojo_plot(options):
         #report.has_exceptions
         #report.print_table()
 
+        # Deltafactor
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
             report.plot_etotal_vs_ecut(title=pseudo.basename)
             if options.eos:
                 report.plot_deltafactor_eos(title=pseudo.basename)
             report.plot_deltafactor_convergence(title=pseudo.basename)
 
+        # GBRV
         if any(k in options.what_plot for k in ("all", "gbrv")):
             count = 0
             for struct_type in ("fcc", "bcc"):
@@ -67,8 +52,40 @@ def dojo_plot(options):
                 report.plot_gbrv_convergence(title=pseudo.basename)
 
 
+def dojo_compare_plots(options):
+    pseudos = options.pseudos
+    import matplotlib.pyplot as plt
+
+    # Compare ecut convergence and Deltafactor
+    if all(p.dojo_report.has_trial("deltafactor") for p in pseudos) and \
+           any(k in options.what_plot for k in ("all", "df")):
+
+        fig, ax_list = plt.subplots(nrows=len(pseudos), ncols=1, sharex=True, squeeze=True)
+        for ax, pseudo in zip(ax_list, pseudos):
+            pseudo.dojo_report.plot_etotal_vs_ecut(ax=ax, show=False, label=pseudo.basename)
+        plt.show()
+
+        fig, ax_grid = plt.subplots(nrows=5, ncols=len(pseudos), sharex=True, sharey="row", squeeze=False)
+        for ax_list, pseudo in zip(ax_grid.T, pseudos):
+            pseudo.dojo_report.plot_deltafactor_convergence(ax_list=ax_list, show=False)
+
+        fig.suptitle(" vs ".join(p.basename for p in pseudos))
+        plt.show()
+
+    # Compare GBRV results
+    if all(p.dojo_report.has_trial("gbrv_bcc") for p in pseudos) and \
+        any(k in options.what_plot for k in ("all", "gbrv")):
+
+        fig, ax_grid = plt.subplots(nrows=2, ncols=len(pseudos), sharex=True, sharey="row", squeeze=False)
+        for ax_list, pseudo in zip(ax_grid.T, pseudos):
+            pseudo.dojo_report.plot_gbrv_convergence(ax_list=ax_list, show=False)
+
+        fig.suptitle(" vs ".join(p.basename for p in pseudos))
+        plt.show()
+
+
 def dojo_table(options):
-    pseudos = pseudos_from_path(options.path)
+    pseudos = options.pseudos
 
     data, errors = pseudos.get_dojo_dataframe()
     print(data)
@@ -169,13 +186,7 @@ Usage example:\n
 
     # Parent parser for commands that need to know on which subset of pseudos we have to operate.
     pseudos_selector_parser = argparse.ArgumentParser(add_help=False)
-    group = pseudos_selector_parser.add_mutually_exclusive_group()
-    #group.add_argument("-n", '--nids', default=None, type=parse_nids, help=(
-    #    "Node identifier(s) used to select the task. Integer or comma-separated list of integers. Use `status` command to get the node ids.\n"
-    #    "Examples: --nids=12 --nids=12,13,16 --nids=10:12 to select 10 and 11, --nids=2:5:2 to select 2,4"  
-    #    ))
-
-    group.add_argument('path', nargs="?", help="Pseudopotential file or directory containing pseudos")
+    pseudos_selector_parser.add_argument('pseudos', nargs="+", help="Pseudopotential file or directory containing pseudos")
 
     # Build the main parser.
     parser = argparse.ArgumentParser(epilog=str_examples(), formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -211,8 +222,29 @@ Usage example:\n
         raise ValueError('Invalid log level: %s' % options.loglevel)
     logging.basicConfig(level=numeric_level)
 
+    def read_pseudos(paths):
+        if len(paths) == 1 and os.path.isdir(paths[0]):
+            # directory: find all pseudos with the psp8 extensions.
+            # ignore directories starting with _
+            top = paths[0]
+            paths, ext = [], ".psp8"
+            for dirpath, dirnames, filenames in os.walk(top):
+                if os.path.basename(dirpath).startswith("_"): continue
+                dirpath = os.path.abspath(dirpath)
+                for filename in filenames:
+                    if filename.endswith(ext): 
+                        paths.append(os.path.join(dirpath, filename))
+                                                                       
+        return PseudoTable(paths).sort_by_z()
+
+    # Build PseudoTable from the paths specified by the user.
+    options.pseudos = read_pseudos(options.pseudos)
+
     if options.command == "plot":
-        dojo_plot(options)
+        if len(options.pseudos) > 1:
+            dojo_compare_plots(options)
+        else:
+            dojo_plot(options)
 
     elif options.command == "table":
         dojo_table(options)
