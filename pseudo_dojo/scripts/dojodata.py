@@ -14,6 +14,7 @@ from pymatgen.io.abinitio.pseudos import PseudoTable
 
 
 def dojo_plot(options):
+    """Plot DOJO results for a single pseudo."""
     pseudos = options.pseudos
     for pseudo in pseudos:
         #print(pseudos)
@@ -22,8 +23,6 @@ def dojo_plot(options):
             continue
 
         report = pseudo.dojo_report
-        #FIXME add symbol
-        #report.symbol = pseudo.symbol
         #print(pseudo)
         #print(report)
 
@@ -53,6 +52,7 @@ def dojo_plot(options):
 
 
 def dojo_compare_plots(options):
+    """Plot and compare DOJO results for multiple pseudos."""
     pseudos = options.pseudos
     import matplotlib.pyplot as plt
 
@@ -74,7 +74,7 @@ def dojo_compare_plots(options):
 
     # Compare GBRV results
     if all(p.dojo_report.has_trial("gbrv_bcc") for p in pseudos) and \
-        any(k in options.what_plot for k in ("all", "gbrv")):
+       any(k in options.what_plot for k in ("all", "gbrv")):
 
         fig, ax_grid = plt.subplots(nrows=2, ncols=len(pseudos), sharex=True, sharey="row", squeeze=False)
         for ax_list, pseudo in zip(ax_grid.T, pseudos):
@@ -85,6 +85,7 @@ def dojo_compare_plots(options):
 
 
 def dojo_table(options):
+    """Build table."""
     pseudos = options.pseudos
 
     data, errors = pseudos.get_dojo_dataframe()
@@ -140,7 +141,7 @@ def dojo_table(options):
 
     data = data[
         [acc + "_dfact_meV" for acc in accuracies]
-        + [acc + "_ecut" for acc in accuracies]
+      + [acc + "_ecut" for acc in accuracies]
     ]
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))
@@ -170,11 +171,27 @@ def dojo_table(options):
     #data["high_dfact_meV"].hist(bins=200)
     #plt.show()
 
+def dojo_validate(options):
+    errors = []
+    for p in options.pseudos:
+        try:
+            d = p.dojo_report.validate()
+            if d:
+                print("Validation problem -->", p.basename, d)
+        except Exception as exc:
+            print("Error: ", p.basename + str(exc))
+
+    if errors:
+        print(errors)
+
 
 def main():
     def str_examples():
         examples = """\
 Usage example:\n
+    dojodata plot H.psp8             ==> Plot dojo data for pseudo H.psp8
+    dojodata plot H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
+    dojodata table .                 ==> Build table
 """
         return examples
 
@@ -206,7 +223,10 @@ Usage example:\n
     p_plot.add_argument("-e", "--eos", type=bool, default=False, help="Plot EOS curve")
 
     # Subparser for table command.
-    p_plot = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
+    p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
+
+    # Subparser for table validate.
+    p_validate = subparsers.add_parser('validate', parents=[pseudos_selector_parser], help="Validate pseudos")
 
     # Parse command line.
     try:
@@ -222,23 +242,27 @@ Usage example:\n
         raise ValueError('Invalid log level: %s' % options.loglevel)
     logging.basicConfig(level=numeric_level)
 
-    def read_pseudos(paths):
+    def read_pseudos(paths, exts):
+        """
+        Find pseudos in paths, return PseudoTable object sorted by Z.
+        Accepts filepaths or directory.
+        """
         if len(paths) == 1 and os.path.isdir(paths[0]):
             # directory: find all pseudos with the psp8 extensions.
             # ignore directories starting with _
             top = paths[0]
-            paths, ext = [], ".psp8"
+            paths, ext = [], "psp8"
             for dirpath, dirnames, filenames in os.walk(top):
                 if os.path.basename(dirpath).startswith("_"): continue
                 dirpath = os.path.abspath(dirpath)
                 for filename in filenames:
-                    if filename.endswith(ext): 
+                    if any(filename.endswith(ext) for ext in exts):
                         paths.append(os.path.join(dirpath, filename))
                                                                        
         return PseudoTable(paths).sort_by_z()
 
     # Build PseudoTable from the paths specified by the user.
-    options.pseudos = read_pseudos(options.pseudos)
+    options.pseudos = read_pseudos(options.pseudos, exts=("psp8",))
 
     if options.command == "plot":
         if len(options.pseudos) > 1:
@@ -248,6 +272,9 @@ Usage example:\n
 
     elif options.command == "table":
         dojo_table(options)
+
+    elif options.command == "validate":
+        dojo_validate(options)
 
     else:
         raise ValueError("Don't know how to handle command %s" % options.command)

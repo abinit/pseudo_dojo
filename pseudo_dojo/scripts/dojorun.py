@@ -13,20 +13,20 @@ from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 
 
-def build_flow(pseudo, manager):
+def build_flow(pseudo, options):
     pseudo = Pseudo.as_pseudo(pseudo)
 
     workdir = pseudo.basename + "_DOJO"
-    if os.path.exists(workdir): raise ValueError("%s exists" % workdir)
+    #if not options.ignore and os.path.exists(workdir): 
+    #    raise ValueError("%s exists" % workdir)
 
-    flow = abilab.Flow(workdir=workdir, manager=manager)
+    flow = abilab.Flow(workdir=workdir, manager=options.manager)
 
     extra_abivars = {
             "mem_test": 0,
             "fband": 2,
             "nstep": 100,
-            "paral_kgb": 0,
-            #"paral_kgb": 1,
+            "paral_kgb": options.paral_kgb
             #"nsym": 1,
     }
 
@@ -47,6 +47,7 @@ def build_flow(pseudo, manager):
 
     factory = DeltaFactory()
     for ecut in ecut_list:
+        if ecut in report["deltafactor"].keys(): continue
         pawecutdg = 2 * ecut 
         # Build and register the workflow.
         work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg, toldfe=1.e-8, **extra_abivars)
@@ -55,8 +56,9 @@ def build_flow(pseudo, manager):
     gbrv_factory = GbrvFactory()
     gbrv_structs = ("fcc", "bcc")
     for struct_type in gbrv_structs:
-        #dojo_trial = "gbrv_" + struct_type
+        dojo_trial = "gbrv_" + struct_type
         for ecut in ecut_list:
+            if ecut in report[dojo_trial].keys(): continue
             pawecutdg = 2 * ecut 
             work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg)
             flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
@@ -79,10 +81,10 @@ Usage Example:\n
 
     parser = argparse.ArgumentParser(epilog=str_examples())
 
-    #parser.add_argument('-l', '--max-level', type=int, default=0,  help="Maximum DOJO level (default 0 i.e. ecut hints).")
-
     parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
     parser.add_argument('-d', '--dry-run', type=bool, default=False,  help="Dry run, build the flow without submitting it")
+    parser.add_argument('--paral_kgb', type=int, default=0,  help="Paral_kgb input variable.")
+    #parser.add_argument('-l', '--max-level', type=int, default=0,  help="Maximum DOJO level (default 0 i.e. ecut hints).")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
@@ -116,7 +118,7 @@ Usage Example:\n
                       abilab.TaskManager.from_file(options.manager)
 
     if os.path.isfile(options.path):
-        flow = build_flow(options.path, options.manager)
+        flow = build_flow(options.path, options)
         flow.build_and_pickle_dump()
         if not options.dry_run:
             # Run the flow with the scheduler.
@@ -136,7 +138,7 @@ Usage Example:\n
 
         nflows, nlaunch = 0, 0
         for pseudo in pseudos:
-            flow = build_flow(pseudo, options.manager)
+            flow = build_flow(pseudo, options)
             if os.path.exists(flow.workdir) or nflows >= 4: continue
             nflows += 1
             flow.build_and_pickle_dump()
