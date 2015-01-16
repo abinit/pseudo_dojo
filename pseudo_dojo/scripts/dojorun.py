@@ -45,23 +45,27 @@ def build_flow(pseudo, options):
 
     ecut_list = list(dense_left) + list(dense_right) + list(coarse_high)
 
-    factory = DeltaFactory()
-    for ecut in ecut_list:
-        if "deltafactor" in report and ecut in report["deltafactor"].keys(): continue
-        pawecutdg = 2 * ecut 
-        # Build and register the workflow.
-        work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg, toldfe=1.e-8, **extra_abivars)
-        flow.register_work(work, workdir='WDF' + str(ecut))
-
-    gbrv_factory = GbrvFactory()
-    gbrv_structs = ("fcc", "bcc")
-    for struct_type in gbrv_structs:
-        dojo_trial = "gbrv_" + struct_type
+    # Computation of the deltafactor.
+    if "df" in options.trials:
+        factory = DeltaFactory()
         for ecut in ecut_list:
-            if dojo_trial in report and ecut in report[dojo_trial].keys(): continue
+            if "deltafactor" in report and ecut in report["deltafactor"].keys(): continue
             pawecutdg = 2 * ecut 
-            work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg)
-            flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
+            # Build and register the workflow.
+            work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg, toldfe=1.e-8, **extra_abivars)
+            flow.register_work(work, workdir='WDF' + str(ecut))
+
+    # GBRV tests.
+    if "gbrv" in options.trials:
+        gbrv_factory = GbrvFactory()
+        gbrv_structs = ("fcc", "bcc")
+        for struct_type in gbrv_structs:
+            dojo_trial = "gbrv_" + struct_type
+            for ecut in ecut_list:
+                if dojo_trial in report and ecut in report[dojo_trial].keys(): continue
+                pawecutdg = 2 * ecut 
+                work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg)
+                flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
     return flow.allocate()
 
@@ -84,7 +88,13 @@ Usage Example:\n
     parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
     parser.add_argument('-d', '--dry-run', type=bool, default=False,  help="Dry run, build the flow without submitting it")
     parser.add_argument('--paral_kgb', type=int, default=0,  help="Paral_kgb input variable.")
-    #parser.add_argument('-l', '--max-level', type=int, default=0,  help="Maximum DOJO level (default 0 i.e. ecut hints).")
+
+
+    def parse_trials(s):
+        if s == "all": return ["df", "gbrv"]
+        return s.split(",")
+
+    parser.add_argument('--trials', type=str, default="df",  type=parse_trials, help="List of tests e.g --trials=df,gbrv")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
