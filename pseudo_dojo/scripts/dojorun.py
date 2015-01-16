@@ -93,7 +93,7 @@ Usage Example:\n
         if s == "all": return ["df", "gbrv"]
         return s.split(",")
 
-    parser.add_argument('--trials', type=str, default="df",  type=parse_trials, help="List of tests e.g --trials=df,gbrv")
+    parser.add_argument('--trials', default="df",  type=parse_trials, help="List of tests e.g --trials=df,gbrv")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
