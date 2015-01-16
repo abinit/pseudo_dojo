@@ -47,7 +47,7 @@ def build_flow(pseudo, options):
 
     factory = DeltaFactory()
     for ecut in ecut_list:
-        if ecut in report["deltafactor"].keys(): continue
+        if "deltafactor" in report and ecut in report["deltafactor"].keys(): continue
         pawecutdg = 2 * ecut 
         # Build and register the workflow.
         work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg, toldfe=1.e-8, **extra_abivars)
@@ -58,7 +58,7 @@ def build_flow(pseudo, options):
     for struct_type in gbrv_structs:
         dojo_trial = "gbrv_" + struct_type
         for ecut in ecut_list:
-            if ecut in report[dojo_trial].keys(): continue
+            if dojo_trial in report and ecut in report[dojo_trial].keys(): continue
             pawecutdg = 2 * ecut 
             work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg)
             flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
