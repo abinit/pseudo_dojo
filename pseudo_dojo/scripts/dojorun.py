@@ -74,7 +74,7 @@ def main():
     def str_examples():
         examples = """
 Usage Example:\n
-    ppdojo_run.py build Si.fhi  => Build pseudo_dojo flow for Si.fhi
+    ppdojo_run.py Si.psp8  => Build pseudo_dojo flow for Si.fhi
 \n"""
         return examples
 
@@ -88,7 +88,6 @@ Usage Example:\n
     parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
     parser.add_argument('-d', '--dry-run', type=bool, default=False,  help="Dry run, build the flow without submitting it")
     parser.add_argument('--paral_kgb', type=int, default=0,  help="Paral_kgb input variable.")
-
 
     def parse_trials(s):
         if s == "all": return ["df", "gbrv"]
