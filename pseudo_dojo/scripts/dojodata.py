@@ -10,7 +10,7 @@ from warnings import warn
 from collections import OrderedDict, namedtuple
 from pprint import pprint
 from tabulate import tabulate
-from pymatgen.io.abinitio.pseudos import PseudoTable 
+from pymatgen.io.abinitio.pseudos import PseudoTable, Pseudo
 
 
 def dojo_plot(options):
@@ -261,8 +261,15 @@ Usage example:\n
                 for filename in filenames:
                     if any(filename.endswith(ext) for ext in exts):
                         paths.append(os.path.join(dirpath, filename))
+
+        pseudos = []
+        for p in paths:
+            try:
+                pseudos.append(Pseudo.from_file(p))
+            except:
+                print("Error in %s" % p)
                                                                        
-        return PseudoTable(paths).sort_by_z()
+        return PseudoTable(pseudos).sort_by_z()
 
     # Build PseudoTable from the paths specified by the user.
     options.pseudos = read_pseudos(options.pseudos, exts=("psp8",))
