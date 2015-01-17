@@ -122,7 +122,6 @@ Usage Example:\n
         raise ValueError('Invalid log level: %s' % options.loglevel)
     logging.basicConfig(level=numeric_level)
 
-    
     options.manager = abilab.TaskManager.from_user_config() if options.manager is None else \
                       abilab.TaskManager.from_file(options.manager)
 
