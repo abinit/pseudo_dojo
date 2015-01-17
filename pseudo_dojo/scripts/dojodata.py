@@ -174,12 +174,15 @@ def dojo_table(options):
 def dojo_validate(options):
     errors = []
     for p in options.pseudos:
-        try:
-            d = p.dojo_report.validate()
-            if d:
-                print("Validation problem -->", p.basename, d)
-        except Exception as exc:
-            print("Error: ", p.basename + str(exc))
+        report = p.dojo_report
+        if "ppgen_hints" in report and "deltafactor" not in report:
+            print(p.basename)
+        #try:
+        #    d = p.dojo_report.validate()
+        #    if d:
+        #        print("Validation problem -->", p.basename, d)
+        #except Exception as exc:
+        #    print("Error: ", p.basename + str(exc))
 
     if errors:
         print(errors)

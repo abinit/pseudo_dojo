@@ -12121,7 +12121,7 @@ END_GNU
 
 Begin PSPCODE8
 Au    ONCVPSP  r_core=  1.46  1.56  1.46  1.51
-     79.0000     19.0000      141211    zatom,zion,pspd
+     79.0000     19.0000      150117    zatom,zion,pspd
      8    11     3     4   501     0    pspcod,pspxc,lmax,lloc,mmax,r2well
   5.00000000  0.15000000  0.00000000    rchrg fchrg qchrg
      2     2     2     2     0    nproj
