@@ -162,7 +162,7 @@ if __name__ == "__main__":
     do_prof = False
     try:
         do_prof = sys.argv[1] == "prof"
-        if do_prof sys.argv.pop(1)
+        if do_prof: sys.argv.pop(1)
     except: 
         pass
 
