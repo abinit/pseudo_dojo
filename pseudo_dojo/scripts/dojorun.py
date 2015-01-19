@@ -33,6 +33,8 @@ def build_flow(pseudo, options):
     report = pseudo.read_dojo_report()
     #print(report)
     #hints = report["hints"]
+
+    # Build ecut mesh.
     ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
 
     #dense_right = np.linspace(ppgen_ecut, ppgen_ecut + 10, num=6)
@@ -50,7 +52,7 @@ def build_flow(pseudo, options):
         factory = DeltaFactory()
         for ecut in ecut_list:
             if "deltafactor" in report and ecut in report["deltafactor"].keys(): continue
-            pawecutdg = 2 * ecut 
+            pawecutdg = 2 * ecut is pseudo.ispaw else None
             # Build and register the workflow.
             work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg, toldfe=1.e-8, **extra_abivars)
             flow.register_work(work, workdir='WDF' + str(ecut))
@@ -63,7 +65,7 @@ def build_flow(pseudo, options):
             dojo_trial = "gbrv_" + struct_type
             for ecut in ecut_list:
                 if dojo_trial in report and ecut in report[dojo_trial].keys(): continue
-                pawecutdg = 2 * ecut 
+                pawecutdg = 2 * ecut is pseudo.ispaw else None
                 work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg)
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
@@ -102,12 +104,9 @@ Usage Example:\n
 
     # Create the parsers for the sub-commands
     #subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
-
     # Subparser for single command.
     #p_build = subparsers.add_parser('build', help="Build dojo.")
 
-    # Subparser for single command.
-    #p_report = subparsers.add_parser('report', help="Show DOJO_REPORT.")
 
     try:
         options = parser.parse_args()
@@ -127,8 +126,9 @@ Usage Example:\n
 
     if os.path.isfile(options.path):
         flow = build_flow(options.path, options)
-        flow.build_and_pickle_dump()
-        if not options.dry_run:
+        if options.dry_run:
+            flow.build_and_pickle_dump()
+        else:
             # Run the flow with the scheduler.
             #print("nlaunch: %d" % flow.rapidfire())
             flow.make_scheduler().start()

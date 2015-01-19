@@ -344,7 +344,6 @@ class DeltaFactory(object):
         pseudo = Pseudo.as_pseudo(pseudo)
         symbol = pseudo.symbol
 
-
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
@@ -599,7 +598,7 @@ def gbrv_nband(pseudo):
     nband += 0.5 * nband
     nband = int(nband)
     nband = max(nband,  8)
-    print("nband", nband)
+    #print("nband", nband)
     return nband
 
 
