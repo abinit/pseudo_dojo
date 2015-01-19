@@ -707,9 +707,9 @@ class OncvOutputParser(PseudoGenOutputParser):
         hints = [np.rint(h) for h in hints]
 
         hints = dict(
-            low={"ecut": hints[0], "aug_ratio": 1},
-            normal={"ecut": hints[1], "aug_ratio": 1},
-            high={"ecut": hints[2], "aug_ratio": 1})
+            low={"ecut": hints[0], "pawecutdg": hints[0]},
+            normal={"ecut": hints[1], "pawecutdg": hints[1]},
+            high={"ecut": hints[2], "pawecutdg": hints[2]})
 
         return hints
 
@@ -782,9 +782,16 @@ class OncvOutputParser(PseudoGenOutputParser):
         # Append the input to ps_data (note XML markers)
         ps_data += "\n\n<INPUT>\n" + self.get_input_str() + "</INPUT>\n"
 
-        # Add the initial DOJO_REPORT with the hints:
-        #d = {"hints": self.hints}
-        d = {"ppgen_hints": self.hints}
+        # Add the initial DOJO_REPORT with the hints and the initial list of ecut values.
+        estart = self.hints["high"]["ecut"]
+        dense_right = np.linspace(estart, estart + 10, num=6)
+
+        d = {
+            "version": "1.0",
+            "ppgen_hints": self.hints, 
+            "ecuts": list(dense_right) + [dense_right[-1] + 10,],
+            "symbol": self.atsym,
+        }
         ps_data += "\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
 
         return ps_data

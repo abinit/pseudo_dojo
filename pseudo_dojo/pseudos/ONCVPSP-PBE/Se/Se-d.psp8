@@ -1,5 +1,5 @@
 Se    ONCVPSP  r_core=  1.82  1.50  1.91
-34.0000     16.0000      150116    zatom,zion,pspd
+34.0000     16.0000      150119    zatom,zion,pspd
 8    11     2     4   601     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 6.00000000  0.20000000  0.00000000    rchrg fchrg qchrg
 2     2     2     0     0    nproj
@@ -3079,17 +3079,28 @@ Se 34.00     5     3     4      psp8
 
 <DOJO_REPORT>
 {
+    "symbol": "Se", 
+    "version": "1.0", 
+    "ecuts": [
+        39.0, 
+        41.0, 
+        43.0, 
+        45.0, 
+        47.0, 
+        49.0, 
+        59.0
+    ], 
     "ppgen_hints": {
         "high": {
-            "aug_ratio": 1, 
+            "pawecutdg": 39.0, 
             "ecut": 39.0
         }, 
         "low": {
-            "aug_ratio": 1, 
+            "pawecutdg": 33.0, 
             "ecut": 33.0
         }, 
         "normal": {
-            "aug_ratio": 1, 
+            "pawecutdg": 36.0, 
             "ecut": 36.0
         }
     }

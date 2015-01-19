@@ -34,13 +34,6 @@ class DojoWork(Work):
     def dojo_trial(self):
         """String identifying the DOJO trial. Used to write results in the DOJO_REPORT."""
 
-    #@property
-    #def dojo_accuracy(self):
-    #    return self._dojo_accuracy
-
-    #def set_dojo_accuracy(self, accuracy):
-    #    self._dojo_accuracy = accuracy
-
     def write_dojo_report(self, report, overwrite_data=False):
         """Write/update the DOJO_REPORT section of the pseudopotential."""
         # Read old_report from pseudo.
@@ -330,7 +323,7 @@ class DeltaFactory(object):
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
     def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, ecut=None, pawecutdg=None,
-                        toldfe=1.e-8, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
+                        toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
@@ -373,8 +366,6 @@ class DeltaFactory(object):
                 kwargs['spinat'] = [(0, 0, 1.5), (0, 0, 1.5), (0, 0, -1.5), (0, 0, -1.5)]
             elif symbol == 'Cr':
                 kwargs['spinat'] = [(0, 0, 1.5), (0, 0, -1.5)]
-                #spin_mode = "polarized"
-                #kwargs['nsym'] = 1
             elif symbol == 'Mn':
                 kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
 
@@ -396,7 +387,7 @@ class DeltaFactorWork(DojoWork):
     """Work for the calculation of the deltafactor."""
     def __init__(self, structure, pseudo, kppa, connect,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
-                 spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
+                 spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
                  accuracy="normal",  chksymbreak=0, paral_kgb=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the deltafactor.
@@ -605,8 +596,8 @@ def gbrv_nband(pseudo):
 class GbrvRelaxAndEosWork(DojoWork):
 
     def __init__(self, structure, struct_type, pseudo, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
-                 spin_mode="unpolarized", toldfe=1.e-8, smearing="fermi_dirac:0.001 Ha",
-                 accuracy="normal", paral_kgb=0, ecutsm=0.05, chksymbreak=0,
+                 spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
+                 accuracy="normal", ecutsm=0.05, chksymbreak=0,
                  workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the relaxed lattice parameter.
@@ -639,7 +630,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             prtwf=0,
             #ecutsm=0.5,
             nband=self.nband,
-            paral_kgb=paral_kgb
+            #paral_kgb=paral_kgb
         )
                                        
         self.extra_abivars.update(**kwargs)

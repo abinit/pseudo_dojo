@@ -37,24 +37,28 @@ def build_flow(pseudo, options):
     # Build ecut mesh.
     ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
 
-    #dense_right = np.linspace(ppgen_ecut, ppgen_ecut + 10, num=6)
-    #dense_left = np.linspace(ppgen_ecut-8, ppgen_ecut, num=4, endpoint=False)
-    #coarse_high = np.linspace(ppgen_ecut + 15, ppgen_ecut + 40, num=4)
+    ecut_list = report["ecuts"]
 
-    dense_right = np.arange(ppgen_ecut, ppgen_ecut + 6*2, step=2)
-    dense_left = np.arange(max(ppgen_ecut-6, 2), ppgen_ecut, step=2)
-    coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 35, step=5)
+    add_ecuts = False
+    if add_ecuts:
+        #dense_right = np.linspace(ppgen_ecut, ppgen_ecut + 10, num=6)
+        #dense_left = np.linspace(ppgen_ecut-8, ppgen_ecut, num=4, endpoint=False)
+        #coarse_high = np.linspace(ppgen_ecut + 15, ppgen_ecut + 40, num=4)
 
-    ecut_list = list(dense_left) + list(dense_right) + list(coarse_high)
+        dense_right = np.arange(ppgen_ecut, ppgen_ecut + 6*2, step=2)
+        dense_left = np.arange(max(ppgen_ecut-6, 2), ppgen_ecut, step=2)
+        coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 35, step=5)
+
+        ecut_list = list(dense_left) + list(dense_right) + list(coarse_high)
 
     # Computation of the deltafactor.
     if "df" in options.trials:
         factory = DeltaFactory()
         for ecut in ecut_list:
             if "deltafactor" in report and ecut in report["deltafactor"].keys(): continue
-            pawecutdg = 2 * ecut is pseudo.ispaw else None
+            pawecutdg = 2 * ecut if pseudo.ispaw else None
             # Build and register the workflow.
-            work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg, toldfe=1.e-8, **extra_abivars)
+            work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg, **extra_abivars)
             flow.register_work(work, workdir='WDF' + str(ecut))
 
     # GBRV tests.
@@ -65,7 +69,7 @@ def build_flow(pseudo, options):
             dojo_trial = "gbrv_" + struct_type
             for ecut in ecut_list:
                 if dojo_trial in report and ecut in report[dojo_trial].keys(): continue
-                pawecutdg = 2 * ecut is pseudo.ispaw else None
+                pawecutdg = 2 * ecut if pseudo.ispaw else None
                 work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg)
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
@@ -95,7 +99,7 @@ Usage Example:\n
         if s == "all": return ["df", "gbrv"]
         return s.split(",")
 
-    parser.add_argument('--trials', default="df",  type=parse_trials, help="List of tests e.g --trials=df,gbrv")
+    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
