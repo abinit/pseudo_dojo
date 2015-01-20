@@ -5,10 +5,10 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import os
 import argparse
-import warnings
 import numpy as np
 import abipy.abilab as abilab
 
+from warnings import warn
 from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
@@ -166,7 +166,9 @@ Usage Example:\n
     else:
         # Gather all pseudos starting from the current working directory and run the flows iteratively.
         table = PeriodicTable()
-        all_symbols = set(element.symbol for element in table.all_elements)
+        #all_symbols = set(element.symbol for element in table.all_elements)
+        all_symbols = ["H"]
+        print(os.listdir(options.path))
         dirs = [os.path.join(options.path, d) for d in os.listdir(options.path) if d in all_symbols]
         #print("dirs", dirs)
         pseudos = []
@@ -175,26 +177,31 @@ Usage Example:\n
             pseudos.extend(os.path.join(d, p) for p in os.listdir(d) if p.endswith(".psp8"))
         #print(pseudos)
 
+        if not pseudos:
+            warn("Empty list of pseudos")
+            return 0
+
         nflows, nlaunch = 0, 0
         exc_filename = "allscheds_exceptions.log"
         if os.path.exists(exc_filename):
             raise RuntimeError("File %s already exists, remove it before running the script" % exc_filename)
-        exc_log = open(exc)
+        exc_log = open(exc_filename, "w")
 
         for pseudo in pseudos:
+            pseudo = Pseudo.from_file(pseudo)
             flow = build_flow(pseudo, options)
 
             if flow is None: 
                 warn("DOJO_REPORT is already computed for pseudo %s." % pseudo.basename)
                 continue
 
-            if os.path.exists(flow.workdir) or nflows >= 2: continue
+            #if os.path.exists(flow.workdir) or nflows >= 2: continue
             nflows += 1
             #flow.build_and_pickle_dump()
             #nlaunch += flow.rapidfire()
 
-            with open(pseudos.basename + "sched.stdout") as sched_stdout, \
-                 open(pseudos.basename + "sched.stderr") as sched_stderr: 
+            with open(pseudo.basename + "sched.stdout", "w") as sched_stdout, \
+                 open(pseudo.basename + "sched.stderr", "w") as sched_stderr: 
                 with RedirectStdStreams(stdout=sched_stdout, stderr=sched_stderr):
                     try:
                         flow.make_scheduler().start()
