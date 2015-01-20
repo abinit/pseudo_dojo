@@ -5,6 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import os
 import argparse
+import warnings
 import numpy as np
 import abipy.abilab as abilab
 
@@ -13,11 +14,29 @@ from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 
 
+class RedirectStdStreams(object):
+    """See http://stackoverflow.com/questions/6796492/temporarily-redirect-stdout-stderr"""
+    def __init__(self, stdout=None, stderr=None):
+        self._stdout = stdout or sys.stdout
+        self._stderr = stderr or sys.stderr
+
+    def __enter__(self):
+        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
+        self.old_stdout.flush(); self.old_stderr.flush()
+        sys.stdout, sys.stderr = self._stdout, self._stderr
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._stdout.flush(); self._stderr.flush()
+        sys.stdout = self.old_stdout
+        sys.stderr = self.old_stderr
+
+
 def build_flow(pseudo, options):
+    """Build the flow, returns None if no calculation must be performed.""" 
     pseudo = Pseudo.as_pseudo(pseudo)
 
     workdir = pseudo.basename + "_DOJO"
-    #if not options.ignore and os.path.exists(workdir): 
+    #if os.path.exists(workdir): 
     #    raise ValueError("%s exists" % workdir)
 
     flow = abilab.Flow(workdir=workdir, manager=options.manager)
@@ -73,7 +92,11 @@ def build_flow(pseudo, options):
                 work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg)
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
-    return flow.allocate()
+    if len(flow) > 0:
+        return flow.allocate()
+    else:
+        # empty flow since all trials have been already performed.
+        return None
 
 
 def main():
@@ -111,7 +134,6 @@ Usage Example:\n
     # Subparser for single command.
     #p_build = subparsers.add_parser('build', help="Build dojo.")
 
-
     try:
         options = parser.parse_args()
     except:
@@ -129,7 +151,11 @@ Usage Example:\n
                       abilab.TaskManager.from_file(options.manager)
 
     if os.path.isfile(options.path):
+        # Operate on a single pseudo.
         flow = build_flow(options.path, options)
+        if flow is None: 
+            warn("DOJO_REPORT is already computed for pseudo %s." % options.path)
+            return 0
         if options.dry_run:
             flow.build_and_pickle_dump()
         else:
@@ -138,26 +164,46 @@ Usage Example:\n
             flow.make_scheduler().start()
 
     else:
+        # Gather all pseudos starting from the current working directory and run the flows iteratively.
         table = PeriodicTable()
-        all_symbols = [element.symbol for element in table.all_elements]
+        all_symbols = set(element.symbol for element in table.all_elements)
         dirs = [os.path.join(options.path, d) for d in os.listdir(options.path) if d in all_symbols]
         #print("dirs", dirs)
         pseudos = []
         for d in dirs:
-            print(d)
+            #print(d)
             pseudos.extend(os.path.join(d, p) for p in os.listdir(d) if p.endswith(".psp8"))
-        print(pseudos)
+        #print(pseudos)
 
         nflows, nlaunch = 0, 0
+        exc_filename = "allscheds_exceptions.log"
+        if os.path.exists(exc_filename):
+            raise RuntimeError("File %s already exists, remove it before running the script" % exc_filename)
+        exc_log = open(exc)
+
         for pseudo in pseudos:
             flow = build_flow(pseudo, options)
-            if os.path.exists(flow.workdir) or nflows >= 4: continue
-            nflows += 1
-            flow.build_and_pickle_dump()
-            nlaunch += flow.rapidfire()
 
-        print("nlaunch: %d" % nlaunch)
-        print("nflows: %d" % nflows)
+            if flow is None: 
+                warn("DOJO_REPORT is already computed for pseudo %s." % pseudo.basename)
+                continue
+
+            if os.path.exists(flow.workdir) or nflows >= 2: continue
+            nflows += 1
+            #flow.build_and_pickle_dump()
+            #nlaunch += flow.rapidfire()
+
+            with open(pseudos.basename + "sched.stdout") as sched_stdout, \
+                 open(pseudos.basename + "sched.stderr") as sched_stderr: 
+                with RedirectStdStreams(stdout=sched_stdout, stderr=sched_stderr):
+                    try:
+                        flow.make_scheduler().start()
+                    except Exception as exc:
+                        exc_log.write(str(exc))
+
+        exc_log.close()
+        #print("nlaunch: %d" % nlaunch)
+        #print("nflows: %d" % nflows)
 
     return 0
 

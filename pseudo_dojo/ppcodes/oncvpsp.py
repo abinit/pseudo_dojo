@@ -515,10 +515,12 @@ class OncvOutputParser(PseudoGenOutputParser):
         #if self.errors:
         #    return 1
 
-        # scalar-relativistic version 2.1.1, 03/26/2014
-        toks, self.gendate = self.lines[1].split(",")
-
-        toks = toks.split()
+        #scalar-relativistic version 2.1.1, 03/26/2014
+        #scalar-relativistic version 3.0.0 10/10/2014
+        #toks, self.gendate = self.lines[1].split(",")
+        #toks = toks.split()
+        toks = self.lines[1].replace(",", " ").split()
+        self.gendate = toks.pop(-1)
         self.calc_type, self.version = toks[0], toks[-1]
 
         if self.calc_type not in ["scalar-relativistic", "non-relativistic"]:
@@ -528,7 +530,7 @@ class OncvOutputParser(PseudoGenOutputParser):
         # Read configuration (not very robust because we assume the user didn't change the template but oh well)
         header = "# atsym  z    nc    nv    iexc   psfile"
         for i, line in enumerate(self.lines):
-            if line.startswith(header):
+            if line.startswith("# atsym"):
                 values = self.lines[i+1].split()
                 keys = header[1:].split()
                 assert len(keys) == len(values)
@@ -788,6 +790,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         d = {
             "version": "1.0",
+            "pseudo_type": "norm-conserving",
             "ppgen_hints": self.hints, 
             "ecuts": list(dense_right) + [dense_right[-1] + 10,],
             "symbol": self.atsym,
