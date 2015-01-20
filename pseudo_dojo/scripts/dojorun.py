@@ -170,12 +170,10 @@ Usage Example:\n
         all_symbols = ["H"]
         print(os.listdir(options.path))
         dirs = [os.path.join(options.path, d) for d in os.listdir(options.path) if d in all_symbols]
-        #print("dirs", dirs)
         pseudos = []
         for d in dirs:
             #print(d)
             pseudos.extend(os.path.join(d, p) for p in os.listdir(d) if p.endswith(".psp8"))
-        #print(pseudos)
 
         if not pseudos:
             warn("Empty list of pseudos")
@@ -188,9 +186,11 @@ Usage Example:\n
         exc_log = open(exc_filename, "w")
 
         for pseudo in pseudos:
-            pseudo = Pseudo.from_file(pseudo)
-            flow = build_flow(pseudo, options)
+            pseudo = Pseudo.as_pseudo(pseudo)
+            report = pseudo.dojo_report
+            if "version" not in report: continue
 
+            flow = build_flow(pseudo, options)
             if flow is None: 
                 warn("DOJO_REPORT is already computed for pseudo %s." % pseudo.basename)
                 continue
