@@ -36,8 +36,10 @@ def build_flow(pseudo, options):
     pseudo = Pseudo.as_pseudo(pseudo)
 
     workdir = pseudo.basename + "_DOJO"
-    #if os.path.exists(workdir): 
-    #    raise ValueError("%s exists" % workdir)
+    if os.path.exists(workdir): 
+        warn("Directory %s already exists" % workdir)
+        return None
+        #raise ValueError("%s exists" % workdir)
 
     flow = abilab.Flow(workdir=workdir, manager=options.manager)
 
@@ -95,7 +97,7 @@ def build_flow(pseudo, options):
     if len(flow) > 0:
         return flow.allocate()
     else:
-        # empty flow since all trials have been already performed.
+        # Empty flow since all trials have been already performed.
         return None
 
 
@@ -170,6 +172,7 @@ Usage Example:\n
         all_symbols = ["H"]
         print(os.listdir(options.path))
         dirs = [os.path.join(options.path, d) for d in os.listdir(options.path) if d in all_symbols]
+
         pseudos = []
         for d in dirs:
             #print(d)
@@ -197,8 +200,6 @@ Usage Example:\n
 
             #if os.path.exists(flow.workdir) or nflows >= 2: continue
             nflows += 1
-            #flow.build_and_pickle_dump()
-            #nlaunch += flow.rapidfire()
 
             with open(pseudo.basename + "sched.stdout", "w") as sched_stdout, \
                  open(pseudo.basename + "sched.stderr", "w") as sched_stderr: 
@@ -206,6 +207,7 @@ Usage Example:\n
                     try:
                         flow.make_scheduler().start()
                     except Exception as exc:
+                        # Log exception and proceed with the next pseudo.
                         exc_log.write(str(exc))
 
         exc_log.close()
