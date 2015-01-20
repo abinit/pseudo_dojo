@@ -5,10 +5,10 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import os
 import argparse
-import warnings
 import numpy as np
 import abipy.abilab as abilab
 
+from warnings import warn
 from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
@@ -36,8 +36,10 @@ def build_flow(pseudo, options):
     pseudo = Pseudo.as_pseudo(pseudo)
 
     workdir = pseudo.basename + "_DOJO"
-    #if os.path.exists(workdir): 
-    #    raise ValueError("%s exists" % workdir)
+    if os.path.exists(workdir): 
+        warn("Directory %s already exists" % workdir)
+        return None
+        #raise ValueError("%s exists" % workdir)
 
     flow = abilab.Flow(workdir=workdir, manager=options.manager)
 
@@ -95,7 +97,7 @@ def build_flow(pseudo, options):
     if len(flow) > 0:
         return flow.allocate()
     else:
-        # empty flow since all trials have been already performed.
+        # Empty flow since all trials have been already performed.
         return None
 
 
@@ -168,6 +170,7 @@ Usage Example:\n
         table = PeriodicTable()
         all_symbols = set(element.symbol for element in table.all_elements)
         dirs = [os.path.join(options.path, d) for d in os.listdir(options.path) if d in all_symbols]
+
         pseudos = []
         for d in dirs:
             #print(d)
@@ -191,8 +194,6 @@ Usage Example:\n
 
             if os.path.exists(flow.workdir) or nflows >= 2: continue
             nflows += 1
-            #flow.build_and_pickle_dump()
-            #nlaunch += flow.rapidfire()
 
             with open(pseudos.basename + "sched.stdout") as sched_stdout, \
                  open(pseudos.basename + "sched.stderr") as sched_stderr: 
@@ -200,6 +201,7 @@ Usage Example:\n
                     try:
                         flow.make_scheduler().start()
                     except Exception as exc:
+                        # Log exception and proceed with the next pseudo.
                         exc_log.write(str(exc))
 
         exc_log.close()
