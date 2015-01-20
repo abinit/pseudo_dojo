@@ -168,10 +168,18 @@ Usage Example:\n
     else:
         # Gather all pseudos starting from the current working directory and run the flows iteratively.
         table = PeriodicTable()
-        #all_symbols = set(element.symbol for element in table.all_elements)
-        all_symbols = ["H"]
-        print(os.listdir(options.path))
-        dirs = [os.path.join(options.path, d) for d in os.listdir(options.path) if d in all_symbols]
+        all_symbols = set(element.symbol for element in table.all_elements)
+        #all_symbols = ["H"]
+        #print(os.listdir(options.path))
+
+        print("here" , os.path.basename(os.path.dirname(options.path)))
+        print("here" , options.path)
+        if os.path.basename(os.path.dirname(options.path)) in all_symbols:
+            print("here")
+            dirs = [options.path]
+        else:
+            dirs = [os.path.join(options.path, d) for d in os.listdir(options.path) if d in all_symbols]
+        print(dirs)
 
         pseudos = []
         for d in dirs:
@@ -183,10 +191,11 @@ Usage Example:\n
             return 0
 
         nflows, nlaunch = 0, 0
-        exc_filename = "allscheds_exceptions.log"
-        if os.path.exists(exc_filename):
-            raise RuntimeError("File %s already exists, remove it before running the script" % exc_filename)
-        exc_log = open(exc_filename, "w")
+        #exc_filename = "allscheds_exceptions.log"
+        #if os.path.exists(exc_filename):
+        #    raise RuntimeError("File %s already exists, remove it before running the script" % exc_filename)
+        #exc_log = open(exc_filename, "w")
+        exc_log = sys.stderr
 
         for pseudo in pseudos:
             pseudo = Pseudo.as_pseudo(pseudo)
@@ -201,16 +210,22 @@ Usage Example:\n
             #if os.path.exists(flow.workdir) or nflows >= 2: continue
             nflows += 1
 
-            with open(pseudo.basename + "sched.stdout", "w") as sched_stdout, \
-                 open(pseudo.basename + "sched.stderr", "w") as sched_stderr: 
-                with RedirectStdStreams(stdout=sched_stdout, stderr=sched_stderr):
-                    try:
-                        flow.make_scheduler().start()
-                    except Exception as exc:
-                        # Log exception and proceed with the next pseudo.
-                        exc_log.write(str(exc))
+            try:
+                flow.make_scheduler().start()
+            except Exception as exc:
+                # Log exception and proceed with the next pseudo.
+                exc_log.write(str(exc))
 
-        exc_log.close()
+            #with open(pseudo.basename + "sched.stdout", "w") as sched_stdout, \
+            #     open(pseudo.basename + "sched.stderr", "w") as sched_stderr: 
+            #    with RedirectStdStreams(stdout=sched_stdout, stderr=sched_stderr):
+            #        try:
+            #            flow.make_scheduler().start()
+            #        except Exception as exc:
+            #            # Log exception and proceed with the next pseudo.
+            #            exc_log.write(str(exc))
+
+        #exc_log.close()
         #print("nlaunch: %d" % nlaunch)
         #print("nflows: %d" % nflows)
 
