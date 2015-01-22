@@ -89,15 +89,28 @@ def dojo_table(options):
     pseudos = options.pseudos
 
     # Build pandas DataFrame
-    data, errors = pseudos.get_dojo_dataframe()
-    print(data)
-
     import matplotlib.pyplot as plt
-    #data.show_hist()
-    #data.show_trials()
-    #data.sns_plot()
-    #plt.show()
-    #return
+    data, errors = pseudos.get_dojo_dataframe()
+    #print(data)
+
+    all_families = ("alkaline",)
+
+    for family in all_families:
+        d = data.get_family("alkaline")
+        d.show_trials()
+        plt.show()
+    return
+
+    rows_list = [1, [2, 3], [4,5], [6]]
+    for rows in rows_list:
+        d = data.select_rows(rows)
+        print(d)
+        #d.show_hist()
+        #d.show_trials()
+        #d.sns_plot()
+        
+
+    return
 
     if errors:
         print("ERRORS:")
