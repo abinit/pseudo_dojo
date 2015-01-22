@@ -88,8 +88,16 @@ def dojo_table(options):
     """Build table."""
     pseudos = options.pseudos
 
+    # Build pandas DataFrame
     data, errors = pseudos.get_dojo_dataframe()
     print(data)
+
+    import matplotlib.pyplot as plt
+    #data.show_hist()
+    #data.show_trials()
+    #data.sns_plot()
+    #plt.show()
+    #return
 
     if errors:
         print("ERRORS:")
@@ -118,23 +126,6 @@ def dojo_table(options):
 
         return data
 
-    import matplotlib.pyplot as plt
-    #import seaborn as sns
-    #data.plot(x="symbol", y="high_dfact_meV", use_index=True)
-    #data = calc_rerrors(data)
-    #g = sns.PairGrid(data, x_vars="Z", y_vars=[
-    #    "low_ecut",
-    #    "low_dfact_meV",
-    #    #"normal_ecut",
-    #    #"low_dfact_meV",
-    #    #"high_dfact_meV", 
-    #    "low_v0_rerr", "low_b0_GPa_rerr", "low_b1_rerr",
-    #    ]
-    #) #, hue="smoker")
-    #g.map(plt.scatter)
-    #g.add_legend()
-    #plt.show()
-
     wrong = data[data["high_b1"] < 0]
     if not wrong.empty:
         print("WRONG".center(80, "*") + "\n", wrong)
@@ -158,18 +149,6 @@ def dojo_table(options):
     bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean()]
     print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
     print(tabulate(bad, headers="keys", tablefmt=tablefmt))
-
-    #import matplotlib.pyplot as plt 
-    #bad.plot(kind="barh")
-    #bad.plot(kind="kde")
-    #bad.plot(kind="density")
-    #bad["high_dfact_meV"].plot(kind="bar")
-    ###bad[[acc + "_dfact_meV" for acc in ["normal", "high"]]].plot(kind="bar")
-    #bad.plot(kind="bar", columns=["high_dfact_meV"])
-    #bad["delta_normal"].hist(bins=200)
-    #bad["delta_high"].hist(bins=200)
-    #data["high_dfact_meV"].hist(bins=200)
-    #plt.show()
 
 
 def dojo_validate(options):
