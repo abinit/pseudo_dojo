@@ -171,6 +171,7 @@ def dojo_table(options):
     #data["high_dfact_meV"].hist(bins=200)
     #plt.show()
 
+
 def dojo_validate(options):
     errors = []
     for p in options.pseudos:
