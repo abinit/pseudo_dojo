@@ -28,7 +28,7 @@ Au 79 10 4 4 psp8
 0 2 1.0
 1 2 2.5
 2 2 1.5
-3 2 1.5
+3 1 1.5
 # icmod fcfact
 1 0.15
 # epsh1 epsh2 depsh
