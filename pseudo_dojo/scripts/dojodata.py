@@ -140,17 +140,23 @@ def dojo_table(options):
     if not wrong.empty:
         print("WRONG".center(80, "*") + "\n", wrong)
 
+    #accuracies = ["high"]
     data = data[
         [acc + "_dfact_meV" for acc in accuracies]
       + [acc + "_ecut" for acc in accuracies]
+      #+ [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
+      #+ [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
     ]
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))
     columns = [acc + "_dfact_meV" for acc in accuracies] 
     columns += [acc + "_ecut" for acc in accuracies] 
-    #print(data.to_string(columns=columns))
+    #columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies] 
+    #columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
+
     tablefmt = "grid"
     print(tabulate(data[columns], headers="keys", tablefmt=tablefmt))
+    #print(data.to_string(columns=columns))
 
     print("\nSTATS:\n") #.center(80, "="))
     #print(data.describe())
