@@ -221,7 +221,7 @@ Usage example:\n
     # Subparser for plot command.
     p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser], help="Plot DOJO_REPORT data.")
     p_plot.add_argument("-w", "--what-plot", type=str, default="all", help="Quantity to plot e.g df for deltafactor, gbrv for GBRV tests")
-    p_plot.add_argument("-e", "--eos", type=bool, default=False, help="Plot EOS curve")
+    p_plot.add_argument("-e", "--eos", action="store_true", help="Plot EOS curve")
 
     # Subparser for table command.
     p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
