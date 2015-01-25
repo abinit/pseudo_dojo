@@ -544,6 +544,10 @@ class GbrvFactory(object):
         # Get the entry in the database
         entry = self._db.get_entry(symbol, struct_type)
 
+        if entry is None: 
+            logger.critical("Cannot find entry for %s, returning None!" % symbol)
+            return None
+
         # Build the structure and handle a possibly missing value.
         structure = entry.build_structure(ref=ref)
 
