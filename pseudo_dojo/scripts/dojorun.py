@@ -91,7 +91,7 @@ def build_flow(pseudo, options):
             for ecut in ecut_list:
                 if dojo_trial in report and ecut in report[dojo_trial].keys(): continue
                 pawecutdg = 2 * ecut if pseudo.ispaw else None
-                work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg)
+                work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg, **extra_abivars)
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
     if len(flow) > 0:

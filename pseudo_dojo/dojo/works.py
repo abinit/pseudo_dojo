@@ -388,7 +388,7 @@ class DeltaFactorWork(DojoWork):
     def __init__(self, structure, pseudo, kppa, connect,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
                  spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
-                 accuracy="normal",  chksymbreak=0, paral_kgb=0, workdir=None, manager=None, **kwargs):
+                 accuracy="normal", chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the deltafactor.
 
@@ -425,7 +425,7 @@ class DeltaFactorWork(DojoWork):
             toldfe=toldfe,
             #nband=nband,
             prtwf=0 if not connect else 1,
-            paral_kgb=paral_kgb,
+            #paral_kgb=paral_kgb,
             chkprim=0,
             nstep=80,
             #mem_test=0,
@@ -560,7 +560,7 @@ class GbrvFactory(object):
 
         return structure
 
-    def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, paral_kgb=0, ref="ae"):
+    def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, ref="ae"):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
@@ -583,7 +583,7 @@ class GbrvFactory(object):
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
         return GbrvRelaxAndEosWork(structure, struct_type, pseudo,
-                                   ecut=ecut, pawecutdg=pawecutdg, paral_kgb=paral_kgb)
+                                   ecut=ecut, pawecutdg=pawecutdg)
 
 
 def gbrv_nband(pseudo):

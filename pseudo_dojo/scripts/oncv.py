@@ -6,7 +6,7 @@ import sys
 import collections
 import argparse
 
-from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser, PseudoGenDataPlotter
+from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
 
     options = parser.parse_args()
 
-    onc_parser = OncvOuptputParser(options.filename)
+    onc_parser = OncvOutputParser(options.filename)
     onc_parser.scan()
     #print(onc_parser)
 

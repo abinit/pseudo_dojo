@@ -140,19 +140,19 @@ def dojo_table(options):
     if not wrong.empty:
         print("WRONG".center(80, "*") + "\n", wrong)
 
-    #accuracies = ["high"]
+    accuracies = ["high"]
     data = data[
         [acc + "_dfact_meV" for acc in accuracies]
       + [acc + "_ecut" for acc in accuracies]
-      #+ [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
-      #+ [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
+      + [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
+      + [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
     ]
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))
     columns = [acc + "_dfact_meV" for acc in accuracies] 
     columns += [acc + "_ecut" for acc in accuracies] 
-    #columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies] 
-    #columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
+    columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies] 
+    columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
 
     tablefmt = "grid"
     print(tabulate(data[columns], headers="keys", tablefmt=tablefmt))
@@ -165,6 +165,10 @@ def dojo_table(options):
     bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean()]
     print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
     print(tabulate(bad, headers="keys", tablefmt=tablefmt))
+
+    #gbrv_fcc_bad = data[data["high_gbrv_fcc_a0_rerr"] > (data["high_gbrv_fcc_a0_rerr"].abs()).mean()]
+    #print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
+    #print(tabulate(bad, headers="keys", tablefmt=tablefmt))
 
 
 def dojo_validate(options):
