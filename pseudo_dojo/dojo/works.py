@@ -560,7 +560,7 @@ class GbrvFactory(object):
 
         return structure
 
-    def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, ref="ae"):
+    def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, ref="ae", **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
@@ -583,7 +583,7 @@ class GbrvFactory(object):
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
         return GbrvRelaxAndEosWork(structure, struct_type, pseudo,
-                                   ecut=ecut, pawecutdg=pawecutdg)
+                                   ecut=ecut, pawecutdg=pawecutdg, **kwargs)
 
 
 def gbrv_nband(pseudo):
@@ -624,7 +624,7 @@ class GbrvRelaxAndEosWork(DojoWork):
 
         # nband must be large enough to accomodate fractional occupancies.
         self._pseudo = Pseudo.as_pseudo(pseudo)
-        self.nband = gbrv_nband(self.pseudo)
+        #self.nband = gbrv_nband(self.pseudo)
 
         # Set extra_abivars.
         self.extra_abivars = dict(
@@ -633,7 +633,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             toldfe=toldfe,
             prtwf=0,
             #ecutsm=0.5,
-            nband=self.nband,
+            #nband=self.nband,
             #paral_kgb=paral_kgb
         )
                                        
