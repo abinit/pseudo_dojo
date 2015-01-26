@@ -623,8 +623,9 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.accuracy = accuracy
 
         # nband must be large enough to accomodate fractional occupancies.
+        fband = kwargs.pop("fband", None)
         self._pseudo = Pseudo.as_pseudo(pseudo)
-        #self.nband = gbrv_nband(self.pseudo)
+        nband = gbrv_nband(self.pseudo)
 
         # Set extra_abivars.
         self.extra_abivars = dict(
@@ -633,7 +634,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             toldfe=toldfe,
             prtwf=0,
             #ecutsm=0.5,
-            #nband=self.nband,
+            nband=nband,
             #paral_kgb=paral_kgb
         )
                                        
