@@ -51,7 +51,7 @@ def dojo_plot(options):
                 report.plot_gbrv_convergence(title=pseudo.basename)
 
 
-def dojo_compare_plots(options):
+def dojo_compare(options):
     """Plot and compare DOJO results for multiple pseudos."""
     pseudos = options.pseudos
     import matplotlib.pyplot as plt
@@ -84,30 +84,30 @@ def dojo_compare_plots(options):
         plt.show()
 
 
-def dojo_table(options):
-    """Build table."""
+def dojo_trials(options):
+    """Visualize the results of the different tests."""
     pseudos = options.pseudos
 
     # Build pandas DataFrame
-    import matplotlib.pyplot as plt
     data, errors = pseudos.get_dojo_dataframe()
     #print(data)
 
-    #all_families = ("alkaline",)
-    #for family in all_families:
-    #    d = data.get_family("alkaline")
-    #    d.show_trials()
-    #    plt.show()
-    #return
+    if errors:
+        print("ERRORS:")
+        pprint(errors)
+    
+    import matplotlib.pyplot as plt
+    data.plot_trials(savefig=options.savefig)
+    #data.plot_hist(savefig=options.savefig)
+    #data.sns_plot(savefig=options.savefig)
 
-    #rows_list = [1, [2, 3], [4,5], [6]]
-    #for rows in rows_list:
-    #    d = data.select_rows(rows)
-    #    print(d)
-    #    #d.show_hist()
-    #    #d.show_trials()
-    #    #d.sns_plot()
-    #return
+
+def dojo_table(options):
+    """Build and show a pandas table."""
+    pseudos = options.pseudos
+
+    data, errors = pseudos.get_dojo_dataframe()
+    print(data)
 
     if errors:
         print("ERRORS:")
@@ -155,20 +155,21 @@ def dojo_table(options):
     columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
 
     tablefmt = "grid"
-    print(tabulate(data[columns], headers="keys", tablefmt=tablefmt))
+    floatfmt=".2f"
+    print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
     #print(data.to_string(columns=columns))
 
     print("\nSTATS:\n") #.center(80, "="))
     #print(data.describe())
-    print(tabulate(data.describe(), headers="keys", tablefmt=tablefmt))
+    print(tabulate(data.describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
     bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean()]
     print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
-    print(tabulate(bad, headers="keys", tablefmt=tablefmt))
+    print(tabulate(bad, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
     #gbrv_fcc_bad = data[data["high_gbrv_fcc_a0_rerr"] > (data["high_gbrv_fcc_a0_rerr"].abs()).mean()]
     #print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
-    #print(tabulate(bad, headers="keys", tablefmt=tablefmt))
+    #print(tabulate(bad, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
 
 def dojo_validate(options):
@@ -182,7 +183,9 @@ def dojo_validate(options):
         try:
             d = p.dojo_report.validate()
             if d:
-                print("Validation problem -->", p.basename, d)
+                print("[%s] Validation problem\n" % p.basename)
+                pprint(d, indent=4)
+                print()
         except Exception as exc:
             print("Error: ", p.basename + str(exc))
 
@@ -194,9 +197,9 @@ def main():
     def str_examples():
         examples = """\
 Usage example:\n
-    dojodata plot H.psp8             ==> Plot dojo data for pseudo H.psp8
-    dojodata plot H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
-    dojodata table .                 ==> Build table
+    dojodata plot H.psp8                ==> Plot dojo data for pseudo H.psp8
+    dojodata compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
+    dojodata table .                    ==> Build table
 """
         return examples
 
@@ -207,14 +210,26 @@ Usage example:\n
         sys.exit(error_code)
 
     # Parent parser for commands that need to know on which subset of pseudos we have to operate.
+    def parse_rows(s):
+        if not s: return []
+        tokens = s.split(",")
+        return list(map(int, tokens)) if tokens else []
+
+    def parse_symbols(s):
+        if not s: return []
+        return s.split(",")
+
     pseudos_selector_parser = argparse.ArgumentParser(add_help=False)
     pseudos_selector_parser.add_argument('pseudos', nargs="+", help="Pseudopotential file or directory containing pseudos")
+    pseudos_selector_parser.add_argument('-s', "--symbols", type=parse_symbols, help="List of chemical symbolss")
+
+    # Options for pseudo selection.
+    group = pseudos_selector_parser.add_mutually_exclusive_group()
+    group.add_argument("-r", '--rows', default="", type=parse_rows, help="Select these rows of the periodic table.")
+    group.add_argument("-f", '--family', type=str, default="", help="Select this family of the periodic table.")
 
     # Build the main parser.
     parser = argparse.ArgumentParser(epilog=str_examples(), formatter_class=argparse.RawDescriptionHelpFormatter)
-
-    #parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
-    #                    help='verbose, can be supplied multiple times to increase verbosity')
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
@@ -222,13 +237,23 @@ Usage example:\n
     # Create the parsers for the sub-commands
     subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
 
+    plot_options_parser = argparse.ArgumentParser(add_help=False)
+    plot_options_parser.add_argument("-w", "--what-plot", type=str, default="all", help="Quantity to plot e.g df for deltafactor, gbrv for GBRV tests")
+    plot_options_parser.add_argument("-e", "--eos", action="store_true", help="Plot EOS curve")
+
+
     # Subparser for plot command.
-    p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser], help="Plot DOJO_REPORT data.")
-    p_plot.add_argument("-w", "--what-plot", type=str, default="all", help="Quantity to plot e.g df for deltafactor, gbrv for GBRV tests")
-    p_plot.add_argument("-e", "--eos", action="store_true", help="Plot EOS curve")
+    p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser, plot_options_parser], help="Plot DOJO_REPORT data.")
+
+    # Subparser for compare.
+    p_validate = subparsers.add_parser('compare', parents=[pseudos_selector_parser, plot_options_parser], help="Compare pseudos")
 
     # Subparser for table command.
     p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
+
+    # Subparser for trials command.
+    p_trials = subparsers.add_parser('trials', parents=[pseudos_selector_parser], help="Plot DOJO trials.")
+    p_trials.add_argument("--savefig", type=str, default="", help="Save plot to savefig file")
 
     # Subparser for table validate.
     p_validate = subparsers.add_parser('validate', parents=[pseudos_selector_parser], help="Validate pseudos")
@@ -247,16 +272,18 @@ Usage example:\n
         raise ValueError('Invalid log level: %s' % options.loglevel)
     logging.basicConfig(level=numeric_level)
 
-    def read_pseudos(paths, exts):
+    def get_pseudos(options):
         """
-        Find pseudos in paths, return PseudoTable object sorted by Z.
+        Find pseudos in paths, return :class:`PseudoTable` object sorted by atomic number Z.
         Accepts filepaths or directory.
         """
+        exts=("psp8",)
+        paths = options.pseudos
         if len(paths) == 1 and os.path.isdir(paths[0]):
             # directory: find all pseudos with the psp8 extensions.
             # ignore directories starting with _
             top = paths[0]
-            paths, ext = [], "psp8"
+            paths = []
             for dirpath, dirnames, filenames in os.walk(top):
                 if os.path.basename(dirpath).startswith("_"): continue
                 dirpath = os.path.abspath(dirpath)
@@ -269,21 +296,48 @@ Usage example:\n
             try:
                 pseudos.append(Pseudo.from_file(p))
             except:
-                print("Error in %s" % p)
-                                                                       
-        return PseudoTable(pseudos).sort_by_z()
+                warn("Error in %s" % p)
+
+        table = PseudoTable(pseudos)
+
+        # Here we select a subset of pseudos according to family or rows
+        if options.rows:
+            table = table.select_rows(options.rows)
+        elif options.family:
+            table = table.select_family(options.family)
+
+        if options.symbols:
+            table = table.select(condition=lambda p: p.element.symbol in options.symbols)
+
+        return table.sort_by_z()
 
     # Build PseudoTable from the paths specified by the user.
-    options.pseudos = read_pseudos(options.pseudos, exts=("psp8",))
+    options.pseudos = get_pseudos(options)
 
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    #sns.set(style='ticks', palette='Set2')
+    sns.set(style="dark", palette="Set2")
+    #And to remove "chartjunk", do:
+    #sns.despine()
+    #plt.tight_layout()
+    sns.despine(offset=10, trim=True)
+
+    # Dispatch
     if options.command == "plot":
-        if len(options.pseudos) > 1:
-            dojo_compare_plots(options)
-        else:
-            dojo_plot(options)
+        dojo_plot(options)
+    
+    elif options.command == "compare":
+        dojo_compare(options)
 
     elif options.command == "table":
         dojo_table(options)
+
+    elif options.command == "trials":
+        dojo_trials(options)
+
+    #elif options.command == "find":
+    #    dojo_find(options)
 
     elif options.command == "validate":
         dojo_validate(options)

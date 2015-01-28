@@ -94,6 +94,7 @@ install_requires = [
     "numpy>=1.5",
     "scipy>=0.10",
     "pymatgen>=3.0.8",
+    "tabulate",
     #"matplotlib>=1.1",
 ]
 
