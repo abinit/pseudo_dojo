@@ -198,8 +198,9 @@ def main():
         examples = """\
 Usage example:\n
     dojodata plot H.psp8                ==> Plot dojo data for pseudo H.psp8
+    dojodata trials H.psp8 -r 1
     dojodata compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
-    dojodata table .                    ==> Build table
+    dojodata table .                    ==> Build table (find all psp8 files withing current directory)
 """
         return examples
 
