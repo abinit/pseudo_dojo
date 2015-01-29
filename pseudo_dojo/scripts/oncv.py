@@ -28,7 +28,6 @@ def main():
 
     onc_parser = OncvOutputParser(options.filename)
     onc_parser.scan()
-    #print(onc_parser)
 
     if options.json:
         import json
@@ -44,6 +43,13 @@ def main():
         ("dp", plotter.plot_dens_and_pots),
         ("lc", plotter.plot_atanlogder_econv),
     ])
+
+    #plotter.plot_radial_wfs()
+    #plotter.plot_projectors()
+    #plotter.plot_densities()
+    #plotter.plot_potentials()
+    #plotter.plot_der_potentials()
+    #return
 
     # Call function depending on options.plot_mode
     if options.plot_mode == "slide":

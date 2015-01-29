@@ -4,7 +4,7 @@ import os
 
 from IPython.nbformat import current as nbf
 
-def generate_notebook(pseudopath):
+def write_notebook(pseudopath):
     """See http://nbviewer.ipython.org/gist/fperez/9716279"""
     nb = nbf.new_notebook()
 
@@ -34,36 +34,56 @@ with open(input_file, "rt") as fh:
 """),
 
         nbf.new_code_cell("""\
-# Get data from the .out file
+# Get data from the output file
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter
 onc_parser = OncvOutputParser(pseudo.filepath.replace(".psp8", ".out"))
+# Parse the file and fuild the plotter
 onc_parser.scan()
-# Build the plotter
 plotter = onc_parser.make_plotter()
 """),
 
         nbf.new_code_cell("""\
-# Plot the arctan of the logarithmic derivative and the convergence in G-space computed by ONCVPSP
-plotter.plot_atanlogder_econv(show=False)
+# AE/PS radial wavefunctions.
+plotter.plot_radial_wfs(show=False)
 """),
 
         nbf.new_code_cell("""\
-# Plot the AE/PS wavefunctions and the projectors.
-plotter.plot_waves_and_projs(show=False)
+# Arctan of the logarithmic derivatives.
+plotter.plot_atan_logders(show=False)
 """),
 
         nbf.new_code_cell("""\
-# Plot core/valence/model charge densities.
-plotter.plot_dens_and_pots(show=False)
+# Convergence in G-space computed by the ONCVPSP generator.
+plotter.plot_ene_vs_ecut(show=False)
 """),
 
         nbf.new_code_cell("""\
-# Plot the convergence of the total energy vs ecut (computed from the deltafactor runs at WIEN2K v0)
+# Projectors.
+plotter.plot_projectors(show=False)
+"""),
+
+        nbf.new_code_cell("""\
+# Core/Valence/Model charge densities.
+plotter.plot_densities(show=False)
+"""),
+
+        nbf.new_code_cell("""\
+# Local potential and l-dependent potentials.
+plotter.plot_potentials(show=False)
+"""),
+
+        nbf.new_code_cell("""\
+# 1-st derivatives of vl and vloc computed via finite differences.
+plotter.plot_der_potentials(show=False)
+"""),
+
+        nbf.new_code_cell("""\
+# Convergence of the total energy (computed from the deltafactor runs with WIEN2K equilibrium volume)
 report.plot_etotal_vs_ecut(show=False)
 """),
 
         nbf.new_code_cell("""\
-# EOS for the different ecuts.
+# EOS for the different cutoff energies.
 report.plot_deltafactor_eos(show=False)
 """),
 
@@ -71,7 +91,6 @@ report.plot_deltafactor_eos(show=False)
 # Convergence of the deltafactor results
 report.plot_deltafactor_convergence(what=("dfact_meV", "dfactprime_meV"), show=False)
 """),
-
 
         nbf.new_code_cell("""\
 # Convergence of \\Delta v0, \\Delta b0, and \\Delta b1 (deltafactor tests)
@@ -96,23 +115,32 @@ report.plot_gbrv_convergence(show=False)
         nbf.write(nb, f, 'ipynb')
 
 def main():
-    top = "."
+    top = "." if len(sys.argv) > 1 else "."
     exts=("psp8",)
-    paths = []
-    for dirpath, dirnames, filenames in os.walk(top):
-        if os.path.basename(dirpath).startswith("_"): continue
-        dirpath = os.path.abspath(dirpath)
-        for filename in filenames:
-            if any(filename.endswith(ext) for ext in exts):
-                paths.append(os.path.join(dirpath, filename))
 
-    #pseudopaths = ["./Si/Si.psp8"]
-    for path in paths:
-        #print(path)
-        generate_notebook(path)
+    def find_paths(top, exts):
+        paths = []
+        for dirpath, dirnames, filenames in os.walk(top):
+            if os.path.basename(dirpath).startswith("_"): continue
+            dirpath = os.path.abspath(dirpath)
+            for filename in filenames:
+                if any(filename.endswith(ext) for ext in exts):
+                    paths.append(os.path.join(dirpath, filename))
+        return paths
 
-    return 0
+    for path in find_paths(top, exts):
+        write_notebook(path)
 
+    # Use runipy
+    #from subprocess import check_output, 
+    #for path in find_paths(top, exts):
+    #    try:
+    #        check_output(["runipy", "-o", path])
+    #    except CalledProcessError as exc:
+    #        print("returncode:", exc.returcode)
+    #        print("output:\n%s", exc.output)
+
+    #return 0
 
 if __name__ == "__main__":
     sys.exit(main())

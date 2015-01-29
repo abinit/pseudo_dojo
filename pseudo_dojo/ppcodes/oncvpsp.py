@@ -26,6 +26,18 @@ def decorate_ax(ax, xlabel, ylabel, title, lines, legends):
     ax.legend(lines, legends, loc="best", shadow=True)
 
 
+
+import matplotlib.pyplot as plt
+def get_axes_fig(ax):
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1)
+    else:
+        fig = plt.gcf()
+
+    return ax, fig
+
+
 class PseudoGenDataPlotter(object):
     """
     Plots the results produced by a pseudopotential generator.
@@ -73,19 +85,18 @@ class PseudoGenDataPlotter(object):
         getattr(self, "plot_" + key)(ax=ax, **kwargs)
         self._mplt.show()
 
-    #def plot_all(self, **kwargs):
-    #    for key in self.all_keys:
-    #        plot_key(key, ax)
-
     def _wf_pltopts(self, l, aeps):
         """Plot options for wavefunctions."""
         return dict(
             color=self.color_l[l], linestyle=self.linestyle_aeps[aeps], #marker=self.markers_aeps[aeps],
             linewidth=self.linewidth, markersize=self.markersize)
 
-    def plot_atan_logders(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_atan_logders(self, ax=None, **kwargs):
         """Plot arctan of logder on axis ax."""
         ae, ps = self.atan_logders.ae, self.atan_logders.ps
+
+        ax, fig = get_axes_fig(ax)
 
         lines, legends = [], []
         for l, ae_alog in ae.items():
@@ -103,14 +114,17 @@ class PseudoGenDataPlotter(object):
         decorate_ax(ax, xlabel="Energy [Ha]", ylabel="ATAN(LogDer)", title="ATAN(Log Derivative)", 
                     lines=lines, legends=legends)
 
-        return lines
+        return fig
 
-    def plot_radial_wfs(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_radial_wfs(self, ax=None, **kwargs):
         """
         Plot ae and ps radial wavefunctions on axis ax.
 
         lselect: List to select l channels
         """
+        ax, fig = get_axes_fig(ax)
+
         ae_wfs, ps_wfs = self.radial_wfs.ae, self.radial_wfs.ps
         lselect = kwargs.get("lselect", [])
 
@@ -128,14 +142,17 @@ class PseudoGenDataPlotter(object):
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$\phi(r)$", title="Wave Functions", 
                     lines=lines, legends=legends)
 
-        return lines
+        return fig
 
-    def plot_projectors(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_projectors(self, ax=None, **kwargs):
         """
         Plot oncvpsp projectors on axis ax.
 
         lselect: List to select l channels
         """
+        ax, fig = get_axes_fig(ax)
+
         lselect = kwargs.get("lselect", [])
 
         lines, legends = [], []
@@ -149,11 +166,13 @@ class PseudoGenDataPlotter(object):
 
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$p(r)$", title="Projector Wave Functions", 
                     lines=lines, legends=legends)
+        return fig
 
-        return lines
-
-    def plot_densities(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_densities(self, ax=None, **kwargs):
         """Plot ae, ps and model densities on axis ax."""
+        ax, fig = get_axes_fig(ax)
+
         lines, legends = [], []
         for name, rho in self.densities.items():
             line, = ax.plot(rho.rmesh, rho.values,
@@ -165,10 +184,13 @@ class PseudoGenDataPlotter(object):
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$n(r)$", title="Charge densities", 
                     lines=lines, legends=legends)
 
-        return lines
+        return fig
 
-    def plot_potentials(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_potentials(self, ax=None, **kwargs):
         """Plot vl and vloc potentials on axis ax"""
+        ax, fig = get_axes_fig(ax)
+
         lines, legends = [], []
         for l, pot in self.potentials.items():
             line, = ax.plot(pot.rmesh, pot.values, **self._wf_pltopts(l, "ae"))
@@ -181,14 +203,15 @@ class PseudoGenDataPlotter(object):
 
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$v_l(r)$", title="Ion Pseudopotentials", 
                     lines=lines, legends=legends)
+        return fig
 
-        return lines
-
-    def plot_der_potentials(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_der_potentials(self, ax=None, **kwargs):
         """
         Plot the derivatives of vl and vloc potentials on axis ax
         Used to analyze the derivative discontinuity introduced by the RRKJ method at rc.
         """
+        ax, fig = get_axes_fig(ax)
         from abipy.tools.derivatives import finite_diff
         from scipy.interpolate import UnivariateSpline
         lines, legends = [], []
@@ -208,11 +231,12 @@ class PseudoGenDataPlotter(object):
                                                                                              
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="${d v_l(r)}{d r}$", title="Ion Pseudopotentials", 
                     lines=lines, legends=legends)
-                                                                                             
-        return lines
+        return fig
 
-    def plot_ene_vs_ecut(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_ene_vs_ecut(self, ax=None, **kwargs):
         """Plot the converge of ene wrt ecut on axis ax."""
+        ax, fig = get_axes_fig(ax)
         lines, legends = [], []
         for l, data in self.ene_vs_ecut.items():
             line, = ax.plot(data.energies, data.values, **self._wf_pltopts(l, "ae"))
@@ -224,8 +248,7 @@ class PseudoGenDataPlotter(object):
                     lines=lines, legends=legends)
 
         ax.set_yscale("log")
-
-        return lines
+        return fig
 
     @add_fig_kwargs
     def plot_atanlogder_econv(self, **kwargs):
@@ -233,8 +256,8 @@ class PseudoGenDataPlotter(object):
         fig, ax_list = self._mplt.subplots(nrows=2, ncols=1, sharex=False, squeeze=False)
         ax_list = ax_list.ravel()
 
-        self.plot_atan_logders(ax_list[0])
-        self.plot_ene_vs_ecut(ax_list[1])
+        self.plot_atan_logders(ax=ax_list[0], show=False)
+        self.plot_ene_vs_ecut(ax=ax_list[1], show=False)
 
         return fig
 
@@ -244,8 +267,8 @@ class PseudoGenDataPlotter(object):
         fig, ax_list = self._mplt.subplots(nrows=2, ncols=1, sharex=False, squeeze=False)
         ax_list = ax_list.ravel()
 
-        self.plot_densities(ax_list[0])
-        self.plot_potentials(ax_list[1])
+        self.plot_densities(ax=ax_list[0], show=False)
+        self.plot_potentials(ax=ax_list[1], show=False)
 
         return fig
 
@@ -257,8 +280,8 @@ class PseudoGenDataPlotter(object):
 
         for l in range(lmax+1):
             ax_idx = lmax - l
-            self.plot_radial_wfs(ax_list[ax_idx][0], lselect=[l])
-            self.plot_projectors(ax_list[ax_idx][1], lselect=[l])
+            self.plot_radial_wfs(ax=ax_list[ax_idx][0], lselect=[l], show=False)
+            self.plot_projectors(ax=ax_list[ax_idx][1], lselect=[l], show=False)
 
         return fig
 
