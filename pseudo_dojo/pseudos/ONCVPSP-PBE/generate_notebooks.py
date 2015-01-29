@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import os
 
 from IPython.nbformat import current as nbf
 
@@ -23,7 +24,7 @@ sns.set(style='ticks', palette='Set2')
 from pymatgen.io.abinitio.pseudos import Pseudo
 pseudo = Pseudo.from_file('%s')
 report = pseudo.dojo_report
-""" % pseudopath),
+""" % os.path.basename(pseudopath)),
 
         nbf.new_code_cell("""\
 # Show the input file used to generate the pseudo
@@ -94,14 +95,23 @@ report.plot_gbrv_convergence(show=False)
     with open(fname, 'w') as f:
         nbf.write(nb, f, 'ipynb')
 
-    # This notebook can be run at the command line with:
-    # ipython -c '%run test.ipynb'
-    # Or you can open it as a live notebook.
-
-
 def main():
-    pseudopath = "./Si/Si.psp8"
-    generate_notebook(pseudopath)
+    top = "."
+    exts=("psp8",)
+    paths = []
+    for dirpath, dirnames, filenames in os.walk(top):
+        if os.path.basename(dirpath).startswith("_"): continue
+        dirpath = os.path.abspath(dirpath)
+        for filename in filenames:
+            if any(filename.endswith(ext) for ext in exts):
+                paths.append(os.path.join(dirpath, filename))
+
+
+    #pseudopaths = ["./Si/Si.psp8"]
+    for path in paths:
+        print(path)
+        #generate_notebook(path)
+
     return 0
 
 
