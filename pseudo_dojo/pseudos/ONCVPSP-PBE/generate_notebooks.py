@@ -106,11 +106,10 @@ def main():
             if any(filename.endswith(ext) for ext in exts):
                 paths.append(os.path.join(dirpath, filename))
 
-
     #pseudopaths = ["./Si/Si.psp8"]
     for path in paths:
-        print(path)
-        #generate_notebook(path)
+        #print(path)
+        generate_notebook(path)
 
     return 0
 
