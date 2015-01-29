@@ -33,10 +33,16 @@ def dojo_plot(options):
 
         # Deltafactor
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
-            report.plot_etotal_vs_ecut(title=pseudo.basename)
-            if options.eos:
+            #report.plot_etotal_vs_ecut(title=pseudo.basename)
+            if options.eos: 
                 report.plot_deltafactor_eos(title=pseudo.basename)
-            report.plot_deltafactor_convergence(title=pseudo.basename)
+            fig = report.plot_deltafactor_convergence(title=pseudo.basename, what="dfactprime_meV", show=True)
+            #report.plot_deltafactor_convergence(title=pseudo.basename)
+
+        #from bokeh import mpl
+        #from bokeh.plotting import show
+        #show(mpl.to_bokeh(fig, name="test"))
+        #return
 
         # GBRV
         if any(k in options.what_plot for k in ("all", "gbrv")):
@@ -172,7 +178,7 @@ def dojo_table(options):
     #print(tabulate(bad, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
 
-def dojo_validate(options):
+def dojo_check(options):
     errors = []
     for p in options.pseudos:
         report = p.dojo_report
@@ -181,7 +187,7 @@ def dojo_validate(options):
             continue
 
         try:
-            d = p.dojo_report.validate()
+            d = p.dojo_report.check()
             if d:
                 print("[%s] Validation problem\n" % p.basename)
                 pprint(d, indent=4)
@@ -191,6 +197,37 @@ def dojo_validate(options):
 
     if errors:
         print(errors)
+
+
+def dojo_validate(options):
+    for pseudo in options.pseudos:
+        report = pseudo.dojo_report
+        #print(pseudo.basename)
+
+        #if report.is_validated:
+        #    print("Pseudo %s is already validated!" % pseudo.basename)
+        #report.plot_deltafactor_convergence(title=pseudo.basename, what="dfactprime_meV")
+
+        hints = report.compute_hints()
+        print("hints computed from deltafactor prime:\n", hints)
+
+        ans = False
+        #ans = prompt("Do you accept the hints? [Y]")
+        if ans:
+            print("got true")
+            #report.validate(hints)
+            #pseudo.write_dojo_report(report)
+        else:
+            print("The dojoreport contains the following ecut values:\n%s" % report.ecuts)
+            #new_ecuts = prompt("Enter new ecuts to compute (comma-separated values or empty string to abort)")
+            #if new_ecuts:
+            #    print("Exit requested by user")
+            #    return 
+
+            # Be careful with the format here! it should be %.1f
+            #new_ecuts = np.array(new_ecuts.split(","))
+            #report.add_ecuts(new_ecuts)
+            #pseudo.write_dojo_report(report)
 
 
 def main():
@@ -235,6 +272,8 @@ Usage example:\n
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
 
+    parser.add_argument('--seaborn', action="store_true", help="Use seaborn settings")
+
     # Create the parsers for the sub-commands
     subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
 
@@ -242,12 +281,11 @@ Usage example:\n
     plot_options_parser.add_argument("-w", "--what-plot", type=str, default="all", help="Quantity to plot e.g df for deltafactor, gbrv for GBRV tests")
     plot_options_parser.add_argument("-e", "--eos", action="store_true", help="Plot EOS curve")
 
-
     # Subparser for plot command.
     p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser, plot_options_parser], help="Plot DOJO_REPORT data.")
 
     # Subparser for compare.
-    p_validate = subparsers.add_parser('compare', parents=[pseudos_selector_parser, plot_options_parser], help="Compare pseudos")
+    p_compare = subparsers.add_parser('compare', parents=[pseudos_selector_parser, plot_options_parser], help="Compare pseudos")
 
     # Subparser for table command.
     p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
@@ -256,7 +294,10 @@ Usage example:\n
     p_trials = subparsers.add_parser('trials', parents=[pseudos_selector_parser], help="Plot DOJO trials.")
     p_trials.add_argument("--savefig", type=str, default="", help="Save plot to savefig file")
 
-    # Subparser for table validate.
+    # Subparser for check command.
+    p_check = subparsers.add_parser('check', parents=[pseudos_selector_parser], help="Check pseudos")
+
+    # Subparser for validate command.
     p_validate = subparsers.add_parser('validate', parents=[pseudos_selector_parser], help="Validate pseudos")
 
     # Parse command line.
@@ -315,36 +356,18 @@ Usage example:\n
     # Build PseudoTable from the paths specified by the user.
     options.pseudos = get_pseudos(options)
 
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    #sns.set(style='ticks', palette='Set2')
-    sns.set(style="dark", palette="Set2")
-    #And to remove "chartjunk", do:
-    #sns.despine()
-    #plt.tight_layout()
-    sns.despine(offset=10, trim=True)
+    if options.seaborn:
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        #sns.set(style='ticks', palette='Set2')
+        sns.set(style="dark", palette="Set2")
+        #And to remove "chartjunk", do:
+        #sns.despine()
+        #plt.tight_layout()
+        #sns.despine(offset=10, trim=True)
 
     # Dispatch
-    if options.command == "plot":
-        dojo_plot(options)
-    
-    elif options.command == "compare":
-        dojo_compare(options)
-
-    elif options.command == "table":
-        dojo_table(options)
-
-    elif options.command == "trials":
-        dojo_trials(options)
-
-    #elif options.command == "find":
-    #    dojo_find(options)
-
-    elif options.command == "validate":
-        dojo_validate(options)
-
-    else:
-        raise ValueError("Don't know how to handle command %s" % options.command)
+    globals()["dojo_" + options.command](options)
 
     return 0
 

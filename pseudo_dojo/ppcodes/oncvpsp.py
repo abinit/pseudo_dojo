@@ -70,7 +70,7 @@ class PseudoGenDataPlotter(object):
             ax = fig.add_subplot(1, 1, 1)
 
         # key --> self.plot_key()
-        getattr(self, "plot_" + key)(ax, **kwargs)
+        getattr(self, "plot_" + key)(ax=ax, **kwargs)
         self._mplt.show()
 
     #def plot_all(self, **kwargs):
