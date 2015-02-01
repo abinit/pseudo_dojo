@@ -59,35 +59,8 @@ def dojo_plot(options):
 
 def dojo_compare(options):
     """Plot and compare DOJO results for multiple pseudos."""
-    pseudos = options.pseudos
-    import matplotlib.pyplot as plt
-
-    # Compare ecut convergence and Deltafactor
-    if all(p.dojo_report.has_trial("deltafactor") for p in pseudos) and \
-           any(k in options.what_plot for k in ("all", "df")):
-
-        fig, ax_list = plt.subplots(nrows=len(pseudos), ncols=1, sharex=True, squeeze=True)
-        for ax, pseudo in zip(ax_list, pseudos):
-            pseudo.dojo_report.plot_etotal_vs_ecut(ax=ax, show=False, label=pseudo.basename)
-        plt.show()
-
-        fig, ax_grid = plt.subplots(nrows=5, ncols=len(pseudos), sharex=True, sharey="row", squeeze=False)
-        for ax_list, pseudo in zip(ax_grid.T, pseudos):
-            pseudo.dojo_report.plot_deltafactor_convergence(ax_list=ax_list, show=False)
-
-        fig.suptitle(" vs ".join(p.basename for p in pseudos))
-        plt.show()
-
-    # Compare GBRV results
-    if all(p.dojo_report.has_trial("gbrv_bcc") for p in pseudos) and \
-       any(k in options.what_plot for k in ("all", "gbrv")):
-
-        fig, ax_grid = plt.subplots(nrows=2, ncols=len(pseudos), sharex=True, sharey="row", squeeze=False)
-        for ax_list, pseudo in zip(ax_grid.T, pseudos):
-            pseudo.dojo_report.plot_gbrv_convergence(ax_list=ax_list, show=False)
-
-        fig.suptitle(" vs ".join(p.basename for p in pseudos))
-        plt.show()
+    options.pseudos.dojo_compare(what=options.what_plot)
+    return
 
 
 def dojo_trials(options):
@@ -113,7 +86,9 @@ def dojo_table(options):
     pseudos = options.pseudos
 
     data, errors = pseudos.get_dojo_dataframe()
-    print(data)
+
+    data.tabulate()
+    return
 
     if errors:
         print("ERRORS:")
@@ -355,6 +330,13 @@ Usage example:\n
 
     # Build PseudoTable from the paths specified by the user.
     options.pseudos = get_pseudos(options)
+
+    pseudos = options.pseudos
+    for z in pseudos.zlist: 
+        pseudos_z = pseudos[z]
+        if len(pseudos_z) > 1:
+            pseudos_z.dojo_compare()
+    return 0
 
     if options.seaborn:
         import matplotlib.pyplot as plt

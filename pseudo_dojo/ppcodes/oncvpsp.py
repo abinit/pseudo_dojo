@@ -77,9 +77,7 @@ class PseudoGenDataPlotter(object):
 
     def plot_key(self, key, ax=None, **kwargs):
         """Plot a singol quantity specified by key."""
-        if ax is None:
-            fig = self._mplt.figure()
-            ax = fig.add_subplot(1, 1, 1)
+        ax, fig = get_axes_fig(ax)
 
         # key --> self.plot_key()
         getattr(self, "plot_" + key)(ax=ax, **kwargs)
@@ -206,9 +204,9 @@ class PseudoGenDataPlotter(object):
         return fig
 
     @add_fig_kwargs
-    def plot_der_potentials(self, ax=None, **kwargs):
+    def plot_der_potentials(self, ax=None, order=1, **kwargs):
         """
-        Plot the derivatives of vl and vloc potentials on axis ax
+        Plot the derivatives of vl and vloc potentials on axis ax.
         Used to analyze the derivative discontinuity introduced by the RRKJ method at rc.
         """
         ax, fig = get_axes_fig(ax)
@@ -220,16 +218,16 @@ class PseudoGenDataPlotter(object):
             lin_rmesh, h = np.linspace(pot.rmesh[0], pot.rmesh[-1], num=len(pot.rmesh) * 4, retstep=True)
             spline = UnivariateSpline(pot.rmesh, pot.values, s=0)
             lin_values = spline(lin_rmesh)
-            vder = finite_diff(lin_values, h, order=1, acc=4)
+            vder = finite_diff(lin_values, h, order=order, acc=4)
             line, = ax.plot(lin_rmesh, vder, **self._wf_pltopts(l, "ae"))
             lines.append(line)
                                                                                              
             if l == -1:
-                legends.append("Derivative Vloc")
+                legends.append("%s-order derivative Vloc" % order)
             else:
-                legends.append("Derivative PS l=%s" % str(l))
+                legends.append("$s-order derivative PS l=%s" % str(l))
                                                                                              
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="${d v_l(r)}{d r}$", title="Ion Pseudopotentials", 
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \phi(r)$" % order, title="Derivative of the ion Pseudopotentials", 
                     lines=lines, legends=legends)
         return fig
 
