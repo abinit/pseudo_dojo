@@ -60,7 +60,6 @@ def dojo_plot(options):
 def dojo_compare(options):
     """Plot and compare DOJO results for multiple pseudos."""
     options.pseudos.dojo_compare(what=options.what_plot)
-    return
 
 
 def dojo_trials(options):
@@ -295,18 +294,22 @@ Usage example:\n
         Accepts filepaths or directory.
         """
         exts=("psp8",)
+
         paths = options.pseudos
         if len(paths) == 1 and os.path.isdir(paths[0]):
-            # directory: find all pseudos with the psp8 extensions.
-            # ignore directories starting with _
+            #    # directory: find all pseudos with the psp8 extensions.
+            #    # ignore directories starting with _
             top = paths[0]
-            paths = []
-            for dirpath, dirnames, filenames in os.walk(top):
-                if os.path.basename(dirpath).startswith("_"): continue
-                dirpath = os.path.abspath(dirpath)
-                for filename in filenames:
-                    if any(filename.endswith(ext) for ext in exts):
-                        paths.append(os.path.join(dirpath, filename))
+            #    paths = []
+            #    for dirpath, dirnames, filenames in os.walk(top):
+            #        if os.path.basename(dirpath).startswith("_"): continue
+            #        dirpath = os.path.abspath(dirpath)
+            #        for filename in filenames:
+            #            if any(filename.endswith(ext) for ext in exts):
+            #                paths.append(os.path.join(dirpath, filename))
+
+            from monty.os.path import find_exts
+            paths = find_exts(top, exts, exclude_dirs="_*")
 
         pseudos = []
         for p in paths:
@@ -324,19 +327,19 @@ Usage example:\n
             table = table.select_family(options.family)
 
         if options.symbols:
-            table = table.select(condition=lambda p: p.element.symbol in options.symbols)
+            table = table.select(condition=lambda p: p.symbol in options.symbols)
 
         return table.sort_by_z()
 
     # Build PseudoTable from the paths specified by the user.
     options.pseudos = get_pseudos(options)
 
-    pseudos = options.pseudos
-    for z in pseudos.zlist: 
-        pseudos_z = pseudos[z]
-        if len(pseudos_z) > 1:
-            pseudos_z.dojo_compare()
-    return 0
+    #pseudos = options.pseudos
+    #for z in pseudos.zlist: 
+    #    pseudos_z = pseudos[z]
+    #    if len(pseudos_z) > 1:
+    #        pseudos_z.dojo_compare()
+    #return 0
 
     if options.seaborn:
         import matplotlib.pyplot as plt

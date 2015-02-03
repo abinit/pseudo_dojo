@@ -12,7 +12,6 @@ def write_notebook(pseudopath):
     """See http://nbviewer.ipython.org/gist/fperez/9716279"""
     nb = nbf.new_notebook()
 
-    # This notebook will simply have three cells that read print 0, print 1, etc:
     cells = [
         nbf.new_text_cell('heading', "This is an auto-generated notebook for %s" % os.path.basename(pseudopath)),
         nbf.new_code_cell("""\
@@ -33,8 +32,7 @@ report = pseudo.dojo_report""" % os.path.basename(pseudopath)),
         nbf.new_text_cell('heading', "ONCVPSP Input File:"),
         nbf.new_code_cell("""\
 input_file = pseudo.filepath.replace(".psp8", ".in") 
-with open(input_file, "rt") as fh:
-    for line in fh: print(line, end="")"""),
+%cat $input_file
 
         nbf.new_code_cell("""\
 # Get data from the output file
@@ -117,9 +115,10 @@ def main():
 
     options = parser.parse_args()
 
+    from monty.os.path import find_exts
+
     def find_paths(top, exts):
         exts = list_strings(exts)
-
         if os.path.isfile(top) and any(top.endswith(ext) for ext in exts):
             return [top]
 
@@ -136,14 +135,16 @@ def main():
     if options.command == "generate":
         # Generate ipython notebooks.
         exts=("psp8",)
-        for path in find_paths(options.top, exts):
+        #for path in find_paths(options.top, exts):
+        for path in find_exts(options.top, exts, exclude_dirs="_*|.*"):
             write_notebook(path)
 
     elif options.command == "runipy":
         # Use runipy to execute and update the notebook.
         # Warning: this does not work in the sense that plots are produced!
         from subprocess import check_output, CalledProcessError
-        for path in find_paths(options.top, exts="ipynb"):
+        #for path in find_paths(options.top, exts="ipynb"):
+        for path in find_exts(options.top, exts="ipynb", exclude_dirs="_*|.*"):
             try:
                 check_output(["runipy", "-o", path])
                 #check_output(["ipython", "notebook", path])
