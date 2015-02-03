@@ -32,7 +32,7 @@ report = pseudo.dojo_report""" % os.path.basename(pseudopath)),
         nbf.new_text_cell('heading', "ONCVPSP Input File:"),
         nbf.new_code_cell("""\
 input_file = pseudo.filepath.replace(".psp8", ".in") 
-%cat $input_file
+%cat $input_file"""),
 
         nbf.new_code_cell("""\
 # Get data from the output file
@@ -117,20 +117,20 @@ def main():
 
     from monty.os.path import find_exts
 
-    def find_paths(top, exts):
-        exts = list_strings(exts)
-        if os.path.isfile(top) and any(top.endswith(ext) for ext in exts):
-            return [top]
+    #def find_paths(top, exts):
+    #    exts = list_strings(exts)
+    #    if os.path.isfile(top) and any(top.endswith(ext) for ext in exts):
+    #        return [top]
 
-        paths = []
-        for dirpath, dirnames, filenames in os.walk(top):
-            basename = os.path.basename(dirpath)
-            if basename.startswith("_") or basename.startswith("."): continue
-            dirpath = os.path.abspath(dirpath)
-            for filename in filenames:
-                if any(filename.endswith(ext) for ext in exts):
-                    paths.append(os.path.join(dirpath, filename))
-        return paths
+    #    paths = []
+    #    for dirpath, dirnames, filenames in os.walk(top):
+    #        basename = os.path.basename(dirpath)
+    #        if basename.startswith("_") or basename.startswith("."): continue
+    #        dirpath = os.path.abspath(dirpath)
+    #        for filename in filenames:
+    #            if any(filename.endswith(ext) for ext in exts):
+    #                paths.append(os.path.join(dirpath, filename))
+    #    return paths
 
     if options.command == "generate":
         # Generate ipython notebooks.
