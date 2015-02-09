@@ -10,6 +10,7 @@ from warnings import warn
 from collections import OrderedDict, namedtuple
 from pprint import pprint
 from tabulate import tabulate
+from monty.os.path import find_exts
 from pymatgen.io.abinitio.pseudos import PseudoTable, Pseudo
 
 
@@ -59,8 +60,13 @@ def dojo_plot(options):
 
 def dojo_compare(options):
     """Plot and compare DOJO results for multiple pseudos."""
-    options.pseudos.dojo_compare(what=options.what_plot)
-
+    pseudos = options.pseudos
+    for z in pseudos.zlist: 
+        pseudos_z = pseudos[z]
+        if len(pseudos_z) > 1:
+            pseudos_z.dojo_compare(what=options.what_plot)
+        else:
+            print("Find only one pseudo for Z=%s" % z)
 
 def dojo_trials(options):
     """Visualize the results of the different tests."""
@@ -74,7 +80,7 @@ def dojo_trials(options):
         print("ERRORS:")
         pprint(errors)
     
-    import matplotlib.pyplot as plt
+    #import matplotlib.pyplot as plt
     data.plot_trials(savefig=options.savefig)
     #data.plot_hist(savefig=options.savefig)
     #data.sns_plot(savefig=options.savefig)
@@ -86,14 +92,15 @@ def dojo_table(options):
 
     data, errors = pseudos.get_dojo_dataframe()
 
-    data.tabulate()
-    return
+    #data.tabulate()
+    #return
 
     if errors:
         print("ERRORS:")
         pprint(errors)
 
     accuracies = ["low", "normal", "high"]
+    accuracies = ["low"]
     keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
     #print(columns)
@@ -177,7 +184,6 @@ def dojo_validate(options):
     for pseudo in options.pseudos:
         report = pseudo.dojo_report
         #print(pseudo.basename)
-
         #if report.is_validated:
         #    print("Pseudo %s is already validated!" % pseudo.basename)
         #report.plot_deltafactor_convergence(title=pseudo.basename, what="dfactprime_meV")
@@ -233,7 +239,8 @@ Usage example:\n
 
     pseudos_selector_parser = argparse.ArgumentParser(add_help=False)
     pseudos_selector_parser.add_argument('pseudos', nargs="+", help="Pseudopotential file or directory containing pseudos")
-    pseudos_selector_parser.add_argument('-s', "--symbols", type=parse_symbols, help="List of chemical symbolss")
+    pseudos_selector_parser.add_argument('-s', "--symbols", type=parse_symbols, help=("List of chemical symbols to include or exclude."
+        "Example --symbols=He,Li to include He and Li, --symbols=-He to exclude He"))
 
     # Options for pseudo selection.
     group = pseudos_selector_parser.add_mutually_exclusive_group()
@@ -297,26 +304,15 @@ Usage example:\n
 
         paths = options.pseudos
         if len(paths) == 1 and os.path.isdir(paths[0]):
-            #    # directory: find all pseudos with the psp8 extensions.
-            #    # ignore directories starting with _
             top = paths[0]
-            #    paths = []
-            #    for dirpath, dirnames, filenames in os.walk(top):
-            #        if os.path.basename(dirpath).startswith("_"): continue
-            #        dirpath = os.path.abspath(dirpath)
-            #        for filename in filenames:
-            #            if any(filename.endswith(ext) for ext in exts):
-            #                paths.append(os.path.join(dirpath, filename))
-
-            from monty.os.path import find_exts
             paths = find_exts(top, exts, exclude_dirs="_*")
 
         pseudos = []
         for p in paths:
             try:
                 pseudos.append(Pseudo.from_file(p))
-            except:
-                warn("Error in %s" % p)
+            except Exception as exc:
+                warn("Error in %s:\n%s" % (p, exc))
 
         table = PseudoTable(pseudos)
 
@@ -324,28 +320,23 @@ Usage example:\n
         if options.rows:
             table = table.select_rows(options.rows)
         elif options.family:
-            table = table.select_family(options.family)
+            table = table.select_families(options.family)
 
         if options.symbols:
-            table = table.select(condition=lambda p: p.symbol in options.symbols)
+            table = table.select_symbols(options.symbols)
 
         return table.sort_by_z()
 
     # Build PseudoTable from the paths specified by the user.
     options.pseudos = get_pseudos(options)
 
-    #pseudos = options.pseudos
-    #for z in pseudos.zlist: 
-    #    pseudos_z = pseudos[z]
-    #    if len(pseudos_z) > 1:
-    #        pseudos_z.dojo_compare()
-    #return 0
-
-    if options.seaborn:
+    if True: #and options.seaborn:
+        import matplotlib
+        matplotlib.use("WXAgg")
         import matplotlib.pyplot as plt
         import seaborn as sns
-        #sns.set(style='ticks', palette='Set2')
-        sns.set(style="dark", palette="Set2")
+        sns.set(style='ticks', palette='Set2')
+        #sns.set(style="dark", palette="Set2")
         #And to remove "chartjunk", do:
         #sns.despine()
         #plt.tight_layout()
@@ -353,7 +344,6 @@ Usage example:\n
 
     # Dispatch
     globals()["dojo_" + options.command](options)
-
     return 0
 
 

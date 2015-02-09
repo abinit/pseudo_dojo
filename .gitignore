@@ -50,3 +50,6 @@ nosetests.xml
 
 # Ipython notebooks
 .ipynb_checkpoints
+
+# tags
+tags

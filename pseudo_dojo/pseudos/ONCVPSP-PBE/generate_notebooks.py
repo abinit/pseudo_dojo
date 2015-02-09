@@ -90,6 +90,13 @@ report.plot_deltafactor_convergence(what=("-dfact_meV", "-dfactprime_meV"), show
 
         nbf.new_text_cell('heading', "GBRV EOS for the BCC structure:"),
         nbf.new_code_cell("""report.plot_gbrv_eos(struct_type="bcc", show=False)"""),
+
+        nbf.new_text_cell('heading', "Comparison with the other pseudos in this table"),
+        nbf.new_code_cell("""\
+from pseudo_dojo import get_pseudos
+pseudos = get_pseudos(".")
+if len(pseudos) > 1:
+    pseudos.dojo_compare()"""),
     ]
 
     # Now that we have the cells, we can make a worksheet with them and add it to the notebook:
@@ -116,21 +123,6 @@ def main():
     options = parser.parse_args()
 
     from monty.os.path import find_exts
-
-    #def find_paths(top, exts):
-    #    exts = list_strings(exts)
-    #    if os.path.isfile(top) and any(top.endswith(ext) for ext in exts):
-    #        return [top]
-
-    #    paths = []
-    #    for dirpath, dirnames, filenames in os.walk(top):
-    #        basename = os.path.basename(dirpath)
-    #        if basename.startswith("_") or basename.startswith("."): continue
-    #        dirpath = os.path.abspath(dirpath)
-    #        for filename in filenames:
-    #            if any(filename.endswith(ext) for ext in exts):
-    #                paths.append(os.path.join(dirpath, filename))
-    #    return paths
 
     if options.command == "generate":
         # Generate ipython notebooks.
@@ -161,7 +153,6 @@ def main():
             #    notebook = read(fh, 'json')
             #    r = NotebookRunner(notebook)
             #    r.run_notebook()
-
             #    from IPython.nbformat.current import write
             #    write(r.nb, open("MyOtherNotebook.ipynb", 'w'), 'json')
 

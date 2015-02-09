@@ -10,8 +10,9 @@ import numpy as np
 from collections import namedtuple, OrderedDict
 from monty.functools import lazy_property
 from monty.collections import AttrDict
-from pymatgen.util.plotting_utils import add_fig_kwargs
+from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
+from abipy.tools.derivatives import finite_diff
 
 import logging
 logger = logging.getLogger(__name__)
@@ -25,17 +26,6 @@ def decorate_ax(ax, xlabel, ylabel, title, lines, legends):
     ax.grid(True)
     ax.legend(lines, legends, loc="best", shadow=True)
 
-
-
-import matplotlib.pyplot as plt
-def get_axes_fig(ax):
-    if ax is None:
-        fig = plt.figure()
-        ax = fig.add_subplot(1,1,1)
-    else:
-        fig = plt.gcf()
-
-    return ax, fig
 
 
 class PseudoGenDataPlotter(object):
@@ -77,7 +67,7 @@ class PseudoGenDataPlotter(object):
 
     def plot_key(self, key, ax=None, **kwargs):
         """Plot a singol quantity specified by key."""
-        ax, fig = get_axes_fig(ax)
+        ax, fig, plt = get_ax_fig_plt(ax)
 
         # key --> self.plot_key()
         getattr(self, "plot_" + key)(ax=ax, **kwargs)
@@ -94,7 +84,7 @@ class PseudoGenDataPlotter(object):
         """Plot arctan of logder on axis ax."""
         ae, ps = self.atan_logders.ae, self.atan_logders.ps
 
-        ax, fig = get_axes_fig(ax)
+        ax, fig, plt = get_ax_fig_plt(ax)
 
         lines, legends = [], []
         for l, ae_alog in ae.items():
@@ -121,7 +111,7 @@ class PseudoGenDataPlotter(object):
 
         lselect: List to select l channels
         """
-        ax, fig = get_axes_fig(ax)
+        ax, fig, plt = get_ax_fig_plt(ax)
 
         ae_wfs, ps_wfs = self.radial_wfs.ae, self.radial_wfs.ps
         lselect = kwargs.get("lselect", [])
@@ -149,7 +139,7 @@ class PseudoGenDataPlotter(object):
 
         lselect: List to select l channels
         """
-        ax, fig = get_axes_fig(ax)
+        ax, fig, plt = get_ax_fig_plt(ax)
 
         lselect = kwargs.get("lselect", [])
 
@@ -169,7 +159,7 @@ class PseudoGenDataPlotter(object):
     @add_fig_kwargs
     def plot_densities(self, ax=None, **kwargs):
         """Plot ae, ps and model densities on axis ax."""
-        ax, fig = get_axes_fig(ax)
+        ax, fig, plt = get_ax_fig_plt(ax)
 
         lines, legends = [], []
         for name, rho in self.densities.items():
@@ -185,9 +175,35 @@ class PseudoGenDataPlotter(object):
         return fig
 
     @add_fig_kwargs
+    def plot_der_densities(self, ax=None, order=1, **kwargs):
+        """
+        Plot the derivatives of the densitiers on axis ax.
+        Used to analyze possible derivative discontinuities
+        """
+        ax, fig, plt = get_ax_fig_plt(ax)
+
+        from scipy.interpolate import UnivariateSpline
+
+        lines, legends = [], []
+        for name, rho in self.densities.items():
+            # Need linear mesh for finite_difference --> Spline input densities on lin_rmesh
+            lin_rmesh, h = np.linspace(rho.rmesh[0], rho.rmesh[-1], num=len(rho.rmesh) * 4, retstep=True)
+            spline = UnivariateSpline(rho.rmesh, rho.values, s=0)
+            lin_values = spline(lin_rmesh)
+            vder = finite_diff(lin_values, h, order=order, acc=4)
+            line, = ax.plot(lin_rmesh, vder) #, **self._wf_pltopts(l, "ae"))
+            lines.append(line)
+                                                                                             
+            legends.append("$s-order derivative of %s" % (order, name))
+                                                                                             
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \n(r)$" % order, title="Derivative of the charge densities", 
+                    lines=lines, legends=legends)
+        return fig
+
+    @add_fig_kwargs
     def plot_potentials(self, ax=None, **kwargs):
         """Plot vl and vloc potentials on axis ax"""
-        ax, fig = get_axes_fig(ax)
+        ax, fig, plt = get_ax_fig_plt(ax)
 
         lines, legends = [], []
         for l, pot in self.potentials.items():
@@ -209,7 +225,7 @@ class PseudoGenDataPlotter(object):
         Plot the derivatives of vl and vloc potentials on axis ax.
         Used to analyze the derivative discontinuity introduced by the RRKJ method at rc.
         """
-        ax, fig = get_axes_fig(ax)
+        ax, fig, plt = get_ax_fig_plt(ax)
         from abipy.tools.derivatives import finite_diff
         from scipy.interpolate import UnivariateSpline
         lines, legends = [], []
@@ -234,7 +250,7 @@ class PseudoGenDataPlotter(object):
     @add_fig_kwargs
     def plot_ene_vs_ecut(self, ax=None, **kwargs):
         """Plot the converge of ene wrt ecut on axis ax."""
-        ax, fig = get_axes_fig(ax)
+        ax, fig, plt = get_ax_fig_plt(ax)
         lines, legends = [], []
         for l, data in self.ene_vs_ecut.items():
             line, = ax.plot(data.energies, data.values, **self._wf_pltopts(l, "ae"))
