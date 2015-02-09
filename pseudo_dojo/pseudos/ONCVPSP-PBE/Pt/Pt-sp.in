@@ -18,9 +18,9 @@ Pt 78 10 4 4 psp8
 # lmax
 2
 # l rc ep ncon nbas qcut
-0 1.35 0.0 3 7 8.8
-1 1.45 0.0 3 7 8.6
-2 1.3 0.0 3 7 9.2
+0 1.4 0.0 4 7 8.8
+1 1.45 0.0 4 8 9.0
+2 1.4 0.0 4 7 9.6
 # lloc lpopt rc5 dvloc0
 4 3 1.3 0.0
 # l nproj debl

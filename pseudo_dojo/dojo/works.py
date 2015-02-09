@@ -35,19 +35,12 @@ class DojoWork(Work):
     def dojo_trial(self):
         """String identifying the DOJO trial. Used to write results in the DOJO_REPORT."""
 
-    @property
-    def dojo_accuracy(self):
-        return self._dojo_accuracy
-
-    def set_dojo_accuracy(self, accuracy):
-        self._dojo_accuracy = accuracy
-
     def write_dojo_report(self, report, overwrite_data=False):
         """Write/update the DOJO_REPORT section of the pseudopotential."""
         # Read old_report from pseudo.
         old_report = self.pseudo.read_dojo_report()
 
-        dojo_trial, dojo_accuracy = self.dojo_trial, self.dojo_accuracy
+        dojo_trial = self.dojo_trial
         if dojo_trial not in old_report:
         	# Create new entry
         	old_report[dojo_trial] = {}
@@ -57,7 +50,8 @@ class DojoWork(Work):
         #        raise RuntimeError("%s already exists in DOJO_REPORT. Cannot overwrite data" % dojo_trial)
 
         # Update old report card with the new one and write new report
-        old_report[dojo_trial][dojo_accuracy] = report
+        dojo_ecut = "%.1f" % self.ecut
+        old_report[dojo_trial][dojo_ecut] = report
         try:
             self.pseudo.write_dojo_report(old_report)
         except:
@@ -75,14 +69,10 @@ def check_conv(values, tol, min_numpts=1, mode="abs", vinf=None):
     returns -1 if convergence is not achieved. By default, vinf = values[-1]
 
     Args:
-        tol:
-            Tolerance
-        min_numpts:
-            Minimum number of points that must be converged.
-        mode:
-            "abs" for absolute convergence, "rel" for relative convergence.
-        vinf:
-            Used to specify an alternative value instead of values[-1].
+        tol: Tolerance
+        min_numpts: Minimum number of points that must be converged.
+        mode: "abs" for absolute convergence, "rel" for relative convergence.
+        vinf: Used to specify an alternative value instead of values[-1].
     """
     vinf = values[-1] if vinf is None else vinf
 
@@ -323,7 +313,7 @@ class DeltaFactory(object):
     Error = DeltaFactoryError
 
     def __init__(self):
-        # reference to the deltafactor database
+        # Get a reference to the deltafactor database
         self._dfdb = df_database()
 
     def get_cif_path(self, symbol):
@@ -334,14 +324,15 @@ class DeltaFactory(object):
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
     def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, ecut=None, pawecutdg=None,
-                        toldfe=1.e-8, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
+                        toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
             kwargs: Extra variables passed to Abinit.
 
-        .. note: 
+        .. note::
+
             0.001 Rydberg is the value used with WIEN2K
         """
         pseudo = Pseudo.as_pseudo(pseudo)
@@ -376,8 +367,6 @@ class DeltaFactory(object):
                 kwargs['spinat'] = [(0, 0, 1.5), (0, 0, 1.5), (0, 0, -1.5), (0, 0, -1.5)]
             elif symbol == 'Cr':
                 kwargs['spinat'] = [(0, 0, 1.5), (0, 0, -1.5)]
-                #spin_mode = "polarized"
-                #kwargs['nsym'] = 1
             elif symbol == 'Mn':
                 kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
 
@@ -399,8 +388,8 @@ class DeltaFactorWork(DojoWork):
     """Work for the calculation of the deltafactor."""
     def __init__(self, structure, pseudo, kppa, connect,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
-                 spin_mode="polarized", toldfe=1.e-8, smearing="fermi_dirac:0.1 eV",
-                 accuracy="normal",  chksymbreak=0, paral_kgb=0, workdir=None, manager=None, **kwargs):
+                 spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
+                 accuracy="normal", chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the deltafactor.
 
@@ -417,8 +406,6 @@ class DeltaFactorWork(DojoWork):
         """
         super(DeltaFactorWork, self).__init__(workdir=workdir, manager=manager)
 
-        self.set_dojo_accuracy(accuracy)
-
         self._pseudo = Pseudo.as_pseudo(pseudo)
 
         spin_mode = SpinMode.as_spinmode(spin_mode)
@@ -430,6 +417,8 @@ class DeltaFactorWork(DojoWork):
         #nband = int(nval / spin_fact) + 6
 
         # Set extra_abivars
+        self.ecut, self.pawecutdg = ecut, pawecutdg
+
         extra_abivars = dict(
             ecut=ecut,
             pawecutdg=pawecutdg,
@@ -437,7 +426,7 @@ class DeltaFactorWork(DojoWork):
             toldfe=toldfe,
             #nband=nband,
             prtwf=0 if not connect else 1,
-            paral_kgb=paral_kgb,
+            #paral_kgb=paral_kgb,
             chkprim=0,
             nstep=200,
             #mem_test=0,
@@ -464,7 +453,7 @@ class DeltaFactorWork(DojoWork):
             self.register_scf_task(scf_input)
 
         if connect:
-            #print("connecting SCF tasks")
+            logger.info("Connecting SCF tasks using previous WFK file")
             middle = len(self.volumes) // 2
             filetype = "WFK"
             for i, task in enumerate(self[:middle]):
@@ -494,13 +483,8 @@ class DeltaFactorWork(DojoWork):
 
         d = {}
         try:
-            #eos_fit = EOS.Murnaghan().fit(self.volumes/num_sites, etotals/num_sites)
-            #eos_fit.plot(show=False, savefig=self.path_in_workdir("murn_eos.pdf"))
-            #print("murn",eos_fit)
-
             # Use same fit as the one employed for the deltafactor.
             eos_fit = EOS.DeltaFactor().fit(self.volumes/num_sites, etotals/num_sites)
-            #eos_fit.plot(show=False, savefig=self.outdir.path_in("eos.pdf"))
 
             # Get reference results (Wien2K).
             wien2k = df_database().get_entry(self.pseudo.symbol)
@@ -509,8 +493,10 @@ class DeltaFactorWork(DojoWork):
             dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
                                eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
 
+            dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa)
+
             print("delta", eos_fit)
-            print("Deltafactor = %.3f meV" % dfact)
+            print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
 
             results.update({
                 "dfact_meV": dfact,
@@ -518,7 +504,7 @@ class DeltaFactorWork(DojoWork):
                 "b0": eos_fit.b0,
                 "b0_GPa": eos_fit.b0_GPa,
                 "b1": eos_fit.b1,
-                "dfactprime_meV": dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa),
+                "dfactprime_meV": dfactprime_meV
             })
 
             d = {k: results[k] for k in 
@@ -559,6 +545,10 @@ class GbrvFactory(object):
         # Get the entry in the database
         entry = self._db.get_entry(symbol, struct_type)
 
+        if entry is None: 
+            logger.critical("Cannot find entry for %s, returning None!" % symbol)
+            return None
+
         # Build the structure and handle a possibly missing value.
         structure = entry.build_structure(ref=ref)
 
@@ -571,7 +561,7 @@ class GbrvFactory(object):
 
         return structure
 
-    def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, paral_kgb=0, ref="ae"):
+    def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, ref="ae", **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
@@ -593,9 +583,8 @@ class GbrvFactory(object):
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
-        return GbrvRelaxAndEosWork(
-            structure, struct_type, pseudo,
-            ecut=ecut, pawecutdg=pawecutdg, paral_kgb=paral_kgb)
+        return GbrvRelaxAndEosWork(structure, struct_type, pseudo,
+                                   ecut=ecut, pawecutdg=pawecutdg, **kwargs)
 
 
 def gbrv_nband(pseudo):
@@ -605,15 +594,15 @@ def gbrv_nband(pseudo):
     nband += 0.5 * nband
     nband = int(nband)
     nband = max(nband,  8)
-    print("nband", nband)
+    #print("nband", nband)
     return nband
 
 
 class GbrvRelaxAndEosWork(DojoWork):
 
     def __init__(self, structure, struct_type, pseudo, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
-                 spin_mode="unpolarized", toldfe=1.e-8, smearing="fermi_dirac:0.001 Ha",
-                 accuracy="normal", paral_kgb=0, ecutsm=0.05, chksymbreak=0,
+                 spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
+                 accuracy="normal", ecutsm=0.05, chksymbreak=0,
                  workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the relaxed lattice parameter.
@@ -635,8 +624,9 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.accuracy = accuracy
 
         # nband must be large enough to accomodate fractional occupancies.
+        fband = kwargs.pop("fband", None)
         self._pseudo = Pseudo.as_pseudo(pseudo)
-        self.nband = gbrv_nband(self.pseudo)
+        nband = gbrv_nband(self.pseudo)
 
         # Set extra_abivars.
         self.extra_abivars = dict(
@@ -644,23 +634,24 @@ class GbrvRelaxAndEosWork(DojoWork):
             pawecutdg=pawecutdg,
             toldfe=toldfe,
             prtwf=0,
-            #ecutsm=ecutsm,
-            nband=self.nband,
-            paral_kgb=paral_kgb
+            #ecutsm=0.5,
+            nband=nband,
+            #paral_kgb=paral_kgb
         )
                                        
         self.extra_abivars.update(**kwargs)
         self.ecut = ecut
         self.smearing = smearing
 
+        # Kpoint sampling: shiftk depends on struct_type
+        shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
         #ngkpt = (1,1,1)
-        self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak)
+        self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk)
         self.spin_mode = spin_mode
         relax_algo = RelaxationMethod.atoms_and_cell()
 
         self.relax_input = RelaxStrategy(structure, pseudo, self.ksampling, relax_algo, 
-                                         accuracy=accuracy, spin_mode=spin_mode,
-                                         smearing=smearing, **self.extra_abivars)
+                                         accuracy=accuracy, spin_mode=spin_mode, smearing=smearing, **self.extra_abivars)
 
         # Register structure relaxation task.
         self.relax_task = self.register_relax_task(self.relax_input)
@@ -679,7 +670,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         a new list of ScfTask for the computation of the EOS with the GBRV parameters.
         """
         # Get the relaxed structure.
-        relaxed_structure = self.relax_task.read_final_structure()
+        self.relaxed_structure = relaxed_structure = self.relax_task.read_final_structure()
 
         # GBRV use nine points from -1% to 1% of the initial guess and fitting the results to a parabola.
         # Note that it's not clear to me if they change the volume or the lattice parameter!
@@ -689,9 +680,13 @@ class GbrvRelaxAndEosWork(DojoWork):
             new_lattice = relaxed_structure.lattice.scale(vol)
             new_structure = Structure(new_lattice, relaxed_structure.species, relaxed_structure.frac_coords)
 
+            # Add ecutsm
+            extra = self.extra_abivars.copy() 
+            extra["ecutsm"] = 0.5
+
             scf_input = ScfStrategy(new_structure, self.pseudo, self.ksampling,
                                     accuracy=self.accuracy, spin_mode=self.spin_mode,
-                                    smearing=self.smearing, **self.extra_abivars)
+                                    smearing=self.smearing, **extra)
 
             # Register new task
             self.register_scf_task(scf_input)
@@ -701,24 +696,20 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.flow.build_and_pickle_dump()
 
     def compute_eos(self):
-        #results = self.Results()
         results = self.get_results()
 
         # Read etotals and fit E(V) with a parabola to find minimum
-        #num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")[1:]
         assert len(etotals) == len(self.volumes)
 
         results.update(dict(
             etotals=list(etotals),
             volumes=list(self.volumes),
-            #num_sites=num_sites,
+            num_sites=len(self.relaxed_structure),
         ))
 
         try:
             eos_fit = EOS.Quadratic().fit(self.volumes, etotals)
-            #eos_fit.plot(show=False, savefig=self.outdir.path_in("eos.pdf"))
-
         except EOS.Error as exc:
             results.push_exceptions(exc)
 
@@ -739,11 +730,18 @@ class GbrvRelaxAndEosWork(DojoWork):
 
         db = gbrv_database()
         entry = db.get_entry(self.pseudo.symbol, stype=self.struct_type)
-        abs_err = a0 - entry.ae
-        rel_err = 100 * (a0 - entry.ae) / entry.ae
 
         pawabs_err = a0 - entry.gbrv_paw
         pawrel_err = 100 * (a0 - entry.gbrv_paw) / entry.gbrv_paw
+
+        # AE results for P and Hg are missing.
+        if entry.ae is not None:
+            abs_err = a0 - entry.ae
+            rel_err = 100 * (a0 - entry.ae) / entry.ae
+        else:
+            # Use GBRV_PAW as reference.
+            abs_err = pawabs_err
+            rel_err = pawrel_err
 
         print("for GBRV struct_type: ", self.struct_type, "a0= ", a0, "Angstrom")
         print("AE - THIS: abs_err = %f, rel_err = %f %%" % (abs_err, rel_err))
@@ -765,8 +763,7 @@ class GbrvRelaxAndEosWork(DojoWork):
 
     def on_all_ok(self):
         """
-        This method is called when self reaches S_OK.
-        It reads the optimized structure from the netcdf file and builds
+        This method is called when self reaches S_OK. It reads the optimized structure from the netcdf file and builds
         a new work for the computation of the EOS with the GBRV parameters.
         """
         if not self.add_eos_done:

@@ -11,7 +11,7 @@ Cl 17 3 2 4 psp8
 # l rc ep ncon nbas qcut
 0 1.55 0.0 4 9 6.8
 1 1.35 0.0 4 7 7.8
-2 1.6 0.05 4 9 8.6
+2 1.55 0.1 4 9 6.8
 # lloc lpopt rc5 dvloc0
 4 5 1.3 0.0
 # l nproj debl

@@ -46,3 +46,10 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+
+# Ipython notebooks
+.ipynb_checkpoints
+
+# tags
+tags

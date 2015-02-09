@@ -10,8 +10,9 @@ import numpy as np
 from collections import namedtuple, OrderedDict
 from monty.functools import lazy_property
 from monty.collections import AttrDict
-from pymatgen.util.plotting_utils import add_fig_kwargs
+from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
+from abipy.tools.derivatives import finite_diff
 
 import logging
 logger = logging.getLogger(__name__)
@@ -24,6 +25,7 @@ def decorate_ax(ax, xlabel, ylabel, title, lines, legends):
     ax.set_ylabel(ylabel)
     ax.grid(True)
     ax.legend(lines, legends, loc="best", shadow=True)
+
 
 
 class PseudoGenDataPlotter(object):
@@ -65,18 +67,11 @@ class PseudoGenDataPlotter(object):
 
     def plot_key(self, key, ax=None, **kwargs):
         """Plot a singol quantity specified by key."""
-        if ax is None:
-            fig = self._mplt.figure()
-            ax = fig.add_subplot(1, 1, 1)
+        ax, fig, plt = get_ax_fig_plt(ax)
 
         # key --> self.plot_key()
-        getattr(self, "plot_" + key)(ax, **kwargs)
-
+        getattr(self, "plot_" + key)(ax=ax, **kwargs)
         self._mplt.show()
-
-    #def plot_all(self, **kwargs):
-    #    for key in self.all_keys:
-    #        plot_key(key, ax)
 
     def _wf_pltopts(self, l, aeps):
         """Plot options for wavefunctions."""
@@ -84,9 +79,12 @@ class PseudoGenDataPlotter(object):
             color=self.color_l[l], linestyle=self.linestyle_aeps[aeps], #marker=self.markers_aeps[aeps],
             linewidth=self.linewidth, markersize=self.markersize)
 
-    def plot_atan_logders(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_atan_logders(self, ax=None, **kwargs):
         """Plot arctan of logder on axis ax."""
         ae, ps = self.atan_logders.ae, self.atan_logders.ps
+
+        ax, fig, plt = get_ax_fig_plt(ax)
 
         lines, legends = [], []
         for l, ae_alog in ae.items():
@@ -104,14 +102,17 @@ class PseudoGenDataPlotter(object):
         decorate_ax(ax, xlabel="Energy [Ha]", ylabel="ATAN(LogDer)", title="ATAN(Log Derivative)", 
                     lines=lines, legends=legends)
 
-        return lines
+        return fig
 
-    def plot_radial_wfs(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_radial_wfs(self, ax=None, **kwargs):
         """
         Plot ae and ps radial wavefunctions on axis ax.
 
         lselect: List to select l channels
         """
+        ax, fig, plt = get_ax_fig_plt(ax)
+
         ae_wfs, ps_wfs = self.radial_wfs.ae, self.radial_wfs.ps
         lselect = kwargs.get("lselect", [])
 
@@ -129,14 +130,17 @@ class PseudoGenDataPlotter(object):
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$\phi(r)$", title="Wave Functions", 
                     lines=lines, legends=legends)
 
-        return lines
+        return fig
 
-    def plot_projectors(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_projectors(self, ax=None, **kwargs):
         """
         Plot oncvpsp projectors on axis ax.
 
         lselect: List to select l channels
         """
+        ax, fig, plt = get_ax_fig_plt(ax)
+
         lselect = kwargs.get("lselect", [])
 
         lines, legends = [], []
@@ -150,11 +154,13 @@ class PseudoGenDataPlotter(object):
 
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$p(r)$", title="Projector Wave Functions", 
                     lines=lines, legends=legends)
+        return fig
 
-        return lines
-
-    def plot_densities(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_densities(self, ax=None, **kwargs):
         """Plot ae, ps and model densities on axis ax."""
+        ax, fig, plt = get_ax_fig_plt(ax)
+
         lines, legends = [], []
         for name, rho in self.densities.items():
             line, = ax.plot(rho.rmesh, rho.values,
@@ -166,10 +172,39 @@ class PseudoGenDataPlotter(object):
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$n(r)$", title="Charge densities", 
                     lines=lines, legends=legends)
 
-        return lines
+        return fig
 
-    def plot_potentials(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_der_densities(self, ax=None, order=1, **kwargs):
+        """
+        Plot the derivatives of the densitiers on axis ax.
+        Used to analyze possible derivative discontinuities
+        """
+        ax, fig, plt = get_ax_fig_plt(ax)
+
+        from scipy.interpolate import UnivariateSpline
+
+        lines, legends = [], []
+        for name, rho in self.densities.items():
+            # Need linear mesh for finite_difference --> Spline input densities on lin_rmesh
+            lin_rmesh, h = np.linspace(rho.rmesh[0], rho.rmesh[-1], num=len(rho.rmesh) * 4, retstep=True)
+            spline = UnivariateSpline(rho.rmesh, rho.values, s=0)
+            lin_values = spline(lin_rmesh)
+            vder = finite_diff(lin_values, h, order=order, acc=4)
+            line, = ax.plot(lin_rmesh, vder) #, **self._wf_pltopts(l, "ae"))
+            lines.append(line)
+                                                                                             
+            legends.append("$s-order derivative of %s" % (order, name))
+                                                                                             
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \n(r)$" % order, title="Derivative of the charge densities", 
+                    lines=lines, legends=legends)
+        return fig
+
+    @add_fig_kwargs
+    def plot_potentials(self, ax=None, **kwargs):
         """Plot vl and vloc potentials on axis ax"""
+        ax, fig, plt = get_ax_fig_plt(ax)
+
         lines, legends = [], []
         for l, pot in self.potentials.items():
             line, = ax.plot(pot.rmesh, pot.values, **self._wf_pltopts(l, "ae"))
@@ -182,11 +217,40 @@ class PseudoGenDataPlotter(object):
 
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$v_l(r)$", title="Ion Pseudopotentials", 
                     lines=lines, legends=legends)
+        return fig
 
-        return lines
+    @add_fig_kwargs
+    def plot_der_potentials(self, ax=None, order=1, **kwargs):
+        """
+        Plot the derivatives of vl and vloc potentials on axis ax.
+        Used to analyze the derivative discontinuity introduced by the RRKJ method at rc.
+        """
+        ax, fig, plt = get_ax_fig_plt(ax)
+        from abipy.tools.derivatives import finite_diff
+        from scipy.interpolate import UnivariateSpline
+        lines, legends = [], []
+        for l, pot in self.potentials.items():
+            # Need linear mesh for finite_difference --> Spline input potentials on lin_rmesh
+            lin_rmesh, h = np.linspace(pot.rmesh[0], pot.rmesh[-1], num=len(pot.rmesh) * 4, retstep=True)
+            spline = UnivariateSpline(pot.rmesh, pot.values, s=0)
+            lin_values = spline(lin_rmesh)
+            vder = finite_diff(lin_values, h, order=order, acc=4)
+            line, = ax.plot(lin_rmesh, vder, **self._wf_pltopts(l, "ae"))
+            lines.append(line)
+                                                                                             
+            if l == -1:
+                legends.append("%s-order derivative Vloc" % order)
+            else:
+                legends.append("$s-order derivative PS l=%s" % str(l))
+                                                                                             
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \phi(r)$" % order, title="Derivative of the ion Pseudopotentials", 
+                    lines=lines, legends=legends)
+        return fig
 
-    def plot_ene_vs_ecut(self, ax, **kwargs):
+    @add_fig_kwargs
+    def plot_ene_vs_ecut(self, ax=None, **kwargs):
         """Plot the converge of ene wrt ecut on axis ax."""
+        ax, fig, plt = get_ax_fig_plt(ax)
         lines, legends = [], []
         for l, data in self.ene_vs_ecut.items():
             line, = ax.plot(data.energies, data.values, **self._wf_pltopts(l, "ae"))
@@ -198,8 +262,7 @@ class PseudoGenDataPlotter(object):
                     lines=lines, legends=legends)
 
         ax.set_yscale("log")
-
-        return lines
+        return fig
 
     @add_fig_kwargs
     def plot_atanlogder_econv(self, **kwargs):
@@ -207,8 +270,8 @@ class PseudoGenDataPlotter(object):
         fig, ax_list = self._mplt.subplots(nrows=2, ncols=1, sharex=False, squeeze=False)
         ax_list = ax_list.ravel()
 
-        self.plot_atan_logders(ax_list[0])
-        self.plot_ene_vs_ecut(ax_list[1])
+        self.plot_atan_logders(ax=ax_list[0], show=False)
+        self.plot_ene_vs_ecut(ax=ax_list[1], show=False)
 
         return fig
 
@@ -218,8 +281,8 @@ class PseudoGenDataPlotter(object):
         fig, ax_list = self._mplt.subplots(nrows=2, ncols=1, sharex=False, squeeze=False)
         ax_list = ax_list.ravel()
 
-        self.plot_densities(ax_list[0])
-        self.plot_potentials(ax_list[1])
+        self.plot_densities(ax=ax_list[0], show=False)
+        self.plot_potentials(ax=ax_list[1], show=False)
 
         return fig
 
@@ -231,8 +294,8 @@ class PseudoGenDataPlotter(object):
 
         for l in range(lmax+1):
             ax_idx = lmax - l
-            self.plot_radial_wfs(ax_list[ax_idx][0], lselect=[l])
-            self.plot_projectors(ax_list[ax_idx][1], lselect=[l])
+            self.plot_radial_wfs(ax=ax_list[ax_idx][0], lselect=[l], show=False)
+            self.plot_projectors(ax=ax_list[ax_idx][1], lselect=[l], show=False)
 
         return fig
 
@@ -337,25 +400,7 @@ class MultiPseudoGenDataPlotter(object):
         i = -1
         for (label, plotter), lineopt in zip(self._plotters_odict.items(), self.iter_lineopt()):
             i += 1
-            #my_kwargs.update(lineopt)
-            #opts_label[label] = my_kwargs.copy()
-
             plotter.plot_key(key, ax=ax_list[i])
-
-            #l = bands.plot_ax(ax1, spin=None, band=None, **my_kwargs)
-            #lines.append(l[0])
-
-            # Use relative paths if label is a file.
-            #if os.path.isfile(label):
-            #    legends.append("%s" % os.path.relpath(label))
-            #else:
-            #    legends.append("%s" % label)
-
-            # Set ticks and labels, legends.
-            #if i == 0:
-            #    bands.decorate_ax(ax)
-
-            #ax.legend(lines, legends, 'best', shadow=True)
 
         return fig
 
@@ -507,10 +552,12 @@ class OncvOutputParser(PseudoGenOutputParser):
         #if self.errors:
         #    return 1
 
-        # scalar-relativistic version 2.1.1, 03/26/2014
-        toks, self.gendate = self.lines[1].split(",")
-
-        toks = toks.split()
+        #scalar-relativistic version 2.1.1, 03/26/2014
+        #scalar-relativistic version 3.0.0 10/10/2014
+        #toks, self.gendate = self.lines[1].split(",")
+        #toks = toks.split()
+        toks = self.lines[1].replace(",", " ").split()
+        self.gendate = toks.pop(-1)
         self.calc_type, self.version = toks[0], toks[-1]
 
         if self.calc_type not in ["scalar-relativistic", "non-relativistic"]:
@@ -520,7 +567,7 @@ class OncvOutputParser(PseudoGenOutputParser):
         # Read configuration (not very robust because we assume the user didn't change the template but oh well)
         header = "# atsym  z    nc    nv    iexc   psfile"
         for i, line in enumerate(self.lines):
-            if line.startswith(header):
+            if line.startswith("# atsym"):
                 values = self.lines[i+1].split()
                 keys = header[1:].split()
                 assert len(keys) == len(values)
@@ -695,13 +742,13 @@ class OncvOutputParser(PseudoGenOutputParser):
         hints.reverse()
 
         print("hints:", hints)
-        # Convert to int and truncate upwards
-        hints = [int(h) + 1 for h in hints]
+        # Truncate to the nearest int
+        hints = [np.rint(h) for h in hints]
 
         hints = dict(
-            low={"ecut": hints[2], "aug_ratio": 1},
-            normal={"ecut": hints[2] + 10, "aug_ratio": 1},
-            high={"ecut": hints[2] + 20, "aug_ratio": 1})
+            low={"ecut": hints[0], "pawecutdg": hints[0]},
+            normal={"ecut": hints[1], "pawecutdg": hints[1]},
+            high={"ecut": hints[2], "pawecutdg": hints[2]})
 
         return hints
 
@@ -774,8 +821,17 @@ class OncvOutputParser(PseudoGenOutputParser):
         # Append the input to ps_data (note XML markers)
         ps_data += "\n\n<INPUT>\n" + self.get_input_str() + "</INPUT>\n"
 
-        # Add the initial DOJO_REPORT with the hints:
-        d = {"hints": self.hints}
+        # Add the initial DOJO_REPORT with the hints and the initial list of ecut values.
+        estart = self.hints["high"]["ecut"]
+        dense_right = np.linspace(estart, estart + 10, num=6)
+
+        d = {
+            "version": "1.0",
+            "pseudo_type": "norm-conserving",
+            "ppgen_hints": self.hints, 
+            "ecuts": list(dense_right) + [dense_right[-1] + 10,],
+            "symbol": self.atsym,
+        }
         ps_data += "\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
 
         return ps_data

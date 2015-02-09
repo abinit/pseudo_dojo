@@ -138,7 +138,7 @@ class DeltaFactorDatabase(object):
     _FILES = [
         "WIEN2k.txt",
         "VASP.txt",
-        "VASP-relaxed.txt",
+        #"VASP-relaxed.txt",
     ]
 
     Error = DeltaFactorDatabaseError

@@ -6,7 +6,7 @@ import sys
 import collections
 import argparse
 
-from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser, PseudoGenDataPlotter
+from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter
 
 
 def main():
@@ -26,9 +26,8 @@ def main():
 
     options = parser.parse_args()
 
-    onc_parser = OncvOuptputParser(options.filename)
+    onc_parser = OncvOutputParser(options.filename)
     onc_parser.scan()
-    #print(onc_parser)
 
     if options.json:
         import json
@@ -44,6 +43,15 @@ def main():
         ("dp", plotter.plot_dens_and_pots),
         ("lc", plotter.plot_atanlogder_econv),
     ])
+
+    #plotter.plot_radial_wfs()
+    #plotter.plot_projectors()
+    #plotter.plot_potentials()
+    #plotter.plot_der_potentials()
+    plotter.plot_densities()
+    plotter.plot_der_densities(order=1)
+    plotter.plot_der_densities(order=2)
+    return
 
     # Call function depending on options.plot_mode
     if options.plot_mode == "slide":
