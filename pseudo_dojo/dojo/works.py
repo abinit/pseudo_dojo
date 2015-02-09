@@ -15,7 +15,7 @@ from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.io.abinitio.abiobjects import SpinMode, Smearing, KSampling, Electrons, RelaxationMethod
-from pymatgen.io.abinitio.works import Work
+from pymatgen.io.abinitio.works import Work, build_oneshot_phononwork, OneShotPhononWork
 from abipy.core.structure import Structure
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
@@ -777,7 +777,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             logger.info("Computing EOS")
             self.compute_eos()
 
-        return super(GbrvRelaxAndEosWorkflow, self).on_all_ok()
+        return super(GbrvRelaxAndEosWork, self).on_all_ok()
 
 
 class DFPTError(Exception):
@@ -878,7 +878,7 @@ class DFPTPhononFactory(object):
             structure = structure_or_cif
         #print(structure)
 
-        structure = AbiStructure.asabistructure(structure)
+        structure = Structure.asabistructure(structure)
 
         all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
@@ -892,14 +892,13 @@ class DFPTPhononFactory(object):
         manager = abilab.TaskManager.from_user_config() if not self.manager else \
             abilab.TaskManager.from_file(self.manager)
 
-        work = build_oneshot_phononwork(workdir=workdir, manager=manager, scf_input=scf_input, ph_inputs=ph_inputs,
-                                        work_class=PhononDojoWorkflow)
+        work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWorkflow)
         work._pseudo = pseudo
         work.set_dojo_accuracy(accuracy=accuracy)
         return work
 
 
-class PhononDojoWorkflow(OneShotPhononWorkflow, DojoWorkflow):
+class PhononDojoWorkflow(OneShotPhononWork, DojoWork):
     @property
     def dojo_trial(self):
         return "phonon"
