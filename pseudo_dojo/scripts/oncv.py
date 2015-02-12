@@ -48,9 +48,10 @@ def main():
     #plotter.plot_projectors()
     #plotter.plot_potentials()
     #plotter.plot_der_potentials()
-    plotter.plot_densities()
-    plotter.plot_der_densities(order=1)
-    plotter.plot_der_densities(order=2)
+    #plotter.plot_densities()
+    #plotter.plot_der_densities(order=1)
+    #plotter.plot_der_densities(order=2)
+    plotter.plot_der_densities(order=4)
     return
 
     # Call function depending on options.plot_mode

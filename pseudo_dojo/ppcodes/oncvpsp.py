@@ -194,7 +194,7 @@ class PseudoGenDataPlotter(object):
             line, = ax.plot(lin_rmesh, vder) #, **self._wf_pltopts(l, "ae"))
             lines.append(line)
                                                                                              
-            legends.append("$s-order derivative of %s" % (order, name))
+            legends.append("%s-order derivative of %s" % (order, name))
                                                                                              
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \n(r)$" % order, title="Derivative of the charge densities", 
                     lines=lines, legends=legends)
