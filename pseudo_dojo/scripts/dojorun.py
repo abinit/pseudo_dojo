@@ -9,7 +9,7 @@ import numpy as np
 import abipy.abilab as abilab
 
 from warnings import warn
-from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory
+from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 
@@ -94,6 +94,17 @@ def build_flow(pseudo, options):
                 work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg, **extra_abivars)
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
+    # PHONON test
+    if "phonons" in options.trials:
+        phonon_factory = DFPTPhononFactory()
+        for ecut in ecut_list:
+            if "dfptgammaphonon" in report and ecut in report["dfptgammaphonon"].keys(): continue
+            kppa = 1000
+            pawecutdg = 2 * ecut if pseudo.ispaw else None
+            work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
+                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005")
+            flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
+
     if len(flow) > 0:
         return flow.allocate()
     else:
@@ -104,9 +115,9 @@ def build_flow(pseudo, options):
 def main():
     def str_examples():
         examples = """
-Usage Example:\n
-    ppdojo_run.py Si.psp8  => Build pseudo_dojo flow for Si.fhi
-\n"""
+                   Usage Example:\n
+                   ppdojo_run.py Si.psp8  => Build pseudo_dojo flow for Si.fhi\n
+                   """
         return examples
 
     def show_examples_and_exit(error_code=1):
@@ -121,7 +132,7 @@ Usage Example:\n
     parser.add_argument('--paral-kgb', type=int, default=1,  help="Paral_kgb input variable.")
 
     def parse_trials(s):
-        if s == "all": return ["df", "gbrv"]
+        if s == "all": return ["df", "gbrv", "phonons"]
         return s.split(",")
 
     parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv")
