@@ -809,45 +809,40 @@ class DFPTPhononFactory(object):
         This function constructs the input files for the phonon calculation:
         GS input + the input files for the phonon calculation.
         """
-
-        # List of q-points for the phonon calculation.
-        qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00, 0.234982364E+00,  0.349884598E+00,  0.0287234E+00]
-
+        qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00]
         qpoints = np.reshape(qpoints, (-1, 3))
 
         # Global variables used both for the GS and the DFPT run.
 
         kppa = kwargs.pop('kppa')
-
         ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=0)
-
-        kwargs.pop('accuracy')
+        try:
+            kwargs.pop('accuracy')
+        except:
+            pass
         kwargs.pop('smearing')
-
-        global_vars = dict(ksampling.to_abivars(), chkprim=0, ecut=3.0, tolvrs=1.0e-8, paral_kgb=0)
+        global_vars = dict(ksampling.to_abivars(), tsmear=0.005, occopt=7, nstep=200, ecut=12.0, paral_kgb=0)
         global_vars.update(**kwargs)
-
+        # if not tolwfr is specified explicitly we remove any other tol and put tolwfr = 1e-16
+        tolwfr = 1e-16
+        for k in global_vars.keys():
+            if 'tol' in k:
+                if k == 'tolwfr':
+                    tolwfr = global_vars.pop(k)
+                else:
+                    global_vars.pop(k)
+        global_vars['tolwfr'] = tolwfr
         global_vars.pop('#comment')
-
-        print(global_vars)
+        electrons = structure.num_valence_electrons(pseudos)
+        global_vars.update(nband=electrons)
 
         inp = abilab.AbiInput(pseudos=pseudos, ndtset=1+len(qpoints))
-
         inp.set_structure(structure)
         inp.set_variables(**global_vars)
 
         for i, qpt in enumerate(qpoints):
             # Response-function calculation for phonons.
-            inp[i+2].set_variables(
-                nstep=20,
-                rfphon=1,        # Will consider phonon-type perturbation
-                nqpt=1,          # One wavevector is to be considered
-                qpt=qpt,         # This wavevector is q=0 (Gamma)
-                )
-
-                #rfatpol   1 1   # Only the first atom is displaced
-                #rfdir   1 0 0   # Along the first reduced coordinate axis
-                #kptopt   2      # Automatic generation of k points, taking
+            inp[i+2].set_variables(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2)
 
         # Split input into gs_inp and ph_inputs
         return inp.split_datasets()
