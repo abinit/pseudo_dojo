@@ -306,6 +306,7 @@ Usage example:\n
         if len(paths) == 1 and os.path.isdir(paths[0]):
             top = paths[0]
             paths = find_exts(top, exts, exclude_dirs="_*")
+            #table = PseudoTable.from_dir(paths[0])
 
         pseudos = []
         for p in paths:
