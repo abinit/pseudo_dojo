@@ -824,7 +824,7 @@ class DFPTPhononFactory(object):
         kwargs.pop('accuracy')
         kwargs.pop('smearing')
 
-        global_vars = dict(ksampling.to_abivars(), nband=4, ecut=3.0, tolvrs=1.0e-8, paral_kgb=0)
+        global_vars = dict(ksampling.to_abivars(), chkprim=0, ecut=3.0, tolvrs=1.0e-8, paral_kgb=0)
         global_vars.update(**kwargs)
 
         global_vars.pop('#comment')
