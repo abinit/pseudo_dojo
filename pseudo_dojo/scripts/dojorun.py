@@ -5,6 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import os
 import argparse
+import copy
 import numpy as np
 import abipy.abilab as abilab
 
@@ -58,7 +59,11 @@ def build_flow(pseudo, options):
     # Build ecut mesh.
     ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
 
-    ecut_list = report["ecuts"]
+    ecut_list = copy.copy(report["ecuts"])
+
+    if 'extend' in options:
+        next_ecut = max(ecut_list) + 2
+        ecut_list.append(next_ecut)
 
     add_ecuts = False
     if add_ecuts:
@@ -128,8 +133,9 @@ def main():
     parser = argparse.ArgumentParser(epilog=str_examples())
 
     parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
-    parser.add_argument('-d', '--dry-run', type=bool, default=False,  help="Dry run, build the flow without submitting it")
+    parser.add_argument('-d', '--dry-run', type=bool, default=False, action="store_true", help="Dry run, build the flow without submitting it")
     parser.add_argument('--paral-kgb', type=int, default=1,  help="Paral_kgb input variable.")
+    parser.add_argument('-e', '--extend', type=bool, default=False, action="store_true", help="Extend the ecut grid by one point at +2 H")
 
     def parse_trials(s):
         if s == "all": return ["df", "gbrv", "phonons"]
