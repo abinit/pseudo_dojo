@@ -8,9 +8,8 @@ __author__ = 'setten'
 import os
 import sys
 import abipy.abilab as abilab
-
-from pseudo_dojo.dojo.dojo_workflows import DeltaFactorWorkflow
-from pseudo_dojo.dojo.dojo_workflows import DeltaFactory
+from pseudo_dojo.dojo.works import DeltaFactorWork, DFPTPhononFactory
+from pseudo_dojo.dojo.works import DeltaFactory
 
 
 def build_flow(options):
@@ -52,7 +51,15 @@ def build_flow(options):
     # and a file deltafactor.txt with the final results in the
     # outdir directory DELTAFACTOR/Wnn/outdir.
 
-    factory = DeltaFactory()
+    if options['df']:
+        factory = DeltaFactory()
+        name = '_df'
+    elif options['phonon']:
+        factory = DFPTPhononFactory()
+        name = '_phon'
+    else:
+        print('no mode selected ...')
+        sys.exit()
 
     #extra = {}
 
@@ -89,16 +96,14 @@ def main(options):
 
 
 if __name__ == "__main__":
-    my_options = {'test': False, 'strip': False}
+    my_options = {'test': False, 'strip': False, 'df': False, 'phonon': False}
 
     name = sys.argv[1]
     my_options['name'] = name
-    print(name, sys.argv)
     if not os.path.isfile(name+'.out'):
         raise RuntimeError('No such file: %s.\nThe the first argument should be the name of the pseudo.' % name)
 
     for arg in sys.argv:
         my_options.update({arg: True})
 
-    print(my_options)
     main(options=my_options)

@@ -9,8 +9,7 @@ import collections
 import numpy as np
 import pprint
 
-from monty.pprint import pprint_table
-from pymatgen.io.gwwrapper.convergence import determine_convergence
+from pymatgen.util.convergence import determine_convergence
 from pymatgen.io.abinitio.netcdf import NetcdfReader
 from pymatgen.io.abinitio.pseudos import Pseudo
 

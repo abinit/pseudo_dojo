@@ -4,17 +4,18 @@ from __future__ import division, print_function, unicode_literals
 
 import abc
 import sys
+import os
 import numpy as np
+from abipy import abilab
 
 from monty.collections import AttrDict
 from monty.pprint import pprint_table
 from pymatgen.core.units import Ha_to_eV
-from pymatgen.util.num_utils import monotonic
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.io.abinitio.abiobjects import SpinMode, Smearing, KSampling, Electrons, RelaxationMethod
-from pymatgen.io.abinitio.works import Work
+from pymatgen.io.abinitio.works import Work, build_oneshot_phononwork, OneShotPhononWork
 from abipy.core.structure import Structure
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
@@ -427,7 +428,7 @@ class DeltaFactorWork(DojoWork):
             prtwf=0 if not connect else 1,
             #paral_kgb=paral_kgb,
             chkprim=0,
-            nstep=80,
+            nstep=200,
             #mem_test=0,
         )
 
@@ -487,7 +488,7 @@ class DeltaFactorWork(DojoWork):
 
             # Get reference results (Wien2K).
             wien2k = df_database().get_entry(self.pseudo.symbol)
-                                                                                                 
+
             # Compute deltafactor estimator.
             dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
                                eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
@@ -774,3 +775,128 @@ class GbrvRelaxAndEosWork(DojoWork):
             self.compute_eos()
 
         return super(GbrvRelaxAndEosWork, self).on_all_ok()
+
+
+class DFPTError(Exception):
+    """Base Error class."""
+
+
+class DFPTPhononFactory(object):
+    """
+    Factory class producing `Workflow` objects for DFPT Phonon calculations.
+    In particular to test if the acoustic modes are zero
+    """
+
+    Error = DFPTError
+
+    def __init__(self, manager=None, workdir=None):
+        # reference to the deltafactor database
+        # use the elemental solid in the gs configuration
+        self._dfdb = df_database()
+        self.manager = manager
+        self.workdir = workdir
+
+    def get_cif_path(self, symbol):
+        """Returns the path to the CIF file associated to the given symbol."""
+        try:
+            return self._dfdb.get_cif_path(symbol)
+        except KeyError:
+            raise self.Error("%s: cannot find CIF file for symbol" % symbol)
+
+    @staticmethod
+    def scf_ph_inputs(structure, pseudos, **kwargs):
+        """
+        This function constructs the input files for the phonon calculation:
+        GS input + the input files for the phonon calculation.
+        """
+        qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00]
+        qpoints = np.reshape(qpoints, (-1, 3))
+
+        # Global variables used both for the GS and the DFPT run.
+
+        kppa = kwargs.pop('kppa')
+        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=0)
+        try:
+            kwargs.pop('accuracy')
+        except:
+            pass
+        kwargs.pop('smearing')
+        global_vars = dict(ksampling.to_abivars(), tsmear=0.005, occopt=7, nstep=200, ecut=12.0, paral_kgb=0)
+        global_vars.update(**kwargs)
+        # if not tolwfr is specified explicitly we remove any other tol and put tolwfr = 1e-16
+        tolwfr = 1e-16
+        for k in global_vars.keys():
+            if 'tol' in k:
+                if k == 'tolwfr':
+                    tolwfr = global_vars.pop(k)
+                else:
+                    global_vars.pop(k)
+        global_vars['tolwfr'] = tolwfr
+        global_vars.pop('#comment')
+        electrons = structure.num_valence_electrons(pseudos)
+        global_vars.update(nband=electrons)
+
+        inp = abilab.AbiInput(pseudos=pseudos, ndtset=1+len(qpoints))
+        inp.set_structure(structure)
+        inp.set_variables(**global_vars)
+
+        for i, qpt in enumerate(qpoints):
+            # Response-function calculation for phonons.
+            inp[i+2].set_variables(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2)
+
+        # Split input into gs_inp and ph_inputs
+        return inp.split_datasets()
+
+    def work_for_pseudo(self, pseudo, **kwargs):
+        """
+        Create an `AbinitFlow` for phonon calculations:
+
+            1) One workflow for the GS run.
+
+            2) nqpt workflows for phonon calculations. Each workflow contains
+               nirred tasks where nirred is the number of irreducible phonon perturbations
+               for that particular q-point.
+        """
+        accuracy = kwargs.pop('accuracy')
+
+        pseudo = Pseudo.as_pseudo(pseudo)
+
+        structure_or_cif = self.get_cif_path(pseudo.symbol)
+
+        if not isinstance(structure_or_cif, Structure):
+            # Assume CIF file
+            structure = Structure.from_file(structure_or_cif, primitive=False)
+        else:
+            structure = structure_or_cif
+        #print(structure)
+
+        structure = Structure.asabistructure(structure)
+
+        all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
+        scf_input, ph_inputs = all_inps[0], all_inps[1:]
+
+        # Working directory (default is the name of the script with '.py' removed and "run_" replaced by "flow_")
+        workdir = self.workdir
+        if not self.workdir:
+            workdir = os.path.basename(__file__).replace(".py", "").replace("run_", "flow_")
+
+        # Instantiate the TaskManager.
+        manager = abilab.TaskManager.from_user_config() if not self.manager else \
+            abilab.TaskManager.from_file(self.manager)
+
+        work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWorkflow)
+        work._pseudo = pseudo
+        work.set_dojo_accuracy(accuracy=accuracy)
+        return work
+
+
+class PhononDojoWorkflow(OneShotPhononWork, DojoWork):
+    @property
+    def dojo_trial(self):
+        return "phonon"
+
+    @property
+    def pseudo(self):
+        return self._pseudo
+
+#        return super(GbrvRelaxAndEosWork, self).on_all_ok()
