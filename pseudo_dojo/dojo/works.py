@@ -824,7 +824,7 @@ class DFPTPhononFactory(object):
         global_vars = dict(ksampling.to_abivars(), tsmear=0.005, occopt=7, nstep=200, ecut=12.0, paral_kgb=0)
         global_vars.update(**kwargs)
         # if not tolwfr is specified explicitly we remove any other tol and put tolwfr = 1e-16
-        tolwfr = 1e-16
+        tolwfr = 1e-24
         for k in global_vars.keys():
             if 'tol' in k:
                 if k == 'tolwfr':
@@ -835,6 +835,7 @@ class DFPTPhononFactory(object):
         global_vars.pop('#comment')
         electrons = structure.num_valence_electrons(pseudos)
         global_vars.update(nband=electrons)
+        global_vars.update(nbdbuf=int(electrons/4))
 
         inp = abilab.AbiInput(pseudos=pseudos, ndtset=1+len(qpoints))
         inp.set_structure(structure)
@@ -870,8 +871,6 @@ class DFPTPhononFactory(object):
             structure = structure_or_cif
         #print(structure)
 
-        structure = Structure.asabistructure(structure)
-
         all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
 
@@ -886,7 +885,7 @@ class DFPTPhononFactory(object):
 
         work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWorkflow)
         work._pseudo = pseudo
-        work.set_dojo_accuracy(accuracy=accuracy)
+#        work.set_dojo_accuracy(accuracy=accuracy)
         return work
 
 
