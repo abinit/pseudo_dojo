@@ -824,7 +824,7 @@ class DFPTPhononFactory(object):
         global_vars = dict(ksampling.to_abivars(), tsmear=0.005, occopt=7, nstep=200, ecut=12.0, paral_kgb=0)
         global_vars.update(**kwargs)
         # if not tolwfr is specified explicitly we remove any other tol and put tolwfr = 1e-16
-        tolwfr = 1e-24
+        tolwfr = 1e-20
         for k in global_vars.keys():
             if 'tol' in k:
                 if k == 'tolwfr':
