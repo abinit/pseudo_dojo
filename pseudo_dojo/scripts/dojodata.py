@@ -68,6 +68,7 @@ def dojo_compare(options):
         else:
             print("Find only one pseudo for Z=%s" % z)
 
+
 def dojo_trials(options):
     """Visualize the results of the different tests."""
     pseudos = options.pseudos

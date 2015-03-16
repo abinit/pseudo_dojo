@@ -784,7 +784,8 @@ class DFPTError(Exception):
 class DFPTPhononFactory(object):
     """
     Factory class producing `Workflow` objects for DFPT Phonon calculations.
-    In particular to test if the acoustic modes are zero
+    In particular to test if the acoustic modes are zero, or at least from which cuttoff they can be made zero by
+    imposing the accoustic sum rule.
     """
 
     Error = DFPTError
@@ -883,13 +884,14 @@ class DFPTPhononFactory(object):
         manager = abilab.TaskManager.from_user_config() if not self.manager else \
             abilab.TaskManager.from_file(self.manager)
 
-        work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWorkflow)
+        work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork)
+        work.ecut = scf_input.ecut
         work._pseudo = pseudo
 #        work.set_dojo_accuracy(accuracy=accuracy)
         return work
 
 
-class PhononDojoWorkflow(OneShotPhononWork, DojoWork):
+class PhononDojoWork(OneShotPhononWork, DojoWork):
     @property
     def dojo_trial(self):
         return "phonon"
@@ -897,5 +899,18 @@ class PhononDojoWorkflow(OneShotPhononWork, DojoWork):
     @property
     def pseudo(self):
         return self._pseudo
+
+    def on_all_ok(self):
+        d = self.get_results()
+        print(self.ecut)
+        print(d['phonons'][0]['freqs'].type)
+
+        report = self.pseudo.read_dojo_report()
+        if self.dojo_trial not in report:
+            report[self.dojo_trial] = {}
+
+        report[self.dojo_trial]['%.1f' % self.ecut] = d['phonons'][0].freq.tolist()
+
+        self.write_dojo_report(report)
 
 #        return super(GbrvRelaxAndEosWork, self).on_all_ok()

@@ -107,7 +107,7 @@ def build_flow(pseudo, options):
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
-                                                  tolwfr=1.e-24, smearing="fermi_dirac:0.0005")
+                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005")
             flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
 
     if len(flow) > 0:
@@ -190,8 +190,8 @@ def main():
         #all_symbols = ["H"]
         #print(os.listdir(options.path))
 
-        print("here" , os.path.basename(os.path.dirname(options.path)))
-        print("here" , options.path)
+        print("here", os.path.basename(os.path.dirname(options.path)))
+        print("here", options.path)
         if os.path.basename(os.path.dirname(options.path)) in all_symbols:
             print("here")
             dirs = [options.path]
