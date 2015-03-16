@@ -42,8 +42,8 @@ class DojoWork(Work):
 
         dojo_trial = self.dojo_trial
         if dojo_trial not in old_report:
-        	# Create new entry
-        	old_report[dojo_trial] = {}
+            # Create new entry
+            old_report[dojo_trial] = {}
         #else:
         #    # Check that we are not going to overwrite data.
         #    if self.dojo_accuracy in old_report[dojo_trial] and not overwrite_data:
@@ -832,7 +832,7 @@ class DFPTPhononFactory(object):
                 else:
                     global_vars.pop(k)
         global_vars['tolwfr'] = tolwfr
-        global_vars.pop('#comment')
+        #global_vars.pop('#comment')
         electrons = structure.num_valence_electrons(pseudos)
         global_vars.update(nband=electrons)
         global_vars.update(nbdbuf=int(electrons/4))

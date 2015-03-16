@@ -127,7 +127,8 @@ def main():
 
     def show_examples_and_exit(error_code=1):
         """Display the usage of the script."""
-        sys.stderr.write(str_examples())
+        #sys.stderr.write(str_examples()+'\n')
+        print(str_examples())
         sys.exit(error_code)
 
     parser = argparse.ArgumentParser(epilog=str_examples())
@@ -141,7 +142,7 @@ def main():
         if s == "all": return ["df", "gbrv", "phonons"]
         return s.split(",")
 
-    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv")
+    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv,phonons")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
