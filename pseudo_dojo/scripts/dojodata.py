@@ -332,10 +332,7 @@ Usage example:\n
     # Build PseudoTable from the paths specified by the user.
     options.pseudos = get_pseudos(options)
 
-    if True: #and options.seaborn:
-        import matplotlib
-        matplotlib.use("WXAgg")
-        import matplotlib.pyplot as plt
+    if options.seaborn:
         import seaborn as sns
         sns.set(style='ticks', palette='Set2')
         #sns.set(style="dark", palette="Set2")

@@ -912,5 +912,6 @@ class PhononDojoWork(OneShotPhononWork, DojoWork):
         report[self.dojo_trial]['%.1f' % self.ecut] = d['phonons'][0].freq.tolist()
 
         self.write_dojo_report(report)
+        return
 
 #        return super(GbrvRelaxAndEosWork, self).on_all_ok()
