@@ -902,7 +902,7 @@ class PhononDojoWork(OneShotPhononWork, DojoWork):
 
     def on_all_ok(self):
         d = self.get_results()
-        report = {d['phonons'][0].freqs.tolist()}
+        report = d['phonons'][0].freqs.tolist()
         self.write_dojo_report(report)
         return d
 
