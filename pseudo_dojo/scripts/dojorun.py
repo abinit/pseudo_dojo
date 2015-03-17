@@ -137,9 +137,9 @@ def main():
     parser = argparse.ArgumentParser(epilog=str_examples())
 
     parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
-    parser.add_argument('-d', '--dry-run', type=bool, default=False, action="store_true", help="Dry run, build the flow without submitting it")
+    parser.add_argument('-d', '--dry-run', default=False, action="store_true", help="Dry run, build the flow without submitting it")
     parser.add_argument('--paral-kgb', type=int, default=1,  help="Paral_kgb input variable.")
-    parser.add_argument('-e', '--extend', type=bool, default=False, action="store_true", help="Extend the ecut grid by one point at +2 H")
+    parser.add_argument('-e', '--extend', default=False, action="store_true", help="Extend the ecut grid by one point at +2 H")
     parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store", help="Extend the ecut grid with the new-ecut point")
 
     def parse_trials(s):
