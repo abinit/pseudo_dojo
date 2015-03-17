@@ -61,12 +61,12 @@ def build_flow(pseudo, options):
 
     ecut_list = copy.copy(report["ecuts"])
 
-    if 'extend' in options:
-        next_ecut = max(ecut_list) + 2
-        ecut_list.append(next_ecut)
+    #if 'extend' in options:
+    #    next_ecut = max(ecut_list) + 2
+    #    ecut_list.append(next_ecut)
 
-    if 'new-ecut' in options:
-        ecut_list.append(options['new-ecut'])
+    #if 'new-ecut' in options:
+    #    ecut_list.append(options['new-ecut'])
 
     add_ecuts = False
     if add_ecuts:
@@ -106,7 +106,7 @@ def build_flow(pseudo, options):
     if "phonon" in options.trials:
         phonon_factory = DFPTPhononFactory()
         for ecut in ecut_list:
-            if "phonon" in report and ecut in report["phonon"].keys(): continue
+            if "phonon" in report and str(ecut) in report["phonon"].keys(): continue
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
