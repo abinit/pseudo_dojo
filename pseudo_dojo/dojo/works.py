@@ -670,7 +670,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         a new list of ScfTask for the computation of the EOS with the GBRV parameters.
         """
         # Get the relaxed structure.
-        self.relaxed_structure = relaxed_structure = self.relax_task.read_final_structure()
+        self.relaxed_structure = relaxed_structure = self.relax_task.get_final_structure()
 
         # GBRV use nine points from -1% to 1% of the initial guess and fitting the results to a parabola.
         # Note that it's not clear to me if they change the volume or the lattice parameter!
