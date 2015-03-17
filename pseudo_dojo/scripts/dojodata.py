@@ -57,6 +57,11 @@ def dojo_plot(options):
             if count:
                 report.plot_gbrv_convergence(title=pseudo.basename)
 
+        # phonon
+        if any(k in options.what_plot for k in ("all", "phonon")):
+            if report.has_trial("phonon"):
+                report.plot_phonon_convergence(title=pseudo.basename)
+
 
 def dojo_compare(options):
     """Plot and compare DOJO results for multiple pseudos."""
@@ -67,6 +72,7 @@ def dojo_compare(options):
             pseudos_z.dojo_compare(what=options.what_plot)
         else:
             print("Find only one pseudo for Z=%s" % z)
+
 
 def dojo_trials(options):
     """Visualize the results of the different tests."""
@@ -331,10 +337,7 @@ Usage example:\n
     # Build PseudoTable from the paths specified by the user.
     options.pseudos = get_pseudos(options)
 
-    if True: #and options.seaborn:
-        import matplotlib
-        matplotlib.use("WXAgg")
-        import matplotlib.pyplot as plt
+    if options.seaborn:
         import seaborn as sns
         sns.set(style='ticks', palette='Set2')
         #sns.set(style="dark", palette="Set2")

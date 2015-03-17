@@ -5,6 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import os
 import argparse
+import copy
 import numpy as np
 import abipy.abilab as abilab
 
@@ -58,7 +59,14 @@ def build_flow(pseudo, options):
     # Build ecut mesh.
     ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
 
-    ecut_list = report["ecuts"]
+    ecut_list = copy.copy(report["ecuts"])
+
+    if 'extend' in options:
+        next_ecut = max(ecut_list) + 2
+        ecut_list.append(next_ecut)
+
+    if 'new-ecut' in options:
+        ecut_list.append(options['new-ecut'])
 
     add_ecuts = False
     if add_ecuts:
@@ -122,20 +130,23 @@ def main():
 
     def show_examples_and_exit(error_code=1):
         """Display the usage of the script."""
-        sys.stderr.write(str_examples())
+        #sys.stderr.write(str_examples()+'\n')
+        print(str_examples())
         sys.exit(error_code)
 
     parser = argparse.ArgumentParser(epilog=str_examples())
 
     parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
-    parser.add_argument('-d', '--dry-run', type=bool, default=False,  help="Dry run, build the flow without submitting it")
+    parser.add_argument('-d', '--dry-run', type=bool, default=False, action="store_true", help="Dry run, build the flow without submitting it")
     parser.add_argument('--paral-kgb', type=int, default=1,  help="Paral_kgb input variable.")
+    parser.add_argument('-e', '--extend', type=bool, default=False, action="store_true", help="Extend the ecut grid by one point at +2 H")
+    parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store", help="Extend the ecut grid with the new-ecut point")
 
     def parse_trials(s):
         if s == "all": return ["df", "gbrv", "phonons"]
         return s.split(",")
 
-    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv")
+    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv,phonons")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
@@ -183,8 +194,8 @@ def main():
         #all_symbols = ["H"]
         #print(os.listdir(options.path))
 
-        print("here" , os.path.basename(os.path.dirname(options.path)))
-        print("here" , options.path)
+        print("here", os.path.basename(os.path.dirname(options.path)))
+        print("here", options.path)
         if os.path.basename(os.path.dirname(options.path)) in all_symbols:
             print("here")
             dirs = [options.path]
