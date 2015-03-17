@@ -57,6 +57,11 @@ def dojo_plot(options):
             if count:
                 report.plot_gbrv_convergence(title=pseudo.basename)
 
+        # phonon
+        if any(k in options.what_plot for k in ("all", "phonon")):
+            if report.has_trial("phonon"):
+                report.plot_phonon_convergence(title=pseudo.basename)
+
 
 def dojo_compare(options):
     """Plot and compare DOJO results for multiple pseudos."""
