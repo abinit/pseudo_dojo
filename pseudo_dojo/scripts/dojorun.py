@@ -65,6 +65,9 @@ def build_flow(pseudo, options):
         next_ecut = max(ecut_list) + 2
         ecut_list.append(next_ecut)
 
+    if 'new-ecut' in options:
+        ecut_list.append(options['new-ecut'])
+
     add_ecuts = False
     if add_ecuts:
         #dense_right = np.linspace(ppgen_ecut, ppgen_ecut + 10, num=6)
@@ -137,6 +140,7 @@ def main():
     parser.add_argument('-d', '--dry-run', type=bool, default=False, action="store_true", help="Dry run, build the flow without submitting it")
     parser.add_argument('--paral-kgb', type=int, default=1,  help="Paral_kgb input variable.")
     parser.add_argument('-e', '--extend', type=bool, default=False, action="store_true", help="Extend the ecut grid by one point at +2 H")
+    parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store", help="Extend the ecut grid with the new-ecut point")
 
     def parse_trials(s):
         if s == "all": return ["df", "gbrv", "phonons"]

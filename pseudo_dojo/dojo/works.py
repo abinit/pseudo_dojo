@@ -902,16 +902,16 @@ class PhononDojoWork(OneShotPhononWork, DojoWork):
 
     def on_all_ok(self):
         d = self.get_results()
-        print(self.ecut)
-        print(d['phonons'][0]['freqs'].type)
 
         report = self.pseudo.read_dojo_report()
         if self.dojo_trial not in report:
             report[self.dojo_trial] = {}
 
-        report[self.dojo_trial]['%.1f' % self.ecut] = d['phonons'][0].freq.tolist()
+        report[self.dojo_trial]['%.1f' % self.ecut] = d['phonons'][0].freqs.tolist()
 
         self.write_dojo_report(report)
-        return
+
+        return d
+
 
 #        return super(GbrvRelaxAndEosWork, self).on_all_ok()
