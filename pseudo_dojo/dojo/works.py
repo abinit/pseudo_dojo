@@ -42,8 +42,8 @@ class DojoWork(Work):
 
         dojo_trial = self.dojo_trial
         if dojo_trial not in old_report:
-        	# Create new entry
-        	old_report[dojo_trial] = {}
+            # Create new entry
+            old_report[dojo_trial] = {}
         #else:
         #    # Check that we are not going to overwrite data.
         #    if self.dojo_accuracy in old_report[dojo_trial] and not overwrite_data:
@@ -784,7 +784,8 @@ class DFPTError(Exception):
 class DFPTPhononFactory(object):
     """
     Factory class producing `Workflow` objects for DFPT Phonon calculations.
-    In particular to test if the acoustic modes are zero
+    In particular to test if the acoustic modes are zero, or at least from which cuttoff they can be made zero by
+    imposing the accoustic sum rule.
     """
 
     Error = DFPTError
@@ -824,7 +825,7 @@ class DFPTPhononFactory(object):
         global_vars = dict(ksampling.to_abivars(), tsmear=0.005, occopt=7, nstep=200, ecut=12.0, paral_kgb=0)
         global_vars.update(**kwargs)
         # if not tolwfr is specified explicitly we remove any other tol and put tolwfr = 1e-16
-        tolwfr = 1e-16
+        tolwfr = 1e-20
         for k in global_vars.keys():
             if 'tol' in k:
                 if k == 'tolwfr':
@@ -832,9 +833,10 @@ class DFPTPhononFactory(object):
                 else:
                     global_vars.pop(k)
         global_vars['tolwfr'] = tolwfr
-        global_vars.pop('#comment')
+        #global_vars.pop('#comment')
         electrons = structure.num_valence_electrons(pseudos)
         global_vars.update(nband=electrons)
+        global_vars.update(nbdbuf=int(electrons/4))
 
         inp = abilab.AbiInput(pseudos=pseudos, ndtset=1+len(qpoints))
         inp.set_structure(structure)
@@ -842,7 +844,7 @@ class DFPTPhononFactory(object):
 
         for i, qpt in enumerate(qpoints):
             # Response-function calculation for phonons.
-            inp[i+2].set_variables(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2)
+            inp[i+2].set_variables(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2)
 
         # Split input into gs_inp and ph_inputs
         return inp.split_datasets()
@@ -870,8 +872,6 @@ class DFPTPhononFactory(object):
             structure = structure_or_cif
         #print(structure)
 
-        structure = Structure.asabistructure(structure)
-
         all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
 
@@ -884,13 +884,14 @@ class DFPTPhononFactory(object):
         manager = abilab.TaskManager.from_user_config() if not self.manager else \
             abilab.TaskManager.from_file(self.manager)
 
-        work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWorkflow)
+        work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork)
+        work.ecut = scf_input.ecut
         work._pseudo = pseudo
-        work.set_dojo_accuracy(accuracy=accuracy)
+#        work.set_dojo_accuracy(accuracy=accuracy)
         return work
 
 
-class PhononDojoWorkflow(OneShotPhononWork, DojoWork):
+class PhononDojoWork(OneShotPhononWork, DojoWork):
     @property
     def dojo_trial(self):
         return "phonon"
@@ -898,5 +899,11 @@ class PhononDojoWorkflow(OneShotPhononWork, DojoWork):
     @property
     def pseudo(self):
         return self._pseudo
+
+    def on_all_ok(self):
+        d = self.get_results()
+        report = d['phonons'][0].freqs.tolist()
+        self.write_dojo_report(report)
+        return d
 
 #        return super(GbrvRelaxAndEosWork, self).on_all_ok()
