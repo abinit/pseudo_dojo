@@ -103,14 +103,15 @@ def build_flow(pseudo, options):
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
     # PHONON test
-    if "phonons" in options.trials:
+    if "phonon" in options.trials:
         phonon_factory = DFPTPhononFactory()
         for ecut in ecut_list:
-            if "dfptgammaphonon" in report and ecut in report["dfptgammaphonon"].keys(): continue
+            if "phonon" in report and ecut in report["phonon"].keys(): continue
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
                                                   tolwfr=1.e-20, smearing="fermi_dirac:0.0005")
+
             flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
 
     if len(flow) > 0:
@@ -143,10 +144,10 @@ def main():
     parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store", help="Extend the ecut grid with the new-ecut point")
 
     def parse_trials(s):
-        if s == "all": return ["df", "gbrv", "phonons"]
+        if s == "all": return ["df", "gbrv", "phonon"]
         return s.split(",")
 
-    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv,phonons")
+    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv,phonon")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
