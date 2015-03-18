@@ -822,7 +822,9 @@ class DFPTPhononFactory(object):
         except:
             pass
         kwargs.pop('smearing')
-        global_vars = dict(ksampling.to_abivars(), tsmear=0.005, occopt=7, nstep=200, ecut=12.0, paral_kgb=0)
+        # to be applicable to all systems we treat all as is they were metals
+        # some systems have a non primitive cell to allow for a anti ferromagnetic structure > chkprim = 0
+        global_vars = dict(ksampling.to_abivars(), tsmear=0.005, occopt=7, nstep=200, ecut=12.0, paral_kgb=0, chkprim=0)
         global_vars.update(**kwargs)
         # if not tolwfr is specified explicitly we remove any other tol and put tolwfr = 1e-16
         tolwfr = 1e-20
@@ -844,6 +846,9 @@ class DFPTPhononFactory(object):
 
         for i, qpt in enumerate(qpoints):
             # Response-function calculation for phonons.
+            # rfasr = 1 is not correct
+            # response calculations can not be restarted > nstep = 200, a problem to solve here is that abinit continues
+            # happily even is NaN are produced ... TODO fix abinit
             inp[i+2].set_variables(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2)
 
         # Split input into gs_inp and ph_inputs
