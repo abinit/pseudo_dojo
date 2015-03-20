@@ -4,7 +4,7 @@ from __future__ import division, print_function, unicode_literals
 import os
 import pytest
 
-from pseudo_dojo.ppcodes.oncvpsp import OncvOuptputParser
+from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 
 
 def filepath(basename):
@@ -15,11 +15,11 @@ def test_oncvoutput_parser():
     """Test the parsing of the output file produced by ONCVPSPS."""
 
     # TODO: Full-relativistic case not yet supported.
-    with pytest.raises(OncvOuptputParser.Error):
-        OncvOuptputParser(filepath("08_O_r.out"))
+    with pytest.raises(OncvOutputParser.Error):
+        OncvOutputParser(filepath("08_O_r.out"))
 
     # Non-relativistic results
-    p = OncvOuptputParser(filepath("08_O_nr.out"))
+    p = OncvOutputParser(filepath("08_O_nr.out"))
     print(p)
     assert not p.fully_relativistic
     assert p.calc_type == "non-relativistic"
@@ -42,7 +42,7 @@ def test_oncvoutput_parser():
     plotter = p.make_plotter()
 
     # Scalar relativistic output
-    p = OncvOuptputParser(filepath("08_O_sr.out"))
+    p = OncvOutputParser(filepath("08_O_sr.out"))
     assert not p.fully_relativistic
     assert p.calc_type == "scalar-relativistic"
     assert p.lmax == 1

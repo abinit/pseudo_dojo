@@ -844,7 +844,10 @@ class DFPTPhononFactory(object):
 
         for i, qpt in enumerate(qpoints):
             # Response-function calculation for phonons.
-            inp[i+2].set_variables(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2)
+            # rfatpol=[1, natom],  # Set of atoms to displace.
+            # rfdir=[1, 1, 1],     # Along this set of reduced coordinate axis
+            inp[i+2].set_variables(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2, 
+                                   rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
 
         # Split input into gs_inp and ph_inputs
         return inp.split_datasets()
