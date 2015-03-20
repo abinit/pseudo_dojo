@@ -845,13 +845,13 @@ class DFPTPhononFactory(object):
 
         inp = abilab.AbiInput(pseudos=pseudos, ndtset=1+len(qpoints))
         inp.set_structure(structure)
-        inp.set_variables(**global_vars)
+        inp.set_vars(global_vars)
 
         for i, qpt in enumerate(qpoints):
             # Response-function calculation for phonons.
             # rfatpol=[1, natom],  # Set of atoms to displace.
             # rfdir=[1, 1, 1],     # Along this set of reduced coordinate axis
-            inp[i+2].set_variables(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2, 
+            inp[i+2].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2, 
                                    rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
             # rfasr = 1 is not correct
             # response calculations can not be restarted > nstep = 200, a problem to solve here is that abinit continues
@@ -862,7 +862,7 @@ class DFPTPhononFactory(object):
 
     def work_for_pseudo(self, pseudo, **kwargs):
         """
-        Create an `AbinitFlow` for phonon calculations:
+        Create a :class:`Flow` for phonon calculations:
 
             1) One workflow for the GS run.
 
@@ -903,5 +903,3 @@ class PhononDojoWork(OneShotPhononWork, DojoWork):
         report = d['phonons'][0].freqs.tolist()
         self.write_dojo_report(report)
         return d
-
-#        return super(GbrvRelaxAndEosWork, self).on_all_ok()
