@@ -61,12 +61,12 @@ def build_flow(pseudo, options):
 
     ecut_list = copy.copy(report["ecuts"])
 
-    if 'extend' in options:
-        next_ecut = max(ecut_list) + 2
-        ecut_list.append(next_ecut)
+    #if 'extend' in options:
+    #    next_ecut = max(ecut_list) + 2
+    #    ecut_list.append(next_ecut)
 
-    if 'new-ecut' in options:
-        ecut_list.append(options['new-ecut'])
+    #if 'new-ecut' in options:
+    #    ecut_list.append(options['new-ecut'])
 
     add_ecuts = False
     if add_ecuts:
@@ -103,14 +103,15 @@ def build_flow(pseudo, options):
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
     # PHONON test
-    if "phonons" in options.trials:
+    if "phonon" in options.trials:
         phonon_factory = DFPTPhononFactory()
         for ecut in ecut_list:
-            if "dfptgammaphonon" in report and ecut in report["dfptgammaphonon"].keys(): continue
+            if "phonon" in report and str(ecut) in report["phonon"].keys(): continue
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
                                                   tolwfr=1.e-20, smearing="fermi_dirac:0.0005")
+
             flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
 
     if len(flow) > 0:
@@ -137,16 +138,16 @@ def main():
     parser = argparse.ArgumentParser(epilog=str_examples())
 
     parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
-    parser.add_argument('-d', '--dry-run', type=bool, default=False, action="store_true", help="Dry run, build the flow without submitting it")
+    parser.add_argument('-d', '--dry-run', default=False, action="store_true", help="Dry run, build the flow without submitting it")
     parser.add_argument('--paral-kgb', type=int, default=1,  help="Paral_kgb input variable.")
-    parser.add_argument('-e', '--extend', type=bool, default=False, action="store_true", help="Extend the ecut grid by one point at +2 H")
+    parser.add_argument('-p', '--plot', default=False, action="store_true", help="Plot convergence when the flow is done")
     parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store", help="Extend the ecut grid with the new-ecut point")
 
     def parse_trials(s):
-        if s == "all": return ["df", "gbrv", "phonons"]
+        if s == "all": return ["df", "gbrv", "phonon"]
         return s.split(",")
 
-    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv,phonons")
+    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv,phonon")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
@@ -237,6 +238,11 @@ def main():
             except Exception as exc:
                 # Log exception and proceed with the next pseudo.
                 exc_log.write(str(exc))
+
+            new_report = pseudo.read_dojo_report()
+            new_report.plot_deltafactor_convergence()
+            new_report.plot_gbrv_convergence()
+            new_report.plot_phonon_convergence()
 
             #with open(pseudo.basename + "sched.stdout", "w") as sched_stdout, \
             #     open(pseudo.basename + "sched.stderr", "w") as sched_stderr: 
