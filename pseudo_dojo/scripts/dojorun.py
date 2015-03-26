@@ -7,12 +7,16 @@ import os
 import argparse
 import copy
 import numpy as np
+import logging
 import abipy.abilab as abilab
 
 from warnings import warn
 from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
+
+
+logger = logging.getLogger(__name__)
 
 
 class RedirectStdStreams(object):
@@ -106,13 +110,16 @@ def build_flow(pseudo, options):
     if "phonon" in options.trials:
         phonon_factory = DFPTPhononFactory()
         for ecut in ecut_list:
-            if "phonon" in report and str(ecut) in report["phonon"].keys(): continue
+            str_ecut = '%.1f' % ecut
+            if "phonon" in report and str_ecut in report["phonon"].keys(): continue
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
                                                   tolwfr=1.e-20, smearing="fermi_dirac:0.0005")
-
-            flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
+            if work is not None:
+                flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
+            else:
+                logger.info('cannot create GammaPhononsAt' + str(ecut) + ' work, factory returned None')
 
     if len(flow) > 0:
         return flow.allocate()
