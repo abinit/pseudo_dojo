@@ -880,6 +880,17 @@ class DFPTPhononFactory(object):
         else:
             structure = structure_or_cif
 
+        nat = len(structure)
+        report = pseudo.read_dojo_report()
+        ecut_str = '%.1f' % kwargs['ecut']
+
+        try:
+            v0 = nat*report['deltafactor'][ecut_str]['v0']
+        except KeyError:
+            # the df calculation at this ecut is not done already so the phonon task can not be created
+            return None
+
+        structure.scale_lattice(v0)
         all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
 
