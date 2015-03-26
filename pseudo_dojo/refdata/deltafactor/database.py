@@ -138,7 +138,7 @@ class DeltaFactorDatabase(object):
     _FILES = [
         "WIEN2k.txt",
         "VASP.txt",
-        #"VASP-relaxed.txt",
+        "VASP-relaxed.txt",
     ]
 
     Error = DeltaFactorDatabaseError
@@ -171,6 +171,11 @@ class DeltaFactorDatabase(object):
     def get_cif_path(self, symbol):
         """Returns the path to the CIF file used for the given symbol."""
         return self._cif_paths[symbol]
+
+    @property
+    def symbols(self):
+        """Chemical symbols available in the database."""
+        return self._cif_paths.keys()
 
     def get_entry(self, symbol, code=None):
         """
@@ -233,6 +238,52 @@ class DeltaFactorDatabase(object):
             #ax.set_xlabel("Ecut [Ha]")
 
         return fig
+
+
+def check_cif_wien2k_consistency():
+    """
+    This function compares the v0 of thestructures read from the CIF files with
+    with those computed from the text files containing the deltafactor results.
+    """
+    from pymatgen.core.structure import Structure
+    import pandas as pd
+    pd.set_option("display.max_rows", None)
+
+    rows, index = [], []
+    
+    db = df_database()
+    for symbol in db.symbols:
+        if symbol == "S": continue
+        wien2k = db.get_entry(symbol)
+        #vasp = db.get_entry(symbol, "VASP")
+        vasp = db.get_entry(symbol, "VASP-relaxed")
+        structure = Structure.from_file(db.get_cif_path(symbol))
+        v0 = structure.volume / len(structure)
+        wien2k_v0abs_diff = wien2k.v0 - v0
+        wien2k_v0rel_diff = 100 * (wien2k.v0 - v0) / v0
+        #if abs_(v0diff): 
+        print("Wien2k Symbol: %s, abs: %.2f, rel %.2f" % (symbol, wien2k_v0abs_diff, wien2k_v0rel_diff))
+
+        vasp_v0abs_diff = vasp.v0 - v0
+        vasp_v0rel_diff = 100 * (vasp.v0 - v0) / v0
+        print("Vasp Symbol: %s, abs: %.2f, rel %.2f" % (symbol, vasp_v0abs_diff, vasp_v0rel_diff))
+        #if symbol == "O":
+        #    print(v0, wien2k.v0)
+        index.append(symbol)
+        rows.append(dict(wien2k_v0abs_diff=wien2k_v0abs_diff, 
+                         wien2k_v0rel_diff=wien2k_v0rel_diff,
+                         vasp_v0abs_diff=vasp_v0abs_diff, 
+                         vasp_v0rel_diff=vasp_v0rel_diff,
+                    ))
+
+    frame = pd.DataFrame(data=rows, index=index)
+    print(frame)
+    print(frame.describe())
+
+    import matplotlib.pyplot as plt
+    frame.hist()
+    plt.show()
+
 
 ##########################################################################################
 # Official API to access the database.
@@ -390,4 +441,5 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
 
 if __name__ == "__main__":
     import sys
-    read_tables_from_file(sys.argv[1])
+    #read_tables_from_file(sys.argv[1])
+    check_cif_wien2k_consistency()
