@@ -28,10 +28,6 @@ class DojoWork(Work):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractproperty
-    def ecut(self):
-        """in the post-processing we need ecut so all dojoworks should implement it"""
-
-    @abc.abstractproperty
     def pseudo(self):
         """:class:`Pseudo` object"""
 
@@ -812,8 +808,20 @@ class DFPTPhononFactory(object):
         """
         This function constructs the input files for the phonon calculation:
         GS input + the input files for the phonon calculation.
+        kwargs:
+        ecut: the ecut at which the input is generated
+        kppa: kpoint per atom
+        smearing: is removed
+        qpt: optional, list of qpoints
+            if not present gamma is added
+        the rest are passed as abinit input variables
         """
-        qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00]
+
+        if 'qpt' in kwargs:
+            qpoints = kwargs.pop('qpt')
+        else:
+            qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00]
+
         qpoints = np.reshape(qpoints, (-1, 3))
 
         # Global variables used both for the GS and the DFPT run.
@@ -866,6 +874,8 @@ class DFPTPhononFactory(object):
             2) nqpt workflows for phonon calculations. Each workflow contains
                nirred tasks where nirred is the number of irreducible phonon perturbations
                for that particular q-point.
+
+            the kwargs are passed to scf_hp_inputs
         """
         kwargs.pop('accuracy')
         pseudo = Pseudo.as_pseudo(pseudo)
