@@ -14,7 +14,7 @@ from pymatgen.core.units import Ha_to_eV
 from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo
-from pymatgen.io.abinitio.abiobjects import SpinMode, Smearing, KSampling, Electrons, RelaxationMethod
+from pymatgen.io.abinitio.abiobjects import SpinMode, KSampling, RelaxationMethod
 from pymatgen.io.abinitio.works import Work, build_oneshot_phononwork, OneShotPhononWork
 from abipy.core.structure import Structure
 from pseudo_dojo.refdata.gbrv import gbrv_database
@@ -54,7 +54,7 @@ class DojoWork(Work):
         old_report[dojo_trial][dojo_ecut] = report
         try:
             self.pseudo.write_dojo_report(old_report)
-        except:
+        except (OSError, IOError):
             print("Something wrong in write_dojo_report")
 
 
@@ -88,7 +88,7 @@ def check_conv(values, tol, min_numpts=1, mode="abs", vinf=None):
         for i in range(numpts-1, -1, -1):
             if vdiff[i] > tol:
                 break
-        if (numpts - i -1) < min_numpts: i = -2
+        if (numpts - i - 1) < min_numpts: i = -2
 
     return i + 1
 
@@ -96,7 +96,6 @@ def check_conv(values, tol, min_numpts=1, mode="abs", vinf=None):
 def compute_hints(ecuts, etotals, atols_mev, min_numpts=1, stream=sys.stdout):
     de_low, de_normal, de_high = [a / (1000 * Ha_to_eV) for a in atols_mev]
 
-    num_ene = len(etotals)
     etotal_inf = etotals[-1]
 
     ihigh = check_conv(etotals, de_high, min_numpts=min_numpts)
@@ -110,7 +109,7 @@ def compute_hints(ecuts, etotals, atols_mev, min_numpts=1, stream=sys.stdout):
     app(["iter", "ecut", "etotal", "et-e_inf [meV]", "accuracy",])
     for idx, (ec, et) in enumerate(zip(ecuts, etotals)):
         line = "%d %.1f %.7f %.3f" % (idx, ec, et, (et-etotal_inf) * Ha_to_eV * 1.e+3)
-        row = line.split() + ["".join(c for c,v in accidx.items() if v == idx)]
+        row = line.split() + ["".join(c for c, v in accidx.items() if v == idx)]
         app(row)
 
     if stream is not None:
@@ -124,7 +123,7 @@ def compute_hints(ecuts, etotals, atols_mev, min_numpts=1, stream=sys.stdout):
         ecut_normal = ecuts[inormal]
         ecut_high = ecuts[ihigh]
 
-    aug_ratios = [1,]
+    aug_ratios = [1, ]
     aug_ratio_low, aug_ratio_normal, aug_ratio_high = 3 * (1,)
 
     #if not monotonic(etotals, mode="<", atol=1.0e-5):
@@ -670,7 +669,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         a new list of ScfTask for the computation of the EOS with the GBRV parameters.
         """
         # Get the relaxed structure.
-        self.relaxed_structure = relaxed_structure = self.relax_task.read_final_structure()
+        self.relaxed_structure = relaxed_structure = self.relax_task.get_final_structure()
 
         # GBRV use nine points from -1% to 1% of the initial guess and fitting the results to a parabola.
         # Note that it's not clear to me if they change the volume or the lattice parameter!
@@ -809,8 +808,20 @@ class DFPTPhononFactory(object):
         """
         This function constructs the input files for the phonon calculation:
         GS input + the input files for the phonon calculation.
+        kwargs:
+        ecut: the ecut at which the input is generated
+        kppa: kpoint per atom
+        smearing: is removed
+        qpt: optional, list of qpoints
+            if not present gamma is added
+        the rest are passed as abinit input variables
         """
-        qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00]
+
+        if 'qpt' in kwargs:
+            qpoints = kwargs.pop('qpt')
+        else:
+            qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00]
+
         qpoints = np.reshape(qpoints, (-1, 3))
 
         # Global variables used both for the GS and the DFPT run.
@@ -819,10 +830,12 @@ class DFPTPhononFactory(object):
         ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=0)
         try:
             kwargs.pop('accuracy')
-        except:
+        except KeyError:
             pass
         kwargs.pop('smearing')
-        global_vars = dict(ksampling.to_abivars(), tsmear=0.005, occopt=7, nstep=200, ecut=12.0, paral_kgb=0)
+        # to be applicable to all systems we treat all as is they were metals
+        # some systems have a non primitive cell to allow for a anti ferromagnetic structure > chkprim = 0
+        global_vars = dict(ksampling.to_abivars(), tsmear=0.005, occopt=7, nstep=200, ecut=12.0, paral_kgb=0, chkprim=0)
         global_vars.update(**kwargs)
         # if not tolwfr is specified explicitly we remove any other tol and put tolwfr = 1e-16
         tolwfr = 1e-20
@@ -844,6 +857,9 @@ class DFPTPhononFactory(object):
 
         for i, qpt in enumerate(qpoints):
             # Response-function calculation for phonons.
+            # rfasr = 1 is not correct
+            # response calculations can not be restarted > nstep = 200, a problem to solve here is that abinit continues
+            # happily even is NaN are produced ... TODO fix abinit
             inp[i+2].set_variables(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2)
 
         # Split input into gs_inp and ph_inputs
@@ -858,11 +874,11 @@ class DFPTPhononFactory(object):
             2) nqpt workflows for phonon calculations. Each workflow contains
                nirred tasks where nirred is the number of irreducible phonon perturbations
                for that particular q-point.
+
+            the kwargs are passed to scf_hp_inputs
         """
-        accuracy = kwargs.pop('accuracy')
-
+        kwargs.pop('accuracy')
         pseudo = Pseudo.as_pseudo(pseudo)
-
         structure_or_cif = self.get_cif_path(pseudo.symbol)
 
         if not isinstance(structure_or_cif, Structure):
@@ -870,24 +886,24 @@ class DFPTPhononFactory(object):
             structure = Structure.from_file(structure_or_cif, primitive=False)
         else:
             structure = structure_or_cif
-        #print(structure)
 
+        nat = len(structure)
+        report = pseudo.read_dojo_report()
+        ecut_str = '%.1f' % kwargs['ecut']
+
+        try:
+            v0 = nat*report['deltafactor'][ecut_str]['v0']
+        except KeyError:
+            # the df calculation at this ecut is not done already so the phonon task can not be created
+            return None
+
+        structure.scale_lattice(v0)
         all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
-
-        # Working directory (default is the name of the script with '.py' removed and "run_" replaced by "flow_")
-        workdir = self.workdir
-        if not self.workdir:
-            workdir = os.path.basename(__file__).replace(".py", "").replace("run_", "flow_")
-
-        # Instantiate the TaskManager.
-        manager = abilab.TaskManager.from_user_config() if not self.manager else \
-            abilab.TaskManager.from_file(self.manager)
 
         work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork)
         work.ecut = scf_input.ecut
         work._pseudo = pseudo
-#        work.set_dojo_accuracy(accuracy=accuracy)
         return work
 
 
@@ -902,16 +918,8 @@ class PhononDojoWork(OneShotPhononWork, DojoWork):
 
     def on_all_ok(self):
         d = self.get_results()
-
-        report = self.pseudo.read_dojo_report()
-        if self.dojo_trial not in report:
-            report[self.dojo_trial] = {}
-
-        report[self.dojo_trial]['%.1f' % self.ecut] = d['phonons'][0].freqs.tolist()
-
+        report = d['phonons'][0].freqs.tolist()
         self.write_dojo_report(report)
-
         return d
-
 
 #        return super(GbrvRelaxAndEosWork, self).on_all_ok()
