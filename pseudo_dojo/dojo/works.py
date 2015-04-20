@@ -11,10 +11,9 @@ from abipy import abilab
 from monty.collections import AttrDict
 from monty.pprint import pprint_table
 from pymatgen.core.units import Ha_to_eV
-from pymatgen.io.abinitio.strategies import ScfStrategy, RelaxStrategy
 from pymatgen.io.abinitio.eos import EOS
 from pymatgen.io.abinitio.pseudos import Pseudo
-from pymatgen.io.abinitio.abiobjects import SpinMode, KSampling, RelaxationMethod
+from pymatgen.io.abinitio.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
 from pymatgen.io.abinitio.works import Work, build_oneshot_phononwork, OneShotPhononWork
 from abipy.core.structure import Structure
 from pseudo_dojo.refdata.gbrv import gbrv_database
@@ -166,7 +165,7 @@ class PseudoConvergence(DojoWork):
         self.toldfe = toldfe
         self.spin_mode = spin_mode
         self.acell = acell
-        self.smearing = smearing
+        self.smearing = Smearing.as_smearing(smearing)
         self.max_niter = max_niter; assert max_niter > 0
         self.ecut_slice = ecut_slice; assert isinstance(ecut_slice, slice)
 
@@ -191,24 +190,20 @@ class PseudoConvergence(DojoWork):
     def add_task_with_ecut(self, ecut):
         """Register a new task with cutoff energy ecut."""
         # One atom in a box of lenghts acell.
-        boxed_atom = Structure.boxed_atom(self.pseudo, acell=self.acell)
+        inp = abilab.AbinitInput(structure=Structure.boxed_atom(self.pseudo, acell=self.acell), 
+                                 pseudos=self.pseudo)
 
         # Gamma-only sampling.
-        gamma_only = KSampling.gamma_only()
+        inp.add_abiobjects(self.spin_mode, self.smearing, KSampling.gamma_only())
 
-        extra_abivars = {
-            "ecut": ecut,
-            "toldfe": self.toldfe,
-            "prtwf": 1,
-            #"intxc": 1,
-        }
-
-        strategy = ScfStrategy(boxed_atom, self.pseudo, gamma_only,
-                               spin_mode=self.spin_mode, smearing=self.smearing,
-                               **extra_abivars)
+        inp.set_vars(
+            ecut=ecut,
+            toldfe=self.toldfe,
+            prtwf=1,
+        )
 
         self.ecuts.append(ecut)
-        self.register_scf_task(strategy)
+        self.register_scf_task(inp)
 
     def make_report(self):
         """
@@ -385,6 +380,7 @@ class DeltaFactory(object):
 
 class DeltaFactorWork(DojoWork):
     """Work for the calculation of the deltafactor."""
+
     def __init__(self, structure, pseudo, kppa, connect,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
                  spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
@@ -408,6 +404,7 @@ class DeltaFactorWork(DojoWork):
         self._pseudo = Pseudo.as_pseudo(pseudo)
 
         spin_mode = SpinMode.as_spinmode(spin_mode)
+        smearing = Smearing.as_smearing(smearing)
 
         # Compute the number of bands from the pseudo and the spin-polarization.
         # Add 6 bands to account for smearing.
@@ -445,9 +442,13 @@ class DeltaFactorWork(DojoWork):
 
             ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak)
 
-            scf_input = ScfStrategy(new_structure, self.pseudo, ksampling,
-                                    accuracy=accuracy, spin_mode=spin_mode,
-                                    smearing=smearing, **extra_abivars)
+            #scf_input = ScfStrategy(new_structure, self.pseudo, ksampling,
+            #                        accuracy=accuracy, spin_mode=spin_mode,
+            #                        smearing=smearing, **extra_abivars)
+
+            scf_input = abilab.AbinitInput(structure=new_structure, pseudos=self.pseudo)
+            scf_input.add_abiobjects(ksampling, smearing, spin_mode)
+            scf_input.set_vars(extra_abivars)
 
             self.register_scf_task(scf_input)
 
@@ -640,7 +641,7 @@ class GbrvRelaxAndEosWork(DojoWork):
                                        
         self.extra_abivars.update(**kwargs)
         self.ecut = ecut
-        self.smearing = smearing
+        self.smearing = Smearing.as_smearing(smearing)
 
         # Kpoint sampling: shiftk depends on struct_type
         shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
@@ -649,8 +650,12 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.spin_mode = spin_mode
         relax_algo = RelaxationMethod.atoms_and_cell()
 
-        self.relax_input = RelaxStrategy(structure, pseudo, self.ksampling, relax_algo, 
-                                         accuracy=accuracy, spin_mode=spin_mode, smearing=smearing, **self.extra_abivars)
+        #self.relax_input = RelaxStrategy(structure, pseudo, self.ksampling, relax_algo, 
+        #                                 accuracy=accuracy, spin_mode=spin_mode, smearing=smearing, **self.extra_abivars)
+
+        inp = abilab.AbinitInput(structure, pseudo)
+        inp.add_abiobjects(self.ksampling, relax_algo, spin_mode, smearing)
+        inp.set_vars(extra_abivars)
 
         # Register structure relaxation task.
         self.relax_task = self.register_relax_task(self.relax_input)
@@ -683,9 +688,13 @@ class GbrvRelaxAndEosWork(DojoWork):
             extra = self.extra_abivars.copy() 
             extra["ecutsm"] = 0.5
 
-            scf_input = ScfStrategy(new_structure, self.pseudo, self.ksampling,
-                                    accuracy=self.accuracy, spin_mode=self.spin_mode,
-                                    smearing=self.smearing, **extra)
+            #scf_input = ScfStrategy(new_structure, self.pseudo, self.ksampling,
+            #                        accuracy=self.accuracy, spin_mode=self.spin_mode,
+            #                        smearing=self.smearing, **extra)
+
+            scf_input = abilab.AbinitInput(new_structure, self.pseudo)
+            scf_input.add_abiobjects(self.ksampling, self.spin_node, self.smearing)
+            scf_input.set_vars(extra)
 
             # Register new task
             self.register_scf_task(scf_input)
@@ -697,7 +706,7 @@ class GbrvRelaxAndEosWork(DojoWork):
     def compute_eos(self):
         results = self.get_results()
 
-        # Read etotals and fit E(V) with a parabola to find minimum
+        # Read etotals and fit E(V) with a parabola to find the minimum
         etotals = self.read_etotals(unit="eV")[1:]
         assert len(etotals) == len(self.volumes)
 
@@ -812,8 +821,7 @@ class DFPTPhononFactory(object):
         ecut: the ecut at which the input is generated
         kppa: kpoint per atom
         smearing: is removed
-        qpt: optional, list of qpoints
-            if not present gamma is added
+        qpt: optional, list of qpoints. if not present gamma is added
         the rest are passed as abinit input variables
         """
 
@@ -845,28 +853,29 @@ class DFPTPhononFactory(object):
                     tolwfr = global_vars.pop(k)
                 else:
                     global_vars.pop(k)
+
         global_vars['tolwfr'] = tolwfr
         #global_vars.pop('#comment')
         electrons = structure.num_valence_electrons(pseudos)
         global_vars.update(nband=electrons)
         global_vars.update(nbdbuf=int(electrons/4))
 
-        inp = abilab.AbiInput(pseudos=pseudos, ndtset=1+len(qpoints))
-        inp.set_structure(structure)
-        inp.set_vars(global_vars)
+        multi = abilab.MultiDataset(structure=structure, pseudos=pseudos, ndtset=1+len(qpoints))
+        multi.set_vars(global_vars)
 
         for i, qpt in enumerate(qpoints):
             # Response-function calculation for phonons.
             # rfatpol=[1, natom],  # Set of atoms to displace.
             # rfdir=[1, 1, 1],     # Along this set of reduced coordinate axis
-            inp[i+2].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2, 
-                                   rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
+            inp[i+1].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2, 
+                              rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
+
             # rfasr = 1 is not correct
             # response calculations can not be restarted > nstep = 200, a problem to solve here is that abinit continues
             # happily even is NaN are produced ... TODO fix abinit
 
         # Split input into gs_inp and ph_inputs
-        return inp.split_datasets()
+        return multi.split_datasets()
 
     def work_for_pseudo(self, pseudo, **kwargs):
         """
