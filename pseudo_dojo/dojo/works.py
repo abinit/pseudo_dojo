@@ -825,11 +825,7 @@ class DFPTPhononFactory(object):
         the rest are passed as abinit input variables
         """
 
-        if 'qpt' in kwargs:
-            qpoints = kwargs.pop('qpt')
-        else:
-            qpoints = [0.00000000E+00,  0.00000000E+00,  0.00000000E+00]
-
+        qpoints = kwargs.pop('qpt', [0.00000000E+00,  0.00000000E+00,  0.00000000E+00])
         qpoints = np.reshape(qpoints, (-1, 3))
 
         # Global variables used both for the GS and the DFPT run.
@@ -889,8 +885,15 @@ class DFPTPhononFactory(object):
 
             the kwargs are passed to scf_hp_inputs
         """
+        try:
+            qpt = kwargs['qpt']
+        except IndexError:
+            raise ValueError('A phonon test needs to specify a qpoint.')
+
         kwargs.pop('accuracy')
+
         pseudo = Pseudo.as_pseudo(pseudo)
+
         structure_or_cif = self.get_cif_path(pseudo.symbol)
 
         if not isinstance(structure_or_cif, Structure):
@@ -914,6 +917,7 @@ class DFPTPhononFactory(object):
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
 
         work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork)
+        work.set_dojo_trial(qpt)
         work.ecut = scf_input.ecut
         work._pseudo = pseudo
         return work
@@ -922,7 +926,15 @@ class DFPTPhononFactory(object):
 class PhononDojoWork(OneShotPhononWork, DojoWork):
     @property
     def dojo_trial(self):
-        return "phonon"
+        return self._trial
+
+    def set_dojo_trial(self, qpt):
+        if max(qpt) == 0:
+            self._trial = 'phonon'
+        elif max(qpt) == 0.5 and min(qpt) == 0.5:
+            self._trial = 'phonon_hhh'
+        else:
+            raise ValueError('Only dojo phonon works of the Gamma and 0.5, 0.5, 0.5 qpoints have been implemented')
 
     @property
     def pseudo(self):

@@ -116,26 +116,26 @@ def build_flow(pseudo, options):
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
-                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005")
+                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0.0, 0.0, 0.0])
             if work is not None:
                 flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
             else:
                 logger.info('cannot create GammaPhononsAt' + str(ecut) + ' work, factory returned None')
 
     # PHONON Edge test
-    if "phonon_e" in options.trials:
+    if "phonon_hhh" in options.trials:
         phonon_factory = DFPTPhononFactory()
         for ecut in ecut_list:
             str_ecut = '%.1f' % ecut
-            if "phonon_e" in report and str_ecut in report["phonon_e"].keys(): continue
+            if "phonon_hhh" in report and str_ecut in report["phonon_hhh"].keys(): continue
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
                                                   tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0.5, 0.5, 0.5])
             if work is not None:
-                flow.register_work(work, workdir='EdgePhononsAt'+str(ecut))
+                flow.register_work(work, workdir='HHHPhononsAt'+str(ecut))
             else:
-                logger.info('cannot create EdgePhononsAt' + str(ecut) + ' work, factory returned None')
+                logger.info('cannot create HHHPhononsAt' + str(ecut) + ' work, factory returned None')
 
     if len(flow) > 0:
         return flow.allocate()
@@ -167,7 +167,7 @@ def main():
     parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store", help="Extend the ecut grid with the new-ecut point")
 
     def parse_trials(s):
-        if s == "all": return ["df", "gbrv", "phonon", "phonon_e"]
+        if s == "all": return ["df", "gbrv", "phonon"]
         return s.split(",")
 
     parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv,phonon")
