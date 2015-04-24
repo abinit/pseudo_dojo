@@ -812,8 +812,7 @@ class DFPTPhononFactory(object):
         ecut: the ecut at which the input is generated
         kppa: kpoint per atom
         smearing: is removed
-        qpt: optional, list of qpoints
-            if not present gamma is added
+        qpt: qpoint for this phonon
         the rest are passed as abinit input variables
         """
 
@@ -877,8 +876,15 @@ class DFPTPhononFactory(object):
 
             the kwargs are passed to scf_hp_inputs
         """
+        try:
+            qpt = kwargs['qpt']
+        except IndexError:
+            raise ValueError('A phonon test needs to specify a qpoint.')
+
         kwargs.pop('accuracy')
+
         pseudo = Pseudo.as_pseudo(pseudo)
+
         structure_or_cif = self.get_cif_path(pseudo.symbol)
 
         if not isinstance(structure_or_cif, Structure):
@@ -902,6 +908,7 @@ class DFPTPhononFactory(object):
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
 
         work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork)
+        work.set_dojo_trial(qpt)
         work.ecut = scf_input.ecut
         work._pseudo = pseudo
         return work
@@ -910,7 +917,15 @@ class DFPTPhononFactory(object):
 class PhononDojoWork(OneShotPhononWork, DojoWork):
     @property
     def dojo_trial(self):
-        return "phonon"
+        return self._trial
+
+    def set_dojo_trial(self, qpt):
+        if max(qpt) == 0:
+            self._trial = 'phonon'
+        elif max(qpt) == 0.5 and min(qpt) == 0.5:
+            self._trial = 'phonon_hhh'
+        else:
+            raise ValueError('Only dojo phonon works of the Gamma and 0.5, 0.5, 0.5 qpoints have been implemented')
 
     @property
     def pseudo(self):
