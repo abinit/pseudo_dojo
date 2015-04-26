@@ -97,9 +97,31 @@ def dojo_table(options):
     pseudos = options.pseudos
 
     data, errors = pseudos.get_dojo_dataframe()
-
     #data.tabulate()
     #return
+
+    #best = {}
+    #symbols = set(data["symbol"])
+    #for sym in symbols:
+    grouped = data.groupby("symbol")
+    #print(grouped.groups)
+
+    rows, names = [], []
+    for name, group in grouped:
+        #print(name, group["high_dfact_meV"])
+        best = group.sort("high_dfact_meV").iloc[0]
+        names.append(name)
+        #print(best.keys())
+        #print(group.keys())
+        rows.append(dict(Z=best.Z, dfact_meV=best.high_dfact_meV))# pseudo=best.symbol, 
+
+    import pandas
+    best_frame = pandas.DataFrame(rows, index=names)
+    best_frame = best_frame.sort("Z")
+    print(tabulate(best_frame))
+    print(tabulate(best_frame.describe()))
+
+    return
 
     if errors:
         print("ERRORS:")
