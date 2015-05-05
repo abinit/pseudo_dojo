@@ -24,6 +24,9 @@ def main():
     parser.add_argument("-j", "--json", action="store_true", default=False, 
                         help="Produce a string with the results in a JSON dictionary and exit")
 
+    parser.add_argument("-8", "--psp8", action="store_true", default=False, 
+                        help="produce a .psp8 file with initial dojo report and exit")
+
     options = parser.parse_args()
 
     onc_parser = OncvOutputParser(options.filename)
@@ -33,6 +36,10 @@ def main():
         import json
         print(json.dumps(onc_parser.to_dict, indent=4))
         return 0
+
+    if options.psp8:
+        print(onc_parser.get_pseudo_str())
+        return 0      
 
     # Build the plotter
     plotter = onc_parser.make_plotter()
