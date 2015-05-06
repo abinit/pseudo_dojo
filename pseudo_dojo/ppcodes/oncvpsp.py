@@ -741,7 +741,7 @@ class OncvOutputParser(PseudoGenOutputParser):
                 hints[i] = max(hints[i], ene_vs_ecut[l].energies[-i-1])
         hints.reverse()
 
-        print("hints:", hints)
+        # print("hints:", hints)
         # Truncate to the nearest int
         hints = [np.rint(h) for h in hints]
 
