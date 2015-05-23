@@ -43,13 +43,15 @@ class DojoWork(Work):
         if dojo_trial not in old_report:
             # Create new entry
             old_report[dojo_trial] = {}
-        #else:
-        #    # Check that we are not going to overwrite data.
-        #    if self.dojo_accuracy in old_report[dojo_trial] and not overwrite_data:
-        #        raise RuntimeError("%s already exists in DOJO_REPORT. Cannot overwrite data" % dojo_trial)
+        
+        # Convert float to string with 1 decimal digit.
+        dojo_ecut = "%.1f" % self.ecut
+
+        # Check that we are not going to overwrite data.
+        if dojo_ecut in old_report[dojo_trial] and not overwrite_data:
+            raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
 
         # Update old report card with the new one and write new report
-        dojo_ecut = "%.1f" % self.ecut
         old_report[dojo_trial][dojo_ecut] = report
         try:
             self.pseudo.write_dojo_report(old_report)

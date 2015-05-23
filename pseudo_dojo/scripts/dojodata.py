@@ -87,9 +87,14 @@ def dojo_trials(options):
         pprint(errors)
     
     #import matplotlib.pyplot as plt
-    data.plot_trials(savefig=options.savefig)
+    #data.plot_trials(savefig=options.savefig)
     #data.plot_hist(savefig=options.savefig)
     #data.sns_plot(savefig=options.savefig)
+    print(data["high_dfact_meV"])
+    import matplotlib.pyplot as plt
+    ax = data["high_dfact_meV"].hist()
+    ax.set_xlabel("Deltafactor [meV]")
+    plt.show()
 
 
 def dojo_table(options):
@@ -100,28 +105,34 @@ def dojo_table(options):
     #data.tabulate()
     #return
 
-    #best = {}
-    #symbols = set(data["symbol"])
-    #for sym in symbols:
-    grouped = data.groupby("symbol")
-    #print(grouped.groups)
+    if False:
+        """Select best entries"""
+        #best = {}
+        #symbols = set(data["symbol"])
+        #for sym in symbols:
+        grouped = data.groupby("symbol")
+        #print(grouped.groups)
 
-    rows, names = [], []
-    for name, group in grouped:
-        #print(name, group["high_dfact_meV"])
-        best = group.sort("high_dfact_meV").iloc[0]
-        names.append(name)
-        #print(best.keys())
-        #print(group.keys())
-        rows.append(dict(Z=best.Z, dfact_meV=best.high_dfact_meV))# pseudo=best.symbol, 
+        rows, names = [], []
+        for name, group in grouped:
+            #print(name, group["high_dfact_meV"])
+            best = group.sort("high_dfact_meV").iloc[0]
+            names.append(name)
+            #print(best.keys())
+            #print(group.keys())
+            rows.append(dict(Z=best.Z, dfact_meV=best.high_dfact_meV))# pseudo=best.symbol, 
 
-    import pandas
-    best_frame = pandas.DataFrame(rows, index=names)
-    best_frame = best_frame.sort("Z")
-    print(tabulate(best_frame))
-    print(tabulate(best_frame.describe()))
+        import pandas
+        best_frame = pandas.DataFrame(rows, index=names)
+        best_frame = best_frame.sort("Z")
+        print(tabulate(best_frame))
+        print(tabulate(best_frame.describe()))
 
-    return
+        import matplotlib.pyplot as plt
+        best_frame["dfact_meV"].hist(bins=100)
+        plt.show()
+
+        return
 
     if errors:
         print("ERRORS:")
@@ -361,8 +372,8 @@ Usage example:\n
 
     if options.seaborn:
         import seaborn as sns
-        sns.set(style='ticks', palette='Set2')
-        #sns.set(style="dark", palette="Set2")
+        #sns.set(style='ticks', palette='Set2')
+        sns.set(style="dark", palette="Set2")
         #And to remove "chartjunk", do:
         #sns.despine()
         #plt.tight_layout()
