@@ -165,7 +165,7 @@ class PseudoConvergence(DojoWork):
         self.nlaunch = nlaunch; assert nlaunch > 0
         self.atols_mev = atols_mev
         self.toldfe = toldfe
-        self.spin_mode = spin_mode
+        self.spin_mode = SpinMode.as_spinmode(spin_mode)
         self.acell = acell
         self.smearing = Smearing.as_smearing(smearing)
         self.max_niter = max_niter; assert max_niter > 0
@@ -294,10 +294,9 @@ class PPConvergenceFactory(object):
             workdir: Working directory.
             manager: :class:`TaskManager` object.
         """
-        return PseudoConvergence(
-            pseudo, ecut_slice, nlaunch, atols_mev,
-            toldfe=toldfe, spin_mode=spin_mode,
-            acell=acell, smearing=smearing, workdir=workdir, manager=manager)
+        return PseudoConvergence(pseudo, ecut_slice, nlaunch, atols_mev,
+                                 toldfe=toldfe, spin_mode=spin_mode,
+                                 acell=acell, smearing=smearing, workdir=workdir, manager=manager)
 
 
 class DeltaFactoryError(Exception):
@@ -649,18 +648,18 @@ class GbrvRelaxAndEosWork(DojoWork):
         shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
         #ngkpt = (1,1,1)
         self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk)
-        self.spin_mode = spin_mode
+        self.spin_mode = SpinMode.as_spinmode(spin_mode)
         relax_algo = RelaxationMethod.atoms_and_cell()
 
         #self.relax_input = RelaxStrategy(structure, pseudo, self.ksampling, relax_algo, 
         #                                 accuracy=accuracy, spin_mode=spin_mode, smearing=smearing, **self.extra_abivars)
 
         inp = abilab.AbinitInput(structure, pseudo)
-        inp.add_abiobjects(self.ksampling, relax_algo, spin_mode, smearing)
-        inp.set_vars(extra_abivars)
+        inp.add_abiobjects(self.ksampling, relax_algo, self.spin_mode, self.smearing)
+        inp.set_vars(self.extra_abivars)
 
         # Register structure relaxation task.
-        self.relax_task = self.register_relax_task(self.relax_input)
+        self.relax_task = self.register_relax_task(inp)
 
     @property
     def dojo_trial(self):
@@ -695,7 +694,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             #                        smearing=self.smearing, **extra)
 
             scf_input = abilab.AbinitInput(new_structure, self.pseudo)
-            scf_input.add_abiobjects(self.ksampling, self.spin_node, self.smearing)
+            scf_input.add_abiobjects(self.ksampling, self.spin_mode, self.smearing)
             scf_input.set_vars(extra)
 
             # Register new task
@@ -831,7 +830,6 @@ class DFPTPhononFactory(object):
         qpoints = np.reshape(qpoints, (-1, 3))
 
         # Global variables used both for the GS and the DFPT run.
-
         kppa = kwargs.pop('kppa')
         ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=0)
         try:
@@ -909,7 +907,7 @@ class DFPTPhononFactory(object):
         ecut_str = '%.1f' % kwargs['ecut']
 
         try:
-            v0 = nat*report['deltafactor'][ecut_str]['v0']
+            v0 = nat * report['deltafactor'][ecut_str]['v0']
         except KeyError:
             # the df calculation at this ecut is not done already so the phonon task can not be created
             return None
