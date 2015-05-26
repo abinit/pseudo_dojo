@@ -57,13 +57,25 @@ def build_flow(pseudo, options):
     }
 
     report = pseudo.read_dojo_report()
-    #print(report)
+    print(report)
     #hints = report["hints"]
 
     # Build ecut mesh.
-    ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
+    try:
+        ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
 
-    ecut_list = copy.copy(report["ecuts"])
+        ecut_list = copy.copy(report["ecuts"])
+    except KeyError:
+        print('New pseudo without report from the generator, the convergence study is started from 16H')
+        report["ppgen_hints"] = {}
+        report["ppgen_hints"]["high"] = {} 
+        report["ppgen_hints"]["high"]["ecut"] = 16.0
+        report["ecuts"] = [16.0, 20.0, 24.0]
+        pseudo.write_dojo_report(report)
+        ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
+        ecut_list = copy.copy(report["ecuts"])
+
+
 
     #if 'extend' in options:
     #    next_ecut = max(ecut_list) + 2
@@ -103,10 +115,11 @@ def build_flow(pseudo, options):
             for ecut in ecut_list:
                 if dojo_trial in report and ecut in report[dojo_trial].keys(): continue
                 pawecutdg = 2 * ecut if pseudo.ispaw else None
+                # FIXME: we use ntime=3, because structure relaxations go bananas after the third step.
                 work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, ntime=3, pawecutdg=pawecutdg, **extra_abivars)
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
-    # PHONON Gamma test
+    # PHONON test
     if "phonon" in options.trials:
         phonon_factory = DFPTPhononFactory()
         for ecut in ecut_list:
@@ -115,26 +128,11 @@ def build_flow(pseudo, options):
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
-                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0.0, 0.0, 0.0])
+                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005")
             if work is not None:
                 flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
             else:
-                logger.info('cannot create GammaPhononsAt' + str(ecut) + ' work, factory returned None')
-
-    # PHONON Edge test
-    if "phonon_hhh" in options.trials:
-        phonon_factory = DFPTPhononFactory()
-        for ecut in ecut_list:
-            str_ecut = '%.1f' % ecut
-            if "phonon_hhh" in report and str_ecut in report["phonon_hhh"].keys(): continue
-            kppa = 1000
-            pawecutdg = 2 * ecut if pseudo.ispaw else None
-            work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
-                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0.5, 0.5, 0.5])
-            if work is not None:
-                flow.register_work(work, workdir='HHHPhononsAt'+str(ecut))
-            else:
-                logger.info('cannot create HHHPhononsAt' + str(ecut) + ' work, factory returned None')
+                warn('cannot create GammaPhononsAt' + str(ecut) + ' work, factory returned None')
 
     if len(flow) > 0:
         return flow.allocate()
