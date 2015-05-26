@@ -26,6 +26,7 @@ _build
 
 # Vim files
 *.swp
+*.swn
 *.swo
 
 # Pycharm
