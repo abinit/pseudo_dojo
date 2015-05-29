@@ -863,7 +863,7 @@ class DFPTPhononFactory(object):
             # Response-function calculation for phonons.
             # rfatpol=[1, natom],  # Set of atoms to displace.
             # rfdir=[1, 1, 1],     # Along this set of reduced coordinate axis
-            inp[i+1].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2, 
+            multi[i+1].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2, 
                               rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
 
             # rfasr = 1 is not correct
@@ -905,20 +905,28 @@ class DFPTPhononFactory(object):
         nat = len(structure)
         report = pseudo.read_dojo_report()
         ecut_str = '%.1f' % kwargs['ecut']
+        #print(ecut_str)
+        #print(report['deltafactor'][float(ecut_str)].keys())
 
         try:
             v0 = nat * report['deltafactor'][ecut_str]['v0']
         except KeyError:
-            # the df calculation at this ecut is not done already so the phonon task can not be created
-            return None
+            try:
+                v0 = nat * report['deltafactor'][float(ecut_str)]['v0']
+            except KeyError:
+                # the df calculation at this ecut is not done already so the phonon task can not be created
+                return None
 
         structure.scale_lattice(v0)
         all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
 
         work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork)
+        #print('after build_oneshot_phonon')
+        #print(work)
         work.set_dojo_trial(qpt)
-        work.ecut = scf_input.ecut
+        #print(scf_input.keys())
+        work.ecut = scf_input['ecut']
         work._pseudo = pseudo
         return work
 
