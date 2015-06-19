@@ -18,6 +18,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+_l2char = {
+    "0": "s",
+    "1": "p",
+    "2": "d",
+    "3": "f",
+    "4": "g",
+    "5": "h",
+    "6": "i",
+}
+
+
 def decorate_ax(ax, xlabel, ylabel, title, lines, legends):
     """Decorate a `matplotlib` Axis adding xlabel, ylabel, title, grid and legend"""
     ax.set_title(title)
@@ -576,6 +587,39 @@ class OncvOutputParser(PseudoGenOutputParser):
                     setattr(self, k, v)
                 break
 
+        # Parse ATOM and Rerencence configuration
+        # Example::
+        """
+        #
+        #   n    l    f        energy (Ha)
+            1    0    2.00    -6.5631993D+01
+            2    0    2.00    -5.1265474D+00
+            2    1    6.00    -3.5117357D+00
+            3    0    2.00    -3.9736459D-01
+            3    1    2.00    -1.4998149D-01
+        """
+        header = "#   n    l    f        energy (Ha)"
+        nc, nv = int(self.nc), int(self.nv)
+        for i, line in enumerate(self.lines):
+            if line.startswith(header):
+                beg, core = i + 1, [], 
+                for c in range(nc):
+                    n, l = self.lines[beg+c].split()[:2]
+                    core.append(n + _l2char[l])
+                self.core = " ".join(core)
+
+                beg, valence = i + nc + 1, [] 
+                for v in range(nv):
+                    n, l = self.lines[beg+v].split()[:2]
+                    valence.append(n + _l2char[l])
+                self.valence = " ".join(valence)
+
+                #print("core", self.core)
+                #print("valence",self.valence)
+                break
+        else:
+            raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
+
         # Read lmax (not very robust because we assume the user didn't change the template but oh well)
         header = "# lmax"
         for i, line in enumerate(self.lines):
@@ -585,6 +629,23 @@ class OncvOutputParser(PseudoGenOutputParser):
         else:
             raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
         #print("lmax", self.lmax)
+
+        # Compute the minimun rc(l)
+        header = "#   l,   rc,     ep,   ncon, nbas, qcut"
+        for i, line in enumerate(self.lines):
+            if line.startswith(header):
+                beg = i + 1
+                next, rcs = 0, []
+                while True:
+                    l = self.lines[beg + next]
+                    if l.startswith("#"): break
+                    token = l.split()[1]
+                    #print("token", token)
+                    rcs.append(float(token))
+                    #print(l)
+                    next += 1
+
+                self.rc_min = min(rcs)
 
     def __str__(self):
         """String representation."""
