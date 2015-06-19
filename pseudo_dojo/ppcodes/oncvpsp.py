@@ -645,7 +645,7 @@ class OncvOutputParser(PseudoGenOutputParser):
                     #print(l)
                     next += 1
 
-                self.rc_min = min(rcs)
+                self.rc_min, self.rc_max = min(rcs), max(rcs)
 
     def __str__(self):
         """String representation."""
