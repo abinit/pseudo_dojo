@@ -28,6 +28,13 @@ _l2char = {
     "6": "i",
 }
 
+def is_integer(s):
+    try:
+        c = float(s)
+        return int(c) == c
+    except (ValueError, TypeError):
+        return False
+
 
 def decorate_ax(ax, xlabel, ylabel, title, lines, legends):
     """Decorate a `matplotlib` Axis adding xlabel, ylabel, title, grid and legend"""
@@ -604,15 +611,24 @@ class OncvOutputParser(PseudoGenOutputParser):
             if line.startswith(header):
                 beg, core = i + 1, [], 
                 for c in range(nc):
-                    n, l = self.lines[beg+c].split()[:2]
-                    core.append(n + _l2char[l])
-                self.core = " ".join(core)
+                    n, l, f = self.lines[beg+c].split()[:3]
+                    if is_integer(f):
+                        f = str(int(float(f)))
+                    else:
+                        f = "%.1f" % f
+                    core.append(n + _l2char[l] + "^%s" %f)
+                self.core = "$" + " ".join(core) + "$"
 
                 beg, valence = i + nc + 1, [] 
                 for v in range(nv):
-                    n, l = self.lines[beg+v].split()[:2]
-                    valence.append(n + _l2char[l])
-                self.valence = " ".join(valence)
+                    n, l, f = self.lines[beg+v].split()[:3]
+                    if is_integer(f):
+                        f = str(int(float(f)))
+                    else:
+                        f = "%.1f" % f
+
+                    valence.append(n + _l2char[l] + "^%s" % f)
+                self.valence = "$" + " ".join(valence) + "$"
 
                 #print("core", self.core)
                 #print("valence",self.valence)
