@@ -627,9 +627,8 @@ class OncvOutputParser(PseudoGenOutputParser):
                     else:
                         f = "%.1f" % f
 
-                    valence.append(n + _l2char[l] + "^%s" % f)
+                    valence.append(n + _l2char[l] + "^{%s}" % f)
                 self.valence = "$" + " ".join(valence) + "$"
-
                 #print("core", self.core)
                 #print("valence",self.valence)
                 break
@@ -889,8 +888,10 @@ class OncvOutputParser(PseudoGenOutputParser):
         i = self.find_string("Reference configufation results")
         return "\n".join(self.lines[:i])
 
-    def get_pseudo_str(self):
+    def get_pseudo_str(self, devel=False):
         """String with the pseudopotential data."""
+        # devel is for tuning the pseudo, only two cutoffs
+
         # Extract the pseudo in Abinit format.
         i = self.find_string('Begin PSPCODE8')
         ps_data = "\n".join(self.lines[i+1:])
@@ -900,15 +901,20 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         # Add the initial DOJO_REPORT with the hints and the initial list of ecut values.
         estart = self.hints["high"]["ecut"]
-        dense_right = np.linspace(estart, estart + 10, num=6)
+        dense_right = np.linspace(estart - 6, estart + 10, num=9)
 
         d = {
             "version": "1.0",
             "pseudo_type": "norm-conserving",
             "ppgen_hints": self.hints, 
-            "ecuts": list(dense_right) + [dense_right[-1] + 10,],
+            "ecuts": list(dense_right) + [dense_right[-1] + 8, dense_right[-1] + 10,],
             "symbol": self.atsym,
         }
+
+        if devel:
+            # devellopment run: few, relatively high ecut calculations
+            d["ecuts"] = [estart, estart + 10]
+
         ps_data += "\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
 
         return ps_data
