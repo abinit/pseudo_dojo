@@ -55,7 +55,7 @@ class DojoWork(Work):
         old_report[dojo_trial][dojo_ecut] = report
         try:
             self.pseudo.write_dojo_report(old_report)
-        except (OSError, IOError):
+        except (OSError, IOError, TypeError):
             print("Something wrong in write_dojo_report")
 
 
@@ -494,10 +494,15 @@ class DeltaFactorWork(DojoWork):
             dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
                                eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
 
+	    dfact = dfact if not isinstance(dfact, complex) else float('NaN')
+
             dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa)
+
+            dfactprime_meV = dfactprime_meV if not isinstance(dfactprime_meV, complex) else float('NaN')
 
             print("delta", eos_fit)
             print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
+
 
             results.update({
                 "dfact_meV": dfact,
@@ -657,7 +662,6 @@ class GbrvRelaxAndEosWork(DojoWork):
         inp = abilab.AbinitInput(structure, pseudo)
         inp.add_abiobjects(self.ksampling, relax_algo, self.spin_mode, self.smearing)
         inp.set_vars(self.extra_abivars)
-
         # Register structure relaxation task.
         self.relax_task = self.register_relax_task(inp)
 

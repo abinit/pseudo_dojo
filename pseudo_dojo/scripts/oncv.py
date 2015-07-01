@@ -27,6 +27,10 @@ def main():
     parser.add_argument("-8", "--psp8", action="store_true", default=False, 
                         help="produce a .psp8 file with initial dojo report and exit")
 
+    parser.add_argument("-d", "--devel", action="store_true", default=False,
+                        help="put only two energies in the ecuts list for testing for develloping the pseudo")
+
+
     options = parser.parse_args()
 
     onc_parser = OncvOutputParser(options.filename)
@@ -38,7 +42,10 @@ def main():
         return 0
 
     if options.psp8:
-        print(onc_parser.get_pseudo_str())
+        if options.devel:
+            print(onc_parser.get_pseudo_str(devel=True))
+        else:
+            print(onc_parser.get_pseudo_str())
         return 0      
 
     # Build the plotter
@@ -58,8 +65,8 @@ def main():
     #plotter.plot_densities()
     #plotter.plot_der_densities(order=1)
     #plotter.plot_der_densities(order=2)
-    plotter.plot_der_densities(order=4)
-    return
+    #plotter.plot_der_densities(order=4)
+    #return
 
     # Call function depending on options.plot_mode
     if options.plot_mode == "slide":
