@@ -9,6 +9,7 @@ import collections
 import shutil
 import time
 
+from itertools import product
 from monty.os.path import which
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pymatgen.io.abinitio.pseudos import Pseudo
@@ -386,3 +387,65 @@ class OncvGenerator(PseudoGenerator):
         # Build the plotter and plot data according to **kwargs
         plotter = parser.make_plotter()
         plotter.plot_atanlogder_econv()
+
+
+class OncvMultiGenerator(object):
+    """
+    This object receives a template input file and generates multi
+    pseudos by changing paricular parameters
+    """
+    def __init__(self, template):
+        """
+        Args:
+            template: String with the template input file.
+        """
+        self.template_lines = template.split()
+        self.calc_type="scalar-relativistic"
+
+    def change_icmod3(self, fcfact_list=(3, 4, 5), rcfact_list=(1.3, 1.35 1,4 1,45 1,5 1,55)):
+        """
+        Old version with icmod == 1.
+        
+        # icmod fcfact
+        1 0.085
+
+        New version with icmod == 3.
+        # icmod, fcfact (rcfact)
+            3    5.0  1.3
+        """
+        magic = "# icmod fcfact"
+        for i, line in enumerate(self.template_lines):
+            if line.strip() == magic: break
+        else:
+            raise ValueError("Cannot find magic line `%s` in template:\n%s" % (magic, "\n".join(self.template_lines)))
+
+        # Extract the parameters from the line.
+        pos = i + 1
+        line = self.template_lines[pos]
+        tokens = line.split()
+        if len(tokens) != 3:
+            raise ValueError("Expecting line with 3 numbers but got:\n%s" % line)
+
+        icmod, old_fcfact, old_rcfact = int(tokens[0]), float(tokens[1]), float(tokens[2])
+        if icmod != 3:
+            raise ValueError("Expecting icmod == 3 but got %s" % icmod)
+
+        ppgens = []
+        for fcfact, rcfact in product(fcfact_list, rcfact_list):
+            new_input = self.template_lines[:]
+            new_input[pos] = "%i %s %s" % (icmod, fcfact, rcfact)
+            ppgen = OncvGenerator(input_str="\n".join(new_input), calc_type=self.calc_type)
+            if not ppgen.start() == 0:
+                raise RuntimeError("ppgen.start() failed!")
+            ppgens.append(ppgen)
+
+        for ppgen in ppgens:
+            retcode = ppgen.wait()
+            ppgen.check_status()
+            print(ppgen)
+        
+        # Ignore errored calculations.
+        ok_ppgens = [gen for gen in ppgens if gen.status == gen.S_OK]
+        print("%i/%i generations completed with S_OK" % (len(ok_ppgens), len(ppgens))
+
+        return ok_ppgens

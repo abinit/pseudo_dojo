@@ -75,8 +75,6 @@ def build_flow(pseudo, options):
         ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
         ecut_list = copy.copy(report["ecuts"])
 
-
-
     #if 'extend' in options:
     #    next_ecut = max(ecut_list) + 2
     #    ecut_list.append(next_ecut)
