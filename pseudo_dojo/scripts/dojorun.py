@@ -116,7 +116,7 @@ def build_flow(pseudo, options):
                 if dojo_trial in report and ecut in report[dojo_trial].keys(): continue
                 pawecutdg = 2 * ecut if pseudo.ispaw else None
                 # FIXME: we use ntime=3, because structure relaxations go bananas after the third step.
-                work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, ntime=3, pawecutdg=pawecutdg, **extra_abivars)
+                work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, ntime=5, pawecutdg=pawecutdg, **extra_abivars)
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
     # PHONON test

@@ -37,7 +37,8 @@ def dojo_plot(options):
             #report.plot_etotal_vs_ecut(title=pseudo.basename)
             if options.eos: 
                 report.plot_deltafactor_eos(title=pseudo.basename)
-            fig = report.plot_deltafactor_convergence(title=pseudo.basename, what="dfactprime_meV", show=True)
+            #fig = report.plot_deltafactor_convergence(title=pseudo.basename, what="dfactprime_meV", show=True)
+            fig = report.plot_deltafactor_convergence(title=pseudo.basename, show=True)
             #report.plot_deltafactor_convergence(title=pseudo.basename)
 
         #from bokeh import mpl
@@ -119,17 +120,18 @@ def dojo_table(options):
             best = group.sort("high_dfact_meV").iloc[0]
             names.append(name)
             #print(best.keys())
-            #print(group.keys())
-            rows.append(dict(Z=best.Z, dfact_meV=best.high_dfact_meV))# pseudo=best.symbol, 
+            #print(best.name)
+            l = {k: getattr(best, k) for k in ("name", "Z", 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 'high_ecut')} 
+            rows.append(l)
 
         import pandas
         best_frame = pandas.DataFrame(rows, index=names)
         best_frame = best_frame.sort("Z")
-        print(tabulate(best_frame))
-        print(tabulate(best_frame.describe()))
+        print(tabulate(best_frame, headers="keys"))
+        print(tabulate(best_frame.describe(),  headers="keys"))
 
         import matplotlib.pyplot as plt
-        best_frame["dfact_meV"].hist(bins=100)
+        best_frame["high_dfact_meV"].hist(bins=100)
         plt.show()
 
         return
@@ -142,7 +144,7 @@ def dojo_table(options):
     accuracies = ["low"]
     keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
-    #print(columns)
+    print(columns)
 
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]
     #data = data[data["high_dfact_meV"] <= 9]
@@ -170,15 +172,15 @@ def dojo_table(options):
     data = data[
         [acc + "_dfact_meV" for acc in accuracies]
       + [acc + "_ecut" for acc in accuracies]
-      + [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
-      + [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
+#      + [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
+#      + [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
     ]
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))
     columns = [acc + "_dfact_meV" for acc in accuracies] 
     columns += [acc + "_ecut" for acc in accuracies] 
-    columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies] 
-    columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
+#    columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies] 
+#    columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
 
     tablefmt = "grid"
     floatfmt=".2f"
