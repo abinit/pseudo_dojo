@@ -12,13 +12,16 @@ multi = OncvMultiGenerator(path)
 # Change the parameters of the model core charge, generate pseudos
 # and save results in new directories.
 # HEre we generate 2 pseudos, default args are: fcfact_list=(3, 4, 5), rcfact_list=(1.3, 1.35, 1.4, 1.45, 1.5, 1.55))
-pseudos = multi.change_icmod3(fcfact_list=(3,), rcfact_list=(1.3, 1.35))
-
+# pseudos = multi.change_icmod3(fcfact_list=(3,), rcfact_list=(1.3, 1.35))
+pseudos = multi.change_icmod3()
 commands = []
 for i, p in enumerate(pseudos):
     print("[%i] %s" % (i, p.filepath))
-    log = os.path.join(os.path.dirname(p.filepath), "log")
-    cmd = "nohup dojorun.py %s --trials=df --paral-kgb=0 > %s &" % (p.filepath, log)
+    dir = os.path.split(os.path.split(p.filepath)[0])[-1]
+    psp8 = os.path.split(p.filepath)[-1] 
+    log = 'log ' #os.path.join(dir, "log")
+    cmd = "nohup dojorun.py %s --trials=df --paral-kgb=0 > %s &" % (psp8, psp8 + '.log')
+#    cmd = "cd %s\ncp ../*.yml .\nnohup dojorun.py %s --trials=df --paral-kgb=0 > %s &\ncd .." % (dir, psp8, log)
     commands.append(cmd)
 
 for cmd in commands:

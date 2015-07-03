@@ -452,15 +452,17 @@ class OncvMultiGenerator(object):
         #if icmod != 3:
         #    raise ValueError("Expecting icmod == 3 but got %s" % icmod)
 
-        name = os.path.basename(self.filepath).replace(".in", "")
+        base_name = os.path.basename(self.filepath).replace(".in", "")
         ppgens = []
         for fcfact, rcfact in product(fcfact_list, rcfact_list):
             new_input = self.template_lines[:]
             new_input[pos] = "%i %s %s" % (3, fcfact, rcfact)
             input_str = "\n".join(new_input)
-            print(input_str)
+            #print(input_str)
             ppgen = OncvGenerator(input_str, calc_type=self.calc_type)
-
+            
+            name = base_name + "_fcfact%3.2f_rcfact%3.2f" % (fcfact, rcfact)
+            ppgen.name = name
             ppgen.stdin_basename = name + ".in"
             ppgen.stdout_basename = name + ".out"
 
@@ -484,13 +486,15 @@ class OncvMultiGenerator(object):
         for ppgen in ok_ppgens:
             # Copy files to dest
             pseudo = ppgen.pseudo
-            dest = os.path.basename(self.filepath) + "_fcfact%3.2f_rcfact%3.2f" % (ppgen.fcfact, ppgen.rcfact)
-            shutil.copytree(ppgen.workdir, dest)
+            #dest = os.path.basename(self.filepath) + "_fcfact%3.2f_rcfact%3.2f" % (ppgen.fcfact, ppgen.rcfact)
+            dest = os.path.split(self.filepath)[0]
+            shutil.copy(os.path.join(ppgen.workdir,ppgen.stdin_basename), dest)
+            shutil.copy(os.path.join(ppgen.workdir,ppgen.stdout_basename), dest)
 
             # Reduce the number of ecuts in the DOJO_REPORT
             # Re-parse the output and use devel=True to overwrite initial psp8 file
-            psp8_path = os.path.join(dest, name + ".psp8")
-            out_path = os.path.join(dest, name + ".out")
+            psp8_path = os.path.join(dest, ppgen.name + ".psp8")
+            out_path = os.path.join(dest, ppgen.name + ".out")
 
             parser = OncvOutputParser(out_path)
             parser.scan()
