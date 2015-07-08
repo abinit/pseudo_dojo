@@ -893,7 +893,11 @@ class OncvOutputParser(PseudoGenOutputParser):
         # devel is for tuning the pseudo, only two cutoffs
 
         # Extract the pseudo in Abinit format.
-        i = self.find_string('Begin PSPCODE8')
+        try:
+            i = self.find_string('Begin PSPCODE8')
+        except:
+            i = self.find_string('Begin PSP_UPF')
+
         ps_data = "\n".join(self.lines[i+1:])
 
         # Append the input to ps_data (note XML markers)
@@ -901,7 +905,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         # Add the initial DOJO_REPORT with the hints and the initial list of ecut values.
         estart = self.hints["high"]["ecut"]
-        dense_right = np.linspace(estart - 6, estart + 10, num=9)
+        dense_right = np.linspace(estart - 10, estart + 10, num=11)
 
         d = {
             "version": "1.0",
@@ -913,7 +917,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         if devel:
             # devellopment run: few, relatively high ecut calculations
-            d["ecuts"] = [estart, estart + 10]
+            d["ecuts"] = [estart - 10, estart + 10]
 
         ps_data += "\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
 
