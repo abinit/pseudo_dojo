@@ -168,7 +168,7 @@ def dojo_table(options):
     if not wrong.empty:
         print("WRONG".center(80, "*") + "\n", wrong)
 
-    accuracies = ["high"]
+    accuracies = ["low", "high"]
     data = data[
         [acc + "_dfact_meV" for acc in accuracies]
       + [acc + "_ecut" for acc in accuracies]
