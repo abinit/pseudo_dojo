@@ -175,19 +175,21 @@ class PseudoGenDataPlotter(object):
         return fig
 
     @add_fig_kwargs
-    def plot_densities(self, ax=None, **kwargs):
+    def plot_densities(self, ax=None, timesr2=False, **kwargs):
         """Plot ae, ps and model densities on axis ax."""
         ax, fig, plt = get_ax_fig_plt(ax)
 
         lines, legends = [], []
         for name, rho in self.densities.items():
-            line, = ax.plot(rho.rmesh, rho.values,
+            d = rho.values if not timesr2 else  rho.values * rho.rmesh ** 2 
+            line, = ax.plot(rho.rmesh, d,
                             linewidth=self.linewidth, markersize=self.markersize)
 
             lines.append(line)
             legends.append(name)
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$n(r)$", title="Charge densities", 
+        ylabel = "$n(r)$" if not timesr2 else "$r^2 n(r)$"
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel=ylabel, title="Charge densities", 
                     lines=lines, legends=legends)
 
         return fig
@@ -315,6 +317,35 @@ class PseudoGenDataPlotter(object):
             self.plot_radial_wfs(ax=ax_list[ax_idx][0], lselect=[l], show=False)
             self.plot_projectors(ax=ax_list[ax_idx][1], lselect=[l], show=False)
 
+        return fig
+
+    @add_fig_kwargs
+    def plot_den_formfact(self, ecut=60, ax=None, **kwargs):
+        """
+        Plot the density form factor as function of ecut (Ha units). Return matplotlib Figure.
+        """
+        ax, fig, plt = get_ax_fig_plt(ax)
+
+        lines, legends = [], []
+        for name, rho in self.densities.items():
+            if name == "rhoC": continue
+            form = rho.get_intr2j0(ecut=ecut) / (4 * np.pi)
+            line, = ax.plot(form.mesh, form.values, linewidth=self.linewidth, markersize=self.markersize)
+            lines.append(line); legends.append(name)
+
+            intg = rho.r2f_integral()[-1]
+            print("r2 f integral: ", intg)
+            print("form_factor(0): ", name, form.values[0]) 
+
+        # Plot vloc(q)
+        #for l, pot in self.potentials.items():
+        #    if l != -1: continue
+        #    form = pot.get_intr2j0(ecut=ecut)
+        #    mask = np.where(np.abs(form.values) > 20); form.values[mask] = 20
+        #    line, = ax.plot(form.mesh, form.values, linewidth=self.linewidth, markersize=self.markersize)
+        #    lines.append(line); legends.append("Vloc(q)")
+
+        decorate_ax(ax, xlabel="Ecut [Ha]", ylabel="$n(q)$", title="Form factor, l=0 ", lines=lines, legends=legends)
         return fig
 
 

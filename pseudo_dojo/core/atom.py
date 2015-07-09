@@ -244,6 +244,7 @@ class AtomicConfiguration(object):
 
 class RadialFunction(object):
     """A RadialFunction has a name, a radial mesh and values defined on this mesh."""
+
     def __init__(self, name, rmesh, values):
         """
         Args:
@@ -424,6 +425,36 @@ class RadialFunction(object):
         pad_intg[1:] = integ
 
         return pad_intg
+
+    def r2f_integral(self):
+        """
+        Cumulatively integrate r**2 f(r) using the composite trapezoidal rule.
+        """
+        integ = cumtrapz(self.rmesh**2 * self.values, x=self.rmesh)
+        pad_intg = np.empty(len(self))
+        pad_intg[1:] = integ
+        return pad_intg
+
+    def get_intr2j0(self, ecut, numq=3001):
+        """
+        Compute 4\pi\int[(\frac{\sin(2\pi q r)}{2\pi q r})(r^2 n(r))dr].
+        """
+        qmax = np.sqrt(ecut / 2) / np.pi
+        qmesh = np.linspace(0, qmax, num=numq, endpoint=True)
+        outs = np.empty(len(qmesh))
+
+        # Treat q == 0. Note that rmesh[0] > 0
+        f = 4 * np.pi * self.rmesh**2 * self.values
+        outs[0] = cumtrapz(f, x=self.rmesh)[-1]
+
+        for i, q in enumerate(qmesh[1:]):
+            twopiqr = 2 * np.pi * q * self.rmesh
+            f = 4 * np.pi * (np.sin(twopiqr) / twopiqr) * self.rmesh**2 * self.values
+            outs[i+1]= cumtrapz(f, x=self.rmesh)[-1]
+
+        from abipy.core.func1d import Function1D
+        ecuts = 2 * np.pi**2 * qmesh**2
+        return Function1D(ecuts, outs)
 
 
 class RadialWaveFunction(RadialFunction):

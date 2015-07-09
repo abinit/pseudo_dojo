@@ -19,7 +19,8 @@ def main():
                               str(["slide", "wp, dp, lc"] + PseudoGenDataPlotter.all_keys) + "\n"
                               "wp --> wavefunctions and projectors\n" +
                               "dp --> densities and potentials\n" +
-                              "lc --> atan(logder) and convergence wrt ecut"))
+                              "lc --> atan(logder) and convergence wrt ecut\n" + 
+                              "df --> density form factor"))
 
     parser.add_argument("-j", "--json", action="store_true", default=False, 
                         help="Produce a string with the results in a JSON dictionary and exit")
@@ -29,7 +30,6 @@ def main():
 
     parser.add_argument("-d", "--devel", action="store_true", default=False,
                         help="put only two energies in the ecuts list for testing for develloping the pseudo")
-
 
     options = parser.parse_args()
 
@@ -56,17 +56,20 @@ def main():
         ("wp", plotter.plot_waves_and_projs),
         ("dp", plotter.plot_dens_and_pots),
         ("lc", plotter.plot_atanlogder_econv),
+        ("df", plotter.plot_def_formfact),
     ])
 
     #plotter.plot_radial_wfs()
     #plotter.plot_projectors()
     #plotter.plot_potentials()
     #plotter.plot_der_potentials()
-    #plotter.plot_densities()
     #plotter.plot_der_densities(order=1)
     #plotter.plot_der_densities(order=2)
     #plotter.plot_der_densities(order=4)
-    #return
+    #plotter.plot_densities()
+    #plotter.plot_densities(timesr2=True)
+    plotter.plot_den_formfact()
+    return 0
 
     # Call function depending on options.plot_mode
     if options.plot_mode == "slide":
