@@ -863,11 +863,13 @@ class DFPTPhononFactory(object):
         multi = abilab.MultiDataset(structure=structure, pseudos=pseudos, ndtset=1+len(qpoints))
         multi.set_vars(global_vars)
 
+        rfasr = kwargs.pop('rfasr', 2)
+
         for i, qpt in enumerate(qpoints):
             # Response-function calculation for phonons.
             # rfatpol=[1, natom],  # Set of atoms to displace.
             # rfdir=[1, 1, 1],     # Along this set of reduced coordinate axis
-            multi[i+1].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=2, 
+            multi[i+1].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=rfasr, 
                               rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
 
             # rfasr = 1 is not correct
@@ -922,13 +924,19 @@ class DFPTPhononFactory(object):
                 return None
 
         structure.scale_lattice(v0)
+        
+        if 'rfasr' in kwargs:
+            trial_name = 'phwoa'
+        else:
+            trial_name = 'phonon'    
+
         all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
 
         work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork)
         #print('after build_oneshot_phonon')
         #print(work)
-        work.set_dojo_trial(qpt)
+        work.set_dojo_trial(qpt, trial_name)
         #print(scf_input.keys())
         work.ecut = scf_input['ecut']
         work._pseudo = pseudo
@@ -940,11 +948,11 @@ class PhononDojoWork(OneShotPhononWork, DojoWork):
     def dojo_trial(self):
         return self._trial
 
-    def set_dojo_trial(self, qpt):
+    def set_dojo_trial(self, qpt, trial_name):
         if max(qpt) == 0:
-            self._trial = 'phonon'
+            self._trial = trial_name
         elif max(qpt) == 0.5 and min(qpt) == 0.5:
-            self._trial = 'phonon_hhh'
+            self._trial = trial_name + '_hhh'
         else:
             raise ValueError('Only dojo phonon works of the Gamma and 0.5, 0.5, 0.5 qpoints have been implemented')
 
