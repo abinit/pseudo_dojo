@@ -132,6 +132,22 @@ def build_flow(pseudo, options):
             else:
                 warn('cannot create GammaPhononsAt' + str(ecut) + ' work, factory returned None')
 
+    # PHONON WihtOut Asr test
+    if "phwoa" in options.trials:
+        phonon_factory = DFPTPhononFactory()
+        for ecut in ecut_list:
+            str_ecut = '%.1f' % ecut
+            if "phwoa" in report and str_ecut in report["phwoa"].keys(): continue
+            kppa = 1000
+            pawecutdg = 2 * ecut if pseudo.ispaw else None
+            work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
+                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], rfasr=0)
+            if work is not None:
+                flow.register_work(work, workdir='GammaPhononsAt'+str(ecut)+'WOA')
+            else:
+                warn('cannot create GammaPhononsAt' + str(ecut) + 'WOA work, factory returned None')
+
+
     if len(flow) > 0:
         return flow.allocate()
     else:
@@ -165,7 +181,7 @@ def main():
         if s == "all": return ["df", "gbrv", "phonon"]
         return s.split(",")
 
-    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv,phonon")
+    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv,phonon,phwoa")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
