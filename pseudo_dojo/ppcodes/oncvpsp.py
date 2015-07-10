@@ -558,11 +558,18 @@ class OncvOutputParser(PseudoGenOutputParser):
                 if line.startswith("DATA FOR PLOTTING"):
                     self.run_completed = True
 
+                # lines that contain the word ERROR but do not seem to indicate an actual teminating error
+                acceptable_error_markers = [
+                  'run_config: ERROR for fully non-local  PS atom,']
+
                 if "ERROR" in line:
                     # Example:
                     # test_data: must have fcfact>0.0 for icmod= 1
                     # ERROR: test_data found   1 errors; stopping
-                    self._errors.append("\n".join(self.lines[i-1:i+1]))
+                    if line in acceptable_error_markers:
+                        self._warnings.append("\n".join(self.lines[i-1:i+1]))
+                    else:
+                        self._errors.append("\n".join(self.lines[i-1:i+1]))
 
                 if "WARNING" in line:
                     self._warnings.append("\n".join(self.lines[i:i+2]))

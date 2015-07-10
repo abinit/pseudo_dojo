@@ -13,7 +13,8 @@ multi = OncvMultiGenerator(path)
 # and save results in new directories.
 # HEre we generate 2 pseudos, default args are: fcfact_list=(3, 4, 5), rcfact_list=(1.3, 1.35, 1.4, 1.45, 1.5, 1.55))
 # pseudos = multi.change_icmod3(fcfact_list=(3,), rcfact_list=(1.3, 1.35))
-pseudos = multi.change_icmod3()
+pseudos = multi.change_icmod3(fcfact_list=(1,2), rcfact_list=(1.0, 1.05, 1.20, 1.25, 1.30))
+#pseudos = multi.change_icmod3()
 #pseudos = multi.change_icmod3(fcfact_list=(3, 4, 5), rcfact_list=(1.2, 1.25, 1.6, 1.65, 1.7, 1.75))
 
 commands = []

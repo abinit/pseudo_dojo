@@ -335,6 +335,7 @@ class OncvGenerator(PseudoGenerator):
             return self._status
 
         parser = self.OutputParser(self.stdout_path)
+
         try:
             parser.scan()
         except parser.Error:
@@ -359,7 +360,7 @@ class OncvGenerator(PseudoGenerator):
                 self._results = parser.get_results()
             except parser.Error:
                 # File may not be completed.
-                time.sleep(1)
+                time.sleep(2)
                 try:
                     self._results = parser.get_results()
                 except:
@@ -382,6 +383,7 @@ class OncvGenerator(PseudoGenerator):
             logger.warning("setting status to S_ERROR")
             self._status = self.S_ERROR
             self.errors.extend(parser.errors)
+            print(self.errors)
 
         return self._status
 
@@ -476,6 +478,10 @@ class OncvMultiGenerator(object):
         for ppgen in ppgens:
             print(ppgen)
             retcode = ppgen.wait()
+            ppgen.check_status()
+
+        for ppgen in ppgens:
+            print(ppgen)
             ppgen.check_status()
         
         # Ignore errored calculations.
