@@ -166,9 +166,7 @@ class PseudoGenDataPlotter(object):
             if nl.l in lselect: continue
             line, = ax.plot(proj.rmesh, proj.values,
                             linewidth=self.linewidth, markersize=self.markersize)
-
-            lines.append(line)
-            legends.append("Proj %s" % str(nl))
+            lines.append(line); legends.append("Proj %s" % str(nl))
 
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$p(r)$", title="Projector Wave Functions", 
                     lines=lines, legends=legends)
@@ -181,12 +179,9 @@ class PseudoGenDataPlotter(object):
 
         lines, legends = [], []
         for name, rho in self.densities.items():
-            d = rho.values if not timesr2 else  rho.values * rho.rmesh ** 2 
-            line, = ax.plot(rho.rmesh, d,
-                            linewidth=self.linewidth, markersize=self.markersize)
-
-            lines.append(line)
-            legends.append(name)
+            d = rho.values if not timesr2 else rho.values * rho.rmesh ** 2 
+            line, = ax.plot(rho.rmesh, d, linewidth=self.linewidth, markersize=self.markersize)
+            lines.append(line); legends.append(name)
 
         ylabel = "$n(r)$" if not timesr2 else "$r^2 n(r)$"
         decorate_ax(ax, xlabel="r [Bohr]", ylabel=ylabel, title="Charge densities", 
@@ -206,6 +201,7 @@ class PseudoGenDataPlotter(object):
 
         lines, legends = [], []
         for name, rho in self.densities.items():
+            if name != "rhoM": continue
             # Need linear mesh for finite_difference --> Spline input densities on lin_rmesh
             lin_rmesh, h = np.linspace(rho.rmesh[0], rho.rmesh[-1], num=len(rho.rmesh) * 4, retstep=True)
             spline = UnivariateSpline(rho.rmesh, rho.values, s=0)

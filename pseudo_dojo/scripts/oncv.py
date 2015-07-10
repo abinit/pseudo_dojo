@@ -56,20 +56,19 @@ def main():
         ("wp", plotter.plot_waves_and_projs),
         ("dp", plotter.plot_dens_and_pots),
         ("lc", plotter.plot_atanlogder_econv),
-        ("df", plotter.plot_def_formfact),
+        ("df", plotter.plot_den_formfact),
     ])
 
     #plotter.plot_radial_wfs()
     #plotter.plot_projectors()
     #plotter.plot_potentials()
     #plotter.plot_der_potentials()
-    #plotter.plot_der_densities(order=1)
-    #plotter.plot_der_densities(order=2)
-    #plotter.plot_der_densities(order=4)
+    for order in [1,2,3,4]:
+        plotter.plot_der_densities(order=order)
     #plotter.plot_densities()
     #plotter.plot_densities(timesr2=True)
-    plotter.plot_den_formfact()
-    return 0
+    #plotter.plot_den_formfact()
+    #return 0
 
     # Call function depending on options.plot_mode
     if options.plot_mode == "slide":
