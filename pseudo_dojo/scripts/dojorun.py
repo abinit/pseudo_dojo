@@ -126,7 +126,7 @@ def build_flow(pseudo, options):
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
-                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0])
+                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
             if work is not None:
                 flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
             else:
@@ -135,7 +135,7 @@ def build_flow(pseudo, options):
     # PHONON WihtOut Asr test
     if "phwoa" in options.trials:
         phonon_factory = DFPTPhononFactory()
-        for ecut in ecut_list:
+        for ecut in [ecut_list[0], ecut_list[-1]]:
             str_ecut = '%.1f' % ecut
             if "phwoa" in report and str_ecut in report["phwoa"].keys(): continue
             kppa = 1000
@@ -173,15 +173,19 @@ def main():
 
     parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
     parser.add_argument('-d', '--dry-run', default=False, action="store_true", help="Dry run, build the flow without submitting it")
-    parser.add_argument('--paral-kgb', type=int, default=1,  help="Paral_kgb input variable.")
+    parser.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
     parser.add_argument('-p', '--plot', default=False, action="store_true", help="Plot convergence when the flow is done")
     parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store", help="Extend the ecut grid with the new-ecut point")
 
     def parse_trials(s):
-        if s == "all": return ["df", "gbrv", "phonon"]
+        if s == "all": return ["df", "gbrv", "phonon", "phowa"]
         return s.split(",")
 
-    parser.add_argument('--trials', default="all",  type=parse_trials, help="List of tests e.g --trials=df,gbrv,phonon,phwoa")
+    parser.add_argument('--trials', default="all",  type=parse_trials, help=("List of tests e.g --trials=df,gbrv,phonon,phwoa\n"
+                        "  df:     test delta factor against all electron refference\n"
+                        "  gbrv:   test fcc and bcc lattice parameters agains AE refference\n"
+                        "  phonon: test phonon mode at gamma convergence\n"
+                        "  phwoa:  test violation of the acoustic sum rule (without enforcing it) at the min and max ecut\n"))
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
