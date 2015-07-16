@@ -460,7 +460,7 @@ class OncvMultiGenerator(object):
             new_input = self.template_lines[:]
             new_input[pos] = "%i %s %s\n" % (3, fcfact, rcfact)
             input_str = "".join(new_input)
-            print(input_str)
+            #print(input_str)
             ppgen = OncvGenerator(input_str, calc_type=self.calc_type)
             
             name = base_name + "_fcfact%3.2f_rcfact%3.2f" % (fcfact, rcfact)
@@ -476,14 +476,9 @@ class OncvMultiGenerator(object):
             ppgens.append(ppgen)
 
         for ppgen in ppgens:
-            print(ppgen)
             retcode = ppgen.wait()
             ppgen.check_status()
 
-        for ppgen in ppgens:
-            print(ppgen)
-            ppgen.check_status()
-        
         # Ignore errored calculations.
         ok_ppgens = [gen for gen in ppgens if gen.status == gen.S_OK]
         print("%i/%i generations completed with S_OK" % (len(ok_ppgens), len(ppgens)))
