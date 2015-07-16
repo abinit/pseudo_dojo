@@ -63,8 +63,8 @@ def main():
     #plotter.plot_projectors()
     #plotter.plot_potentials()
     #plotter.plot_der_potentials()
-    for order in [1,2,3,4]:
-        plotter.plot_der_densities(order=order)
+    #for order in [1,2,3,4]:
+    #    plotter.plot_der_densities(order=order)
     #plotter.plot_densities()
     #plotter.plot_densities(timesr2=True)
     #plotter.plot_den_formfact()

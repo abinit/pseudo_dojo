@@ -443,10 +443,6 @@ class DeltaFactorWork(DojoWork):
 
             ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak)
 
-            #scf_input = ScfStrategy(new_structure, self.pseudo, ksampling,
-            #                        accuracy=accuracy, spin_mode=spin_mode,
-            #                        smearing=smearing, **extra_abivars)
-
             scf_input = abilab.AbinitInput(structure=new_structure, pseudos=self.pseudo)
             scf_input.add_abiobjects(ksampling, smearing, spin_mode)
             scf_input.set_vars(extra_abivars)
@@ -656,12 +652,10 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.spin_mode = SpinMode.as_spinmode(spin_mode)
         relax_algo = RelaxationMethod.atoms_and_cell()
 
-        #self.relax_input = RelaxStrategy(structure, pseudo, self.ksampling, relax_algo, 
-        #                                 accuracy=accuracy, spin_mode=spin_mode, smearing=smearing, **self.extra_abivars)
-
         inp = abilab.AbinitInput(structure, pseudo)
         inp.add_abiobjects(self.ksampling, relax_algo, self.spin_mode, self.smearing)
         inp.set_vars(self.extra_abivars)
+
         # Register structure relaxation task.
         self.relax_task = self.register_relax_task(inp)
 
@@ -692,10 +686,6 @@ class GbrvRelaxAndEosWork(DojoWork):
             # Add ecutsm
             extra = self.extra_abivars.copy() 
             extra["ecutsm"] = 0.5
-
-            #scf_input = ScfStrategy(new_structure, self.pseudo, self.ksampling,
-            #                        accuracy=self.accuracy, spin_mode=self.spin_mode,
-            #                        smearing=self.smearing, **extra)
 
             scf_input = abilab.AbinitInput(new_structure, self.pseudo)
             scf_input.add_abiobjects(self.ksampling, self.spin_mode, self.smearing)

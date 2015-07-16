@@ -67,6 +67,12 @@ plotter = onc_parser.make_plotter()"""),
         #nbf.new_text_cell('heading', "2-nd order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
         #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=2, show=False)"""),
 
+        nbf.new_text_cell('heading', "Model core charge and form factors computed by ABINIT"),
+        nbf.new_code_cell("""\n
+peudo = abilab.Pseudo.from_file(pseudos[0])
+with pseudo.open_pspsfile(ecut=30) as psps:
+    psps.plot(what="all")"""),
+
         nbf.new_text_cell('heading', "Convergence of the total energy:"),
         nbf.new_code_cell("""\
 # Convergence of the total energy (computed from the deltafactor runs with Wien2K equilibrium volume)
