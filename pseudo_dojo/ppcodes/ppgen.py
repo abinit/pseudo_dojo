@@ -458,9 +458,9 @@ class OncvMultiGenerator(object):
         ppgens = []
         for fcfact, rcfact in product(fcfact_list, rcfact_list):
             new_input = self.template_lines[:]
-            new_input[pos] = "%i %s %s" % (3, fcfact, rcfact)
-            input_str = "\n".join(new_input)
-            #print(input_str)
+            new_input[pos] = "%i %s %s\n" % (3, fcfact, rcfact)
+            input_str = "".join(new_input)
+            print(input_str)
             ppgen = OncvGenerator(input_str, calc_type=self.calc_type)
             
             name = base_name + "_fcfact%3.2f_rcfact%3.2f" % (fcfact, rcfact)
