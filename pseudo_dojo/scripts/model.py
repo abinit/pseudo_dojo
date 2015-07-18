@@ -12,7 +12,7 @@ multi = OncvMultiGenerator(path)
 # Change the parameters of the model core charge, generate pseudos
 # and save results in new directories.
 # HEre we generate 2 pseudos, default args are: fcfact_list=(3, 4, 5), rcfact_list=(1.3, 1.35, 1.4, 1.45, 1.5, 1.55))
-pseudos = multi.change_icmod3(fcfact_list=(2.0, 3.0, 4.0, 5.0), rcfact_list=(1.1, 1.2, 1.3, 1.4, 1.5))
+pseudos = multi.change_icmod3(fcfact_list=(7.0, 8.0), rcfact_list=(1.15, 1.17, 1.19, 1.21, 1.23, 1.25))
 #pseudos = multi.change_icmod3(fcfact_list=(2.25, 1.5, 1.75), rcfact_list=(0.85, 0.90, 0.95, 1.00, 1.05, 1.1, 1.15))
 #pseudos = multi.change_icmod3(fcfact_list=(1.8, 1.9, 2.1, 2.2), rcfact_list=(0.65, 0.70, 0.75, 0.8, 0.85, 0.90))
 #pseudos = multi.change_icmod3()
