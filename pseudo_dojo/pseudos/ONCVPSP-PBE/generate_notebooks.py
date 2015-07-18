@@ -68,10 +68,12 @@ plotter = onc_parser.make_plotter()"""),
         #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=2, show=False)"""),
 
         nbf.new_text_cell('heading', "Model core charge and form factors computed by ABINIT"),
-        nbf.new_code_cell("""\n
-peudo = abilab.Pseudo.from_file(pseudos[0])
-with pseudo.open_pspsfile(ecut=30) as psps:
-    psps.plot(what="all")"""),
+        nbf.new_code_cell("""\
+with pseudo.open_pspsfile() as psps:
+    psps.plot_modelcore_rspace()
+    psps.plot_modelcore_qspace()
+    psps.plot_vlspl()
+    psps.plot_ffspl()"""),
 
         nbf.new_text_cell('heading', "Convergence of the total energy:"),
         nbf.new_code_cell("""\
@@ -97,6 +99,9 @@ fig = report.plot_deltafactor_convergence(what=("-dfact_meV", "-dfactprime_meV")
 
         nbf.new_text_cell('heading', "GBRV EOS for the BCC structure:"),
         nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="bcc", show=False)"""),
+
+        nbf.new_text_cell('heading', "Convergence of phonon frequencies at $\Gamma$:"),
+        nbf.new_code_cell("""fig = report.plot_phonon_convergence(show=False)"""),
 
 #        nbf.new_text_cell('heading', "Comparison with the other pseudos in this table"),
 #        nbf.new_code_cell("""\
