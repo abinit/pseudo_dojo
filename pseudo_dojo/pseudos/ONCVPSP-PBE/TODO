@@ -1,0 +1,21 @@
+Se-d has problems to converge the GBRV structural relaxation 
+Rh-sp-ncon3 has problems to converge the relaxation GBRV_bcc46.0/
+Hf-sp.psp8_DOJO/GBRV_bcc42.0
+--- !ERROR
+message: |
+
+     getcut: ERROR -
+           Choice of acell, ngfft, and ecut
+           ===> basis sphere extends BEYOND fft box !
+           Recall that boxcut=Gcut(box)/Gcut(sphere)  must be > 1.
+           Action : try larger ngfft or smaller ecut.
+           Note that ecut=effcut/boxcut**2 and effcut=   39.131293
+           src_file: getcut.F90
+           src_line: 157
+...
+
+Pb-d.psp8_DOJO/GBRV_bcc30.0 Unconverged
+O-dmax!!!!!!!!!
+
+fband is not enough
+
