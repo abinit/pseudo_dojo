@@ -11,6 +11,10 @@ from pseudo_dojo.core import PseudoDojoTest
 from pseudo_dojo.dojo.works import *
 
 
+DRY_RUN = False
+#DRY_RUN = True
+
+
 class DeltaFactorTest(PseudoDojoTest):
 
     def test_nc_silicon_df(self):
@@ -31,12 +35,17 @@ class DeltaFactorTest(PseudoDojoTest):
         flow.register_work(work)
 
         flow.build_and_pickle_dump()
+        print("Working in ", flow.workdir)
         isok, results = flow.abivalidate_inputs()
-        assert isok
+        if not isok:
+            print(results)
+            assert isok
 
-        flow.make_scheduler().start()
-        assert flow.all_ok
-        assert pseudo.has_dojo_report
+        if not DRY_RUN:
+            flow.make_scheduler().start()
+            assert flow.all_ok
+            assert all(work.finalized for work in flow)
+            assert pseudo.has_dojo_report
 
         flow.rmtree()
 
@@ -62,12 +71,21 @@ class GbrvTest(PseudoDojoTest):
             flow.register_work(work)
 
         flow.build_and_pickle_dump()
-        isok, results = flow.abivalidate_inputs()
-        assert isok
+        print("Working in ", flow.workdir)
 
-        flow.make_scheduler().start()
-        assert flow.all_ok
-        assert pseudo.has_dojo_report
+        isok, results = flow.abivalidate_inputs()
+        print(results)
+        if not isok:
+            print(results)
+            assert isok
+        assert len(flow[0]) == 1
+
+        if not DRY_RUN:
+            flow.make_scheduler().start()
+            assert flow.all_ok
+            assert len(flow[0]) == 1 + 9
+            assert all(work.finalized for work in flow)
+            assert pseudo.has_dojo_report
 
         flow.rmtree()
 

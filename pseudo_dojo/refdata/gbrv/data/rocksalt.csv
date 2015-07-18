@@ -1,4 +1,4 @@
-# {"struct_type": "NaCl"}
+# {"struct_type": "rocksalt"}
 # NaCl testing data,,,,,(abinit)
 Symbol,AE,GBRV_USPP,VASP,PSLIB,GBRV_PAW
 LiCl,5.161,5.151,5.150,5.160,5.153

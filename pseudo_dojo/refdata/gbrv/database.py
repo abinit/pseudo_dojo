@@ -15,6 +15,7 @@ import json
 import numpy as np
 
 from collections import namedtuple, OrderedDict
+from monty.functools import lazy_property
 from pymatgen.core.units import FloatWithUnit
 from abipy.core.structure import Structure
 
@@ -108,6 +109,21 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
 
         return super(cls, GbrvEntry).__new__(cls, **kwargs)
 
+    @lazy_property
+    def species(self):
+        # FIXME: This won't work for ternary SrLiF3
+        # Only for rocksalt
+        pos = [i for i, c in enumerate(self.symbol) if (c.isupper() and c.isalpha())]
+        assert pos
+        nchar, npos = len(self.symbol), len(pos)
+
+        species = []
+        for i, start in enumerate(pos):
+            stop = nchar if (i == npos -1) else pos[i+1]
+            species.append(self.symbol[start:stop])
+
+        return species
+
     def build_structure(self, ref="ae"):
         """
         Returns the crystalline structure associated to this entry.
@@ -128,8 +144,7 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
             return Structure.fcc(a, species=[self.symbol])
 
         elif stype == "rocksalt":
-            raise NotImplementedError()
-            #return Structure.rocksalt(a, sites)
+            return Structure.rocksalt(a, self.species)
 
         elif stype == "ABO3":
             raise NotImplementedError()
@@ -281,6 +296,17 @@ class GbrvDatabase(object):
         """Returns the entry in the BCC table."""
         return self.get_entry(symbol, "bcc")
 
+    def get_rocksalt_entry(self, formula):
+        """Returns the entry in the rocksalt table."""
+        return self.get_entry(formula, "rocksalt")
+
+    def get_abo3_entry(self, formula):
+        """Returns the entry in the peroviskite table."""
+        return self.get_entry(formula, "ABO3")
+
+    def get_hH_entry(self, formula):
+        """Returns the entry in the half-Heusler table."""
+        return self.get_entry(formula, "hH")
 
 
 ###################################

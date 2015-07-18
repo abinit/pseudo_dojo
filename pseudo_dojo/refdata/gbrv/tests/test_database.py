@@ -12,29 +12,49 @@ class TestGbrvDatabase(PseudoDojoTest):
         db = GbrvDatabase()
 
         # Test basic methods
-        self.assertTrue(db.has_symbol("Si", stype="fcc"))
-        self.assertFalse(db.has_symbol("Si", stype="rocksalt"))
-        self.assertTrue("KMgF3" in db.all_symbols)
+        assert db.has_symbol("Si", stype="fcc")
+        assert not db.has_symbol("Si", stype="rocksalt")
+        assert "KMgF3" in db.all_symbols
 
         # Get FCC entry for Silicon
         fcc_si = db.get_fcc_entry("Si")
-        self.assertEqual(fcc_si.ae, 3.857)
-        self.assertEqual(fcc_si.gbrv_uspp, 3.853)
-        self.assertEqual(fcc_si.struct_type, "fcc")
+        assert fcc_si.ae == 3.857 and fcc_si.gbrv_uspp == 3.853
+        assert fcc_si.struct_type == "fcc" and fcc_si.species == ["Si"]
         sfcc = fcc_si.build_structure()
         self.assert_almost_equal(sfcc.volume, fcc_si.ae**3 /4.)
 
         # Get BCC entry for H
         bcc_h = db.get_bcc_entry("H")
-        self.assertEqual(bcc_h.ae, 1.806)
-        self.assertEqual(bcc_h.gbrv_paw, 1.807)
-        self.assertEqual(bcc_h.struct_type, "bcc")
+        assert bcc_h.ae == 1.806 and bcc_h.gbrv_paw == 1.807
+        assert bcc_h.struct_type == "bcc" and bcc_h.species == ["H"]
         sbcc = bcc_h.build_structure()
         self.assert_almost_equal(sbcc.volume, bcc_h.ae**3 /2.)
 
         # Hg is missing.
         missing = db.get_bcc_entry("Hg")
-        self.assertTrue(missing.ae is None)
+        assert missing.ae is None
+
+        # Get Rocksalt entry for LiF
+        lif = db.get_rocksalt_entry("LiF")
+        assert lif.symbol == "LiF"  and lif.struct_type == "rocksalt"
+        assert lif.species == ["Li", "F"]
+        assert lif.ae == 4.076  and lif.pslib == 4.081
+        struct = lif.build_structure()
+        #print(struct.to_abivars())
+
+        # Get AB03 entry for SrLiF3
+        srlif3 = db.get_abo3_entry("SrLiF3")
+        assert srlif3.symbol == "SrLiF3" and srlif3.struct_type == "ABO3"
+        assert srlif3.ae == 3.884  and srlif3.gbrv_paw == 3.883
+        # TODO
+        #srlif3.build_structure()
+
+        # Get hH entry for SrLiF3
+        agalge = db.get_hH_entry("AgAlGe")
+        assert agalge.symbol == "AgAlGe" and agalge.struct_type == "hH"
+        assert agalge.ae == 6.224  and agalge.gbrv_paw == 6.218
+        # TODO
+        #agalge.build_structure()
 
         #assert 0
 

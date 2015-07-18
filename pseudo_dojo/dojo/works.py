@@ -159,7 +159,7 @@ class PseudoConvergence(DojoWork):
             workdir: Working directory.
             manager: :class:`TaskManager` object.
         """
-        super(PseudoConvergence, self).__init__(workdir, manager)
+        super(PseudoConvergence, self).__init__(workdir=workdir, manager=manager)
 
         self._pseudo = Pseudo.as_pseudo(pseudo)
         self.nlaunch = nlaunch; assert nlaunch > 0
@@ -489,8 +489,7 @@ class DeltaFactorWork(DojoWork):
             # Compute deltafactor estimator.
             dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
                                eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
-
-	    dfact = dfact if not isinstance(dfact, complex) else float('NaN')
+            dfact = dfact if not isinstance(dfact, complex) else float('NaN')
 
             dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa)
 
@@ -498,7 +497,6 @@ class DeltaFactorWork(DojoWork):
 
             print("delta", eos_fit)
             print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
-
 
             results.update({
                 "dfact_meV": dfact,
@@ -672,6 +670,8 @@ class GbrvRelaxAndEosWork(DojoWork):
         Read the optimized structure from the netcdf file and add to self a new
         a new list of ScfTask for the computation of the EOS with the GBRV parameters.
         """
+        self.history.info("Building EOS tasks")
+
         # Get the relaxed structure.
         self.relaxed_structure = relaxed_structure = self.relax_task.get_final_structure()
 
@@ -699,6 +699,8 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.flow.build_and_pickle_dump()
 
     def compute_eos(self):
+        self.history.info("Computing EOS")
+
         results = self.get_results()
 
         # Read etotals and fit E(V) with a parabola to find the minimum
@@ -770,11 +772,9 @@ class GbrvRelaxAndEosWork(DojoWork):
         a new work for the computation of the EOS with the GBRV parameters.
         """
         if not self.add_eos_done:
-            logger.info("Building EOS tasks")
             self.add_eos_tasks()
             self._finalized = False
         else:
-            logger.info("Computing EOS")
             self.compute_eos()
 
         return super(GbrvRelaxAndEosWork, self).on_all_ok()
