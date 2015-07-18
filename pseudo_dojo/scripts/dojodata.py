@@ -215,7 +215,7 @@ def dojo_check(options):
             print("Exception: ", exc)
             continue
 
-        #report.fix_check_and_fix_dojo_md5()
+        p.check_and_fix_dojo_md5()
 
         #if "ppgen_hints" not in report: # and "deltafactor" not in report:
         #    print(p.basename, "old version without ppgen_hints")

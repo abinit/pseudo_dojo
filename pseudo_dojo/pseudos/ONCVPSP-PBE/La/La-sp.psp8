@@ -3682,9 +3682,6 @@ La 57.00    9    4       4      psp8
 
 <DOJO_REPORT>
 {
-    "symbol": "La", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
     "ecuts": [
         54.0, 
         56.0, 
@@ -3694,19 +3691,23 @@ La 57.00    9    4       4      psp8
         64.0, 
         74.0
     ], 
+    "md5": "d0cb93d17c4caed5e71de91019476c3e", 
     "ppgen_hints": {
         "high": {
-            "pawecutdg": 54.0, 
-            "ecut": 54.0
+            "ecut": 54.0, 
+            "pawecutdg": 54.0
         }, 
         "low": {
-            "pawecutdg": 46.0, 
-            "ecut": 46.0
+            "ecut": 46.0, 
+            "pawecutdg": 46.0
         }, 
         "normal": {
-            "pawecutdg": 51.0, 
-            "ecut": 51.0
+            "ecut": 51.0, 
+            "pawecutdg": 51.0
         }
-    }
+    }, 
+    "pseudo_type": "norm-conserving", 
+    "symbol": "La", 
+    "version": "1.0"
 }
 </DOJO_REPORT>
