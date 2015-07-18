@@ -206,54 +206,63 @@ def dojo_table(options):
 
 
 def dojo_check(options):
-    errors = []
     for p in options.pseudos:
-        report = p.dojo_report
-        if "ppgen_hints" not in report: # and "deltafactor" not in report:
-            print(p.basename, "old version")
-            continue
 
         try:
-            d = p.dojo_report.check()
-            if d:
+            report = p.dojo_report
+        except Exception as exc:
+            print("Invalid dojo_report in:", p.basename)
+            print("Exception: ", exc)
+            continue
+
+        #report.fix_check_and_fix_dojo_md5()
+
+        #if "ppgen_hints" not in report: # and "deltafactor" not in report:
+        #    print(p.basename, "old version without ppgen_hints")
+        #    continue
+
+        try:
+            errors = report.check()
+            if errors:
                 print("[%s] Validation problem\n" % p.basename)
-                pprint(d, indent=4)
+                pprint(errors, indent=4)
                 print()
+
         except Exception as exc:
             print("Error: ", p.basename + str(exc))
-
-    if errors:
-        print(errors)
 
 
 def dojo_validate(options):
     for pseudo in options.pseudos:
-        report = pseudo.dojo_report
-        #print(pseudo.basename)
-        #if report.is_validated:
-        #    print("Pseudo %s is already validated!" % pseudo.basename)
-        #report.plot_deltafactor_convergence(title=pseudo.basename, what="dfactprime_meV")
+        try:
+            report = pseudo.dojo_report
+            #if report.is_validated:
+            #    print("Pseudo %s is already validated!" % pseudo.basename)
+            #report.plot_deltafactor_convergence(title=pseudo.basename, what="dfactprime_meV")
 
-        hints = report.compute_hints()
-        print("hints computed from deltafactor prime:\n", hints)
+            hints = report.compute_hints()
+            print("hints for %s computed from deltafactor prime: %s" % (pseudo.basename, hints))
 
-        ans = False
-        #ans = prompt("Do you accept the hints? [Y]")
-        if ans:
-            print("got true")
-            #report.validate(hints)
-            #pseudo.write_dojo_report(report)
-        else:
-            print("The dojoreport contains the following ecut values:\n%s" % report.ecuts)
-            #new_ecuts = prompt("Enter new ecuts to compute (comma-separated values or empty string to abort)")
-            #if new_ecuts:
-            #    print("Exit requested by user")
-            #    return 
+            #ans = prompt("Do you accept the hints? [Y]")
+            #ans = False
+            #if ans:
+            #    print("got true")
+            #    #report.validate(hints)
+            #    #pseudo.write_dojo_report(report)
+            #else:
+            #    print("The dojoreport contains ecuts :\n%s" % report.ecuts)
+            #    #new_ecuts = prompt("Enter new ecuts to compute (comma-separated values or empty string to abort)")
+            #    #if new_ecuts:
+            #    #    print("Exit requested by user")
+            #    #    return 
 
-            # Be careful with the format here! it should be %.1f
-            #new_ecuts = np.array(new_ecuts.split(","))
-            #report.add_ecuts(new_ecuts)
-            #pseudo.write_dojo_report(report)
+            #    # Be careful with the format here! it should be %.1f
+            #    #new_ecuts = np.array(new_ecuts.split(","))
+            #    #report.add_ecuts(new_ecuts)
+            #    #pseudo.write_dojo_report(report)
+
+        except Exception as exc:
+            print(pseudo.basename, "raised: ", str(exc))
 
 
 def main():
@@ -359,7 +368,7 @@ Usage example:\n
             try:
                 pseudos.append(Pseudo.from_file(p))
             except Exception as exc:
-                warn("Error in %s:\n%s" % (p, exc))
+                warn("Error in %s:\n%s. This pseudo will be ignored" % (p, exc))
 
         table = PseudoTable(pseudos)
 
