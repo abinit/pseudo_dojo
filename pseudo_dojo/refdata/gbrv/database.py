@@ -24,6 +24,20 @@ __all__ = [
 ]
 
 
+def species_from_formula(formula):
+    """
+    Return a list with the chemical species.
+
+    >>> assert species_from_formula("Li2F") == ["Li", "Li", "F"]
+    >>> assert species_from_formula("ABO3") == ["A", "B", "O", "O", "O"]
+    """
+    count = count_species(formula)
+    species = []
+    for symbol, n in count.items():
+        species.extend(n * [symbol])
+    return species
+
+
 def count_species(formula):
     """
     Construct a counter (OrderedDict) from a chemical formula. 
@@ -35,6 +49,8 @@ def count_species(formula):
     >>> count_species("OSn") == OrderedDict([('O', 1), ('Sn', 1)])
     True
     >>> count_species("SnO2") == OrderedDict([('Sn', 1), ('O', 2)])
+    True
+    >>> count_species("O2Sn") == OrderedDict([('O', 2), ('Sn', 1)])
     True
     >>> count_species("OSnO") == OrderedDict([('O', 2), ('Sn', 1)])
     True
@@ -111,18 +127,7 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
 
     @lazy_property
     def species(self):
-        # FIXME: This won't work for ternary SrLiF3
-        # Only for rocksalt
-        pos = [i for i, c in enumerate(self.symbol) if (c.isupper() and c.isalpha())]
-        assert pos
-        nchar, npos = len(self.symbol), len(pos)
-
-        species = []
-        for i, start in enumerate(pos):
-            stop = nchar if (i == npos -1) else pos[i+1]
-            species.append(self.symbol[start:stop])
-
-        return species
+        return species_from_formula(self.symbol)
 
     def build_structure(self, ref="ae"):
         """

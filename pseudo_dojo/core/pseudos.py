@@ -19,7 +19,7 @@ class DojoTable(PseudoTable):
     extra properties or methods, if needed.
     """
     @classmethod
-    def from_dojo_dirpath(cls, top):
+    def from_dojodir(cls, top):
         """
         Initialize the object for one of the top level directories
         located in pseudo_dojo.pseudos

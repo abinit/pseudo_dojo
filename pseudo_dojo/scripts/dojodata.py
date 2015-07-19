@@ -215,7 +215,8 @@ def dojo_check(options):
             print("Exception: ", exc)
             continue
 
-        p.check_and_fix_dojo_md5()
+        # Comment this to fix the md5 checksum in the pseudos
+        #p.check_and_fix_dojo_md5()
 
         #if "ppgen_hints" not in report: # and "deltafactor" not in report:
         #    print(p.basename, "old version without ppgen_hints")
