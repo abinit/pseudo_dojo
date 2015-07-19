@@ -5,14 +5,14 @@ import os
 
 from pseudo_dojo.core.testing import PseudoDojoTest
 from pseudo_dojo.dojo.gbrv_outdb import GbrvRecord, GbrvOutdb, RocksaltOutdb
-from pseudo_dojo.pseudos import dojo_absdir
+from pseudo_dojo.pseudos import dojotable_absdir
 
 
 class GbrvOutdbTest(PseudoDojoTest):
 
     def test_rocksalt_outdb(self):
         """Testing RocksaltOutdb database and its API."""
-        dirpath = dojo_absdir("ONCVPSP-PBE")
+        dirpath = dojotable_absdir("ONCVPSP-PBE")
 
         # Test the initialization of an empty object.
         outdb = RocksaltOutdb.new_from_dojodir(dirpath)
@@ -42,6 +42,7 @@ class GbrvOutdbTest(PseudoDojoTest):
             # Test find_record
             for rec in records:
                 same_rec = outdb.find_record(formula, rec.pseudos)
+                #assert rec.matches_pseudos(same_rec.pseudos)
                 assert rec == same_rec
 
             # All the records for the same formula should be different!
@@ -55,6 +56,7 @@ class GbrvOutdbTest(PseudoDojoTest):
             all_records.extend(records)
         for rec1, rec2 in zip(all_records[:-1], all_records[1:]):
             assert rec1 != rec2
+            assert not rec1.matches_pseudos(rec2.pseudos)
 
         # Test API to extract jobs
         jobs = outdb.find_jobs_torun(max_njobs=3)
@@ -77,20 +79,6 @@ class GbrvOutdbTest(PseudoDojoTest):
 
         # NB: This works because all values support __eq__
         assert new_outdb == outdb
-
-        #records = new_outdb["ScN"]
-        #pprint(records)
-        #print(records)
-            #print(rec)
-        #assert len(records) > 1
-        #rec0, rec1 = records[:2]
-        #print(rec0)
-        #assert rec0 == rec0
-        #assert rec0.matches_pseudos(rec0.pseudos)
-        #assert rec0 != rec1
-        #assert not rec0.matches_pseudos(rec1.pseudos)
-        #params = outdb.find_jobparams_torun()
-        #print(torun)
 
 
 if __name__ == "__main__":

@@ -47,7 +47,7 @@ class DojoTable(PseudoTable):
         return new
 
     @classmethod
-    def from_djson(cls, djson_file):
+    def from_djson(cls, djson_path):
         """
         Initialize the table of pseudos for one of **official"" djson files 
         located in the subdirectories on pseudo_dojo.pseudos.
@@ -56,7 +56,7 @@ class DojoTable(PseudoTable):
 
             The table contains one pseudo per element and can be used for production calculations
 
-        djson_file contains the dictionary:
+        djson_path contains the dictionary:
 
         {
         "dojo_info": {
@@ -85,14 +85,14 @@ class DojoTable(PseudoTable):
         }, 
         }
         """
-        with open(djson_file, "rt") as fh:
+        with open(djson_path, "rt") as fh:
             d = json.loads(fh.read())
 
         dojo_info = AttrDict(**d["dojo_info"])
         #dojo_dir = dojo_info["dojo_dir"]
         meta = d["pseudos_metadata"]
 
-        top = os.path.dirname(djson_file)
+        top = os.path.dirname(djson_path)
 
         paths, md5dict = [], {}
         for esymb, m in meta.items():
@@ -122,7 +122,8 @@ class DojoTable(PseudoTable):
     #def show_dojo_info(self):
     #    print(self.dojo_info)
 
-    def dojo_check_errors(self, md5dict, require_hints=True):
+    # TODO: Move to require_hints == True
+    def dojo_check_errors(self, md5dict, require_hints=False):
         """
         This function tests whether the table fulfill the requirements 
         imposed by the PseudoDojo. More specifically:
@@ -133,6 +134,9 @@ class DojoTable(PseudoTable):
 
             #. The md5 value computed from the pseudo potential file must agree
                with the one found in the djson file.
+        
+        Args:
+            md5dict: dict basename --> md5 hash value
         """
         errors = []
         eapp = errors.append

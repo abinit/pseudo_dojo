@@ -8,18 +8,18 @@ import os
 
 here = os.path.dirname(__file__)
 
-DOJO_BASEDIRS = [
+DOJOTABLE_BASEDIRS = [
     "ONCVPSP-PBE",
     "ONCVPSP-PBE-MC2",
 ]
 
 
-def dojo_absdir(dojo_basedir):
+def dojotable_absdir(basedir):
     """
-    Return the absolute path of the directory with the pseudos from its basename
+    Return the absolute dirpath of the table from its basename
     """
-    assert dojo_basedir in DOJO_BASEDIRS
-    return os.path.join(here, dojo_basedir)
+    assert basedir in DOJOTABLE_BASEDIRS
+    return os.path.join(here, basedir)
 
 
 #def find_ncfiles(top):
