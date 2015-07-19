@@ -143,16 +143,16 @@ class GbrvCompoundRelaxAndEosWork(Work):
         # Register structure relaxation task.
         self.relax_task = self.register_relax_task(inp)
 
-    def set_outdb(self, outdb)
-        assert outdb.struct_type == self.struct_type
-        self._outdb = outdb
+    #def set_outdb(self, outdb):
+    #    assert outdb.struct_type == self.struct_type
+    #    self._outdb = outdb
 
-    @property
-    def outdb(self):
-        try:
-            return self._outdb
-        except AttributeError:
-            return None
+    #@property
+    #def outdb(self):
+    #    try:
+    #        return self._outdb
+    #    except AttributeError:
+    #        return None
 
     def add_eos_tasks(self):
         """

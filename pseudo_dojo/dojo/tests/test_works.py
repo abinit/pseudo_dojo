@@ -11,8 +11,8 @@ from pseudo_dojo.core import PseudoDojoTest
 from pseudo_dojo.dojo.works import *
 
 
-DRY_RUN = False
-#DRY_RUN = True
+#DRY_RUN = False
+DRY_RUN = True
 
 
 class DeltaFactorTest(PseudoDojoTest):

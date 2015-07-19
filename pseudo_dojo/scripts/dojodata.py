@@ -223,7 +223,7 @@ def dojo_check(options):
         #    continue
 
         try:
-            errors = report.check()
+            errors = report.check_errors()
             if errors:
                 print("[%s] Validation problem\n" % p.basename)
                 pprint(errors, indent=4)

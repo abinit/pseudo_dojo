@@ -13,7 +13,7 @@ from pseudo_dojo.dojo.compounds import *
 
 #DRY_RUN = False
 DRY_RUN = True
-DRY_RUN = False
+#DRY_RUN = False
 
 
 class GbrvCompoundTest(PseudoDojoTest):
@@ -55,8 +55,9 @@ class GbrvCompoundTest(PseudoDojoTest):
             assert len(flow[0]) == 1 + 9
             assert all(work.finalized for work in flow)
 
-        assert 0
+        #assert 0
         flow.rmtree()
+
 
 if __name__ == "__main__":
     import unittest

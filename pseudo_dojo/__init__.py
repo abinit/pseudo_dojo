@@ -1,5 +1,5 @@
 from __future__ import division, print_function, unicode_literals
-#from .dojo import Dojo
+
 
 def get_pseudos(top):
     """
@@ -17,3 +17,33 @@ def get_pseudos(top):
             warn("Exception in pseudo %s:\n%s" % (p.filepath, exc))
             
     return PseudoTable(pseudos).sort_by_z()
+
+
+class OfficialTable(object):
+    """
+    A data descriptor that sets and returns values
+    normally and prints a message logging their access.
+    """
+    def __init__(self, initval=None, name='var'):
+        self.val = initval
+        self.name = name
+
+    def __get__(self, obj, objtype):
+        print("obj ", obj, "objtype", objtype)
+        print('Retrieving', self.name)
+        return self.val
+
+    def __set__(self, obj, val):
+        """Eead-only data descriptor"""
+        #print('Updating', self.name)
+        #self.val = val
+        raise AttributeError("Dojo Tables are read-only!")
+
+
+class Tables(object):
+    """
+    This object gathers the official tables provided by PseudoDojo in a single namespace.
+    """
+    GGA = OfficialTable(initval="hello")
+
+
