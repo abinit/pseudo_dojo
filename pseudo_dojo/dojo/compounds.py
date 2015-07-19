@@ -143,6 +143,17 @@ class GbrvCompoundRelaxAndEosWork(Work):
         # Register structure relaxation task.
         self.relax_task = self.register_relax_task(inp)
 
+    def set_outdb(self, outdb)
+        assert outdb.struct_type == self.struct_type
+        self._outdb = outdb
+
+    @property
+    def outdb(self):
+        try:
+            return self._outdb
+        except AttributeError:
+            return None
+
     def add_eos_tasks(self):
         """
         Read the optimized structure from the netcdf file and add to self a new
@@ -196,7 +207,12 @@ class GbrvCompoundRelaxAndEosWork(Work):
             results.push_exceptions(exc)
 
         return results
-        # TODO
+
+        # TODO, handle error!
+        #if self.outdb is None
+        #    record = self.outdb.find_record(self.formula, self.pseudos)
+        #    record.add_results(accuracy, results)
+        #    self.outdb.json_write()
 
         # Function to compute cubic a0 from primitive v0 (depends on struct_type)
         vol2a = {"fcc": lambda vol: (4 * vol) ** (1/3.),
