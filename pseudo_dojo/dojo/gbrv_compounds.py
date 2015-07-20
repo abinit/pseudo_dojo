@@ -52,7 +52,7 @@ class GbrvCompoundsFactory(object):
 
         return structure
 
-    def relax_and_eos_work(self, pseudos, formula, struct_type, ecut=None, pawecutdg=None, ref="ae", **kwargs):
+    def relax_and_eos_work(self, accuracy, pseudos, formula, struct_type, ecut=None, pawecutdg=None, ref="ae", **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
@@ -74,15 +74,15 @@ class GbrvCompoundsFactory(object):
 
         structure = self.make_ref_structure(formula, struct_type=struct_type, ref=ref)
  
-        return GbrvCompoundRelaxAndEosWork(structure, formula, struct_type, pseudos,
+        return GbrvCompoundRelaxAndEosWork(structure, formula, struct_type, pseudos, accuracy,
                                            ecut=ecut, pawecutdg=pawecutdg, **kwargs)
 
 
 class GbrvCompoundRelaxAndEosWork(Work):
 
-    def __init__(self, structure, formula, struct_type, pseudos, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
+    def __init__(self, structure, formula, struct_type, pseudos, accuracy, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
                  spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
-                 accuracy="normal", ecutsm=0.05, chksymbreak=0,
+                 ecutsm=0.05, chksymbreak=0,
                  workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the relaxed lattice parameter.

@@ -66,6 +66,14 @@ def gbrv_plot(options):
 
         frame = outdb.get_dataframe()
         print(frame)
+
+        import matplotlib.pyplot as plt
+
+        frame.plot(frame.index, ["normal_rel_err", "high_rel_err"])
+        #ax.set_xticks(range(len(data.index)))
+        #ax.set_xticklabels(data.index)
+        plt.show()
+
         
         #outdb.plot_errors(reference="ae", accuracy="normal")
 
@@ -107,7 +115,7 @@ def gbrv_run(options):
 
     gbrv_factory = GbrvCompoundsFactory()
     for job in jobs:
-        work = gbrv_factory.relax_and_eos_work(job.pseudos, job.formula, outdb.struct_type, 
+        work = gbrv_factory.relax_and_eos_work(job.accuracy, job.pseudos, job.formula, outdb.struct_type, 
                                                ecut=6, pawecutdg=None, **extra_abivars)
 
         # Attach the database to the work to trigger the storage of the results.
