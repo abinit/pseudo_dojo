@@ -38,13 +38,26 @@ class GbrvRecord(dict):
             normal: {ecut:, a:, v0: , b0:, b1:},
             high: {ecut:, a:, v0: , b0:, b1},
         }
+
+        where results is a dictionary
+
+        "normal": {
+            "ecut": 6, 
+            "v0": 31.72020565768123, 
+            "a0": 5.024952898489712, 
+            "etotals": [-593.3490598305451, ...], 
+            "b0": 4.148379951739942, 
+            "b1": Infinity, 
+            "volumes": [31.410526411353832, ...], 
+            "num_sites": 2
+        }
     """
     ACCURACIES = ("normal", "high")
 
     @classmethod
-    def from_dict(cls, d, dojo_pptable):
+    def from_dict(cls, d, struct_type, dojo_pptable):
         d = d.copy()
-        new = cls(d.pop("formula"), d.pop("pseudos_metadata"), dojo_pptable)
+        new = cls(struct_type, d.pop("formula"), d.pop("pseudos_metadata"), dojo_pptable)
 
         for acc in cls.ACCURACIES:
             new[acc] = d.pop(acc)
@@ -55,7 +68,7 @@ class GbrvRecord(dict):
     def as_dict(self):
         return {k: self[k] for k in self}
 
-    def __init__(self, formula, pseudos_or_dict, dojo_pptable):
+    def __init__(self, struct_type, formula, pseudos_or_dict, dojo_pptable):
         """
         Initialize the record for the chemical formula and the list of 
         pseudopotentials.
@@ -98,11 +111,14 @@ class GbrvRecord(dict):
 
         self.pseudos = DojoTable.as_table(pseudos)
         self.dojo_pptable = dojo_pptable
+        self.struct_type = struct_type
 
     def __eq__(self, other):
+        """Two records can be compared for equality."""
         if other is None: return False
         if self["formula"] != other["formula"]: return False
         if len(self.pseudos) != len(other.pseudos): return False
+        if self.struct_type != other.struct_type: return False
 
         for p in self.pseudos:
             try:
@@ -127,11 +143,10 @@ class GbrvRecord(dict):
     def add_results(self, accuracy, results):
         # Validate input.
         assert accuracy in self.ACCURACIES
-        #assert set(data.keys()) == set(["ecut", "a", "v0" , "b0", "b1"])
+        #assert set(data.keys()) == set(["ecut", "a0", "v0" , "b0", "b1"])
 
         if self[accuracy] is not None:
             logger.warning("Overwriting results for %s" % self.formula)
-            
 
         self[accuracy] = results
 
@@ -151,26 +166,59 @@ class GbrvRecord(dict):
         #@ecut = max(p.hint_for_accuracy(accuracy).ecut for p in self.pseudos)        
         ecut = 6
         pawecutdg = None
-        struct_type = None #?
 
-        return dict2namedtuple(formula=self.formula, struct_type=struct_type, accuracy=accuracy, 
+        return dict2namedtuple(formula=self.formula, struct_type=self.struct_type, accuracy=accuracy, 
                                pseudos=self.pseudos, ecut=ecut, pawecutdg=pawecutdg)
 
     def compute_err(self, reference="ae", accuracy="normal"):
+        """
+        Return namedtuple with absolute and relative error.
+        None if data is not available.
+        """
         # Get the reference results
         gbrv_db = gbrv_database()
-        gbrv_entry = gbrv_db.get_entry(self.symbol)
+        gbrv_entry = gbrv_db.get_entry(self.formula, self.struct_type)
         ref_a = getattr(gbrv_entry, reference)
 
         # Get our value, Return None if not computed.
-        try:
-            our_a = self[accuracy]["a"]
-        except KeyError:
-            return None
+        d = self[accuracy] #; print(d)
+        if not isinstance(d, dict): return None
 
+        our_a = d["a0"]
         abs_err = our_a - ref_a
         rel_err = 100 * abs_err / ref_a
-        return dict2namedtuple(abs_err=abs_err, rel_err=rel_err)
+
+        return dict2namedtuple(a0=our_a, abs_err=abs_err, rel_err=rel_err)
+
+    @add_fig_kwargs
+    def plot_eos(self, ax=None, **kwargs):
+        """
+        plot the EOS computed with the deltafactor setup.
+
+        Args:
+            ax: matplotlib :class:`Axes` or None if a new figure should be created.
+            
+        Returns:
+            `matplotlib` figure.
+        """
+        ax, fig, plt = get_ax_fig_plt(ax)
+
+        d = self["normal"]
+        if not isinstance(d, dict):
+            return fig
+        #print(d)
+
+        num_sites, volumes, etotals = d["num_sites"], np.array(d["volumes"]), np.array(d["etotals"])
+        from pymatgen.io.abinitio.eos import EOS
+        eos = EOS.Quadratic()
+
+        # Use same fit as the one employed for the deltafactor.
+        eos_fit = eos.fit(volumes/num_sites, etotals/num_sites)
+
+        label = "ecut %.1f" % d["ecut"]
+        eos_fit.plot(ax=ax, text=False, label=label,show=False) # color=cmap(i/num_ecuts, alpha=1), 
+
+        return fig
 
 
 class GbrvOutdb(MutableMapping):
@@ -200,7 +248,7 @@ class GbrvOutdb(MutableMapping):
 
             # Add record for this formula.
             for pplist in comb_list:
-                new[formula].append(GbrvRecord(formula, pplist, dojo_pptable))
+                new[formula].append(GbrvRecord(new.struct_type, formula, pplist, dojo_pptable))
 
         return new
 
@@ -211,9 +259,9 @@ class GbrvOutdb(MutableMapping):
         """
         with open(filepath, "rt") as fh:
             d = json.loads(fh.read())
-
             struct_type = d.pop("struct_type")
             dojo_dir = d.pop("dojo_dir")
+
             if cls.struct_type != struct_type:
                 for subcls in cls.__subclasses__():
                     if subcls.struct_type == struct_type:
@@ -228,7 +276,7 @@ class GbrvOutdb(MutableMapping):
             # Here I initialize the object with the data read from file.
             new = cls(dojo_dir, dojo_pptable)
             for formula, dict_list in d.items():
-                new[formula] = [GbrvRecord.from_dict(d, dojo_pptable) for d in dict_list]
+                new[formula] = [GbrvRecord.from_dict(d, new.struct_type, dojo_pptable) for d in dict_list]
 
             return new
 
@@ -247,10 +295,6 @@ class GbrvOutdb(MutableMapping):
         #return str(self.data)
         return self.to_json()
 
-    #@property
-    #def basename(self):
-    #    return self.struct_type + ".json"
-
     @property
     def filepath(self):
         # TODO: dojo_dir is relative path that should be converted
@@ -264,7 +308,6 @@ class GbrvOutdb(MutableMapping):
         for formula, records in self.items():
             d[formula] = [rec.as_dict() for rec in records]
 
-        #d = self.data.copy()
         return json.dumps(d, indent=4, sort_keys=False)
 
     def json_write(self, filepath=None):
@@ -300,7 +343,7 @@ class GbrvOutdb(MutableMapping):
 
         records = self[formula]
         try:
-            i = records.index(GbrvRecord(formula, pseudos, self.dojo_pptable))
+            i = records.index(GbrvRecord(self.struct_type, formula, pseudos, self.dojo_pptable))
         except ValueError:
             return None
 
@@ -309,15 +352,20 @@ class GbrvOutdb(MutableMapping):
     def has_record(self, record):
         return record in self[record.formula]
 
-    def find_jobs_torun(self, max_njobs=3):
+    def find_jobs_torun(self, max_njobs=3, select_formulas=None):
         """
         Find entries whose results have not been yet calculated.
+
+        Args:
+            select_formulas:
         """
         jobs, got = [], 0
         #if max_njobs == -1: max_njobs = np.inf
 
         for formula, records in self.items():
             if got >= max_njobs: break
+            if select_formulas is not None and formula not in select_formulas:
+                continue
 
             for rec in records:
                 for accuracy in rec.ACCURACIES:
@@ -393,7 +441,7 @@ class GbrvOutdb(MutableMapping):
             for formula, pplist in missing.items():
                 for pseudos in pplist:
                     nrec_removed += 1
-                    self[formula].append(GbrvRecord(formula, pseudos, self.dojo_pptable))
+                    self[formula].append(GbrvRecord(self.struct_type, formula, pseudos, self.dojo_pptable))
                                                                                       
         if missing or nrec_removed:
             print("Updating database.")
@@ -446,11 +494,47 @@ class GbrvOutdb(MutableMapping):
         if not xs:
             warn("No entry available for plotting")
 
-        #ax.scatter([high_hint], [1.0], s=20) #, c='b', marker='o', cmap=None, norm=None)
+        ax.scatter(range(len(ys_rel)), ys_rel, s=20) #, c='b', marker='o', cmap=None, norm=None)
+        #ax.scatter(xs, ys_rel, s=20) #, c='b', marker='o', cmap=None, norm=None)
 
         return fig
 
-    #def get_frame(self)
+    def get_dataframe(self, reference="ae", **kwargs):
+        """
+        Buid a pandas :class:`DataFrame` with the most important results.
+
+        Args:
+            reference:
+
+        ================  ==============================================================
+        kwargs            Meaning
+        ================  ==============================================================
+        with_metadata     True if column with pseudo metadata is wanted. Default: False.
+        ================  ==============================================================
+
+        Returns:
+            frame: pandas :class:`DataFrame` 
+        """
+        with_metadata = kwargs.pop("with_metadata", False)
+        rows, names = [], []
+
+        for formula, records in self.items():
+            for rec in records:
+                for acc in ("normal", "high"):
+                    e = rec.compute_err(reference=reference, accuracy=acc)
+                    if e is None: continue
+                    d = {"a0": e.a0, acc + "_rel_err": e.rel_err, # acc + "_abs_err": e.abs_err, 
+                    }
+
+                    if with_metadata:
+                        d.update({"pseudos_metadata": {p.basename: p.md5 for p in rec.pseudos}})
+
+                    names.append(formula)
+                    rows.append(d)
+
+        # Build sub-class of pandas.DataFrame
+        from pandas import DataFrame
+        return DataFrame(rows, index=names)
 
 
 class RocksaltOutdb(GbrvOutdb):

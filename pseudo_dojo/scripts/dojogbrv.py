@@ -58,12 +58,32 @@ def gbrv_reset(options):
     return 0
 
 
+def gbrv_plot(options):
+    """Plot data with matplotlib."""
+
+    for path in options.database_list:
+        outdb = GbrvOutdb.from_file(path)
+
+        frame = outdb.get_dataframe()
+        print(frame)
+        
+        #outdb.plot_errors(reference="ae", accuracy="normal")
+
+        #for formula, records in outdb.values()
+        #records = outdb["NaCl"]
+        #for rec in records:
+        #    rec.plot_eos()
+
+    return 0
+
+
 def gbrv_run(options):
     options.manager = abilab.TaskManager.as_manager(options.manager)
 
     outdb = GbrvOutdb.from_file(options.database)
 
-    jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs)
+    #jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs)
+    jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs, select_formulas=["NaCl"])
     num_jobs = len(jobs)
 
     if num_jobs == 0:
@@ -152,9 +172,12 @@ usage example:
     p_reset = subparsers.add_parser('reset', parents=[copts_parser], help="Reset failed entries in the database.")
     p_reset.add_argument('database_list', nargs="+", help='Database(s) with the output results.')
 
+    # Subparser for plot command.
+    p_plot = subparsers.add_parser('plot', parents=[copts_parser], help="Plot results in the databases.")
+    p_plot.add_argument('database_list', nargs="+", help='Database(s) with the output results.')
+
     # Subparser for run command.
     p_run = subparsers.add_parser('run', parents=[copts_parser], help="Update databases.")
-
     p_run.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
     p_run.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
     p_run.add_argument('-n', '--max-njobs', default=2, help="Maximum number of jobs (a.k.a. flows) that will be submitted")

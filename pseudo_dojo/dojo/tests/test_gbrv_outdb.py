@@ -59,6 +59,13 @@ class GbrvOutdbTest(PseudoDojoTest):
             assert rec1 != rec2
             assert not rec1.matches_pseudos(rec2.pseudos)
 
+        # Test pandas dataframe
+        frame = outdb.get_dataframe()
+        assert frame is not None
+
+        # Test matplotlib tools
+        outdb.plot_errors()
+
         # Test API to extract jobs
         jobs = outdb.find_jobs_torun(max_njobs=3)
         assert len(jobs) == 3
