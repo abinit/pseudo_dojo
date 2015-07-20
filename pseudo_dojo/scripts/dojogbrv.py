@@ -59,9 +59,7 @@ def gbrv_reset(options):
 
 
 def gbrv_run(options):
-
-    #options.manager = abilab.TaskManager.from_user_config() if options.manager is None else \
-    #                  abilab.TaskManager.from_file(options.manager)
+    options.manager = abilab.TaskManager.as_manager(options.manager)
 
     outdb = GbrvOutdb.from_file(options.database)
 
@@ -74,20 +72,17 @@ def gbrv_run(options):
     else:
         print("Will run %d works" % num_jobs)
 
-    #workdir = pseudo.basename + "_DOJO"
-    #if os.path.exists(workdir): 
-    #    warn("Directory %s already exists" % workdir)
-    #    return None
-    #    #raise ValueError("%s exists" % workdir)
-
     import tempfile
-    flow = abilab.Flow(workdir=tempfile.mkdtemp())
+    workdir=tempfile.mkdtemp(dir=os.getcwd(), prefix=outdb.struct_type + "_")
+    workdir=tempfile.mkdtemp()
+
+    flow = abilab.Flow(workdir=workdir, manager=options.manager)
 
     extra_abivars = {
         "mem_test": 0,
         "fband": 2,
         "nstep": 100,
-        "paral_kgb": 0,
+        "paral_kgb": options.paral_kgb,
     }
 
     gbrv_factory = GbrvCompoundsFactory()
@@ -98,8 +93,8 @@ def gbrv_run(options):
         # Attach the database to the work to trigger the storage of the results.
         flow.register_work(work.set_outdb(outdb))
 
-    flow.build_and_pickle_dump()
     print("Working in: ", flow.workdir)                     
+    flow.build_and_pickle_dump()
 
     if options.dry_run:
         print("dry-run mode, will validate input files")
@@ -109,8 +104,8 @@ def gbrv_run(options):
             return 1
     else:
         # Run the flow with the scheduler.
-        print("Fake Running")
-        #flow.make_scheduler().start()
+        #print("Fake Running")
+        flow.make_scheduler().start()
 
     return 0
 
@@ -119,7 +114,8 @@ def main():
     def str_examples():
         return """\
 usage example:
-   dojogbrv generate directory      =>  Generate json files for GBRV computations
+   dojogbrv generate directory      =>  Generate the json files needed GBRV computations.
+                                        directory contains the pseudopotential table.
    dojogbrv update   directory      =>  Update all the json files in directory (check for 
                                         new pseudos or stale entries)
    dojogbrv reset dir/*.json        =>  Reset all failed entries in the json files
@@ -158,9 +154,10 @@ usage example:
 
     # Subparser for run command.
     p_run = subparsers.add_parser('run', parents=[copts_parser], help="Update databases.")
-    #p_run.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
-    #p_run.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
-    p_run.add_argument('-n', '--max-njobs', default=3, help="Maximum number of jobs (a.k.a. flows) that will be submitted")
+
+    p_run.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
+    p_run.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
+    p_run.add_argument('-n', '--max-njobs', default=2, help="Maximum number of jobs (a.k.a. flows) that will be submitted")
     p_run.add_argument('-d', '--dry-run', default=False, action="store_true", help=("Dry run, build the flow and check validity "
                        "of input files without submitting"))
     p_run.add_argument('database', help='Database with the output results.')

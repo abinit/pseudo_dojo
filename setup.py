@@ -95,6 +95,8 @@ install_requires = [
     "scipy>=0.10",
     "pymatgen>=3.0.8",
     "tabulate",
+    "validictory",
+    "atomicfile",
     #"matplotlib>=1.1",
 ]
 

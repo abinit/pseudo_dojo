@@ -5,7 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import os
 import json
 
-from monty.collections import AttrDict #, dict2namedtuple
+from monty.collections import AttrDict 
 from pymatgen.core.periodic_table import PeriodicTable
 from pymatgen.io.abinitio.pseudos import PseudoTable 
 
@@ -60,14 +60,14 @@ class DojoTable(PseudoTable):
 
         {
         "dojo_info": {
-              "authors": ["M. Giantomassi", "M. J van Setten"],
-              "xc_type": "GGA-PBE",
               "pseudo_type": "norm-conserving",
-              "generation_date": "Sun Jul 19 21:24:10 CEST 2015",
-              "dojo_dir": "ONCVPSP-PBE",
+              "xc_type": "GGA-PBE",
+              "authors": ["M. Giantomassi", "M. J van Setten"],
+              "generation_date": "2015-07-20",
               "description": "String",
+              "tags": ["accuracy", "tag2"],
               "reference": "paper",
-              "tags": ["accuracy", "tag2"]
+              "dojo_dir": "ONCVPSP-PBE",
         },
         "pseudos_metadata": {
             "Si": {
@@ -88,8 +88,9 @@ class DojoTable(PseudoTable):
         with open(djson_path, "rt") as fh:
             d = json.loads(fh.read())
 
-        dojo_info = AttrDict(**d["dojo_info"])
-        #dojo_dir = dojo_info["dojo_dir"]
+        dojo_info = DojoInfo(**d["dojo_info"])
+        dojo_info.validate_json_schema()
+
         meta = d["pseudos_metadata"]
 
         top = os.path.dirname(djson_path)
@@ -161,3 +162,37 @@ class DojoTable(PseudoTable):
                 app("p.mdf5 != mdf5dict[p.basename]\n%s, %s" % (p.md5, md5dict[p.basename]))
 
         return errors
+
+
+class DojoInfo(AttrDict):
+    """Dictionary with metadata associated to the table."""
+
+    # See http://validictory.readthedocs.org/en/latest/usage.html#schema-options
+    JSON_SCHEMA = {
+        "type": "object",
+        "properties": {
+            "pseudo_type": {"type": "string", "enum": ["norm-conserving", "PAW"]},
+            "xc_type": {"type": "string", "enum": ["GGA-PBE",]},
+            "authors": {"type": "array"},
+            "generation_date": {"type": "string", "format": "date"},
+            "description": {"type": "string"},
+            "tags": {"type": "array", "items": {"type": "string", "enum": ["accuracy", "efficiency"]}},
+            "reference": {"type": "string"},
+            "dojo_dir": {"type": "string"},
+            #non-relativistic, scalar-relativistic or relativistic
+        },
+    }
+
+    def validate_json_schema(self):
+        import validictory
+        validictory.validate(self, self.JSON_SCHEMA)
+
+    @property
+    def isnc(self):
+        """True if norm-conserving pseudopotential."""
+        return self.pseudo_type == "norm-conserving"
+
+    @property
+    def ispaw(self):
+        """True if PAW pseudopotential."""
+        return self.pseudo_type == "PAW"

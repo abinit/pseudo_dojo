@@ -12,6 +12,7 @@ import numpy as np
 from collections import OrderedDict, MutableMapping, defaultdict
 from warnings import warn
 from monty.io import FileLock
+from atomicfile import AtomicFile
 from monty.collections import AttrDict, dict2namedtuple
 from monty.functools import lazy_property
 #from pymatgen.core.units import Ha_to_eV
@@ -126,7 +127,11 @@ class GbrvRecord(dict):
     def add_results(self, accuracy, results):
         # Validate input.
         assert accuracy in self.ACCURACIES
-        assert set(data.keys()) == set(["ecut", "a", "v0" , "b0", "b1"])
+        #assert set(data.keys()) == set(["ecut", "a", "v0" , "b0", "b1"])
+
+        if self[accuracy] is not None:
+            logger.warning("Overwriting results for %s" % self.formula)
+            
 
         self[accuracy] = results
 
@@ -266,7 +271,7 @@ class GbrvOutdb(MutableMapping):
         """Write new file with locking mechanism."""
         filepath = self.filepath if filepath is None else filepath
         with FileLock(filepath):
-            with open(filepath, "wt") as fh:
+            with AtomicFile(filepath, mode="wt") as fh:
                 fh.write(self.to_json())
 
     # ABC protocol.

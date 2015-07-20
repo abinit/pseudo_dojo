@@ -105,6 +105,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         self.formula = formula
         self.struct_type = struct_type
         self.accuracy = accuracy
+        self.set_name("_".join(["gbrv", struct_type, formula, accuracy]))
 
         # nband must be large enough to accomodate fractional occupancies.
         fband = kwargs.pop("fband", None)
@@ -112,6 +113,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         # FIXME
         #nband = gbrv_nband(self.pseudo)
 
+        # TODO: toldfe for the EOS, tolvrs for the relaxation.
         # Set extra_abivars.
         self.extra_abivars = dict(
             ecut=ecut,
@@ -196,12 +198,13 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
     def compute_eos(self):
         self.history.info("Computing EOS")
-        results = self.get_results()
+        #results = self.get_results()
 
         # Read etotals and fit E(V) with a parabola to find the minimum
         etotals = self.read_etotals(unit="eV")[1:]
         assert len(etotals) == len(self.volumes)
 
+        results = {}
         results.update(dict(
             etotals=list(etotals),
             volumes=list(self.volumes),
@@ -213,16 +216,11 @@ class GbrvCompoundRelaxAndEosWork(Work):
         except EOS.Error as exc:
             results.push_exceptions(exc)
 
-        return results
-
-        # TODO, handle error!
-        #if self.outdb is None
-        #    record = self.outdb.find_record(self.formula, self.pseudos)
-        #    record.add_results(accuracy, results)
-        #    self.outdb.json_write()
+        #return results
 
         # Function to compute cubic a0 from primitive v0 (depends on struct_type)
         vol2a = {"fcc": lambda vol: (4 * vol) ** (1/3.),
+                 "rocksalt": lambda vol: (4 * vol) ** (1/3.),
                  "bcc": lambda vol: (2 * vol) ** (1/3.),
                  }[self.struct_type]
 
@@ -233,8 +231,15 @@ class GbrvCompoundRelaxAndEosWork(Work):
             b0=eos_fit.b0,
             b1=eos_fit.b1,
             a0=a0,
-            struct_type=self.struct_type
+            ecut=self.ecut,
+            #struct_type=self.struct_type
         ))
+
+        # TODO, handle error!
+        if self.outdb is not None:
+            rec = self.outdb.find_record(self.formula, self.pseudos)
+            rec.add_results(self.accuracy, results)
+            self.outdb.json_write()
 
         db = gbrv_database()
         entry = db.get_entry(self.formula, stype=self.struct_type)
@@ -242,12 +247,11 @@ class GbrvCompoundRelaxAndEosWork(Work):
         pawabs_err = a0 - entry.gbrv_paw
         pawrel_err = 100 * (a0 - entry.gbrv_paw) / entry.gbrv_paw
 
-        # AE results for P and Hg are missing.
+        # If AE results are missing we use GBRV_PAW as reference.
         if entry.ae is not None:
             abs_err = a0 - entry.ae
             rel_err = 100 * (a0 - entry.ae) / entry.ae
         else:
-            # Use GBRV_PAW as reference.
             abs_err = pawabs_err
             rel_err = pawrel_err
 
@@ -255,11 +259,11 @@ class GbrvCompoundRelaxAndEosWork(Work):
         print("AE - THIS: abs_err = %f, rel_err = %f %%" % (abs_err, rel_err))
         print("GBRV-PAW - THIS: abs_err = %f, rel_err = %f %%" % (pawabs_err, pawrel_err))
 
-        d = {k: results[k] for k in ("a0", "etotals", "volumes")}
-        d["a0_abs_err"] = abs_err
-        d["a0_rel_err"] = rel_err
-        if results.exceptions:
-            d["_exceptions"] = str(results.exceptions)
+        #d = {k: results[k] for k in ("a0", "etotals", "volumes")}
+        #d["a0_abs_err"] = abs_err
+        #d["a0_rel_err"] = rel_err
+        #if results.exceptions:
+        #    d["_exceptions"] = str(results.exceptions)
 
         return results
 

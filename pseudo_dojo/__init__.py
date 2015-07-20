@@ -65,13 +65,13 @@ class OfficialTable(object):
         return new_table
 
 
-class Tables(object):
+class DescTables(object):
     """
     This object gathers the official tables provided by PseudoDojo in a single namespace.
     """
     GGA = OfficialTable("ONCVPSP-PBE", "accuracy.djson")
 
-    #NC_ODRH_GGA_SR_V0_2 = OfficialTable("ONCVPSP-PBE", "accuracy.djson")
+    #NC_ODRH_BSE_SR_V0_2 = OfficialTable("ONCVPSP-PBE", "accuracy.djson")
     #PAW_JTH_PBE_V0_2
 
     #@classmethod
@@ -87,3 +87,32 @@ class Tables(object):
     #@classmethod
     #def get_all(cls)
 
+from monty.design_patterns import singleton
+from collections import OrderedDict, Mapping
+
+@singleton
+class Tables(Mapping):
+
+    def __init__(self):
+        self.data = data = OrderedDict()
+        data["GGA"] = OfficialTable("ONCVPSP-PBE", "accuracy.djson")
+
+    # ABC protocol.
+    def __iter__(self):
+        return self.data.__iter__()
+
+    def __len__(self):
+        return self.data.__len__()
+
+    def __getitem__(self, key):
+        v = self.data[key]
+        if not isinstance(v, OfficialTable): return v 
+
+        # Parse files, construct table and store it.
+        new_table = DojoTable.from_djson(v.djson_path)
+        self.data[key] = new_table
+        return new_table
+
+    #def paw_tables(self, **kwargs):
+    #def nc_tables(self, **kwargs):
+    #def with_dojo_params(self, **kwargs)
