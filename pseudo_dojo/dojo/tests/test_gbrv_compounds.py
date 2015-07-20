@@ -8,7 +8,7 @@ import tempfile
 from abipy import abilab
 from abipy import data as abidata
 from pseudo_dojo.core import PseudoDojoTest
-from pseudo_dojo.dojo.compounds import *
+from pseudo_dojo.dojo.gbrv_compounds import *
 
 
 #DRY_RUN = False

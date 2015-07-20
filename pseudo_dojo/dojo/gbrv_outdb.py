@@ -14,10 +14,8 @@ from warnings import warn
 from monty.io import FileLock
 from monty.collections import AttrDict, dict2namedtuple
 from monty.functools import lazy_property
-#from monty.pprint import pprint_table
 #from pymatgen.core.units import Ha_to_eV
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
-#from pymatgen.io.abinitio.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formula
 
@@ -244,9 +242,9 @@ class GbrvOutdb(MutableMapping):
         #return str(self.data)
         return self.to_json()
 
-    @property
-    def basename(self):
-        return self.struct_type + ".json"
+    #@property
+    #def basename(self):
+    #    return self.struct_type + ".json"
 
     @property
     def filepath(self):
@@ -348,6 +346,72 @@ class GbrvOutdb(MutableMapping):
 
         return items
 
+    def check_update(self):
+        """
+        Check consistency between the pseudo potential table and the database and upgrade it
+        This usually happens when new pseudopotentials have been added to the dojo directory.
+        (very likely) or when pseudos have been removed (unlikely!)
+
+        Returns: namedtuple with the following attributes.
+            nrec_removed
+            nrec_added
+        """
+        nrec_removed, nrec_added = 0, 0
+        missing = defaultdict(list)
+                                                                                      
+        for formula, species in self.gbrv_formula_and_species:
+            # Get **all** the possible combinations for these species.
+            comb_list = self.dojo_pptable.all_combinations_for_elements(set(species))
+
+            # Check consistency between records and pseudos!
+            # This is gonna be slow if we have several possibilities!
+            records = self[formula]
+            recidx_found = []
+            for pseudos in comb_list:
+                for i, rec in enumerate(records):
+                    if rec.matches_pseudos(pseudos): 
+                        recidx_found.append(i)
+                        break
+
+                else:
+                    missing[formula].append(pseudos)
+
+            # Remove stale records (if any)
+            num_found = len(recidx_found)
+            if  num_found != len(records):
+                num_stale = len(records) - num_found
+                print("Found %s stale records" % num_stale)
+                nrec_removed += num_stale
+                self[formula] = [records[i] for i in recidx_found]
+
+        if missing:
+            for formula, pplist in missing.items():
+                for pseudos in pplist:
+                    nrec_removed += 1
+                    self[formula].append(GbrvRecord(formula, pseudos, self.dojo_pptable))
+                                                                                      
+        if missing or nrec_removed:
+            print("Updating database.")
+            self.json_write()
+
+        return dict2namedtuple(nrec_removed=nrec_removed, nrec_added=nrec_added)
+
+    def reset_failed(self):
+        """
+        Reset all the failed calculation so that we can resubmit them.
+        Return number of records that have been resetted.
+        """
+        count = 0
+        for formula, records in self.items():
+            for rec in records:
+                for accuracy in rec.ACCURACIES:
+                    # TODO: Better treatment of failed!
+                    if rec[accuracy] == "failed":
+                        count += 1
+                        rec[accuracy] = None
+
+        return count
+
     @add_fig_kwargs
     def plot_errors(self, reference="ae", accuracy="normal", ax=None, **kwargs):
         """
@@ -387,52 +451,16 @@ class GbrvOutdb(MutableMapping):
 class RocksaltOutdb(GbrvOutdb):
     """Results for the rocksalt structures."""
     struct_type = "rocksalt"
+    basename = struct_type + ".json"
 
 
 class PeroviskiteOutdb(GbrvOutdb):
     """Results for the ABO3 structures."""
     struct_type = "ABO3"
+    basename = struct_type + ".json"
 
 
 class HalfHeuslersOutdb(GbrvOutdb):
     """Results for the half-Heuslers structures."""
     struct_type = "hH"
-
-
-def check_consistency(json_path):
-    """
-    Check whether the set of results stored in the json file `json_path`
-    is not consistent with the set of pseudopotentials.
-    This usually happens when new pseudopotentials have been added to the dojo directory.
-
-    Returns the number of records that have been added.
-    """
-    # TODO: To be tested.
-    # Build the interfaces with the GBRV results and the set of dojo pseudos.
-    odata = GbrvOutdb.from_file(json_path)
-    dojo_pptable = DojoTable.from_dojodir(os.path.dirname(json_path))
-
-    # This is gonna be slow!
-    missing = defaultdict(list)
-
-    for formula, species in odata.gbrv_formula_and_species:
-        comb_list = dojo_pptable.all_combinations_for_elements(set(species))
-        records = odata[formula]
-
-        for pseudos in comb_list:
-            for rec in records:
-                if rec.matches_pseudos(pseudos): break
-            else:
-                missing[formula].append(pseudos)
-
-    count = 0 
-    if missing:
-        for formula, pplist in missing.items():
-            for pseudos in pplist:
-                count += 1
-                odata[formula].append(GbrvRecord(formula, pseudos, dojo_pptable))
-
-        odata.json_write()
-
-    return count
-
+    basename = struct_type + ".json"

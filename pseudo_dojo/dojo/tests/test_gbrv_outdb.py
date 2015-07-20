@@ -4,6 +4,7 @@ import sys
 import os
 
 from pseudo_dojo.core.testing import PseudoDojoTest
+from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.dojo.gbrv_outdb import GbrvRecord, GbrvOutdb, RocksaltOutdb
 from pseudo_dojo.pseudos import dojotable_absdir
 
@@ -79,6 +80,27 @@ class GbrvOutdbTest(PseudoDojoTest):
 
         # NB: This works because all values support __eq__
         assert new_outdb == outdb
+
+    def test_db_update(self):
+        """Testing DB update"""
+        dirpath = dojotable_absdir("ONCVPSP-PBE")
+
+        # Init an empty object.
+        outdb = RocksaltOutdb.new_from_dojodir(dirpath)
+
+        # No change here
+        u = outdb.check_update()
+        print(u)
+        assert u.nrec_added == 0 and u.nrec_removed
+
+        # Now I hack a bit the object to simulate a pseudo that has been removed
+        new_table = [p for p in outdb.dojo_pptable if p.basename != "Si.psp8"]
+        outdb.dojo_pptable = DojoTable.as_table(new_table)
+
+        # TODO:
+        u = outdb.check_update()
+        print(u)
+        assert u.nrec_added == 0 and u.nrec_removed == 0
 
 
 if __name__ == "__main__":
