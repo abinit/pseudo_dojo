@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 def gbrv_generate(options):
     """Generate the GBRV output databases."""
 
+    # FIXME bugme with workdir
     for cls in GbrvOutdb.__subclasses__():
         outdb = cls.new_from_dojodir(options.dojo_dir)
         if os.path.exists(outdb.filepath):
