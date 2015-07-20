@@ -132,7 +132,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         # Kpoint sampling: shiftk depends on struct_type
         #shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
         shiftk = [0, 0, 0]
-        ngkpt = (4,4,4)
+        #ngkpt = (4,4,4)
 
         self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk)
         self.spin_mode = SpinMode.as_spinmode(spin_mode)
@@ -256,7 +256,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
             abs_err = pawabs_err
             rel_err = pawrel_err
 
-        print("for GBRV struct_type: ", self.struct_type, "a0= ", a0, "Angstrom")
+        print("for %s (%s) a0=%.2f Angstrom" % (self.formula, self.struct_type, a0))
         print("AE - THIS: abs_err = %f, rel_err = %f %%" % (abs_err, rel_err))
         print("GBRV-PAW - THIS: abs_err = %f, rel_err = %f %%" % (pawabs_err, pawrel_err))
 
