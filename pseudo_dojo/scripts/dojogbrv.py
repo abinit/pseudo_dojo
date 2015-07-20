@@ -67,12 +67,11 @@ def gbrv_plot(options):
         frame = outdb.get_dataframe()
         print(frame)
 
-        import matplotlib.pyplot as plt
-
-        frame.plot(frame.index, ["normal_rel_err", "high_rel_err"])
+        #import matplotlib.pyplot as plt
+        #frame.plot(frame.index, ["normal_rel_err", "high_rel_err"])
         #ax.set_xticks(range(len(data.index)))
         #ax.set_xticklabels(data.index)
-        plt.show()
+        #plt.show()
 
         
         #outdb.plot_errors(reference="ae", accuracy="normal")
@@ -90,8 +89,8 @@ def gbrv_run(options):
 
     outdb = GbrvOutdb.from_file(options.database)
 
-    #jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs)
-    jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs, select_formulas=["NaCl"])
+    jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs)
+    #jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs, select_formulas=["NaCl"])
     num_jobs = len(jobs)
 
     if num_jobs == 0:
@@ -102,7 +101,7 @@ def gbrv_run(options):
 
     import tempfile
     workdir=tempfile.mkdtemp(dir=os.getcwd(), prefix=outdb.struct_type + "_")
-    workdir=tempfile.mkdtemp()
+    #workdir=tempfile.mkdtemp()
 
     flow = abilab.Flow(workdir=workdir, manager=options.manager)
 
@@ -113,10 +112,12 @@ def gbrv_run(options):
         "paral_kgb": options.paral_kgb,
     }
 
+
     gbrv_factory = GbrvCompoundsFactory()
     for job in jobs:
+        ecut = 45 if job.accuracy == "normal" else 65
         work = gbrv_factory.relax_and_eos_work(job.accuracy, job.pseudos, job.formula, outdb.struct_type, 
-                                               ecut=6, pawecutdg=None, **extra_abivars)
+                                               ecut=ecut, pawecutdg=None, **extra_abivars)
 
         # Attach the database to the work to trigger the storage of the results.
         flow.register_work(work.set_outdb(outdb))
@@ -133,6 +134,7 @@ def gbrv_run(options):
     else:
         # Run the flow with the scheduler.
         #print("Fake Running")
+        flow.use_smartio()
         flow.make_scheduler().start()
 
     return 0
@@ -188,7 +190,7 @@ usage example:
     p_run = subparsers.add_parser('run', parents=[copts_parser], help="Update databases.")
     p_run.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
     p_run.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
-    p_run.add_argument('-n', '--max-njobs', default=2, help="Maximum number of jobs (a.k.a. flows) that will be submitted")
+    p_run.add_argument('-n', '--max-njobs', type=int, default=2, help="Maximum number of jobs (a.k.a. flows) that will be submitted")
     p_run.add_argument('-d', '--dry-run', default=False, action="store_true", help=("Dry run, build the flow and check validity "
                        "of input files without submitting"))
     p_run.add_argument('database', help='Database with the output results.')
