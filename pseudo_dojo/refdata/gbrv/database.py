@@ -152,8 +152,7 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
             return Structure.rocksalt(a, self.species)
 
         elif stype == "ABO3":
-            raise NotImplementedError()
-            #return Structure.peroviskite(a, sites)
+            return Structure.ABO3(a, self.species)
 
         elif stype == "hH":
             raise NotImplementedError()

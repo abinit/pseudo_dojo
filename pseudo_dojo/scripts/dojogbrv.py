@@ -116,7 +116,7 @@ def gbrv_run(options):
 
     gbrv_factory = GbrvCompoundsFactory()
     for job in jobs:
-        ecut = 45 if job.accuracy == "normal" else 65
+        ecut = 30 if job.accuracy == "normal" else 45
         work = gbrv_factory.relax_and_eos_work(job.accuracy, job.pseudos, job.formula, outdb.struct_type, 
                                                ecut=ecut, pawecutdg=None, **extra_abivars)
 
