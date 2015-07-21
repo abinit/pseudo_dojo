@@ -50,9 +50,15 @@ def gbrv_update(options):
 def gbrv_reset(options):
     """Reset the failed entries in the list of databases specified by the user."""
 
+    status_list = []
+    if "f" in options.status: status_list.append("failed")
+    if "s" in opions.status: status_list.append("scheduled")
+    if not status_list:
+        raise ValueError("Wrong value option %s" % options.status)
+
     for path in options.database_list:
         outdb = GbrvOutdb.from_file(path)
-        n = outdb.reset(status="failed")
+        n = outdb.reset(status_list=status_list)
         print("%s: %d has been resetted" % (outdb.basename, n))
 
     return 0
@@ -73,9 +79,7 @@ def gbrv_plot(options):
         #ax.set_xticklabels(data.index)
         #plt.show()
 
-        
         #outdb.plot_errors(reference="ae", accuracy="normal")
-
         #for formula, records in outdb.values()
         #records = outdb["NaCl"]
         #for rec in records:
@@ -179,7 +183,8 @@ usage example:
     p_update.add_argument('dojo_dir', help='Directory containing the pseudopotentials.')
 
     # Subparser for the reset command.
-    p_reset = subparsers.add_parser('reset', parents=[copts_parser], help="Reset failed entries in the database.")
+    p_reset = subparsers.add_parser('reset', parents=[copts_parser], help="Reset entries in the database.")
+    p_reset.add_argument("-s", '--status', type=string, default="f", help='f for failed, s for scheduled, `fs` for both')
     p_reset.add_argument('database_list', nargs="+", help='Database(s) with the output results.')
 
     # Subparser for plot command.

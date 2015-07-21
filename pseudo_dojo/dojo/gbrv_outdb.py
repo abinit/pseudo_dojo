@@ -12,6 +12,7 @@ import numpy as np
 from collections import OrderedDict, MutableMapping, defaultdict
 from warnings import warn
 from monty.io import FileLock
+from monty.string import list_strings
 from atomicfile import AtomicFile
 from pandas import DataFrame
 from monty.collections import AttrDict, dict2namedtuple
@@ -455,17 +456,18 @@ class GbrvOutdb(MutableMapping):
 
         return dict2namedtuple(nrec_removed=nrec_removed, nrec_added=nrec_added)
 
-    def reset(self, status="failed"):
+    def reset(self, status_list="failed"):
         """
-        Reset all the failed calculation so that we can resubmit them.
+        Reset all the records whose status is in status_list so that we can resubmit them.
         Return number of records that have been resetted.
         """
+        status_list = list_strings(status_list)
         count = 0
+
         for formula, records in self.items():
             for rec in records:
                 for accuracy in rec.ACCURACIES:
-                    # TODO: Better treatment of failed!
-                    if rec[accuracy] == status:
+                    if rec[accuracy] in status_list:
                         count += 1
                         rec[accuracy] = None
 
@@ -631,10 +633,11 @@ class GbrvDataFrame(DataFrame):
 
         # Find all pseudos with the given symbol in the table.
         frame_esymb = self.subframe_for_symbol(symbol)
-        
-        #frame_pseudo = frame_esymb.subframe_for_pseudo(pseudo, best_with_accuracy=accuracy)
 
         # For each pseudo:
-        #     1) Extract the sub-frame.
-        #     2) Keep the rows with the best result for the given accuracy
-        #     3) Plot
+        # Extract the sub-frame for this pseudo and keep the rows with the 
+        # best result for the given accuracy
+        #frame_pseudo = frame_esymb.subframe_for_pseudo(pseudo, best_with_accuracy=accuracy)
+
+        # Plot
+        #frame.pseudo.plot("formula", key, ax=ax)
