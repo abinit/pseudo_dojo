@@ -52,7 +52,7 @@ def gbrv_reset(options):
 
     status_list = []
     if "f" in options.status: status_list.append("failed")
-    if "s" in opions.status: status_list.append("scheduled")
+    if "s" in options.status: status_list.append("scheduled")
     if not status_list:
         raise ValueError("Wrong value option %s" % options.status)
 
@@ -60,6 +60,7 @@ def gbrv_reset(options):
         outdb = GbrvOutdb.from_file(path)
         n = outdb.reset(status_list=status_list)
         print("%s: %d has been resetted" % (outdb.basename, n))
+        outdb.json_write()
 
     return 0
 
@@ -185,7 +186,7 @@ usage example:
 
     # Subparser for the reset command.
     p_reset = subparsers.add_parser('reset', parents=[copts_parser], help="Reset entries in the database.")
-    p_reset.add_argument("-s", '--status', type=string, default="f", help='f for failed, s for scheduled, `fs` for both')
+    p_reset.add_argument("-s", '--status', type=str, default="f", help='f for failed, s for scheduled, `fs` for both')
     p_reset.add_argument('database_list', nargs="+", help='Database(s) with the output results.')
 
     # Subparser for plot command.
