@@ -18,6 +18,7 @@ from pymatgen.io.abinitio.works import Work, build_oneshot_phononwork, OneShotPh
 from abipy.core.structure import Structure
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
+from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb #, RocksaltOutdb GbrvRecord, 
 
 import logging
 logger = logging.getLogger(__name__)
@@ -144,21 +145,20 @@ class GbrvCompoundRelaxAndEosWork(Work):
         # Register structure relaxation task.
         self.relax_task = self.register_relax_task(inp)
 
-    def set_outdb(self, outdb):
+    def set_outdb(self, path):
         """
         This function set the outdb property (a database with the Gbrv results)
         Use this function when you want the work to write the results of the 
         calculation to the ouddb calculation.
         """
-        assert outdb.struct_type == self.struct_type
-        self._outdb = outdb
+        self._outdb_path = path
         return self
 
     @property
-    def outdb(self):
+    def outdb_path(self):
         """The database with the output results, None if not set."""
         try:
-            return self._outdb
+            return self._outdb_path
         except AttributeError:
             return None
 
@@ -235,11 +235,10 @@ class GbrvCompoundRelaxAndEosWork(Work):
             #struct_type=self.struct_type
         ))
 
+        # Update the database.
         # TODO, handle error!
-        if self.outdb is not None:
-            rec = self.outdb.find_record(self.formula, self.pseudos)
-            rec.add_results(self.accuracy, results)
-            self.outdb.json_write()
+        if self.outdb_path is not None:
+            GbrvOutDb.update_record(self.outdb_path, self.formula, self.accuracy, self.pseudos. results)
 
         db = gbrv_database()
         entry = db.get_entry(self.formula, stype=self.struct_type)
@@ -279,7 +278,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         """
         if not self.add_eos_done:
             self.add_eos_tasks()
-            self._finalized = False
+            self.finalized = False
         else:
             self.compute_eos()
 

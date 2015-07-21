@@ -3,7 +3,7 @@
 from __future__ import division, print_function, unicode_literals
 
 #import abc
-#import sys
+import sys
 import os
 #import six
 import json
@@ -17,6 +17,7 @@ from atomicfile import AtomicFile
 from pandas import DataFrame
 from monty.collections import AttrDict, dict2namedtuple
 from monty.functools import lazy_property
+from pymatgen.core.periodic_table import sort_symbols_by_Z
 #from pymatgen.core.units import Ha_to_eV
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.core.pseudos import DojoTable
@@ -319,10 +320,23 @@ class GbrvOutdb(MutableMapping):
 
     def json_write(self, filepath=None):
         """Write new file with locking mechanism."""
+        # FIXME: This cannot be called my multiple processes!
         filepath = self.filepath if filepath is None else filepath
         with FileLock(filepath):
             with AtomicFile(filepath, mode="wt") as fh:
                 fh.write(self.to_json())
+
+    @classmethod
+    def update_record(cls, filepath, formula, accuracy, pseudos, results):
+        """Update database."""
+        with FileLock(filepath):
+            outdb = cls.from_file(filepath)
+
+            rec = outdb.find_record(formula, pseudos)
+            rec.add_results(accuracy, results)
+
+            with AtomicFile(filepath, mode="wt") as fh:
+                fh.write(outdb.to_json())
 
     # ABC protocol.
     def __iter__(self):
@@ -507,44 +521,49 @@ class GbrvOutdb(MutableMapping):
 
         return fig
 
-    def get_dataframe(self, reference="ae", **kwargs):
+    def get_dataframe(self, reference="ae", pptable=None, **kwargs):
         """
         Build a pandas :class:`DataFrame` with the most important results.
 
         Args:
             reference:
-
-        ================  ==============================================================
-        kwargs            Meaning
-        ================  ==============================================================
-        with_md5          True if column with md5 is wanted. Default: True.
-        ================  ==============================================================
+            pptable: :class:`PseudoTable` object. If given. the frame will contains only the 
+                entries with pseudopotential in pptable.
 
         Returns:
             frame: pandas :class:`DataFrame` 
         """
-        with_md5 = kwargs.pop("with_md5", True)
-        rows, names = [], []
+        rows = []
 
         for formula, records in self.items():
             for rec in records:
                 d = {"formula": formula, "basenames": set(p.basename for p in rec.pseudos)}
-                if with_md5:
-                    d.update({"md5": {p.symbol: p.md5 for p in rec.pseudos}})
+                d.update({"md5": {p.symbol: p.md5 for p in rec.pseudos}})
 
+                has_data = 0
                 for acc in ("normal", "high"):
                     e = rec.compute_err(reference=reference, accuracy=acc)
                     if e is None: continue
-                    d.update({acc + "_a0": e.a0, acc + "_rel_err": e.rel_err, 
-                             # acc + "_abs_err": e.abs_err, 
+                    has_data += 1
+                    d.update({acc + "_a0": e.a0, acc + "_rel_err": e.rel_err, #acc + "_abs_err": e.abs_err, 
                              })
 
-                names.append(formula)
-                rows.append(d)
+                if has_data:
+                    rows.append(d)
 
         # Build sub-class of pandas.DataFrame
-        #return GbrvDataFrame(rows, index=names)
-        return GbrvDataFrame(rows)
+        new = GbrvDataFrame(rows)
+        if pptable is None: return new
+
+        raise NotImplementedError()
+        # Remove rows that are not in pptable.
+        #rows = []
+        #for index, entry in self.iterrows():
+        #    md5 = entry.md5
+        #    if not pptable.has_md5_signatures(md5): continue
+        #    rows.append(entry)
+
+        #return GbrvDataFrame(rows)
 
 
 class RocksaltOutdb(GbrvOutdb):
@@ -568,7 +587,7 @@ class HalfHeuslersOutdb(GbrvOutdb):
 
 class GbrvDataFrame(DataFrame):
     """
-    Extends pands DataFrame adding helper functions.
+    Extends pandas :class:`DataFrame` by adding helper functions.
 
     The frame has the structure:
 
@@ -579,12 +598,37 @@ class GbrvDataFrame(DataFrame):
 
     #ALL_ACCURACIES = ("normal", "high")
 
+    @lazy_property
+    def symbols(self):
+        """List with the element symbols present in the table sorted by Z."""
+        symbols = set()
+        for idx, row in self.iterrows(): 
+            symbols.update(row.md5.keys())
+
+        return sort_symbols_by_Z(symbols)
+
+    #@lazy_property
+    #def pseudo_metas(self):
+    #    d = {}
+    #    for idx, row in self.iterrows(): 
+    #        d.update(row.pseudo_metas)
+    #    return d
+
+    def pprint(self, **kwargs):
+        """Pretty-print"""
+        frame = self[["formula", "high_rel_err", "basenames"]]
+        s = frame.to_string(index=False)
+        print(s)
+        print("")
+        #print(frame.describe())
+        #print("")
+
     def subframe_for_pseudo(self, pseudo, best_for_accuracy=None):
         """
         Extract the rows with the given pseudo. Return new `GbrvDataFrame`.
 
         Args:
-            pseudo: :class:`Pseudo` object or string with the pseudo basename name.
+            pseudo: :class:`Pseudo` object or string with the pseudo basename.
             best_for_accuracy: If not None, the returned frame will contain one
                 entry for formula. This entry has the `best` relative error
                 i.e. it's the one with the minimum absolute error.
@@ -592,52 +636,57 @@ class GbrvDataFrame(DataFrame):
         pname = pseudo.basename if hasattr(pseudo, "basename") else pseudo
                                                                              
         # Extract the rows containing this pseudo.
-        rows = []
-        for index, entry in self.iterrows():
-            if pname not in entry.basenames: continue
-            rows.append(entry)
+        rows = [row for idx, row in self.iterrows() if pname in row.basenames]
 
         new = self.__class__(rows)
-        if best_for_accuracy is None: return new
+        if best_for_accuracy is None: 
+            return new
 
         # Handle best_for_accuracy
         key = best_for_accuracy + "_rel_err"
 
-        groups = new.groupby("formula")
-        #groups = new.groupby("basenames").groups
-        for group in groups:
-            print("group")
-            print(group)
-            #print(group[key])
+        #groups = new.groupby("formula")
+        ##groups = new.groupby("basenames").groups
+        #for group in groups:
+        #    print("group")
+        #    print(group)
+        #    #print(group[key])
         #raise NotImplementedError()
 
     def subframe_for_symbol(self, symbol):
-        """
-        Extract the rows with the given symbol. Return new `GbrvDataFrame`.
-        """
-        rows = []
-        for index, entry in self.iterrows():
-            if symbol not in entry.md5.keys(): continue
-            rows.append(entry)
-
+        """Extract the rows with the given element symbol. Return new `GbrvDataFrame`."""
+        rows = [row for idx, row in self.iterrows() if symbol in row.md5.keys()]
         return self.__class__(rows)
 
     @add_fig_kwargs
     def plot_error_pseudo(self, pseudo, ax=None, **kwargs):
         frame = self.subframe_for_pseudo(pseudo)
-        return frame.plot("formula", ["normal_rel_err", "high_rel_err"])
+
+        ynames = ["normal_rel_err", "high_rel_err"]
+        style = ["-o"] * len(ynames)
+
+        ax, fig, plt = get_ax_fig_plt(ax)
+        frame.plot("formula", ynames, style=style, grid=True, ax=ax
+                        #kind="scatter"
+                       )
+
+        #xticks = ax.get_xticks()
+        #ax.set_xticklabels(frame.formula)
+        return fig
 
     @add_fig_kwargs
-    def plot_pseudos_with_symbol(self, symbol, accuracy="normal", **kwargs):
-        key = accuracy + "_rel_err"
-
-        # Find all pseudos with the given symbol in the table.
-        frame_esymb = self.subframe_for_symbol(symbol)
-
+    def plot_allpseudos_with_symbol(self, symbol, accuracy="normal", **kwargs):
         # For each pseudo:
         # Extract the sub-frame for this pseudo and keep the rows with the 
         # best result for the given accuracy
-        #frame_pseudo = frame_esymb.subframe_for_pseudo(pseudo, best_with_accuracy=accuracy)
+        ax, fig, plt = get_ax_fig_plt(ax)
+        key = accuracy + "_rel_err"
 
-        # Plot
-        #frame.pseudo.plot("formula", key, ax=ax)
+        # Find all pseudos with the given symbol in the table.
+        frame = self.subframe_for_symbol(symbol)
+
+        #for pseudo in frame.pseudos:
+        #    frame.plot_error_pseudo(pseudo, ax=None)
+
+        return fig
+
