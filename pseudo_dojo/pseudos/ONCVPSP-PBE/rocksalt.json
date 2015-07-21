@@ -1,7 +1,7 @@
 {
     "AlN": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -17,10 +17,10 @@
                     "md5": "95554b941e9158fd56c80fda470ef61c"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -36,10 +36,10 @@
                     "md5": "a683a8bd86c6b8059f6c315d1b6c6685"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -55,10 +55,10 @@
                     "md5": "c6121e2629558e5fffa741a7ed8d6aef"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -74,10 +74,10 @@
                     "md5": "349526dea7842a0f4bf3ee6cf27869ec"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -93,10 +93,10 @@
                     "md5": "95554b941e9158fd56c80fda470ef61c"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -112,10 +112,10 @@
                     "md5": "a683a8bd86c6b8059f6c315d1b6c6685"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -131,10 +131,10 @@
                     "md5": "c6121e2629558e5fffa741a7ed8d6aef"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -150,10 +150,10 @@
                     "md5": "349526dea7842a0f4bf3ee6cf27869ec"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -169,10 +169,10 @@
                     "md5": "95554b941e9158fd56c80fda470ef61c"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -188,10 +188,10 @@
                     "md5": "a683a8bd86c6b8059f6c315d1b6c6685"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -207,10 +207,10 @@
                     "md5": "c6121e2629558e5fffa741a7ed8d6aef"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlN", 
             "pseudos_metadata": {
                 "Al": {
@@ -226,7 +226,7 @@
                     "md5": "349526dea7842a0f4bf3ee6cf27869ec"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "LaN": [
@@ -1372,7 +1372,7 @@
     ], 
     "WO": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1388,10 +1388,39 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 22.12504076270388, 
+                "a0": 4.456371180235325, 
+                "etotals": [
+                    -1988.8716896716562, 
+                    -1988.8726202100006, 
+                    -1988.873328123095, 
+                    -1988.8737848522594, 
+                    -1988.8739668211651, 
+                    -1988.8738987779911, 
+                    -1988.8736289639048, 
+                    -1988.8731309325901, 
+                    -1988.872515450787
+                ], 
+                "b0": 1.687805297948394, 
+                "b1": Infinity, 
+                "volumes": [
+                    21.882062574942683, 
+                    21.93732030871779, 
+                    21.992578042492894, 
+                    22.047835776268006, 
+                    22.103093510043113, 
+                    22.15835124381822, 
+                    22.21360897759333, 
+                    22.268866711368435, 
+                    22.324124445143543
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1407,10 +1436,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1426,10 +1455,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1445,10 +1474,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1464,10 +1493,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1483,10 +1512,39 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 22.166508947062987, 
+                "a0": 4.45915358246904, 
+                "etotals": [
+                    -1887.9087085197389, 
+                    -1887.9095292238594, 
+                    -1887.9101289147231, 
+                    -1887.9105046128893, 
+                    -1887.9106635698715, 
+                    -1887.910617217953, 
+                    -1887.910368720214, 
+                    -1887.909853773566, 
+                    -1887.909270083603
+                ], 
+                "b0": 1.5215582955520857, 
+                "b1": Infinity, 
+                "volumes": [
+                    21.928295702245133, 
+                    21.983670186341712, 
+                    22.039044670438287, 
+                    22.094419154534865, 
+                    22.149793638631444, 
+                    22.20516812272803, 
+                    22.260542606824608, 
+                    22.315917090921186, 
+                    22.371291575017764
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1502,10 +1560,39 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 22.07987176457697, 
+                "a0": 4.453336504741692, 
+                "etotals": [
+                    -1988.831173659977, 
+                    -1988.8320771907852, 
+                    -1988.8327458185645, 
+                    -1988.8331911755583, 
+                    -1988.8333860582943, 
+                    -1988.8333197705783, 
+                    -1988.833017891908, 
+                    -1988.8325221014695, 
+                    -1988.831833400978
+                ], 
+                "b0": 1.698722823321003, 
+                "b1": Infinity, 
+                "volumes": [
+                    21.841005439212314, 
+                    21.89615949335174, 
+                    21.951313547491164, 
+                    22.00646760163059, 
+                    22.061621655770015, 
+                    22.116775709909433, 
+                    22.17192976404886, 
+                    22.227083818188284, 
+                    22.28223787232771
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1521,10 +1608,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1540,10 +1627,39 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 22.167179698543936, 
+                "a0": 4.459198559536443, 
+                "etotals": [
+                    -1889.3521990863846, 
+                    -1889.3531410181445, 
+                    -1889.3538391052948, 
+                    -1889.3542710163329, 
+                    -1889.3544452884616, 
+                    -1889.3544075379264, 
+                    -1889.354166073356, 
+                    -1889.353697150435, 
+                    -1889.3530928115802
+                ], 
+                "b0": 1.6353450481535083, 
+                "b1": Infinity, 
+                "volumes": [
+                    21.921129515940535, 
+                    21.97648590360705, 
+                    22.031842291273566, 
+                    22.08719867894008, 
+                    22.142555066606597, 
+                    22.19791145427311, 
+                    22.253267841939632, 
+                    22.30862422960615, 
+                    22.363980617272663
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1559,10 +1675,39 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 21.518430134150577, 
+                "a0": 4.4152658534441755, 
+                "etotals": [
+                    -2681.4472569618047, 
+                    -2681.4480188219236, 
+                    -2681.4485586779556, 
+                    -2681.4488815395243, 
+                    -2681.448990568729, 
+                    -2681.4488890396997, 
+                    -2681.4485796990016, 
+                    -2681.4480655974176, 
+                    -2681.447350421119
+                ], 
+                "b0": 1.568248483563458, 
+                "b1": Infinity, 
+                "volumes": [
+                    21.300873202397106, 
+                    21.354663286241543, 
+                    21.40845337008598, 
+                    21.46224345393042, 
+                    21.516033537774856, 
+                    21.569823621619292, 
+                    21.623613705463733, 
+                    21.67740378930817, 
+                    21.731193873152606
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1578,10 +1723,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1597,10 +1742,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1616,10 +1761,10 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1635,10 +1780,10 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "WO", 
             "pseudos_metadata": {
                 "W": {
@@ -1654,12 +1799,12 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "SnO": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "SnO", 
             "pseudos_metadata": {
                 "Sn": {
@@ -1675,10 +1820,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "SnO", 
             "pseudos_metadata": {
                 "Sn": {
@@ -1694,10 +1839,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "SnO", 
             "pseudos_metadata": {
                 "Sn": {
@@ -1713,10 +1858,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "SnO", 
             "pseudos_metadata": {
                 "Sn": {
@@ -1732,10 +1877,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "SnO", 
             "pseudos_metadata": {
                 "Sn": {
@@ -1751,10 +1896,10 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "SnO", 
             "pseudos_metadata": {
                 "Sn": {
@@ -1770,10 +1915,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "SnO", 
             "pseudos_metadata": {
                 "Sn": {
@@ -1789,10 +1934,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "SnO", 
             "pseudos_metadata": {
                 "Sn": {
@@ -1808,10 +1953,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "SnO", 
             "pseudos_metadata": {
                 "Sn": {
@@ -1827,10 +1972,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "SnO", 
             "pseudos_metadata": {
                 "Sn": {
@@ -1846,12 +1991,12 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "BN": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -1867,10 +2012,10 @@
                     "md5": "95554b941e9158fd56c80fda470ef61c"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -1886,10 +2031,10 @@
                     "md5": "a683a8bd86c6b8059f6c315d1b6c6685"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -1905,10 +2050,10 @@
                     "md5": "c6121e2629558e5fffa741a7ed8d6aef"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -1924,10 +2069,10 @@
                     "md5": "349526dea7842a0f4bf3ee6cf27869ec"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -1943,10 +2088,10 @@
                     "md5": "95554b941e9158fd56c80fda470ef61c"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -1962,10 +2107,10 @@
                     "md5": "a683a8bd86c6b8059f6c315d1b6c6685"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -1981,10 +2126,10 @@
                     "md5": "c6121e2629558e5fffa741a7ed8d6aef"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -2000,10 +2145,10 @@
                     "md5": "349526dea7842a0f4bf3ee6cf27869ec"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -2019,10 +2164,10 @@
                     "md5": "95554b941e9158fd56c80fda470ef61c"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -2038,10 +2183,10 @@
                     "md5": "a683a8bd86c6b8059f6c315d1b6c6685"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -2057,10 +2202,10 @@
                     "md5": "c6121e2629558e5fffa741a7ed8d6aef"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -2076,10 +2221,10 @@
                     "md5": "349526dea7842a0f4bf3ee6cf27869ec"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -2095,10 +2240,10 @@
                     "md5": "95554b941e9158fd56c80fda470ef61c"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -2114,10 +2259,10 @@
                     "md5": "a683a8bd86c6b8059f6c315d1b6c6685"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -2133,10 +2278,10 @@
                     "md5": "c6121e2629558e5fffa741a7ed8d6aef"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "BN", 
             "pseudos_metadata": {
                 "B": {
@@ -2152,7 +2297,7 @@
                     "md5": "349526dea7842a0f4bf3ee6cf27869ec"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "MgO": [
@@ -2939,7 +3084,7 @@
     ], 
     "GaN": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GaN", 
             "pseudos_metadata": {
                 "Ga": {
@@ -2955,10 +3100,10 @@
                     "md5": "95554b941e9158fd56c80fda470ef61c"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GaN", 
             "pseudos_metadata": {
                 "Ga": {
@@ -2974,10 +3119,10 @@
                     "md5": "a683a8bd86c6b8059f6c315d1b6c6685"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GaN", 
             "pseudos_metadata": {
                 "Ga": {
@@ -2993,10 +3138,10 @@
                     "md5": "c6121e2629558e5fffa741a7ed8d6aef"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GaN", 
             "pseudos_metadata": {
                 "Ga": {
@@ -3012,10 +3157,10 @@
                     "md5": "349526dea7842a0f4bf3ee6cf27869ec"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GaN", 
             "pseudos_metadata": {
                 "Ga": {
@@ -3031,10 +3176,10 @@
                     "md5": "95554b941e9158fd56c80fda470ef61c"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GaN", 
             "pseudos_metadata": {
                 "Ga": {
@@ -3050,10 +3195,10 @@
                     "md5": "a683a8bd86c6b8059f6c315d1b6c6685"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GaN", 
             "pseudos_metadata": {
                 "Ga": {
@@ -3069,10 +3214,10 @@
                     "md5": "c6121e2629558e5fffa741a7ed8d6aef"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GaN", 
             "pseudos_metadata": {
                 "Ga": {
@@ -3088,7 +3233,7 @@
                     "md5": "349526dea7842a0f4bf3ee6cf27869ec"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "AlAs": [
@@ -4368,7 +4513,36 @@
     ], 
     "GeO": [
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 27.16791831798125, 
+                "a0": 4.772055120075463, 
+                "etotals": [
+                    -2812.7268520850594, 
+                    -2812.727323907213, 
+                    -2812.727671339976, 
+                    -2812.7278961370516, 
+                    -2812.728000786612, 
+                    -2812.727986726113, 
+                    -2812.7278566785076, 
+                    -2812.7276116356293, 
+                    -2812.727253051808
+                ], 
+                "b0": 0.6994335701572397, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.868578469563435, 
+                    26.93642841519365, 
+                    27.00427836082386, 
+                    27.07212830645407, 
+                    27.13997825208428, 
+                    27.207828197714488, 
+                    27.275678143344702, 
+                    27.343528088974914, 
+                    27.41137803460512
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "GeO", 
             "pseudos_metadata": {
                 "Ge": {
@@ -4384,10 +4558,68 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 27.17988577976026, 
+                "a0": 4.772755713609875, 
+                "etotals": [
+                    -2811.936223769384, 
+                    -2811.937297156708, 
+                    -2811.9381684687905, 
+                    -2811.938782312769, 
+                    -2811.9390579736964, 
+                    -2811.938993217647, 
+                    -2811.9385951139257, 
+                    -2811.9378883373297, 
+                    -2811.9369971975475
+                ], 
+                "b0": 1.7990777158001352, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.88630949884319, 
+                    26.954204219799863, 
+                    27.022098940756543, 
+                    27.089993661713216, 
+                    27.15788838266989, 
+                    27.225783103626565, 
+                    27.293677824583238, 
+                    27.36157254553991, 
+                    27.429467266496587
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 27.149503369625013, 
+                "a0": 4.770976678829767, 
+                "etotals": [
+                    -2810.9589367143217, 
+                    -2810.9594089151374, 
+                    -2810.9597572184625, 
+                    -2810.9599829153585, 
+                    -2810.9600883457942, 
+                    -2810.96007479293, 
+                    -2810.9599446810685, 
+                    -2810.9596994648073, 
+                    -2810.959340689495
+                ], 
+                "b0": 0.7009573976887141, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.850162209382148, 
+                    26.91796564930483, 
+                    26.98576908922751, 
+                    27.05357252915019, 
+                    27.121375969072872, 
+                    27.18917940899556, 
+                    27.25698284891824, 
+                    27.324786288840922, 
+                    27.392589728763607
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "GeO", 
             "pseudos_metadata": {
                 "Ge": {
@@ -4403,10 +4635,68 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 27.1719095295274, 
+                "a0": 4.7722887945717, 
+                "etotals": [
+                    -2810.4416835255697, 
+                    -2810.442681506742, 
+                    -2810.443499803808, 
+                    -2810.4440636061963, 
+                    -2810.444326291347, 
+                    -2810.444252837843, 
+                    -2810.4438863991472, 
+                    -2810.4432434800933, 
+                    -2810.442426296456
+                ], 
+                "b0": 1.6653500238931223, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.87790144596127, 
+                    26.945774934461173, 
+                    27.01364842296108, 
+                    27.081521911460978, 
+                    27.14939539996088, 
+                    27.21726888846078, 
+                    27.285142376960685, 
+                    27.353015865460588, 
+                    27.420889353960487
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 27.141455097861233, 
+                "a0": 4.770505191852977, 
+                "etotals": [
+                    -2812.6219328963093, 
+                    -2812.6224053934225, 
+                    -2812.6227541167223, 
+                    -2812.622980232693, 
+                    -2812.6230862209914, 
+                    -2812.6230734394335, 
+                    -2812.622944285132, 
+                    -2812.62270037581, 
+                    -2812.622343112924
+                ], 
+                "b0": 0.700144027910578, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.841736897244633, 
+                    26.909519061126563, 
+                    26.977301225008492, 
+                    27.045083388890426, 
+                    27.112865552772355, 
+                    27.180647716654285, 
+                    27.248429880536218, 
+                    27.316212044418148, 
+                    27.383994208300077
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "GeO", 
             "pseudos_metadata": {
                 "Ge": {
@@ -4422,10 +4712,68 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 27.170303696936035, 
+                "a0": 4.772194780226398, 
+                "etotals": [
+                    -2811.878240240897, 
+                    -2811.879282000993, 
+                    -2811.8801378492867, 
+                    -2811.880733235989, 
+                    -2811.8810119083264, 
+                    -2811.8809372056885, 
+                    -2811.8805446210376, 
+                    -2811.879838414448, 
+                    -2811.878929160059
+                ], 
+                "b0": 1.7808966573849943, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.878415876079043, 
+                    26.9462906636449, 
+                    27.01416545121075, 
+                    27.082040238776607, 
+                    27.149915026342466, 
+                    27.217789813908322, 
+                    27.285664601474178, 
+                    27.353539389040034, 
+                    27.42141417660589
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 27.104413217282094, 
+                "a0": 4.768333987534949, 
+                "etotals": [
+                    -2818.167038654816, 
+                    -2818.1674623751323, 
+                    -2818.1677614054056, 
+                    -2818.1679368331493, 
+                    -2818.167991138058, 
+                    -2818.1679256832003, 
+                    -2818.1677425296557, 
+                    -2818.167443576076, 
+                    -2818.16702997826
+                ], 
+                "b0": 0.7059216212371779, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.834677993706745, 
+                    26.902442332074692, 
+                    26.97020667044264, 
+                    27.037971008810583, 
+                    27.10573534717853, 
+                    27.173499685546474, 
+                    27.24126402391442, 
+                    27.30902836228237, 
+                    27.376792700650316
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "GeO", 
             "pseudos_metadata": {
                 "Ge": {
@@ -4441,10 +4789,68 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 27.112139721627642, 
+                "a0": 4.7687870386389735, 
+                "etotals": [
+                    -2817.385504923965, 
+                    -2817.3864102759158, 
+                    -2817.3871230354134, 
+                    -2817.3875739779423, 
+                    -2817.3877688002235, 
+                    -2817.387602003896, 
+                    -2817.3871275759534, 
+                    -2817.386313146655, 
+                    -2817.385239170723
+                ], 
+                "b0": 1.755393475848169, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.845970225462374, 
+                    26.91376307956708, 
+                    26.98155593367178, 
+                    27.049348787776484, 
+                    27.117141641881187, 
+                    27.18493449598589, 
+                    27.25272735009059, 
+                    27.320520204195294, 
+                    27.3883130583
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 27.106279431320996, 
+                "a0": 4.768443422697556, 
+                "etotals": [
+                    -2802.1546394493485, 
+                    -2802.155062263586, 
+                    -2802.1553603406464, 
+                    -2802.1555348197044, 
+                    -2802.1555881362897, 
+                    -2802.1555214903815, 
+                    -2802.155337035347, 
+                    -2802.155036796816, 
+                    -2802.154621918265
+                ], 
+                "b0": 0.7062703115887845, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.837145881438147, 
+                    26.904916451845814, 
+                    26.97268702225349, 
+                    27.04045759266116, 
+                    27.108228163068834, 
+                    27.175998733476504, 
+                    27.24376930388418, 
+                    27.31153987429185, 
+                    27.379310444699524
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "GeO", 
             "pseudos_metadata": {
                 "Ge": {
@@ -4460,10 +4866,68 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 27.11179928090423, 
+                "a0": 4.768767078378598, 
+                "etotals": [
+                    -2801.3717790702394, 
+                    -2801.37267416612, 
+                    -2801.3733807611734, 
+                    -2801.3738234611787, 
+                    -2801.3740065625498, 
+                    -2801.3738271965417, 
+                    -2801.3733416864006, 
+                    -2801.372515217825, 
+                    -2801.371433431234
+                ], 
+                "b0": 1.7579520834960787, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.847939579833938, 
+                    26.91573740705574, 
+                    26.983535234277543, 
+                    27.051333061499346, 
+                    27.11913088872115, 
+                    27.18692871594295, 
+                    27.25472654316475, 
+                    27.32252437038656, 
+                    27.390322197608363
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 26.93138068592712, 
+                "a0": 4.758165423347193, 
+                "etotals": [
+                    -616.3848437085145, 
+                    -616.3853222040324, 
+                    -616.3856770457605, 
+                    -616.3859093415203, 
+                    -616.3860203564866, 
+                    -616.3860120769699, 
+                    -616.3858866461397, 
+                    -616.3856462358079, 
+                    -616.3852918234302
+                ], 
+                "b0": 0.7089804042812092, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.63143727483384, 
+                    26.698688379063213, 
+                    26.765939483292595, 
+                    26.833190587521973, 
+                    26.900441691751347, 
+                    26.967692795980728, 
+                    27.034943900210106, 
+                    27.102195004439487, 
+                    27.16944610866886
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "GeO", 
             "pseudos_metadata": {
                 "Ge": {
@@ -4479,10 +4943,39 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 26.99274068399704, 
+                "a0": 4.761776323357974, 
+                "etotals": [
+                    -616.116529441481, 
+                    -616.1170210523387, 
+                    -616.1174262942847, 
+                    -616.1176924677828, 
+                    -616.1178206785147, 
+                    -616.1177984020474, 
+                    -616.11762546465, 
+                    -616.1172819832776, 
+                    -616.1167810399467
+                ], 
+                "b0": 0.8653412276553604, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.70530946720236, 
+                    26.77274711737206, 
+                    26.840184767541764, 
+                    26.90762241771147, 
+                    26.975060067881167, 
+                    27.04249771805087, 
+                    27.109935368220576, 
+                    27.17737301839028, 
+                    27.244810668559982
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GeO", 
             "pseudos_metadata": {
                 "Ge": {
@@ -4498,10 +4991,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GeO", 
             "pseudos_metadata": {
                 "Ge": {
@@ -4517,10 +5010,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GeO", 
             "pseudos_metadata": {
                 "Ge": {
@@ -4536,10 +5029,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "GeO", 
             "pseudos_metadata": {
                 "Ge": {
@@ -4555,7 +5048,7 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "RuO": [
@@ -5782,7 +6275,36 @@
     "struct_type": "rocksalt", 
     "AuO": [
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 26.8345672868588, 
+                "a0": 4.752456998819384, 
+                "etotals": [
+                    -4453.23213162699, 
+                    -4453.232720240841, 
+                    -4453.233150333388, 
+                    -4453.2334243634305, 
+                    -4453.233543221005, 
+                    -4453.233509052205, 
+                    -4453.233324839239, 
+                    -4453.232992409778, 
+                    -4453.232514567304
+                ], 
+                "b0": 0.9106173990016805, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.546043052434698, 
+                    26.61307851468832, 
+                    26.680113976941943, 
+                    26.747149439195564, 
+                    26.814184901449188, 
+                    26.88122036370281, 
+                    26.948255825956434, 
+                    27.015291288210054, 
+                    27.08232675046368
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -5798,10 +6320,68 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 26.993756291416034, 
+                "a0": 4.7618360435467775, 
+                "etotals": [
+                    -4452.921638696064, 
+                    -4452.92229558493, 
+                    -4452.922884077415, 
+                    -4452.923296947716, 
+                    -4452.923514060858, 
+                    -4452.923505964483, 
+                    -4452.92327434371, 
+                    -4452.922789139348, 
+                    -4452.922065188952
+                ], 
+                "b0": 1.2323785383886687, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.701434435826517, 
+                    26.768862300563452, 
+                    26.836290165300387, 
+                    26.903718030037325, 
+                    26.97114589477426, 
+                    27.038573759511195, 
+                    27.106001624248133, 
+                    27.173429488985064, 
+                    27.240857353722003
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 26.823100227066092, 
+                "a0": 4.751779955755044, 
+                "etotals": [
+                    -4451.46162262844, 
+                    -4451.462210122427, 
+                    -4451.462638887254, 
+                    -4451.462912115121, 
+                    -4451.463030547269, 
+                    -4451.46299628883, 
+                    -4451.462812216316, 
+                    -4451.462479964631, 
+                    -4451.462001945776
+                ], 
+                "b0": 0.9096012177195181, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.534844979259105, 
+                    26.601852163550163, 
+                    26.66885934784122, 
+                    26.73586653213228, 
+                    26.80287371642334, 
+                    26.869880900714396, 
+                    26.936888085005453, 
+                    27.003895269296514, 
+                    27.070902453587575
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -5817,10 +6397,68 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 26.9654190045724, 
+                "a0": 4.76016917957722, 
+                "etotals": [
+                    -4451.422167234107, 
+                    -4451.422785760681, 
+                    -4451.423291292696, 
+                    -4451.423662234479, 
+                    -4451.423867223372, 
+                    -4451.423911937407, 
+                    -4451.423786131199, 
+                    -4451.423494901808, 
+                    -4451.423026614858
+                ], 
+                "b0": 0.9451845682238887, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.648166949449333, 
+                    26.715460300331777, 
+                    26.78275365121423, 
+                    26.850047002096677, 
+                    26.917340352979128, 
+                    26.984633703861572, 
+                    27.05192705474402, 
+                    27.11922040562647, 
+                    27.186513756508916
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 26.798101246822714, 
+                "a0": 4.750303286079602, 
+                "etotals": [
+                    -4453.131166658969, 
+                    -4453.1317547125345, 
+                    -4453.1321833814145, 
+                    -4453.132456330895, 
+                    -4453.1325749343, 
+                    -4453.132540843303, 
+                    -4453.132356514801, 
+                    -4453.13202462194, 
+                    -4453.1315468431285
+                ], 
+                "b0": 0.9103541543790318, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.510086291766633, 
+                    26.577030954119582, 
+                    26.643975616472527, 
+                    26.71092027882547, 
+                    26.777864941178418, 
+                    26.844809603531363, 
+                    26.911754265884312, 
+                    26.978698928237254, 
+                    27.045643590590203
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -5836,10 +6474,68 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 26.965206061532847, 
+                "a0": 4.760156649361366, 
+                "etotals": [
+                    -4452.866516791829, 
+                    -4452.8670919219085, 
+                    -4452.867625419461, 
+                    -4452.868026331413, 
+                    -4452.868232328371, 
+                    -4452.868245212992, 
+                    -4452.8680344629975, 
+                    -4452.867597250289, 
+                    -4452.866913531635
+                ], 
+                "b0": 1.127996223983695, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.671309005136667, 
+                    26.738660795553677, 
+                    26.80601258597069, 
+                    26.873364376387702, 
+                    26.940716166804712, 
+                    27.00806795722173, 
+                    27.07541974763874, 
+                    27.14277153805575, 
+                    27.210123328472765
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 26.77356158115137, 
+                "a0": 4.7488528542777155, 
+                "etotals": [
+                    -4458.676690577641, 
+                    -4458.677240967435, 
+                    -4458.677631063249, 
+                    -4458.677864210694, 
+                    -4458.67794196534, 
+                    -4458.677866124933, 
+                    -4458.6776388446, 
+                    -4458.677263116151, 
+                    -4458.676740514316
+                ], 
+                "b0": 0.9161462364209219, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.503782225008194, 
+                    26.57071096800064, 
+                    26.637639710993085, 
+                    26.70456845398553, 
+                    26.771497196977975, 
+                    26.83842593997042, 
+                    26.905354682962866, 
+                    26.97228342595531, 
+                    27.039212168947756
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -5855,10 +6551,68 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 26.85878087473365, 
+                "a0": 4.753885994484509, 
+                "etotals": [
+                    -4458.374871616159, 
+                    -4458.375263481481, 
+                    -4458.375562481714, 
+                    -4458.375824796884, 
+                    -4458.37596666706, 
+                    -4458.375916378944, 
+                    -4458.375678414459, 
+                    -4458.3752186421825, 
+                    -4458.374537533131
+                ], 
+                "b0": 0.9281869173368638, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.598349326327654, 
+                    26.665516875131505, 
+                    26.732684423935368, 
+                    26.799851972739226, 
+                    26.867019521543078, 
+                    26.934187070346937, 
+                    27.0013546191508, 
+                    27.068522167954658, 
+                    27.13568971675851
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 26.77490140594716, 
+                "a0": 4.748932068302027, 
+                "etotals": [
+                    -4442.664505260642, 
+                    -4442.665047403998, 
+                    -4442.665429632267, 
+                    -4442.665655030635, 
+                    -4442.6657248829415, 
+                    -4442.66564108145, 
+                    -4442.665405884159, 
+                    -4442.665022252897, 
+                    -4442.664491829004
+                ], 
+                "b0": 0.9157926995972588, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.50852613222074, 
+                    26.575466854776856, 
+                    26.64240757733297, 
+                    26.70934829988908, 
+                    26.776289022445194, 
+                    26.84322974500131, 
+                    26.910170467557418, 
+                    26.977111190113533, 
+                    27.044051912669648
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -5874,10 +6628,39 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 26.858472938491914, 
+                "a0": 4.753867826628614, 
+                "etotals": [
+                    -4442.36175062878, 
+                    -4442.362135596309, 
+                    -4442.362433050358, 
+                    -4442.362691609146, 
+                    -4442.362823689604, 
+                    -4442.362762925503, 
+                    -4442.362512669602, 
+                    -4442.362040456182, 
+                    -4442.361345276487
+                ], 
+                "b0": 0.9385016020925471, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.601671366984366, 
+                    26.668847304779778, 
+                    26.736023242575193, 
+                    26.80319918037061, 
+                    26.870375118166024, 
+                    26.93755105596144, 
+                    27.004726993756854, 
+                    27.071902931552266, 
+                    27.139078869347685
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -5893,10 +6676,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -5912,10 +6695,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -5931,10 +6714,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -5950,10 +6733,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -5969,10 +6752,10 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -5988,10 +6771,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -6007,10 +6790,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -6026,10 +6809,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -6045,10 +6828,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AuO", 
             "pseudos_metadata": {
                 "Au": {
@@ -6064,7 +6847,7 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "CsCl": [
@@ -6138,7 +6921,7 @@
     ], 
     "HgO": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "HgO", 
             "pseudos_metadata": {
                 "Hg": {
@@ -6154,10 +6937,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "HgO", 
             "pseudos_metadata": {
                 "Hg": {
@@ -6173,10 +6956,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "HgO", 
             "pseudos_metadata": {
                 "Hg": {
@@ -6192,10 +6975,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "HgO", 
             "pseudos_metadata": {
                 "Hg": {
@@ -6211,10 +6994,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "HgO", 
             "pseudos_metadata": {
                 "Hg": {
@@ -6230,10 +7013,10 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "HgO", 
             "pseudos_metadata": {
                 "Hg": {
@@ -6249,10 +7032,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "HgO", 
             "pseudos_metadata": {
                 "Hg": {
@@ -6268,10 +7051,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "HgO", 
             "pseudos_metadata": {
                 "Hg": {
@@ -6287,10 +7070,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "HgO", 
             "pseudos_metadata": {
                 "Hg": {
@@ -6306,10 +7089,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "HgO", 
             "pseudos_metadata": {
                 "Hg": {
@@ -6325,7 +7108,7 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "TiO": [
@@ -6427,7 +7210,36 @@
     ], 
     "ReO": [
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 21.988127459235738, 
+                "a0": 4.447159907032645, 
+                "etotals": [
+                    -2182.608830616288, 
+                    -2182.6096238867167, 
+                    -2182.610203741512, 
+                    -2182.6105740913417, 
+                    -2182.6068719525006, 
+                    -2182.6067708166393, 
+                    -2182.606468651085, 
+                    -2182.6059676716377, 
+                    -2182.605270631615
+                ], 
+                "b0": 0.9498902007144665, 
+                "b1": Infinity, 
+                "volumes": [
+                    22.01884473162644, 
+                    22.074447874888122, 
+                    22.130051018149807, 
+                    22.185654161411488, 
+                    22.241257304673173, 
+                    22.296860447934854, 
+                    22.35246359119654, 
+                    22.40806673445822, 
+                    22.463669877719905
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "ReO", 
             "pseudos_metadata": {
                 "Re": {
@@ -6443,10 +7255,68 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 22.312866069995128, 
+                "a0": 4.468946099968692, 
+                "etotals": [
+                    -2182.3265599415113, 
+                    -2182.3273867853395, 
+                    -2182.3279803901264, 
+                    -2182.3283589267758, 
+                    -2182.3285279452684, 
+                    -2182.3284637003217, 
+                    -2182.328163543548, 
+                    -2182.327609777544, 
+                    -2182.326839201396
+                ], 
+                "b0": 1.6394945192071957, 
+                "b1": Infinity, 
+                "volumes": [
+                    22.080647430879544, 
+                    22.136406641563585, 
+                    22.192165852247623, 
+                    22.247925062931664, 
+                    22.3036842736157, 
+                    22.359443484299742, 
+                    22.415202694983783, 
+                    22.470961905667817, 
+                    22.526721116351858
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 21.984771335308743, 
+                "a0": 4.4469336337218035, 
+                "etotals": [
+                    -2180.8448048542273, 
+                    -2180.8455954773613, 
+                    -2180.8461724540284, 
+                    -2180.8465397986874, 
+                    -2180.8430487318874, 
+                    -2180.8429484166527, 
+                    -2180.8426471645844, 
+                    -2180.8421474146326, 
+                    -2180.841451822655
+                ], 
+                "b0": 0.9786645069638945, 
+                "b1": Infinity, 
+                "volumes": [
+                    21.994480445468138, 
+                    22.050022062754678, 
+                    22.105563680041215, 
+                    22.16110529732775, 
+                    22.216646914614284, 
+                    22.27218853190082, 
+                    22.327730149187357, 
+                    22.38327176647389, 
+                    22.438813383760426
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "ReO", 
             "pseudos_metadata": {
                 "Re": {
@@ -6462,10 +7332,68 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 22.28336229306848, 
+                "a0": 4.4669755037882615, 
+                "etotals": [
+                    -2180.836368863818, 
+                    -2180.837151504578, 
+                    -2180.8377129274054, 
+                    -2180.838065166145, 
+                    -2180.838212459445, 
+                    -2180.838155003286, 
+                    -2180.8378938585756, 
+                    -2180.837429066522, 
+                    -2180.8367598795776
+                ], 
+                "b0": 1.4809215018749118, 
+                "b1": Infinity, 
+                "volumes": [
+                    22.04782672084993, 
+                    22.103503050953087, 
+                    22.15917938105624, 
+                    22.214855711159398, 
+                    22.270532041262555, 
+                    22.32620837136571, 
+                    22.381884701468866, 
+                    22.437561031572024, 
+                    22.493237361675185
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 21.950716155723747, 
+                "a0": 4.444636295192686, 
+                "etotals": [
+                    -2182.5196803500307, 
+                    -2182.5204754041847, 
+                    -2182.521055941017, 
+                    -2182.5214264312144, 
+                    -2182.5177892962197, 
+                    -2182.517689162994, 
+                    -2182.517388197895, 
+                    -2182.5168890148716, 
+                    -2182.51619393361
+                ], 
+                "b0": 0.9608844142549134, 
+                "b1": Infinity, 
+                "volumes": [
+                    21.974235675592773, 
+                    22.02972616972305, 
+                    22.085216663853338, 
+                    22.140707157983623, 
+                    22.19619765211391, 
+                    22.251688146244195, 
+                    22.307178640374477, 
+                    22.362669134504763, 
+                    22.41815962863505
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "ReO", 
             "pseudos_metadata": {
                 "Re": {
@@ -6481,10 +7409,68 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 22.271831468788047, 
+                "a0": 4.466204872080136, 
+                "etotals": [
+                    -2182.2841475228306, 
+                    -2182.2849794758718, 
+                    -2182.2855501205386, 
+                    -2182.285905158377, 
+                    -2182.286052601849, 
+                    -2182.285985936516, 
+                    -2182.285692591548, 
+                    -2182.2851694623746, 
+                    -2182.2843962852635
+                ], 
+                "b0": 1.600802950235689, 
+                "b1": Infinity, 
+                "volumes": [
+                    22.041150014197523, 
+                    22.096809483930347, 
+                    22.152468953663163, 
+                    22.208128423395987, 
+                    22.26378789312881, 
+                    22.319447362861634, 
+                    22.375106832594454, 
+                    22.430766302327278, 
+                    22.486425772060098
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 22.19518220468543, 
+                "a0": 4.461075451316964, 
+                "etotals": [
+                    -2188.0638260271626, 
+                    -2188.064561983615, 
+                    -2188.065082699548, 
+                    -2188.0653926611303, 
+                    -2188.0654848744466, 
+                    -2188.0653833767315, 
+                    -2188.0650806002564, 
+                    -2188.0645792097725, 
+                    -2188.063881741962
+                ], 
+                "b0": 1.4729719403442862, 
+                "b1": Infinity, 
+                "volumes": [
+                    21.972060602914148, 
+                    22.02754560443666, 
+                    22.08303060595917, 
+                    22.138515607481683, 
+                    22.194000609004192, 
+                    22.249485610526705, 
+                    22.304970612049214, 
+                    22.36045561357172, 
+                    22.415940615094232
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "ReO", 
             "pseudos_metadata": {
                 "Re": {
@@ -6500,10 +7486,68 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 22.20974994947218, 
+                "a0": 4.462051242595215, 
+                "etotals": [
+                    -2187.802016524398, 
+                    -2187.802877876897, 
+                    -2187.80346257741, 
+                    -2187.8037859854558, 
+                    -2187.803893778265, 
+                    -2187.8037938219195, 
+                    -2187.803482321292, 
+                    -2187.8029448047632, 
+                    -2187.8021793084563
+                ], 
+                "b0": 1.622999419217775, 
+                "b1": Infinity, 
+                "volumes": [
+                    21.983995025252998, 
+                    22.03951016420566, 
+                    22.095025303158312, 
+                    22.150540442110973, 
+                    22.206055581063634, 
+                    22.261570720016294, 
+                    22.31708585896895, 
+                    22.372600997921612, 
+                    22.42811613687427
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 22.200989758886976, 
+                "a0": 4.461464509895749, 
+                "etotals": [
+                    -2172.0511392010835, 
+                    -2172.0518754842847, 
+                    -2172.0523965928605, 
+                    -2172.0527068642596, 
+                    -2172.052903997901, 
+                    -2172.0528025144968, 
+                    -2172.0524997948482, 
+                    -2172.0519984852294, 
+                    -2172.051301107199
+                ], 
+                "b0": 1.4899668158452024, 
+                "b1": Infinity, 
+                "volumes": [
+                    21.973137038400733, 
+                    22.028624758194674, 
+                    22.084112477988615, 
+                    22.139600197782556, 
+                    22.195087917576497, 
+                    22.25057563737044, 
+                    22.30606335716438, 
+                    22.36155107695832, 
+                    22.417038796752262
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "ReO", 
             "pseudos_metadata": {
                 "Re": {
@@ -6519,12 +7563,41 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 22.210894842881377, 
+                "a0": 4.462127912905814, 
+                "etotals": [
+                    -2171.78775372452, 
+                    -2171.788609098716, 
+                    -2171.7891865055003, 
+                    -2171.7895038976435, 
+                    -2171.789606727593, 
+                    -2171.7895027845007, 
+                    -2171.7891850607252, 
+                    -2171.7886415310218, 
+                    -2171.7878697600236
+                ], 
+                "b0": 1.622076150350037, 
+                "b1": Infinity, 
+                "volumes": [
+                    21.986517530710742, 
+                    22.04203903962668, 
+                    22.097560548542614, 
+                    22.15308205745855, 
+                    22.208603566374492, 
+                    22.264125075290426, 
+                    22.31964658420636, 
+                    22.375168093122298, 
+                    22.430689602038232
+                ], 
+                "num_sites": 2
+            }
         }
     ], 
     "IrO": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "IrO", 
             "pseudos_metadata": {
                 "Ir": {
@@ -6540,10 +7613,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "IrO", 
             "pseudos_metadata": {
                 "Ir": {
@@ -6559,10 +7632,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "IrO", 
             "pseudos_metadata": {
                 "Ir": {
@@ -6578,10 +7651,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "IrO", 
             "pseudos_metadata": {
                 "Ir": {
@@ -6597,10 +7670,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "IrO", 
             "pseudos_metadata": {
                 "Ir": {
@@ -6616,7 +7689,7 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "CuO": [
@@ -6834,7 +7907,36 @@
     ], 
     "SiO": [
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.571668362795062, 
+                "a0": 4.614927458795668, 
+                "etotals": [
+                    -592.2442233614341, 
+                    -592.2446430871541, 
+                    -592.2449416461552, 
+                    -592.2451202329424, 
+                    -592.2451803573728, 
+                    -592.2451238790862, 
+                    -592.2449522548206, 
+                    -592.2446671086522, 
+                    -592.2442699480756
+                ], 
+                "b0": 0.7601776337828121, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.323491989597144, 
+                    24.384914949166838, 
+                    24.446337908736528, 
+                    24.507760868306217, 
+                    24.569183827875907, 
+                    24.630606787445593, 
+                    24.692029747015287, 
+                    24.753452706584977, 
+                    24.814875666154666
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "SiO", 
             "pseudos_metadata": {
                 "Si": {
@@ -6850,10 +7952,68 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.64486972624995, 
+                "a0": 4.619505686401522, 
+                "etotals": [
+                    -591.9722322713671, 
+                    -591.9727155704048, 
+                    -591.9730714941979, 
+                    -591.9733346347354, 
+                    -591.9734231105311, 
+                    -591.9733405097091, 
+                    -591.9731518531165, 
+                    -591.9728593524575, 
+                    -591.9724795729096
+                ], 
+                "b0": 0.8548300066575276, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.386160785117763, 
+                    24.4477419992216, 
+                    24.50932321332543, 
+                    24.57090442742926, 
+                    24.632485641533094, 
+                    24.69406685563693, 
+                    24.755648069740758, 
+                    24.81722928384459, 
+                    24.878810497948425
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.558386364113638, 
+                "a0": 4.614095789478043, 
+                "etotals": [
+                    -590.4758017847888, 
+                    -590.4762215560539, 
+                    -590.476519906067, 
+                    -590.4766983710069, 
+                    -590.476758525522, 
+                    -590.4767020722742, 
+                    -590.4765305652289, 
+                    -590.4762454023481, 
+                    -590.4758481762674
+                ], 
+                "b0": 0.7604467720775347, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.310353665669677, 
+                    24.371743447653692, 
+                    24.433133229637704, 
+                    24.494523011621723, 
+                    24.555912793605735, 
+                    24.61730257558975, 
+                    24.678692357573762, 
+                    24.740082139557774, 
+                    24.801471921541793
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "SiO", 
             "pseudos_metadata": {
                 "Si": {
@@ -6869,10 +8029,68 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.666793078705695, 
+                "a0": 4.620875072631517, 
+                "etotals": [
+                    -590.4732289929881, 
+                    -590.4736499832693, 
+                    -590.4739572458226, 
+                    -590.4741441943188, 
+                    -590.4742035944687, 
+                    -590.4741430915794, 
+                    -590.4739718484151, 
+                    -590.4736877082279, 
+                    -590.4733009692181
+                ], 
+                "b0": 0.7609963958342575, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.41640235146105, 
+                    24.478059933156654, 
+                    24.539717514852263, 
+                    24.601375096547873, 
+                    24.663032678243482, 
+                    24.724690259939088, 
+                    24.7863478416347, 
+                    24.84800542333031, 
+                    24.90966300502592
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.537062821039594, 
+                "a0": 4.612759961206786, 
+                "etotals": [
+                    -592.1418244334844, 
+                    -592.1422418024764, 
+                    -592.14253820546, 
+                    -592.1427149896516, 
+                    -592.142773572262, 
+                    -592.1427156878051, 
+                    -592.1425429591759, 
+                    -592.1422566663111, 
+                    -592.1418585008118
+                ], 
+                "b0": 0.7598815711060499, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.29003256001374, 
+                    24.35137102607438, 
+                    24.412709492135022, 
+                    24.474047958195662, 
+                    24.535386424256302, 
+                    24.596724890316942, 
+                    24.658063356377582, 
+                    24.719401822438225, 
+                    24.780740288498865
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "SiO", 
             "pseudos_metadata": {
                 "Si": {
@@ -6888,10 +8106,68 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.615540475180456, 
+                "a0": 4.617672439082061, 
+                "etotals": [
+                    -591.915931535773, 
+                    -591.9163942436736, 
+                    -591.9167154719441, 
+                    -591.9169496143679, 
+                    -591.91703403822, 
+                    -591.9169476832836, 
+                    -591.9167359452705, 
+                    -591.9164276006906, 
+                    -591.9160153509233
+                ], 
+                "b0": 0.8483527916387568, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.3656941933137, 
+                    24.427223724104902, 
+                    24.488753254896096, 
+                    24.55028278568729, 
+                    24.611812316478492, 
+                    24.673341847269686, 
+                    24.73487137806088, 
+                    24.79640090885208, 
+                    24.857930439643273
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.520479510067283, 
+                "a0": 4.611720553014992, 
+                "etotals": [
+                    -597.6885678572996, 
+                    -597.6889876871054, 
+                    -597.6892857487883, 
+                    -597.6894633913324, 
+                    -597.689521957745, 
+                    -597.68946309116, 
+                    -597.6892885071469, 
+                    -597.688999461985, 
+                    -597.6885976579806
+                ], 
+                "b0": 0.7661422821998117, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.273898509031493, 
+                    24.335196232539147, 
+                    24.3964939560468, 
+                    24.457791679554457, 
+                    24.519089403062118, 
+                    24.58038712656977, 
+                    24.641684850077425, 
+                    24.702982573585082, 
+                    24.764280297092736
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "SiO", 
             "pseudos_metadata": {
                 "Si": {
@@ -6907,10 +8183,68 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.495786916165184, 
+                "a0": 4.610172002696142, 
+                "etotals": [
+                    -597.4328269767038, 
+                    -597.4332702774104, 
+                    -597.433574479217, 
+                    -597.4337416482343, 
+                    -597.4337814842975, 
+                    -597.4337316474212, 
+                    -597.4335193152717, 
+                    -597.4331411592581, 
+                    -597.432654522464
+                ], 
+                "b0": 0.8626689167327115, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.25998727334042, 
+                    24.321249867465017, 
+                    24.382512461589613, 
+                    24.443775055714212, 
+                    24.50503764983881, 
+                    24.566300243963404, 
+                    24.627562838088, 
+                    24.688825432212596, 
+                    24.7500880263372
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.52232038414829, 
+                "a0": 4.611835958376297, 
+                "etotals": [
+                    -581.6761139922484, 
+                    -581.676535057034, 
+                    -581.676834291452, 
+                    -581.6770131819817, 
+                    -581.6770731850714, 
+                    -581.6770157652959, 
+                    -581.6768425781084, 
+                    -581.6765551031975, 
+                    -581.6761548294652
+                ], 
+                "b0": 0.7657584028501726, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.275005674323005, 
+                    24.336306193702608, 
+                    24.397606713082208, 
+                    24.458907232461815, 
+                    24.52020775184142, 
+                    24.581508271221022, 
+                    24.642808790600625, 
+                    24.704109309980232, 
+                    24.765409829359832
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "SiO", 
             "pseudos_metadata": {
                 "Si": {
@@ -6926,10 +8260,68 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.497748330424546, 
+                "a0": 4.610295047198968, 
+                "etotals": [
+                    -581.419309937841, 
+                    -581.4197447521975, 
+                    -581.4200411925949, 
+                    -581.4201984461903, 
+                    -581.4202340397118, 
+                    -581.4201753435169, 
+                    -581.4199499224824, 
+                    -581.4195618960346, 
+                    -581.4190691818385
+                ], 
+                "b0": 0.864271045015447, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.26587742064578, 
+                    24.327154888879736, 
+                    24.38843235711369, 
+                    24.44970982534764, 
+                    24.510987293581596, 
+                    24.57226476181555, 
+                    24.633542230049507, 
+                    24.69481969828346, 
+                    24.75609716651741
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.569847716712328, 
+                "a0": 4.614813474443113, 
+                "etotals": [
+                    -592.2447931759691, 
+                    -592.2452132703943, 
+                    -592.245512100585, 
+                    -592.2456909139572, 
+                    -592.245751223522, 
+                    -592.245694940578, 
+                    -592.2455236375829, 
+                    -592.245238930642, 
+                    -592.2448422718427
+                ], 
+                "b0": 0.7600704005537398, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.321539901275543, 
+                    24.38295793132927, 
+                    24.444375961383, 
+                    24.50579399143672, 
+                    24.567212021490448, 
+                    24.628630051544175, 
+                    24.6900480815979, 
+                    24.751466111651624, 
+                    24.812884141705354
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "SiO", 
             "pseudos_metadata": {
                 "Si": {
@@ -6945,10 +8337,68 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.652496568552895, 
+                "a0": 4.619982169715167, 
+                "etotals": [
+                    -591.9722702003666, 
+                    -591.9727588793833, 
+                    -591.9731254132016, 
+                    -591.9733938971964, 
+                    -591.9734835692041, 
+                    -591.9734061885425, 
+                    -591.9732262792993, 
+                    -591.9729425145625, 
+                    -591.972576004231
+                ], 
+                "b0": 0.8507444334221275, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.39053799380679, 
+                    24.452130261467918, 
+                    24.513722529129044, 
+                    24.575314796790177, 
+                    24.636907064451304, 
+                    24.698499332112434, 
+                    24.76009159977356, 
+                    24.82168386743469, 
+                    24.883276135095816
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.55668015196392, 
+                "a0": 4.613988931091595, 
+                "etotals": [
+                    -590.4763937052558, 
+                    -590.4768134420668, 
+                    -590.4771117755715, 
+                    -590.4772902172062, 
+                    -590.4773503323601, 
+                    -590.4772938033253, 
+                    -590.4771221801137, 
+                    -590.4768368510174, 
+                    -590.476439451096
+                ], 
+                "b0": 0.7606665879956701, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.308704440493, 
+                    24.37009005776697, 
+                    24.431475675040943, 
+                    24.492861292314913, 
+                    24.554246909588887, 
+                    24.61563252686286, 
+                    24.67701814413683, 
+                    24.738403761410805, 
+                    24.79978937868478
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "SiO", 
             "pseudos_metadata": {
                 "Si": {
@@ -6964,10 +8414,68 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.668071518565082, 
+                "a0": 4.620954902071353, 
+                "etotals": [
+                    -590.4734930662449, 
+                    -590.4739146042665, 
+                    -590.4742225843582, 
+                    -590.4744093504206, 
+                    -590.4744683687896, 
+                    -590.4744080750168, 
+                    -590.4742377820871, 
+                    -590.4739551264773, 
+                    -590.4735706667947
+                ], 
+                "b0": 0.7594043146193523, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.41738281172413, 
+                    24.4790428693295, 
+                    24.540702926934863, 
+                    24.60236298454023, 
+                    24.66402304214559, 
+                    24.725683099750952, 
+                    24.787343157356318, 
+                    24.84900321496168, 
+                    24.910663272567046
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.53515238509183, 
+                "a0": 4.612640242841269, 
+                "etotals": [
+                    -592.1424058974915, 
+                    -592.1428230560135, 
+                    -592.1431191850271, 
+                    -592.1432956389336, 
+                    -592.1433538530354, 
+                    -592.1432955869379, 
+                    -592.1431225248699, 
+                    -592.1428359786076, 
+                    -592.1424376213372
+                ], 
+                "b0": 0.7599160372364046, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.288304393676462, 
+                    24.349638495680697, 
+                    24.410972597684932, 
+                    24.472306699689167, 
+                    24.5336408016934, 
+                    24.59497490369763, 
+                    24.656309005701864, 
+                    24.7176431077061, 
+                    24.778977209710334
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "SiO", 
             "pseudos_metadata": {
                 "Si": {
@@ -6983,10 +8491,68 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.62253907163154, 
+                "a0": 4.6181100239442285, 
+                "etotals": [
+                    -591.9159854900796, 
+                    -591.9164494415487, 
+                    -591.9167753869319, 
+                    -591.9170144784421, 
+                    -591.9170960994228, 
+                    -591.917007454119, 
+                    -591.9168009067702, 
+                    -591.91649691627, 
+                    -591.916094100536
+                ], 
+                "b0": 0.8449803023383651, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.371463115238175, 
+                    24.43300721401403, 
+                    24.49455131278988, 
+                    24.556095411565735, 
+                    24.61763951034159, 
+                    24.679183609117445, 
+                    24.7407277078933, 
+                    24.80227180666915, 
+                    24.86381590544501
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.51858229956085, 
+                "a0": 4.611601609849594, 
+                "etotals": [
+                    -597.6891488524548, 
+                    -597.6895688786045, 
+                    -597.6898670723834, 
+                    -597.6900447898674, 
+                    -597.6901033899318, 
+                    -597.6900445281544, 
+                    -597.6898699746146, 
+                    -597.6895810333416, 
+                    -597.6891793994552
+                ], 
+                "b0": 0.7662493353450146, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.271982119829957, 
+                    24.333275003970943, 
+                    24.39456788811193, 
+                    24.45586077225291, 
+                    24.517153656393898, 
+                    24.578446540534884, 
+                    24.639739424675867, 
+                    24.701032308816853, 
+                    24.76232519295784
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "SiO", 
             "pseudos_metadata": {
                 "Si": {
@@ -7002,10 +8568,68 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.502416360840055, 
+                "a0": 4.610587858201048, 
+                "etotals": [
+                    -597.432926603137, 
+                    -597.4333513733516, 
+                    -597.4336389700084, 
+                    -597.4337865710384, 
+                    -597.4338212045202, 
+                    -597.4337519988128, 
+                    -597.4335109496964, 
+                    -597.4331153327422, 
+                    -597.4326198706407
+                ], 
+                "b0": 0.8639525183390636, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.274382835904817, 
+                    24.335681782460128, 
+                    24.396980729015446, 
+                    24.45827967557076, 
+                    24.519578622126076, 
+                    24.58087756868139, 
+                    24.642176515236706, 
+                    24.703475461792024, 
+                    24.76477440834734
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.520426024052796, 
+                "a0": 4.611717199862354, 
+                "etotals": [
+                    -581.6767045098685, 
+                    -581.6771232551112, 
+                    -581.6774201296411, 
+                    -581.6775966102505, 
+                    -581.6776541839862, 
+                    -581.6775943322995, 
+                    -581.6774187583203, 
+                    -581.6771289913319, 
+                    -581.6767265177555
+                ], 
+                "b0": 0.7656507960931698, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.274357828179713, 
+                    24.335656711584207, 
+                    24.396955594988704, 
+                    24.458254478393197, 
+                    24.51955336179769, 
+                    24.580852245202188, 
+                    24.642151128606677, 
+                    24.70345001201117, 
+                    24.764748895415668
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "SiO", 
             "pseudos_metadata": {
                 "Si": {
@@ -7021,12 +8645,41 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.504365682334775, 
+                "a0": 4.6107101220566555, 
+                "etotals": [
+                    -581.4193880304475, 
+                    -581.4198103128784, 
+                    -581.4200951994151, 
+                    -581.4202397869982, 
+                    -581.4202743255969, 
+                    -581.4202005326366, 
+                    -581.4199536499088, 
+                    -581.4195551836577, 
+                    -581.4190578595446
+                ], 
+                "b0": 0.8653166873449983, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.27767783048867, 
+                    24.33898509773738, 
+                    24.40029236498609, 
+                    24.461599632234797, 
+                    24.522906899483505, 
+                    24.584214166732213, 
+                    24.64552143398092, 
+                    24.706828701229632, 
+                    24.76813596847834
+                ], 
+                "num_sites": 2
+            }
         }
     ], 
     "PtO": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7042,10 +8695,39 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.646005182384574, 
+                "a0": 4.619576629706377, 
+                "etotals": [
+                    -3096.507038433676, 
+                    -3096.507764726949, 
+                    -3096.5082955787657, 
+                    -3096.5086595388116, 
+                    -3096.5087782632804, 
+                    -3096.5086724966045, 
+                    -3096.508402836562, 
+                    -3096.507966334185, 
+                    -3096.5073742193863
+                ], 
+                "b0": 1.2676009206653691, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.38821304519518, 
+                    24.44979944177396, 
+                    24.511385838352734, 
+                    24.57297223493151, 
+                    24.634558631510284, 
+                    24.69614502808906, 
+                    24.757731424667835, 
+                    24.81931782124661, 
+                    24.880904217825385
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7061,10 +8743,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7080,10 +8762,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7099,10 +8781,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7118,10 +8800,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7137,10 +8819,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7156,10 +8838,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7175,10 +8857,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7194,10 +8876,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7213,10 +8895,39 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.483448336597036, 
+                "a0": 4.609397821573518, 
+                "etotals": [
+                    -3980.121718098506, 
+                    -3980.122351104647, 
+                    -3980.1227988307237, 
+                    -3980.123064872973, 
+                    -3980.1231511892356, 
+                    -3980.123060970388, 
+                    -3980.122797851633, 
+                    -3980.122363157576, 
+                    -3980.1217602578417
+                ], 
+                "b0": 1.1535373444919184, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.237475584875504, 
+                    24.29868133130196, 
+                    24.359887077728413, 
+                    24.421092824154865, 
+                    24.48229857058132, 
+                    24.543504317007773, 
+                    24.604710063434226, 
+                    24.66591580986068, 
+                    24.727121556287134
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7232,10 +8943,68 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.443693265230838, 
+                "a0": 4.606901628921443, 
+                "etotals": [
+                    -3979.5897522468977, 
+                    -3979.590711286209, 
+                    -3979.591344137285, 
+                    -3979.591718574897, 
+                    -3979.591848649291, 
+                    -3979.5917404220872, 
+                    -3979.5915352180855, 
+                    -3979.59111647687, 
+                    -3979.590446270225
+                ], 
+                "b0": 1.4256956832543166, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.178890215212288, 
+                    24.239948018786052, 
+                    24.30100582235982, 
+                    24.362063625933587, 
+                    24.42312142950736, 
+                    24.484179233081125, 
+                    24.545237036654893, 
+                    24.60629484022866, 
+                    24.66735264380243
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.553425685236412, 
+                "a0": 4.613785093320268, 
+                "etotals": [
+                    -3106.55419068585, 
+                    -3106.554825712551, 
+                    -3106.5552760907794, 
+                    -3106.555544113914, 
+                    -3106.555632402784, 
+                    -3106.5555437625962, 
+                    -3106.555280805799, 
+                    -3106.554845970057, 
+                    -3106.554242080578
+                ], 
+                "b0": 1.1536076598299678, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.306315540065306, 
+                    24.36769512476244, 
+                    24.429074709459574, 
+                    24.490454294156713, 
+                    24.551833878853845, 
+                    24.613213463550977, 
+                    24.674593048248116, 
+                    24.73597263294525, 
+                    24.797352217642384
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7251,10 +9020,68 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.528396578830293, 
+                "a0": 4.61221683721809, 
+                "etotals": [
+                    -3106.2982316240423, 
+                    -3106.298914485717, 
+                    -3106.299376270068, 
+                    -3106.2996173863917, 
+                    -3106.2996957106398, 
+                    -3106.299568174684, 
+                    -3106.2992085220353, 
+                    -3106.298657091747, 
+                    -3106.2979509894144
+                ], 
+                "b0": 1.3066594853793727, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.29462066082911, 
+                    24.355970713002918, 
+                    24.41732076517673, 
+                    24.47867081735054, 
+                    24.54002086952435, 
+                    24.601370921698162, 
+                    24.662720973871973, 
+                    24.724071026045785, 
+                    24.785421078219596
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.55200676621338, 
+                "a0": 4.6136962161966695, 
+                "etotals": [
+                    -3086.218121046908, 
+                    -3086.2187499187717, 
+                    -3086.2191941230544, 
+                    -3086.21945597634, 
+                    -3086.219538609024, 
+                    -3086.2194448077857, 
+                    -3086.219176995192, 
+                    -3086.2187378920626, 
+                    -3086.2181303779034
+                ], 
+                "b0": 1.150989897044558, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.306740035002885, 
+                    24.36812069165693, 
+                    24.42950134831098, 
+                    24.49088200496503, 
+                    24.552262661619075, 
+                    24.61364331827312, 
+                    24.67502397492717, 
+                    24.736404631581216, 
+                    24.797785288235264
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7270,10 +9097,39 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.52897163421759, 
+                "a0": 4.612252880604297, 
+                "etotals": [
+                    -3085.961343231515, 
+                    -3085.9620253437242, 
+                    -3085.9624870002745, 
+                    -3085.962728097812, 
+                    -3085.962807460572, 
+                    -3085.962680541913, 
+                    -3085.9623218121715, 
+                    -3085.9617720140614, 
+                    -3085.9610677949177
+                ], 
+                "b0": 1.3044404748730023, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.295008547374454, 
+                    24.356359579059745, 
+                    24.417710610745033, 
+                    24.479061642430324, 
+                    24.54041267411561, 
+                    24.6017637058009, 
+                    24.66311473748619, 
+                    24.72446576917148, 
+                    24.785816800856768
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7289,10 +9145,68 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.445351895619506, 
+                "a0": 4.607005827226401, 
+                "etotals": [
+                    -3963.576787535232, 
+                    -3963.577737741851, 
+                    -3963.578366996847, 
+                    -3963.5787364696403, 
+                    -3963.5788624397337, 
+                    -3963.5787526499316, 
+                    -3963.5785491987895, 
+                    -3963.578124166099, 
+                    -3963.577449188708
+                ], 
+                "b0": 1.4222802883052807, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.181455708683767, 
+                    24.2425199907764, 
+                    24.30358427286904, 
+                    24.364648554961672, 
+                    24.425712837054313, 
+                    24.486777119146947, 
+                    24.54784140123958, 
+                    24.608905683332218, 
+                    24.66996996542485
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 24.55468041343802, 
+                "a0": 4.6138636831368744, 
+                "etotals": [
+                    -3090.5419624657025, 
+                    -3090.542593950883, 
+                    -3090.5430408200586, 
+                    -3090.543305491673, 
+                    -3090.543390588849, 
+                    -3090.5432987610493, 
+                    -3090.543032690408, 
+                    -3090.5425948764487, 
+                    -3090.5419879232677
+                ], 
+                "b0": 1.152901641372997, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.30866636842549, 
+                    24.37005188955788, 
+                    24.43143741069027, 
+                    24.49282293182266, 
+                    24.554208452955045, 
+                    24.61559397408743, 
+                    24.676979495219822, 
+                    24.73836501635221, 
+                    24.7997505374846
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "PtO", 
             "pseudos_metadata": {
                 "Pt": {
@@ -7308,7 +9222,36 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 24.5301507028605, 
+                "a0": 4.612326780639644, 
+                "etotals": [
+                    -3090.28524848996, 
+                    -3090.2859331409163, 
+                    -3090.2863966663185, 
+                    -3090.286639620322, 
+                    -3090.286720690817, 
+                    -3090.286593557791, 
+                    -3090.2862345733147, 
+                    -3090.285684773397, 
+                    -3090.2849802557644
+                ], 
+                "b0": 1.3075277651167547, 
+                "b1": Infinity, 
+                "volumes": [
+                    24.295889983789653, 
+                    24.357243241324475, 
+                    24.418596498859298, 
+                    24.47994975639412, 
+                    24.541303013928943, 
+                    24.602656271463765, 
+                    24.664009528998587, 
+                    24.72536278653341, 
+                    24.78671604406823
+                ], 
+                "num_sites": 2
+            }
         }
     ], 
     "ScN": [
@@ -7478,7 +9421,7 @@
     ], 
     "CO": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7494,10 +9437,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7513,10 +9456,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7532,10 +9475,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7551,10 +9494,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7570,10 +9513,10 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7589,10 +9532,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7608,10 +9551,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7627,10 +9570,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7646,10 +9589,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7665,10 +9608,10 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7684,10 +9627,39 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 15.791201483017696, 
+                "a0": 3.9825238810990173, 
+                "etotals": [
+                    -600.9660141648046, 
+                    -600.9664651757338, 
+                    -600.962333898765, 
+                    -600.9624953662812, 
+                    -600.9625502815985, 
+                    -600.9625000776367, 
+                    -600.9623458269123, 
+                    -600.9620884813625, 
+                    -600.961729458203
+                ], 
+                "b0": -2.291781837562601, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.545711041839235, 
+                    15.584967887904487, 
+                    15.624224733969736, 
+                    15.663481580034988, 
+                    15.702738426100238, 
+                    15.74199527216549, 
+                    15.78125211823074, 
+                    15.820508964295989, 
+                    15.85976581036124
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7703,10 +9675,68 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 15.744094164616401, 
+                "a0": 3.9785597984844405, 
+                "etotals": [
+                    -600.9013510644296, 
+                    -600.9017988483419, 
+                    -600.9021164523677, 
+                    -600.9022946054637, 
+                    -600.9023520802541, 
+                    -600.9023049310524, 
+                    -600.9021740522999, 
+                    -600.9019574650197, 
+                    -600.9016401363335
+                ], 
+                "b0": 1.0905515283981746, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.576008605103471, 
+                    15.615341960166864, 
+                    15.654675315230257, 
+                    15.694008670293648, 
+                    15.733342025357041, 
+                    15.772675380420434, 
+                    15.812008735483825, 
+                    15.851342090547218, 
+                    15.890675445610611
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 15.83319980376841, 
+                "a0": 3.986051399321479, 
+                "etotals": [
+                    -602.6414676637102, 
+                    -602.6419210051716, 
+                    -602.6422648782278, 
+                    -602.6378758856205, 
+                    -602.6379299405577, 
+                    -602.6378791119444, 
+                    -602.6377253760221, 
+                    -602.6374700258165, 
+                    -602.6371134229157
+                ], 
+                "b0": -1.5572373381211733, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.504131131831478, 
+                    15.543282978123981, 
+                    15.582434824416485, 
+                    15.62158667070899, 
+                    15.660738517001494, 
+                    15.699890363293996, 
+                    15.7390422095865, 
+                    15.778194055879004, 
+                    15.817345902171507
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7722,10 +9752,68 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 15.713615609422037, 
+                "a0": 3.9759908121743797, 
+                "etotals": [
+                    -602.3464045463907, 
+                    -602.3468643683997, 
+                    -602.3472330576271, 
+                    -602.3474368999199, 
+                    -602.3474922402329, 
+                    -602.3474188347494, 
+                    -602.3472514379873, 
+                    -602.3470075302309, 
+                    -602.3466599855875
+                ], 
+                "b0": 1.2213122508265573, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.548531814497041, 
+                    15.58779578372557, 
+                    15.627059752954098, 
+                    15.666323722182627, 
+                    15.705587691411154, 
+                    15.74485166063968, 
+                    15.784115629868209, 
+                    15.823379599096738, 
+                    15.862643568325266
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 15.661695983521984, 
+                "a0": 3.971606933942, 
+                "etotals": [
+                    -608.1845438369436, 
+                    -608.1849275314715, 
+                    -608.1852008814459, 
+                    -608.1853876146062, 
+                    -608.1854425562568, 
+                    -608.1853921718642, 
+                    -608.1852384409674, 
+                    -608.184982772714, 
+                    -608.1846255973505
+                ], 
+                "b0": 1.0951875195543945, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.501628513310719, 
+                    15.540774039859484, 
+                    15.579919566408249, 
+                    15.619065092957012, 
+                    15.658210619505775, 
+                    15.697356146054542, 
+                    15.736501672603305, 
+                    15.77564719915207, 
+                    15.814792725700833
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7741,10 +9829,68 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 15.666745024863266, 
+                "a0": 3.9720336789791255, 
+                "etotals": [
+                    -607.8826193320252, 
+                    -607.8830945251035, 
+                    -607.8834253879139, 
+                    -607.8836655686852, 
+                    -607.883750534104, 
+                    -607.883678791072, 
+                    -607.8834803297724, 
+                    -607.8831796453884, 
+                    -607.8828026575368
+                ], 
+                "b0": 1.3134711668128853, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.50448908478526, 
+                    15.543641834999365, 
+                    15.582794585213469, 
+                    15.62194733542757, 
+                    15.661100085641676, 
+                    15.700252835855782, 
+                    15.739405586069884, 
+                    15.778558336283988, 
+                    15.817711086498093
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 15.666381729938154, 
+                "a0": 3.9720029763490254, 
+                "etotals": [
+                    -592.1722712454448, 
+                    -592.1726548946335, 
+                    -592.1729281777173, 
+                    -592.173191622429, 
+                    -592.1732467211169, 
+                    -592.1731964036566, 
+                    -592.1730426276915, 
+                    -592.1727867357355, 
+                    -592.1724293342216
+                ], 
+                "b0": 1.1415128263912602, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.502420392566139, 
+                    15.541567918809994, 
+                    15.580715445053848, 
+                    15.6198629712977, 
+                    15.659010497541555, 
+                    15.698158023785409, 
+                    15.737305550029262, 
+                    15.776453076273118, 
+                    15.81560060251697
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7760,10 +9906,68 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 15.668828195593743, 
+                "a0": 3.972209721877013, 
+                "etotals": [
+                    -591.8698395496224, 
+                    -591.8703189301583, 
+                    -591.8706549380066, 
+                    -591.8709004192751, 
+                    -591.8709896185945, 
+                    -591.8709228277903, 
+                    -591.8707291164603, 
+                    -591.870434104646, 
+                    -591.8700628806387
+                ], 
+                "b0": 1.3123361920144225, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.505047446623564, 
+                    15.544201606842313, 
+                    15.583355767061057, 
+                    15.622509927279804, 
+                    15.66166408749855, 
+                    15.700818247717297, 
+                    15.739972407936044, 
+                    15.77912656815479, 
+                    15.818280728373535
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 15.784196249427108, 
+                "a0": 3.9819348898913707, 
+                "etotals": [
+                    -602.6500531023379, 
+                    -602.6459161196384, 
+                    -602.6461820402051, 
+                    -602.6463399584486, 
+                    -602.6463918474548, 
+                    -602.6463395671177, 
+                    -602.6461833637442, 
+                    -602.645924297674, 
+                    -602.6455636318892
+                ], 
+                "b0": -1.7230504784516092, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.557366174106969, 
+                    15.596652452324411, 
+                    15.635938730541852, 
+                    15.675225008759293, 
+                    15.714511286976736, 
+                    15.753797565194176, 
+                    15.793083843411619, 
+                    15.83237012162906, 
+                    15.871656399846504
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7779,10 +9983,68 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 15.763455065309934, 
+                "a0": 3.9801899747967897, 
+                "etotals": [
+                    -602.3492747592686, 
+                    -602.3497088708015, 
+                    -602.3499996458505, 
+                    -602.3501803392778, 
+                    -602.3502304168907, 
+                    -602.3501614803856, 
+                    -602.349959705668, 
+                    -602.3495799212396, 
+                    -602.3490566335744
+                ], 
+                "b0": 1.3564447743070578, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.612425727591107, 
+                    15.651851045085024, 
+                    15.691276362578941, 
+                    15.73070168007286, 
+                    15.770126997566773, 
+                    15.809552315060692, 
+                    15.84897763255461, 
+                    15.888402950048526, 
+                    15.927828267542443
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 15.780199233352416, 
+                "a0": 3.9815987477326154, 
+                "etotals": [
+                    -600.8792387516445, 
+                    -600.8752772620065, 
+                    -600.8755434096066, 
+                    -600.8757015676741, 
+                    -600.8757531794352, 
+                    -600.8756998328183, 
+                    -600.8755424947404, 
+                    -600.8752822826331, 
+                    -600.8749205189009
+                ], 
+                "b0": -1.6123628491646869, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.551417286197902, 
+                    15.590688541971131, 
+                    15.629959797744357, 
+                    15.669231053517583, 
+                    15.708502309290811, 
+                    15.747773565064037, 
+                    15.787044820837266, 
+                    15.826316076610492, 
+                    15.865587332383718
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7798,10 +10060,68 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 15.75129341689002, 
+                "a0": 3.979166127238688, 
+                "etotals": [
+                    -600.8499233352444, 
+                    -600.8503256401162, 
+                    -600.850607296746, 
+                    -600.8507738932819, 
+                    -600.8508291809776, 
+                    -600.8507806649728, 
+                    -600.8506306930693, 
+                    -600.850375278034, 
+                    -600.850009133745
+                ], 
+                "b0": 1.0975910073354223, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.59049857359463, 
+                    15.629868519487545, 
+                    15.669238465380461, 
+                    15.708608411273376, 
+                    15.747978357166295, 
+                    15.78734830305921, 
+                    15.826718248952124, 
+                    15.866088194845041, 
+                    15.905458140737956
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 15.753888572445753, 
+                "a0": 3.979384648722025, 
+                "etotals": [
+                    -602.5546858879649, 
+                    -602.5551372818115, 
+                    -602.5509216384087, 
+                    -602.5510810086779, 
+                    -602.5511340069323, 
+                    -602.5510822564017, 
+                    -602.5509273744102, 
+                    -602.5506702891574, 
+                    -602.55031191016
+                ], 
+                "b0": -2.363980871831582, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.509642101412183, 
+                    15.548807864294536, 
+                    15.587973627176892, 
+                    15.627139390059245, 
+                    15.666305152941597, 
+                    15.705470915823954, 
+                    15.744636678706307, 
+                    15.783802441588659, 
+                    15.822968204471016
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7817,10 +10137,68 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 15.719305544154873, 
+                "a0": 3.976470659263743, 
+                "etotals": [
+                    -602.299583130173, 
+                    -602.2999845349884, 
+                    -602.300293164032, 
+                    -602.3004581357116, 
+                    -602.3005143445706, 
+                    -602.300444325776, 
+                    -602.3002606029554, 
+                    -602.2999548396757, 
+                    -602.2994906581296
+                ], 
+                "b0": 1.2425005013488066, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.56496925160852, 
+                    15.604274729516622, 
+                    15.643580207424725, 
+                    15.682885685332826, 
+                    15.722191163240929, 
+                    15.76149664114903, 
+                    15.800802119057135, 
+                    15.840107596965236, 
+                    15.879413074873339
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 15.666847475683735, 
+                "a0": 3.972042337174593, 
+                "etotals": [
+                    -608.0977513401994, 
+                    -608.0981330096349, 
+                    -608.0984050443441, 
+                    -608.0985920255076, 
+                    -608.098645904913, 
+                    -608.0985946204858, 
+                    -608.0984397920342, 
+                    -608.0981824707469, 
+                    -608.0978235294285
+                ], 
+                "b0": 1.095641762146809, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.507110856648168, 
+                    15.546270227498292, 
+                    15.585429598348412, 
+                    15.624588969198534, 
+                    15.663748340048656, 
+                    15.702907710898778, 
+                    15.742067081748898, 
+                    15.781226452599022, 
+                    15.820385823449142
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7836,10 +10214,68 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 15.671968428656738, 
+                "a0": 3.972475064652811, 
+                "etotals": [
+                    -607.8357662866774, 
+                    -607.8361611994602, 
+                    -607.8364448544376, 
+                    -607.8366505288229, 
+                    -607.8367164950344, 
+                    -607.8366644456498, 
+                    -607.8364905730585, 
+                    -607.8362007003908, 
+                    -607.8357926669202
+                ], 
+                "b0": 1.1932202703665815, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.513426659150019, 
+                    15.552601978996359, 
+                    15.591777298842697, 
+                    15.630952618689035, 
+                    15.670127938535373, 
+                    15.709303258381711, 
+                    15.74847857822805, 
+                    15.787653898074389, 
+                    15.826829217920727
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
-            "high": null, 
+            "high": {
+                "ecut": 45, 
+                "v0": 15.670250144023342, 
+                "a0": 3.9723298777783462, 
+                "etotals": [
+                    -592.0854785926236, 
+                    -592.0858602752875, 
+                    -592.0862353530518, 
+                    -592.0863961756717, 
+                    -592.0864502658227, 
+                    -592.0863991111391, 
+                    -592.0862442463254, 
+                    -592.0859867577732, 
+                    -592.085627623745
+                ], 
+                "b0": 1.1602112580842052, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.507878033660145, 
+                    15.547039341825952, 
+                    15.58620064999176, 
+                    15.625361958157571, 
+                    15.664523266323378, 
+                    15.703684574489186, 
+                    15.742845882654995, 
+                    15.782007190820805, 
+                    15.821168498986612
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "CO", 
             "pseudos_metadata": {
                 "C": {
@@ -7855,7 +10291,36 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": {
+                "ecut": 30, 
+                "v0": 15.674210349580896, 
+                "a0": 3.972664480346765, 
+                "etotals": [
+                    -591.8230052337374, 
+                    -591.823401412123, 
+                    -591.8236881513919, 
+                    -591.8238956777001, 
+                    -591.8239623138004, 
+                    -591.8239122853507, 
+                    -591.8237392811435, 
+                    -591.8234513450845, 
+                    -591.8230450762329
+                ], 
+                "b0": 1.1940005747311049, 
+                "b1": Infinity, 
+                "volumes": [
+                    15.51510185809601, 
+                    15.554281408242716, 
+                    15.593460958389423, 
+                    15.63264050853613, 
+                    15.671820058682835, 
+                    15.710999608829542, 
+                    15.75017915897625, 
+                    15.789358709122958, 
+                    15.828538259269665
+                ], 
+                "num_sites": 2
+            }
         }
     ], 
     "AlBi": [
@@ -7940,7 +10405,36 @@
     ], 
     "CdO": [
         {
-            "high": "scheduled", 
+            "high": {
+                "ecut": 45, 
+                "v0": 27.163429581193242, 
+                "a0": 4.771792289495393, 
+                "etotals": [
+                    -5112.313191400517, 
+                    -5112.313740301687, 
+                    -5112.314138074017, 
+                    -5112.314392024495, 
+                    -5112.3145190757605, 
+                    -5112.314520551767, 
+                    -5112.314399657378, 
+                    -5112.314153598216, 
+                    -5112.313785686827
+                ], 
+                "b0": 0.7617305041444945, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.854757952188248, 
+                    26.922572997522057, 
+                    26.990388042855866, 
+                    27.058203088189675, 
+                    27.126018133523484, 
+                    27.193833178857293, 
+                    27.261648224191102, 
+                    27.329463269524908, 
+                    27.397278314858717
+                ], 
+                "num_sites": 2
+            }, 
             "formula": "CdO", 
             "pseudos_metadata": {
                 "O": {
@@ -7956,7 +10450,36 @@
                     "md5": "8a31dcd424432bb76aff3e7834f03ce3"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": {
+                "ecut": 30, 
+                "v0": 27.15243764611216, 
+                "a0": 4.771148552573776, 
+                "etotals": [
+                    -5109.20150627335, 
+                    -5109.203308642504, 
+                    -5109.204796954531, 
+                    -5109.205794891536, 
+                    -5109.206281520322, 
+                    -5109.206093144815, 
+                    -5109.205370254407, 
+                    -5109.204040916875, 
+                    -5109.202362286513
+                ], 
+                "b0": 3.183185329413648, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.866255231132538, 
+                    26.934099309999034, 
+                    27.00194338886553, 
+                    27.069787467732027, 
+                    27.137631546598517, 
+                    27.205475625465013, 
+                    27.273319704331513, 
+                    27.34116378319801, 
+                    27.409007862064506
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
             "high": "scheduled", 
@@ -7975,7 +10498,36 @@
                     "md5": "4b2acedb1c5ac7330c1a5a512c49148f"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": {
+                "ecut": 30, 
+                "v0": 27.13338222321158, 
+                "a0": 4.7700321699363855, 
+                "etotals": [
+                    -1979.4024307281938, 
+                    -1979.4032713663764, 
+                    -1979.4039238580392, 
+                    -1979.404345596763, 
+                    -1979.4045448237207, 
+                    -1979.4044539616561, 
+                    -1979.4041163051188, 
+                    -1979.403503274331, 
+                    -1979.402670936087
+                ], 
+                "b0": 1.4630175088087718, 
+                "b1": Infinity, 
+                "volumes": [
+                    26.85234660180851, 
+                    26.92015555787368, 
+                    26.98796451393885, 
+                    27.055773470004024, 
+                    27.1235824260692, 
+                    27.19139138213437, 
+                    27.259200338199545, 
+                    27.327009294264716, 
+                    27.39481825032989
+                ], 
+                "num_sites": 2
+            }
         }, 
         {
             "high": "scheduled", 
@@ -8906,7 +11458,7 @@
     ], 
     "InN": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "InN", 
             "pseudos_metadata": {
                 "In": {
@@ -8922,10 +11474,10 @@
                     "md5": "95554b941e9158fd56c80fda470ef61c"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "InN", 
             "pseudos_metadata": {
                 "In": {
@@ -8941,10 +11493,10 @@
                     "md5": "a683a8bd86c6b8059f6c315d1b6c6685"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "InN", 
             "pseudos_metadata": {
                 "In": {
@@ -8960,10 +11512,10 @@
                     "md5": "c6121e2629558e5fffa741a7ed8d6aef"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "InN", 
             "pseudos_metadata": {
                 "In": {
@@ -8979,7 +11531,7 @@
                     "md5": "349526dea7842a0f4bf3ee6cf27869ec"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "NbO": [
@@ -9363,7 +11915,7 @@
     ], 
     "OsO": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "OsO", 
             "pseudos_metadata": {
                 "Os": {
@@ -9379,10 +11931,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "OsO", 
             "pseudos_metadata": {
                 "Os": {
@@ -9398,10 +11950,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "OsO", 
             "pseudos_metadata": {
                 "Os": {
@@ -9417,10 +11969,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "OsO", 
             "pseudos_metadata": {
                 "Os": {
@@ -9436,10 +11988,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "OsO", 
             "pseudos_metadata": {
                 "Os": {
@@ -9455,7 +12007,7 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "MnO": [
@@ -9915,7 +12467,7 @@
     ], 
     "AlP": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlP", 
             "pseudos_metadata": {
                 "P": {
@@ -9931,10 +12483,10 @@
                     "md5": "42da21322f3278ceb2300d0d28522705"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlP", 
             "pseudos_metadata": {
                 "P": {
@@ -9950,10 +12502,10 @@
                     "md5": "e7164e37bf4c1374752275b57b1633f7"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlP", 
             "pseudos_metadata": {
                 "P": {
@@ -9969,10 +12521,10 @@
                     "md5": "4a7ea47326ecff0d223a8c6872504991"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlP", 
             "pseudos_metadata": {
                 "P": {
@@ -9988,10 +12540,10 @@
                     "md5": "42da21322f3278ceb2300d0d28522705"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlP", 
             "pseudos_metadata": {
                 "P": {
@@ -10007,10 +12559,10 @@
                     "md5": "e7164e37bf4c1374752275b57b1633f7"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "AlP", 
             "pseudos_metadata": {
                 "P": {
@@ -10026,7 +12578,7 @@
                     "md5": "4a7ea47326ecff0d223a8c6872504991"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
             "high": null, 
@@ -13359,7 +15911,7 @@
     ], 
     "TlN": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "TlN", 
             "pseudos_metadata": {
                 "Tl": {
@@ -13375,10 +15927,10 @@
                     "md5": "95554b941e9158fd56c80fda470ef61c"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "TlN", 
             "pseudos_metadata": {
                 "Tl": {
@@ -13394,10 +15946,10 @@
                     "md5": "a683a8bd86c6b8059f6c315d1b6c6685"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "TlN", 
             "pseudos_metadata": {
                 "Tl": {
@@ -13413,10 +15965,10 @@
                     "md5": "c6121e2629558e5fffa741a7ed8d6aef"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "TlN", 
             "pseudos_metadata": {
                 "Tl": {
@@ -13432,7 +15984,7 @@
                     "md5": "349526dea7842a0f4bf3ee6cf27869ec"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "PdO": [
@@ -14423,36 +16975,7 @@
             "normal": "scheduled"
         }, 
         {
-            "high": {
-                "ecut": 45, 
-                "v0": 23.794965761598725, 
-                "a0": 4.5657804605503847, 
-                "etotals": [
-                    -2059.9930929238039, 
-                    -2059.9937576220109, 
-                    -2059.9942342424415, 
-                    -2059.9945204487731, 
-                    -2059.9946141377991, 
-                    -2059.9945148610336, 
-                    -2059.9942223472822, 
-                    -2059.993738662909, 
-                    -2059.9930657630248
-                ], 
-                "b0": 1.2896759949365297, 
-                "b1": Infinity, 
-                "volumes": [
-                    23.55801346731478, 
-                    23.617503400313048, 
-                    23.676993333311319, 
-                    23.736483266309587, 
-                    23.795973199307859, 
-                    23.855463132306127, 
-                    23.914953065304399, 
-                    23.974442998302671, 
-                    24.033932931300939
-                ], 
-                "num_sites": 2
-            }, 
+            "high": "scheduled", 
             "formula": "HfO", 
             "pseudos_metadata": {
                 "Hf": {
@@ -14468,68 +16991,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": {
-                "ecut": 30, 
-                "v0": 23.931454319128314, 
-                "a0": 4.5744936348448784, 
-                "etotals": [
-                    -2059.6372799971523, 
-                    -2059.6382228117027, 
-                    -2059.6389134513229, 
-                    -2059.6261334112714, 
-                    -2059.6262478912349, 
-                    -2059.6261630454405, 
-                    -2059.6259836737154, 
-                    -2059.6258178711182, 
-                    -2059.6256643875017
-                ], 
-                "b0": -4.0778080896440603, 
-                "b1": Infinity, 
-                "volumes": [
-                    23.513554456615992, 
-                    23.572932119385229, 
-                    23.632309782154458, 
-                    23.691687444923691, 
-                    23.751065107692924, 
-                    23.810442770462156, 
-                    23.869820433231389, 
-                    23.929198096000619, 
-                    23.988575758769851
-                ], 
-                "num_sites": 2
-            }
+            "normal": "scheduled"
         }, 
         {
-            "high": {
-                "ecut": 45, 
-                "v0": 23.767054447575862, 
-                "a0": 4.563994553488012, 
-                "etotals": [
-                    -2058.23179360726, 
-                    -2058.2324465000625, 
-                    -2058.2329159422993, 
-                    -2058.233198768492, 
-                    -2058.233291887494, 
-                    -2058.233193565803, 
-                    -2058.2329046687155, 
-                    -2058.2324260636478, 
-                    -2058.231759352992
-                ], 
-                "b0": 1.2746049372232287, 
-                "b1": Infinity, 
-                "volumes": [
-                    23.530554484261152, 
-                    23.589975076393124, 
-                    23.649395668525095, 
-                    23.708816260657066, 
-                    23.768236852789041, 
-                    23.827657444921016, 
-                    23.887078037052987, 
-                    23.946498629184958, 
-                    24.00591922131693
-                ], 
-                "num_sites": 2
-            }, 
+            "high": "scheduled", 
             "formula": "HfO", 
             "pseudos_metadata": {
                 "Hf": {
@@ -14545,36 +17010,7 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": {
-                "ecut": 30, 
-                "v0": 23.977770351213969, 
-                "a0": 4.577442833761669, 
-                "etotals": [
-                    -2058.1494709318581, 
-                    -2058.1502416616559, 
-                    -2058.1507938390082, 
-                    -2058.1385106262769, 
-                    -2058.1385960440152, 
-                    -2058.1385161207822, 
-                    -2058.1383133687036, 
-                    -2058.1380170961679, 
-                    -2058.1375954639784
-                ], 
-                "b0": -3.8369676567939139, 
-                "b1": Infinity, 
-                "volumes": [
-                    23.548767085264622, 
-                    23.60823366881327, 
-                    23.667700252361918, 
-                    23.727166835910566, 
-                    23.786633419459214, 
-                    23.846100003007862, 
-                    23.90556658655651, 
-                    23.965033170105158, 
-                    24.02449975365381
-                ], 
-                "num_sites": 2
-            }
+            "normal": "scheduled"
         }, 
         {
             "high": "scheduled", 
@@ -14593,36 +17029,7 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": {
-                "ecut": 30, 
-                "v0": 25.03004925617077, 
-                "a0": 4.6434477729070318, 
-                "etotals": [
-                    -2059.5896870717534, 
-                    -2059.5906177475395, 
-                    -2059.5913106921976, 
-                    -2059.5917410888128, 
-                    -2059.5787356263186, 
-                    -2059.5786399857066, 
-                    -2059.5784018304707, 
-                    -2059.5781156905059, 
-                    -2059.5778515185079
-                ], 
-                "b0": -0.6671763218911454, 
-                "b1": Infinity, 
-                "volumes": [
-                    23.488057533825589, 
-                    23.547370810426163, 
-                    23.606684087026732, 
-                    23.665997363627302, 
-                    23.725310640227871, 
-                    23.784623916828441, 
-                    23.84393719342901, 
-                    23.90325047002958, 
-                    23.962563746630149
-                ], 
-                "num_sites": 2
-            }
+            "normal": "scheduled"
         }, 
         {
             "high": "scheduled", 
@@ -14878,7 +17285,7 @@
     ], 
     "PbO": [
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PbO", 
             "pseudos_metadata": {
                 "Pb": {
@@ -14894,10 +17301,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PbO", 
             "pseudos_metadata": {
                 "Pb": {
@@ -14913,10 +17320,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PbO", 
             "pseudos_metadata": {
                 "Pb": {
@@ -14932,10 +17339,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PbO", 
             "pseudos_metadata": {
                 "Pb": {
@@ -14951,10 +17358,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }, 
         {
-            "high": null, 
+            "high": "scheduled", 
             "formula": "PbO", 
             "pseudos_metadata": {
                 "Pb": {
@@ -14970,7 +17377,7 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": null
+            "normal": "scheduled"
         }
     ], 
     "AlSb": [
