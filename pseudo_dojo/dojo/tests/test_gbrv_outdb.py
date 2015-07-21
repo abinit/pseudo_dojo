@@ -33,6 +33,7 @@ class GbrvOutdbTest(PseudoDojoTest):
             assert rec.formula == "LiF"
             assert rec["normal"] is None and rec["high"] is None
             assert "pseudos_metadata" in rec
+            assert not rec.has_data("normal")
 
             d = rec.as_dict()
             same_rec = GbrvRecord.from_dict(d, rec.dojo_pptable)

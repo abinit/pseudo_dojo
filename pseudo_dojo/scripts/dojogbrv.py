@@ -5,7 +5,6 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import os
 import argparse
-#import numpy as np
 import logging
 
 from warnings import warn
@@ -53,7 +52,7 @@ def gbrv_reset(options):
 
     for path in options.database_list:
         outdb = GbrvOutdb.from_file(path)
-        n = outdb.reset_failed()
+        n = outdb.reset(status="failed")
         print("%s: %d has been resetted" % (outdb.basename, n))
 
     return 0
@@ -136,7 +135,7 @@ def gbrv_run(options):
         # Run the flow with the scheduler.
         #print("Fake Running")
         flow.use_smartio()
-        flow.make_scheduler().start()
+        flow.make_scheduler(rmflow=True).start()
 
     return 0
 

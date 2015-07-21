@@ -13,6 +13,7 @@ from collections import OrderedDict, MutableMapping, defaultdict
 from warnings import warn
 from monty.io import FileLock
 from atomicfile import AtomicFile
+from pandas import DataFrame
 from monty.collections import AttrDict, dict2namedtuple
 from monty.functools import lazy_property
 #from pymatgen.core.units import Ha_to_eV
@@ -54,8 +55,11 @@ class GbrvRecord(dict):
     """
     ACCURACIES = ("normal", "high")
 
+    STATUS_LIST = (None, "scheduled" ,"failed")
+
     @classmethod
     def from_dict(cls, d, struct_type, dojo_pptable):
+        """Construct the object from a dictionary."""
         d = d.copy()
         new = cls(struct_type, d.pop("formula"), d.pop("pseudos_metadata"), dojo_pptable)
 
@@ -66,6 +70,7 @@ class GbrvRecord(dict):
         return new
 
     def as_dict(self):
+        """Dict representation."""
         return {k: self[k] for k in self}
 
     def __init__(self, struct_type, formula, pseudos_or_dict, dojo_pptable):
@@ -150,6 +155,10 @@ class GbrvRecord(dict):
 
         self[accuracy] = results
 
+    def has_data(self, accuracy):
+        """True if the record contains computed data for this accuracy."""
+        return self[accuracy] not in self.STATUS_LIST
+
     def matches_pseudos(self, pseudos):
         """Return True if the list of `pseudos` matches the one in the record.""" 
         d1 = {p.symbol: p for p in self.pseudos}
@@ -164,8 +173,7 @@ class GbrvRecord(dict):
         assert accuracy in self.ACCURACIES
         # TODO
         #@ecut = max(p.hint_for_accuracy(accuracy).ecut for p in self.pseudos)        
-        ecut = 6
-        pawecutdg = None
+        ecut, pawecutdg = 6, None
 
         return dict2namedtuple(formula=self.formula, struct_type=self.struct_type, accuracy=accuracy, 
                                pseudos=self.pseudos, ecut=ecut, pawecutdg=pawecutdg)
@@ -181,8 +189,8 @@ class GbrvRecord(dict):
         ref_a = getattr(gbrv_entry, reference)
 
         # Get our value, Return None if not computed.
-        d = self[accuracy] #; print(d)
-        if not isinstance(d, dict): return None
+        if not self.has_data(accuracy): return None
+        d = self[accuracy]
 
         our_a = d["a0"]
         abs_err = our_a - ref_a
@@ -191,7 +199,7 @@ class GbrvRecord(dict):
         return dict2namedtuple(a0=our_a, abs_err=abs_err, rel_err=rel_err)
 
     @add_fig_kwargs
-    def plot_eos(self, ax=None, **kwargs):
+    def plot_eos(self, ax=None, accuracy="normal", **kwargs):
         """
         plot the EOS computed with the deltafactor setup.
 
@@ -203,10 +211,8 @@ class GbrvRecord(dict):
         """
         ax, fig, plt = get_ax_fig_plt(ax)
 
-        d = self["normal"]
-        if not isinstance(d, dict):
-            return fig
-        #print(d)
+        if not self.has_data(accuracy): return fig
+        d = self["accuracy"]
 
         num_sites, volumes, etotals = d["num_sites"], np.array(d["volumes"]), np.array(d["etotals"])
         from pymatgen.io.abinitio.eos import EOS
@@ -371,7 +377,7 @@ class GbrvOutdb(MutableMapping):
                 for accuracy in rec.ACCURACIES:
                     data = rec[accuracy]
                     # TODO: Better treatment of failed!
-                    if data in  ("scheduled", "failed"): continue
+                    if data in ("scheduled", "failed"): continue
                     if got < max_njobs and data is None:
                         got += 1
                         jobs.append(rec.get_jobparams(accuracy))
@@ -449,7 +455,7 @@ class GbrvOutdb(MutableMapping):
 
         return dict2namedtuple(nrec_removed=nrec_removed, nrec_added=nrec_added)
 
-    def reset_failed(self):
+    def reset(self, status="failed"):
         """
         Reset all the failed calculation so that we can resubmit them.
         Return number of records that have been resetted.
@@ -459,7 +465,7 @@ class GbrvOutdb(MutableMapping):
             for rec in records:
                 for accuracy in rec.ACCURACIES:
                     # TODO: Better treatment of failed!
-                    if rec[accuracy] == "failed":
+                    if rec[accuracy] == status:
                         count += 1
                         rec[accuracy] = None
 
@@ -468,7 +474,7 @@ class GbrvOutdb(MutableMapping):
     @add_fig_kwargs
     def plot_errors(self, reference="ae", accuracy="normal", ax=None, **kwargs):
         """
-        Plot the error wrt reference
+        Plot the error wrt the reference values.
 
         Args:
             ax: matplotlib :class:`Axes` or None if a new figure should be created.
@@ -501,7 +507,7 @@ class GbrvOutdb(MutableMapping):
 
     def get_dataframe(self, reference="ae", **kwargs):
         """
-        Buid a pandas :class:`DataFrame` with the most important results.
+        Build a pandas :class:`DataFrame` with the most important results.
 
         Args:
             reference:
@@ -509,32 +515,34 @@ class GbrvOutdb(MutableMapping):
         ================  ==============================================================
         kwargs            Meaning
         ================  ==============================================================
-        with_metadata     True if column with pseudo metadata is wanted. Default: False.
+        with_md5          True if column with md5 is wanted. Default: True.
         ================  ==============================================================
 
         Returns:
             frame: pandas :class:`DataFrame` 
         """
-        with_metadata = kwargs.pop("with_metadata", False)
+        with_md5 = kwargs.pop("with_md5", True)
         rows, names = [], []
 
         for formula, records in self.items():
             for rec in records:
+                d = {"formula": formula, "basenames": set(p.basename for p in rec.pseudos)}
+                if with_md5:
+                    d.update({"md5": {p.symbol: p.md5 for p in rec.pseudos}})
+
                 for acc in ("normal", "high"):
                     e = rec.compute_err(reference=reference, accuracy=acc)
                     if e is None: continue
-                    d = {"a0": e.a0, acc + "_rel_err": e.rel_err, # acc + "_abs_err": e.abs_err, 
-                    }
+                    d.update({acc + "_a0": e.a0, acc + "_rel_err": e.rel_err, 
+                             # acc + "_abs_err": e.abs_err, 
+                             })
 
-                    if with_metadata:
-                        d.update({"pseudos_metadata": {p.basename: p.md5 for p in rec.pseudos}})
-
-                    names.append(formula)
-                    rows.append(d)
+                names.append(formula)
+                rows.append(d)
 
         # Build sub-class of pandas.DataFrame
-        from pandas import DataFrame
-        return DataFrame(rows, index=names)
+        #return GbrvDataFrame(rows, index=names)
+        return GbrvDataFrame(rows)
 
 
 class RocksaltOutdb(GbrvOutdb):
@@ -553,3 +561,80 @@ class HalfHeuslersOutdb(GbrvOutdb):
     """Results for the half-Heuslers structures."""
     struct_type = "hH"
     basename = struct_type + ".json"
+
+
+
+class GbrvDataFrame(DataFrame):
+    """
+    Extends pands DataFrame adding helper functions.
+
+    The frame has the structure:
+
+          a0         high_rel_err  normal_rel_err     basenames
+    CsCl  7.074637           NaN       -0.188528      set(Cs_basename, Cl_basename)
+    BeO   3.584316           NaN       -1.799555      {...}
+    """
+
+    #ALL_ACCURACIES = ("normal", "high")
+
+    def subframe_for_pseudo(self, pseudo, best_for_accuracy=None):
+        """
+        Extract the rows with the given pseudo. Return new `GbrvDataFrame`.
+
+        Args:
+            pseudo: :class:`Pseudo` object or string with the pseudo basename name.
+            best_for_accuracy: If not None, the returned frame will contain one
+                entry for formula. This entry has the `best` relative error
+                i.e. it's the one with the minimum absolute error.
+        """
+        pname = pseudo.basename if hasattr(pseudo, "basename") else pseudo
+                                                                             
+        # Extract the rows containing this pseudo.
+        rows = []
+        for index, entry in self.iterrows():
+            if pname not in entry.basenames: continue
+            rows.append(entry)
+
+        new = self.__class__(rows)
+        if best_for_accuracy is None: return new
+
+        # Handle best_for_accuracy
+        key = best_for_accuracy + "_rel_err"
+
+        groups = new.groupby("formula")
+        #groups = new.groupby("basenames").groups
+        for group in groups:
+            print("group")
+            print(group)
+            #print(group[key])
+        #raise NotImplementedError()
+
+    def subframe_for_symbol(self, symbol):
+        """
+        Extract the rows with the given symbol. Return new `GbrvDataFrame`.
+        """
+        rows = []
+        for index, entry in self.iterrows():
+            if symbol not in entry.md5.keys(): continue
+            rows.append(entry)
+
+        return self.__class__(rows)
+
+    @add_fig_kwargs
+    def plot_error_pseudo(self, pseudo, ax=None, **kwargs):
+        frame = self.subframe_for_pseudo(pseudo)
+        return frame.plot("formula", ["normal_rel_err", "high_rel_err"])
+
+    @add_fig_kwargs
+    def plot_pseudos_with_symbol(self, symbol, accuracy="normal", **kwargs):
+        key = accuracy + "_rel_err"
+
+        # Find all pseudos with the given symbol in the table.
+        frame_esymb = self.subframe_for_symbol(symbol)
+        
+        #frame_pseudo = frame_esymb.subframe_for_pseudo(pseudo, best_with_accuracy=accuracy)
+
+        # For each pseudo:
+        #     1) Extract the sub-frame.
+        #     2) Keep the rows with the best result for the given accuracy
+        #     3) Plot

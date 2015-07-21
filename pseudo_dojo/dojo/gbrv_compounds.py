@@ -119,7 +119,6 @@ class GbrvCompoundRelaxAndEosWork(Work):
             ecut=ecut,
             pawecutdg=pawecutdg,
             toldfe=toldfe,
-            prtwf=0,
             #ecutsm=0.5,
             #nband=nband,
             #paral_kgb=paral_kgb
