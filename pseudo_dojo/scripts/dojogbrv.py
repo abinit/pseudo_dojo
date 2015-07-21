@@ -135,7 +135,8 @@ def gbrv_run(options):
         # Run the flow with the scheduler.
         #print("Fake Running")
         flow.use_smartio()
-        flow.make_scheduler(rmflow=True).start()
+        #flow.make_scheduler(rmflow=True).start()
+        flow.make_scheduler().start()
 
     return 0
 
