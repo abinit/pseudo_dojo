@@ -125,7 +125,7 @@ def gbrv_run(options):
                                                ecut=ecut, pawecutdg=None, **extra_abivars)
 
         # Attach the database to the work to trigger the storage of the results.
-        flow.register_work(work.set_outdb(outdb))
+        flow.register_work(work.set_outdb(outdb.filepath))
 
     print("Working in: ", flow.workdir)                     
     flow.build_and_pickle_dump()

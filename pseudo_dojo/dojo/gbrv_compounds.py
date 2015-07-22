@@ -238,7 +238,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         # Update the database.
         # TODO, handle error!
         if self.outdb_path is not None:
-            GbrvOutDb.update_record(self.outdb_path, self.formula, self.accuracy, self.pseudos. results)
+            GbrvOutdb.update_record(self.outdb_path, self.formula, self.accuracy, self.pseudos, results)
 
         db = gbrv_database()
         entry = db.get_entry(self.formula, stype=self.struct_type)
