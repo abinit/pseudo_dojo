@@ -3681,9 +3681,6 @@ Rn 86.00   12    3       4      psp8
 
 <DOJO_REPORT>
 {
-    "symbol": "Rn", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
     "ecuts": [
         34.0, 
         36.0, 
@@ -3693,20 +3690,24 @@ Rn 86.00   12    3       4      psp8
         44.0, 
         54.0
     ], 
+    "md5": "1a9b635175cf6666d6edfe50864e8cc3", 
     "ppgen_hints": {
         "high": {
-            "pawecutdg": 34.0, 
-            "ecut": 34.0
+            "ecut": 34.0, 
+            "pawecutdg": 34.0
         }, 
         "low": {
-            "pawecutdg": 31.0, 
-            "ecut": 31.0
+            "ecut": 31.0, 
+            "pawecutdg": 31.0
         }, 
         "normal": {
-            "pawecutdg": 33.0, 
-            "ecut": 33.0
+            "ecut": 33.0, 
+            "pawecutdg": 33.0
         }
-    }
+    }, 
+    "pseudo_type": "norm-conserving", 
+    "symbol": "Rn", 
+    "version": "1.0"
 }
 </DOJO_REPORT>
 

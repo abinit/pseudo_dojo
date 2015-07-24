@@ -3083,9 +3083,6 @@ Au 79.00   10    4       4      psp8
 
 <DOJO_REPORT>
 {
-    "symbol": "Au", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
     "ecuts": [
         26.0, 
         28.0, 
@@ -3101,20 +3098,24 @@ Au 79.00   10    4       4      psp8
         54.0, 
         56.0
     ], 
+    "md5": "6fdaf5ef780157987aa018d5691a86c4", 
     "ppgen_hints": {
         "high": {
-            "pawecutdg": 36.0, 
-            "ecut": 36.0
+            "ecut": 36.0, 
+            "pawecutdg": 36.0
         }, 
         "low": {
-            "pawecutdg": 32.0, 
-            "ecut": 32.0
+            "ecut": 32.0, 
+            "pawecutdg": 32.0
         }, 
         "normal": {
-            "pawecutdg": 34.0, 
-            "ecut": 34.0
+            "ecut": 34.0, 
+            "pawecutdg": 34.0
         }
-    }
+    }, 
+    "pseudo_type": "norm-conserving", 
+    "symbol": "Au", 
+    "version": "1.0"
 }
 </DOJO_REPORT>
 
