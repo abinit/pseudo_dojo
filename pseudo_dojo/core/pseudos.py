@@ -6,6 +6,7 @@ import os
 import json
 
 from monty.collections import AttrDict 
+from monty.string import list_strings
 from pymatgen.core.periodic_table import PeriodicTable
 from pymatgen.io.abinitio.pseudos import PseudoTable 
 
@@ -18,10 +19,14 @@ class DojoTable(PseudoTable):
     """
 
     @classmethod
-    def from_dojodir(cls, top):
+    def from_dojodir(cls, top, exclude_basenames=None):
         """
         Initialize the table of pseudos for one of the top level directories
         located in the pseudo_dojo.pseudos directory.
+
+        Args:
+            exclude_basenames: Optional string or list of strings with the 
+                pseudo basenames to be excluded.
 
         .. warning::
             
@@ -38,10 +43,14 @@ class DojoTable(PseudoTable):
         all_symbols = set(element.symbol for element in PeriodicTable().all_elements)
         dirs = [os.path.join(top, d) for d in os.listdir(top) if d in all_symbols]
 
+        exclude = set(list_strings(exclude_basenames)) if exclude_basenames is not None else set()
+
         paths = []
         for dir in dirs:
             paths.extend(os.path.join(dir, f) for f in os.listdir(dir) 
-                         if f.endswith(meta.pseudo_ext))
+                         if f.endswith(meta.pseudo_ext)
+                         and f not in exclude #!= "Sr-sp.psp8"
+                         )
 
         new = cls(paths).sort_by_z()
         return new

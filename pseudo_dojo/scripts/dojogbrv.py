@@ -90,14 +90,14 @@ def gbrv_plot(options):
 
 
 def gbrv_run(options):
+    """Build flow and run it."""
     options.manager = abilab.TaskManager.as_manager(options.manager)
 
     outdb = GbrvOutdb.from_file(options.database)
 
-    jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs)
-    #jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs, select_formulas=["NaCl"])
-    num_jobs = len(jobs)
+    jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs, select_formulas=options.formulas)
 
+    num_jobs = len(jobs)
     if num_jobs == 0:
         print("Nothing to do, returning")
         return 0
@@ -120,6 +120,7 @@ def gbrv_run(options):
 
     gbrv_factory = GbrvCompoundsFactory()
     for job in jobs:
+        # FIXME this should be taken from the pseudos
         ecut = 30 if job.accuracy == "normal" else 45
         work = gbrv_factory.relax_and_eos_work(job.accuracy, job.pseudos, job.formula, outdb.struct_type, 
                                                ecut=ecut, pawecutdg=None, **extra_abivars)
@@ -137,8 +138,7 @@ def gbrv_run(options):
             print(results)                                     
             return 1
     else:
-        # Run the flow with the scheduler.
-        #print("Fake Running")
+        # Run the flow with the scheduler (enable smart_io)
         flow.use_smartio()
         #flow.make_scheduler(rmflow=True).start()
         flow.make_scheduler().start()
@@ -152,7 +152,7 @@ def main():
 usage example:
    dojogbrv generate directory      =>  Generate the json files needed GBRV computations.
                                         directory contains the pseudopotential table.
-   dojogbrv update   directory      =>  Update all the json files in directory (check for 
+   dojogbrv update directory        =>  Update all the json files in directory (check for 
                                         new pseudos or stale entries)
    dojogbrv reset dir/*.json        =>  Reset all failed entries in the json files
    dojogbrv run json_database       =>  Read data from json file, create flows and submit them
@@ -200,6 +200,10 @@ usage example:
     p_run.add_argument('-n', '--max-njobs', type=int, default=2, help="Maximum number of jobs (a.k.a. flows) that will be submitted")
     p_run.add_argument('-d', '--dry-run', default=False, action="store_true", help=("Dry run, build the flow and check validity "
                        "of input files without submitting"))
+    def parse_formulas(s):
+        return s.split(",") if s is not None else None
+    p_run.add_argument('-f', '--formulas', type=parse_formulas, default=None,  
+                        help="Optional list of formulas to be selected e.g. --formulas=LiF, NaCl")
     p_run.add_argument('database', help='Database with the output results.')
 
     try:

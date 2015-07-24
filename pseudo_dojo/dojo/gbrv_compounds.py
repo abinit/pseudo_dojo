@@ -83,8 +83,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
     def __init__(self, structure, formula, struct_type, pseudos, accuracy, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
                  spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
-                 ecutsm=0.05, chksymbreak=0,
-                 workdir=None, manager=None, **kwargs):
+                 ecutsm=0.05, chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the relaxed lattice parameter.
 
@@ -122,7 +121,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
             toldfe=toldfe,
             #ecutsm=0.5,
             #nband=nband,
-            #paral_kgb=paral_kgb
+            paral_kgb=paral_kgb
         )
                                        
         self.extra_abivars.update(**kwargs)
