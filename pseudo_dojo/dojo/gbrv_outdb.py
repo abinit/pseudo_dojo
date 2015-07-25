@@ -765,7 +765,15 @@ class GbrvDataFrame(DataFrame):
         ax.grid(True)
         for acc in ("normal", "high"):
             col = acc + "_rel_err"
-            sns.distplot(self[col].dropna() , ax=ax, rug=True, hist=False, label=col)
+            values = self[col].dropna() 
+            sns.distplot(values, ax=ax, rug=True, hist=False, label=col)
+
+            # Add text with Mean or (MARE/RMSRE)
+            text = []; app = text.append
+            app("MARE = %.2f" % values.abs().mean())
+            app("RMSRE = %.2f" % np.sqrt((values**2).mean()))
+                                                                       
+            ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
 
         return fig
 

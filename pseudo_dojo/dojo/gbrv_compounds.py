@@ -152,7 +152,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
     @property
     def outdb_path(self):
-        """The database with the output results, None if not set."""
+        """The path to the database with the output results, None if not set."""
         try:
             return self._outdb_path
         except AttributeError:
@@ -161,7 +161,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
     def add_eos_tasks(self):
         """
         Read the optimized structure from the netcdf file and add to self a new
-        a new list of ScfTask for the computation of the EOS with the GBRV parameters.
+        a new list of `ScfTask` for the computation of the EOS with the GBRV setup.
         """
         self.history.info("Building EOS tasks")
 

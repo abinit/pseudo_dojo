@@ -5,10 +5,8 @@ import sys
 import os
 import argparse
 
-from pymatgen.io.abinitio.pseudos import write_notebook
+from pseudo_dojo.pseudos import write_notebook
 
-#from IPython.nbformat import current as nbf
-#from IPython.nbformat import v3 as nbf
 
 def main():
     parser = argparse.ArgumentParser(add_help=False)
