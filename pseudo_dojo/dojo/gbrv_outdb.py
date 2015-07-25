@@ -2,7 +2,6 @@
 """The GBRV results for binary and ternary compunds"""
 from __future__ import division, print_function, unicode_literals
 
-import sys
 import os
 import json
 import numpy as np
@@ -13,7 +12,7 @@ from monty.io import FileLock
 from monty.string import list_strings
 from atomicfile import AtomicFile
 from pandas import DataFrame
-from monty.collections import AttrDict, dict2namedtuple
+from monty.collections import dict2namedtuple #AttrDict,
 from monty.functools import lazy_property
 from pymatgen.core.periodic_table import sort_symbols_by_Z
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
@@ -83,7 +82,7 @@ class GbrvRecord(dict):
         if all(hasattr(p, "as_dict") for p in pseudos_or_dict):
             def get_info(p):
                 """Extract the most important info from the pseudo."""
-                symbol = p.symbol
+                #symbol = p.symbol
                 d = p.as_dict()
                 return {k: d[k] for k in keys}
 
@@ -307,9 +306,7 @@ class GbrvOutdb(MutableMapping):
         return os.path.join(dirpath, self.basename)
 
     def to_json(self):
-        d = {}
-        d["struct_type"] = self.struct_type
-        d["dojo_dir"] = self.dojo_dir
+        d = dict(struct_type=self.struct_type, dojo_dir=self.dojo_dir)
         for formula, records in self.items():
             d[formula] = [rec.as_dict() for rec in records]
 
@@ -534,10 +531,10 @@ class GbrvOutdb(MutableMapping):
         for formula, records in self.items():
             for rec in records:
                 d = dict(formula=formula, struct_type=self.struct_type, 
-                     basenames=set(p.basename for p in rec.pseudos),
-                     pseudos_meta={p.symbol: {"basename": p.basename, "md5": p.md5} for p in rec.pseudos},
-                     symbols={p.symbol for p in rec.pseudos},
-                    )
+                         basenames=set(p.basename for p in rec.pseudos),
+                         pseudos_meta={p.symbol: {"basename": p.basename, "md5": p.md5} for p in rec.pseudos},
+                         symbols={p.symbol for p in rec.pseudos},
+                        )
 
                 has_data = 0
                 for acc in ("normal", "high"):
@@ -667,9 +664,9 @@ class GbrvDataFrame(DataFrame):
                     continue
 
                 row = dict(formula=trial, struct_type=struct_type, 
-                            basenames=set([p.basename]),
-                            pseudos_meta={p.symbol: {"basename": p.basename, "md5": p.md5}},
-                            symbols={p.symbol})
+                           basenames=set([p.basename]),
+                           pseudos_meta={p.symbol: {"basename": p.basename, "md5": p.md5}},
+                           symbols={p.symbol})
                                                                                             
                 for acc in cls.ALL_ACCURACIES:
                     # FIXME: ecut should depend on accuracy.
@@ -924,7 +921,7 @@ class GbrvDataFrame(DataFrame):
 
         for name, group in grouped:
             print(name) #; print(group)
-            acc= "high"
+            acc = "high"
             col = acc + "_rel_err"
             s = group[col].dropna()
             if len(s) in [0, 1]: continue

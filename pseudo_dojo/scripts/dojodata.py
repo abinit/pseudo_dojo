@@ -11,7 +11,8 @@ from collections import OrderedDict, namedtuple
 from pprint import pprint
 from tabulate import tabulate
 from monty.os.path import find_exts
-from pymatgen.io.abinitio.pseudos import PseudoTable, Pseudo
+from pymatgen.io.abinitio.pseudos import Pseudo
+from pseudo_dojo.core.pseudos import DojoTable
 
 
 def dojo_plot(options):
@@ -205,6 +206,13 @@ def dojo_table(options):
     #print(tabulate(bad, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
 
+def dojo_dist(options):
+    """
+    Plot the distribution of the deltafactor and of the relative error for the GBRV fcc/bcc tests.
+    """
+    fig = options.pseudos.plot_dfgbrv_dist()
+
+
 def dojo_check(options):
     for p in options.pseudos:
 
@@ -315,7 +323,8 @@ Usage example:\n
     subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
 
     plot_options_parser = argparse.ArgumentParser(add_help=False)
-    plot_options_parser.add_argument("-w", "--what-plot", type=str, default="all", help="Quantity to plot e.g df for deltafactor, gbrv for GBRV tests")
+    plot_options_parser.add_argument("-w", "--what-plot", type=str, default="all", 
+                                      help="Quantity to plot e.g df for deltafactor, gbrv for GBRV tests")
     plot_options_parser.add_argument("-e", "--eos", action="store_true", help="Plot EOS curve")
 
     # Subparser for plot command.
@@ -326,6 +335,10 @@ Usage example:\n
 
     # Subparser for table command.
     p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
+
+    # Subparser for dist command.
+    p_dist = subparsers.add_parser('dist', parents=[pseudos_selector_parser], 
+                                   help="Plot distribution of deltafactor and GBRV relative errors.")
 
     # Subparser for trials command.
     p_trials = subparsers.add_parser('trials', parents=[pseudos_selector_parser], help="Plot DOJO trials.")
@@ -353,7 +366,7 @@ Usage example:\n
 
     def get_pseudos(options):
         """
-        Find pseudos in paths, return :class:`PseudoTable` object sorted by atomic number Z.
+        Find pseudos in paths, return :class:`DojoTable` object sorted by atomic number Z.
         Accepts filepaths or directory.
         """
         exts=("psp8",)
@@ -362,7 +375,7 @@ Usage example:\n
         if len(paths) == 1 and os.path.isdir(paths[0]):
             top = paths[0]
             paths = find_exts(top, exts, exclude_dirs="_*")
-            #table = PseudoTable.from_dir(paths[0])
+            #table = DojoTable.from_dir(paths[0])
 
         pseudos = []
         for p in paths:
@@ -371,7 +384,7 @@ Usage example:\n
             except Exception as exc:
                 warn("Error in %s:\n%s. This pseudo will be ignored" % (p, exc))
 
-        table = PseudoTable(pseudos)
+        table = DojoTable(pseudos)
 
         # Here we select a subset of pseudos according to family or rows
         if options.rows:
@@ -384,7 +397,7 @@ Usage example:\n
 
         return table.sort_by_z()
 
-    # Build PseudoTable from the paths specified by the user.
+    # Build DojoTable from the paths specified by the user.
     options.pseudos = get_pseudos(options)
 
     if options.seaborn:
