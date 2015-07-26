@@ -99,7 +99,7 @@ class GbrvOutdbTest(PseudoDojoTest):
         # No change here
         u = outdb.check_update()
         print(u)
-        assert u.nrec_added == 0 and u.nrec_removed
+        assert u.nrec_added == 0 and u.nrec_removed == 0
 
         # Now I hack a bit the object to simulate a pseudo that has been removed
         new_table = [p for p in outdb.dojo_pptable if p.basename != "Si.psp8"]

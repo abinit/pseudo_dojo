@@ -25,7 +25,7 @@ class DojoInfo(AttrDict):
             "authors": {"type": "array"},
             "generation_date": {"type": "string", "format": "date"},
             "description": {"type": "string"},
-            "tags": {"type": "array", "items": {"type": "string", "enum": ["accuracy", "efficiency"]}},
+            #"tags": {"type": "array", "items": {"type": "string", "enum": ["accuracy", "efficiency"]}},
             "reference": {"type": "string"},
             "dojo_dir": {"type": "string"},
             #non-relativistic, scalar-relativistic or relativistic
@@ -33,6 +33,7 @@ class DojoInfo(AttrDict):
     }
 
     def validate_json_schema(self):
+        """Validate DojoInfo with validictory."""
         import validictory
         validictory.validate(self, self.JSON_SCHEMA)
 
@@ -127,7 +128,7 @@ class DojoTable(PseudoTable):
                 "l_max": 2, 
                 "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
             }
-        }, 
+        }
         }
         """
         with open(djson_path, "rt") as fh:

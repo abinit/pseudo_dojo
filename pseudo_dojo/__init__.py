@@ -24,95 +24,96 @@ def get_pseudos(top):
     return PseudoTable(pseudos).sort_by_z()
 
 
-from collections import defaultdict
+from collections import defaultdict, OrderedDict, Mapping
+from monty.design_patterns import singleton
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.pseudos import dojotable_absdir
 
 
-class OfficialTable(object):
+class TableMetadata(object):
     """
-    A data descriptor that sets and returns values
-    normally and prints a message logging their access.
+     Metadata used to build one of the official tables.
     """
     def __init__(self, table_dir, djson_name):
+        """
+        Args:
+            table_dir:
+            djson_name:
+        """
         self.table_dir = table_dir
         self.dojo_absdir = dojotable_absdir(table_dir)
         self.djson_name = djson_name
         self.djson_path = os.path.join(self.dojo_absdir, djson_name)
 
-    def __set__(self, obj, val):
-        """Read-only data descriptor"""
-        raise AttributeError("Dojo Tables are read-only!")
+    #def __set__(self, obj, val):
+    #    """Read-only data descriptor"""
+    #    raise AttributeError("Dojo Tables are read-only!")
 
-    def __get__(self, obj, cls):
-        print("in get with obj ", obj, "and cls", cls)
-        x = cls
-        #x = obj
-        if not hasattr(x, "_dtables"):
-            x._dtables = defaultdict(dict)
+    #def __get__(self, obj, cls):
+    #    print("in get with obj ", obj, "and cls", cls)
+    #    x = cls
+    #    #x = obj
+    #    if not hasattr(x, "_dtables"):
+    #        x._dtables = defaultdict(dict)
 
-        if (self.table_dir in x._dtables and 
-            self.djson_name in x._dtables[self.table_dir]):
-            print("Returning cached table")
-            return x._dtables[self.table_dir][self.djson_name]
+    #    if (self.table_dir in x._dtables and 
+    #        self.djson_name in x._dtables[self.table_dir]):
+    #        print("Returning cached table")
+    #        return x._dtables[self.table_dir][self.djson_name]
 
-        print("Not found, will compute and store the table")
+    #    print("Not found, will compute and store the table")
 
-        new_table = 1
-        new_table = DojoTable.from_djson(self.djson_path)
+    #    new_table = 1
+    #    new_table = DojoTable.from_djson(self.djson_path)
 
-        x._dtables[self.table_dir][self.djson_name] = new_table
-        return new_table
+    #    x._dtables[self.table_dir][self.djson_name] = new_table
+    #    return new_table
 
-
-class DescTables(object):
-    """
-    This object gathers the official tables provided by PseudoDojo in a single namespace.
-    """
-    GGA = OfficialTable("ONCVPSP-PBE", "accuracy.djson")
-
-    #NC_ODRH_BSE_SR_V0_2 = OfficialTable("ONCVPSP-PBE", "accuracy.djson")
-    #PAW_JTH_PBE_V0_2
-
-    #@classmethod
-    #def objects(cls):
-    #    dtables = cls._dtables
-
-    #    all_tables = []
-    #    for v in dtables.values():
-    #        all_tables.extend(list(v.values()))
-
-    #    return all_tables
-
-    #@classmethod
-    #def get_all(cls)
-
-from monty.design_patterns import singleton
-from collections import OrderedDict, Mapping
 
 @singleton
-class Tables(Mapping):
+class OfficialTables(Mapping):
 
     def __init__(self):
-        self.data = data = OrderedDict()
-        data["GGA"] = OfficialTable("ONCVPSP-PBE", "accuracy.djson")
+        self._tables = tables = OrderedDict()
+
+        # Naming scheme
+        # [PP_TYPE]-[TABLE_NAME]-[XC_NAME]-[SO|""]-version
+        #
+        # where: 
+        #
+        #  PP_TYPE in ("PAW", "NC") defines the pseudos type.
+        #  TABLE_NAME is the name of the table e.g. ONCVPSP, JTH ...
+        #  XC_NAME gives the functional type e.g. PBE
+        #  SO is present if the table contains the Spin-orbit term.
+        #  maybe FR|SR for fully or scalar-relativistic?
+        #  version is the version number.
+        # 
+        # Maybe descriptor?
+        tables["ONC-DOJO-PBE"] = TableMetadata("ONCVPSP-PBE", "accuracy.djson")
+
+        #tables["ONCV-GYGYv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "accuracy.djson")
+        #tables["PAW-JTHv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "accuracy.djson")
+        #tables["PAW-GBRVv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "accuracy.djson")
 
     # ABC protocol.
     def __iter__(self):
-        return self.data.__iter__()
+        return self._tables.__iter__()
 
     def __len__(self):
-        return self.data.__len__()
+        return self._tables.__len__()
 
     def __getitem__(self, key):
-        v = self.data[key]
-        if not isinstance(v, OfficialTable): return v 
+        v = self._tables[key]
+        if not isinstance(v, TableMetadata): return v 
 
         # Parse files, construct table and store it.
         new_table = DojoTable.from_djson(v.djson_path)
-        self.data[key] = new_table
+        new_table.dojo_name = key
+        self._tables[key] = new_table
         return new_table
 
-    #def paw_tables(self, **kwargs):
     #def nc_tables(self, **kwargs):
-    #def with_dojo_params(self, **kwargs)
+    #    return [table for for name, table in self.items() if table.dojo_info.isnc]
+
+    #def paw_tables(self, **kwargs):
+    #    return [table for for name, table in self.items() if table.dojo_info.ispaw]
