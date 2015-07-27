@@ -214,8 +214,8 @@ def dojo_dist(options):
 
 
 def dojo_check(options):
-    for p in options.pseudos:
 
+    for p in options.pseudos:
         try:
             report = p.dojo_report
         except Exception as exc:
@@ -231,10 +231,10 @@ def dojo_check(options):
         #    continue
 
         try:
-            errors = report.check_errors()
-            if errors:
-                print("[%s] Validation problem\n" % p.basename)
-                pprint(errors, indent=4)
+            error = report.check()
+            if error:
+                print("[%s] Validation problem" % p.basename)
+                print(error)
                 print()
 
         except Exception as exc:

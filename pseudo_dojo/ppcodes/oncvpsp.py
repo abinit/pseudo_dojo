@@ -628,7 +628,7 @@ class OncvOutputParser(PseudoGenOutputParser):
                     setattr(self, k, v)
                 break
 
-        # Parse ATOM and Rerencence configuration
+        # Parse ATOM and Reference configuration
         # Example::
         """
         #

@@ -280,7 +280,8 @@ class GbrvOutdb(MutableMapping):
             # Here I initialize the object with the data read from file.
             new = cls(dojo_dir, dojo_pptable)
             for formula, dict_list in d.items():
-                new[formula] = [GbrvRecord.from_dict(d, new.struct_type, dojo_pptable) for d in dict_list]
+                new[formula] = [GbrvRecord.from_dict(d, new.struct_type, dojo_pptable) 
+                                for d in dict_list]
 
             return new
 

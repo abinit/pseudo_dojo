@@ -36,7 +36,7 @@ class GbrvOutdbTest(PseudoDojoTest):
             assert not rec.has_data("normal")
 
             d = rec.as_dict()
-            same_rec = GbrvRecord.from_dict(d, rec.dojo_pptable)
+            same_rec = GbrvRecord.from_dict(d, outdb.struct_type, rec.dojo_pptable)
             #print(rec)
             assert same_rec == rec
 

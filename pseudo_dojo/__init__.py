@@ -32,13 +32,14 @@ from pseudo_dojo.pseudos import dojotable_absdir
 
 class TableMetadata(object):
     """
-     Metadata used to build one of the official tables.
+     Metadata associated to one of the official PseudoDojo tables.
     """
     def __init__(self, table_dir, djson_name):
         """
         Args:
-            table_dir:
-            djson_name:
+            table_dir: basename of the directory containing the pseudos
+            djson_name: name of the json file in `table_dir` with the
+             list of pseudos and metatada.
         """
         self.table_dir = table_dir
         self.dojo_absdir = dojotable_absdir(table_dir)
@@ -91,9 +92,9 @@ class OfficialTables(Mapping):
         # Maybe descriptor?
         tables["ONC-DOJO-PBE"] = TableMetadata("ONCVPSP-PBE", "accuracy.djson")
 
-        #tables["ONCV-GYGYv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "accuracy.djson")
+        #tables["ONCV-GYGYv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "htc.djson")
         #tables["PAW-JTHv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "accuracy.djson")
-        #tables["PAW-GBRVv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "accuracy.djson")
+        #tables["PAW-GBRVv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "efficiency.djson")
 
     # ABC protocol.
     def __iter__(self):
@@ -110,6 +111,7 @@ class OfficialTables(Mapping):
         new_table = DojoTable.from_djson(v.djson_path)
         new_table.dojo_name = key
         self._tables[key] = new_table
+
         return new_table
 
     #def nc_tables(self, **kwargs):

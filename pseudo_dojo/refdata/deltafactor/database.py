@@ -242,7 +242,7 @@ class DeltaFactorDatabase(object):
 
 def check_cif_wien2k_consistency():
     """
-    This function compares the v0 of thestructures read from the CIF files with
+    This function compares the v0 of the structures read from the CIF files with
     with those computed from the text files containing the deltafactor results.
     """
     from pymatgen.core.structure import Structure
