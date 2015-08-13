@@ -582,6 +582,9 @@ class OncvOutputParser(PseudoGenOutputParser):
                 line = line.strip()
                 self.lines.append(line)
 
+                if line.startswith("fcfact*="):
+                    print(line)
+
                 if line.startswith("DATA FOR PLOTTING"):
                     self.run_completed = True
 

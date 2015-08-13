@@ -19,7 +19,6 @@ def dojo_plot(options):
     """Plot DOJO results for a single pseudo."""
     pseudos = options.pseudos
     for pseudo in pseudos:
-        #print(pseudos)
         if not pseudo.has_dojo_report:
             warn("pseudo %s does not contain the DOJO_REPORT section" % pseudo.filepath)
             continue
@@ -35,17 +34,13 @@ def dojo_plot(options):
 
         # Deltafactor
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
-            #report.plot_etotal_vs_ecut(title=pseudo.basename)
             if options.eos: 
+                # Plot EOS curve
                 report.plot_deltafactor_eos(title=pseudo.basename)
-            #fig = report.plot_deltafactor_convergence(title=pseudo.basename, what="dfactprime_meV", show=True)
-            fig = report.plot_deltafactor_convergence(title=pseudo.basename, show=True)
-            #report.plot_deltafactor_convergence(title=pseudo.basename)
+            # Plot total energy convergence.
+            #fig = report.plot_deltafactor_convergence(title=pseudo.basename, show=True)
 
-        #from bokeh import mpl
-        #from bokeh.plotting import show
-        #show(mpl.to_bokeh(fig, name="test"))
-        #return
+            fig = report.plot_etotal_vs_ecut(title=pseudo.basename)
 
         # GBRV
         if any(k in options.what_plot for k in ("all", "gbrv")):
@@ -216,6 +211,7 @@ def dojo_dist(options):
 def dojo_check(options):
 
     for p in options.pseudos:
+
         try:
             report = p.dojo_report
         except Exception as exc:
@@ -281,7 +277,7 @@ Usage example:\n
     dojodata plot H.psp8                ==> Plot dojo data for pseudo H.psp8
     dojodata trials H.psp8 -r 1
     dojodata compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
-    dojodata table .                    ==> Build table (find all psp8 files withing current directory)
+    dojodata table .                    ==> Build table (find all psp8 files within current directory)
 """
         return examples
 

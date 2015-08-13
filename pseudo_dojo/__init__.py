@@ -32,14 +32,14 @@ from pseudo_dojo.pseudos import dojotable_absdir
 
 class TableMetadata(object):
     """
-     Metadata associated to one of the official PseudoDojo tables.
+     Metadata associated to one of the official `PseudoDojo` tables.
     """
     def __init__(self, table_dir, djson_name):
         """
         Args:
             table_dir: basename of the directory containing the pseudos
             djson_name: name of the json file in `table_dir` with the
-             list of pseudos and metatada.
+                list of pseudos and metatada.
         """
         self.table_dir = table_dir
         self.dojo_absdir = dojotable_absdir(table_dir)
