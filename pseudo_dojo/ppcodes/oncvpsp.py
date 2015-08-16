@@ -954,7 +954,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         if devel:
             # devellopment run: few, relatively high ecut calculations
-            d["ecuts"] = [estart - 10, estart + 10]
+            d["ecuts"] = [estart, estart + 10]
 
         ps_data += "\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
 
