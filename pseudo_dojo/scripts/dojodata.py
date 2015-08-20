@@ -12,6 +12,168 @@ from pprint import pprint
 from tabulate import tabulate
 from monty.os.path import find_exts
 from pymatgen.io.abinitio.pseudos import PseudoTable, Pseudo
+from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
+
+def dojo_figures(options):
+    """
+    Create figures for a dojo table.
+    currently for all pseudo's in the search space the one with the best df per element is chosen 
+    this should probably come from a dojotable eventually
+    """
+    pseudos = options.pseudos
+
+    data, errors = pseudos.get_dojo_dataframe()
+
+    """Select best entries"""
+    grouped = data.groupby("symbol")
+
+    rows, names = [], []
+    for name, group in grouped:
+        best = group.sort("high_dfact_meV").iloc[0]
+        names.append(name)
+        
+        l = {k: getattr(best, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
+                                           'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err', 
+                                           'high_gbrv_fcc_a0_rel_err', 'high_ecut')} 
+        out = best.name.replace('psp8', 'out')
+        outfile = name+'/'+out
+            
+        parser = OncvOutputParser(outfile)
+        parser.scan()
+
+        data = {'valence': parser.valence, 'rcmin': parser.rc_min, 'rcmax': parser.rc_max} 
+
+        l.update(data)
+#        for v in l.values():
+#            if str(v) == 'nan':
+#                print('\n\nnan detected in best:\n ', best)
+
+        rows.append(l)
+
+
+    import matplotlib.pyplot as plt
+    from ptplotter.plotter import ElementDataPlotter
+    import matplotlib.cm as mpl_cm
+    from matplotlib.collections import PatchCollection 
+    import numpy as np
+
+
+    class ElementDataPlotterRangefixer(ElementDataPlotter):
+        """
+        modified plotter that alows to set the clim for the plot
+        """
+ 
+        def draw(self, colorbars=True, **kwargs):
+            self.cbars = []
+            for coll, cmap, label in zip(self.collections, self.cmaps, self.cbar_labels):
+                pc = PatchCollection(coll, cmap=cmap)
+                pc.set_clim(kwargs.get('vmin', None), kwargs.get('vmax', None))
+                pc.set_array(np.array([ p.value for p in coll ]))
+                self._ax.add_collection(pc)
+
+                if colorbars:
+                    options = {
+                                'orientation':'horizontal',
+                                'pad':0.05, 'aspect':60
+                              }
+
+                    options.update(kwargs.get('colorbar-options', {}))
+                    cbar = plt.colorbar(pc, **options)
+                    cbar.set_label(label)
+                    self.cbars.append(cbar)
+            fontdict = kwargs.get('font', {'color':'white'})
+            for s in self.squares:
+                if not s.label:
+                    continue
+                x = s.x + s.dx/2
+                y = s.y + s.dy/2
+                self._ax.text(x, y, s.label, ha='center',
+                                             va='center',
+                                             fontdict=fontdict)
+
+            if self.guide_square:
+                self.guide_square.set_labels(self.labels)
+                pc = PatchCollection(self.guide_square.patches, match_original=True)
+                self._ax.add_collection(pc)
+            self._ax.autoscale_view()
+
+    cmap = mpl_cm.cool
+    color = 'black'
+    cmap.set_under('w', 1.)
+ 
+    # functions for plotting
+    def rcmin(elt):
+        """R_c min"""
+        return elt['rcmin']
+    def rcmax(elt):
+        """R_c max"""
+        return elt['rcmax']
+    def ar(elt):
+        """Atomic Radius"""
+        return elt['atomic_radii']*0.018897161646320722
+    def df(elt):
+        """Delta Factor"""
+        try:
+            return elt['high_dfact_meV']
+        except KeyError:
+            return float('NaN')
+    def dfp(elt):
+        """Delta Factor Prime"""
+        try:
+            return elt['high_dfactprime_meV']
+        except KeyError:
+            return float('NaN')
+    def bcc(elt):
+        """GBRV BCC"""
+        try:
+            return elt['high_gbrv_bcc_a0_rel_err']
+        except KeyError:
+            print('bcc func fail: ', elt)
+            return float('NaN')
+    def fcc(elt):
+        """GBRV FCC"""
+        try:
+            return elt['high_gbrv_fcc_a0_rel_err']
+        except KeyError:
+            print('fcc func fail: ', elt)
+            return float('NaN')
+
+    els=[]
+    elsgbrv=[]
+    rel_ers=[]
+    for el in rows:
+        symbol = el['name'].split('.')[0].split('-')[0]
+        rel_ers.append(max(abs(el['high_gbrv_bcc_a0_rel_err']),abs(el['high_gbrv_fcc_a0_rel_err'])))
+        if el['high_dfact_meV'] > 0:
+            data[symbol] = el
+            els.append(symbol)
+        else:
+            print('failed reading df  :', symbol, el['high_dfact_meV'])
+        if el['high_gbrv_bcc_a0_rel_err'] > -100 and el['high_gbrv_fcc_a0_rel_err'] > -100:
+            elsgbrv.append(symbol)
+        else:
+            print('failed reading gbrv: ', symbol, el['high_gbrv_bcc_a0_rel_err'], el['high_gbrv_fcc_a0_rel_err'])
+            print(el)
+
+    max_rel_err = max(rel_ers)
+
+    # plot the periodic table with df and dfp
+    epd = ElementDataPlotterRangefixer(elements=els, data=data)
+    epd.ptable(functions=[df,dfp], font={'color':color}, cmaps=cmap, vmin=0)
+    plt.show()
+    #plt.savefig('df.eps', format='eps')
+
+    # plot the GBVR results periodic table
+    epd = ElementDataPlotterRangefixer(elements=elsgbrv, data=data)
+    epd.ptable(functions=[bcc,fcc], font={'color':color}, cmaps=mpl_cm.jet, vmin=-max_rel_err, vmax=max_rel_err)
+    plt.show()
+    #plt.savefig('gbrv.eps', format='eps')
+
+    # plot the radii periodic table
+    epd = ElementDataPlotterRangefixer(elements=els, data=data)
+    epd.ptable(functions=[rcmin, rcmax, ar], font={'color':color}, vmin=0, vmax=4, cmaps=cmap)
+    plt.show()
+    #plt.savefig('rc.eps', format='eps')
 
 
 def dojo_plot(options):
@@ -269,11 +431,12 @@ def dojo_validate(options):
 def main():
     def str_examples():
         examples = """\
-Usage example:\n
+    Usage example:\n
     dojodata plot H.psp8                ==> Plot dojo data for pseudo H.psp8
     dojodata trials H.psp8 -r 1
     dojodata compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
     dojodata table .                    ==> Build table (find all psp8 files withing current directory)
+    dojodata figure .                   ==> Plot periodic table figures
 """
         return examples
 
@@ -323,6 +486,9 @@ Usage example:\n
 
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[pseudos_selector_parser, plot_options_parser], help="Compare pseudos")
+
+    # Subparser for figures
+    p_figures = subparsers.add_parser('figures', parents=[pseudos_selector_parser, plot_options_parser], help="Plot table figures")
 
     # Subparser for table command.
     p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
