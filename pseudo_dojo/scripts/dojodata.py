@@ -37,8 +37,9 @@ def dojo_plot(options):
             if options.eos: 
                 # Plot EOS curve
                 report.plot_deltafactor_eos(title=pseudo.basename)
+
             # Plot total energy convergence.
-            #fig = report.plot_deltafactor_convergence(title=pseudo.basename, show=True)
+            fig = report.plot_deltafactor_convergence(title=pseudo.basename)
 
             fig = report.plot_etotal_vs_ecut(title=pseudo.basename)
 
