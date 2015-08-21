@@ -579,4 +579,16 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        do_prof = sys.argv[1] == "prof"
+        if do_prof or do_tracemalloc: sys.argv.pop(1)
+    except: 
+        pass
+
+    if do_prof:
+        import pstats, cProfile
+        cProfile.runctx("main()", globals(), locals(), "Profile.prof")
+        s = pstats.Stats("Profile.prof")
+        s.strip_dirs().sort_stats("time").print_stats()
+    else:
+        sys.exit(main())
