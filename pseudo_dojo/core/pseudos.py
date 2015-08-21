@@ -4,11 +4,48 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import json
+import numpy as np
 
 from monty.collections import AttrDict 
 from monty.string import list_strings
 from pymatgen.core.periodic_table import PeriodicTable
+from pymatgen.util.plotting_utils import add_fig_kwargs #, get_ax_fig_plt
 from pymatgen.io.abinitio.pseudos import PseudoTable 
+
+
+class DojoInfo(AttrDict):
+    """Dictionary with metadata associated to the table."""
+
+    # See http://validictory.readthedocs.org/en/latest/usage.html#schema-options
+    JSON_SCHEMA = {
+        "type": "object",
+        "properties": {
+            "pseudo_type": {"type": "string", "enum": ["norm-conserving", "PAW"]},
+            "xc_type": {"type": "string", "enum": ["GGA-PBE",]},
+            "authors": {"type": "array"},
+            "generation_date": {"type": "string", "format": "date"},
+            "description": {"type": "string"},
+            #"tags": {"type": "array", "items": {"type": "string", "enum": ["accuracy", "efficiency"]}},
+            "reference": {"type": "string"},
+            "dojo_dir": {"type": "string"},
+            #non-relativistic, scalar-relativistic or relativistic
+        },
+    }
+
+    def validate_json_schema(self):
+        """Validate DojoInfo with validictory."""
+        import validictory
+        validictory.validate(self, self.JSON_SCHEMA)
+
+    @property
+    def isnc(self):
+        """True if norm-conserving pseudopotential."""
+        return self.pseudo_type == "norm-conserving"
+
+    @property
+    def ispaw(self):
+        """True if PAW pseudopotential."""
+        return self.pseudo_type == "PAW"
 
 
 class DojoTable(PseudoTable):
@@ -91,7 +128,7 @@ class DojoTable(PseudoTable):
                 "l_max": 2, 
                 "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
             }
-        }, 
+        }
         }
         """
         with open(djson_path, "rt") as fh:
@@ -172,36 +209,75 @@ class DojoTable(PseudoTable):
 
         return errors
 
+    def get_dfgbrv_dataframe(self):
+        """
+        Build and return a pandas :class:`DataFrame` in the form.
 
-class DojoInfo(AttrDict):
-    """Dictionary with metadata associated to the table."""
+            basename     deltafactor  df_prime  gbrv_bcc  gbrv_fcc  symbol   md5 
+            H-high.psp8  0.074830     1.258340  0.028904  0.024726  H        5863396c90149cbe12af496141bde0d0 
+            ...
 
-    # See http://validictory.readthedocs.org/en/latest/usage.html#schema-options
-    JSON_SCHEMA = {
-        "type": "object",
-        "properties": {
-            "pseudo_type": {"type": "string", "enum": ["norm-conserving", "PAW"]},
-            "xc_type": {"type": "string", "enum": ["GGA-PBE",]},
-            "authors": {"type": "array"},
-            "generation_date": {"type": "string", "format": "date"},
-            "description": {"type": "string"},
-            "tags": {"type": "array", "items": {"type": "string", "enum": ["accuracy", "efficiency"]}},
-            "reference": {"type": "string"},
-            "dojo_dir": {"type": "string"},
-            #non-relativistic, scalar-relativistic or relativistic
-        },
-    }
+        where `gbrv_bcc` and `gbrv_fcc` are the relative errors (in percentage) wrt the AE calculations.
+        """
+        _TRIALS2KEY = {
+            "deltafactor": "dfact_meV",
+            "gbrv_bcc": "a0_rel_err",
+            "gbrv_fcc": "a0_rel_err",
+        }
 
-    def validate_json_schema(self):
-        import validictory
-        validictory.validate(self, self.JSON_SCHEMA)
+        rows = []
+        for p in self:
+            # Extract the dojo_report
+            report = p.dojo_report
 
-    @property
-    def isnc(self):
-        """True if norm-conserving pseudopotential."""
-        return self.pseudo_type == "norm-conserving"
+            row = dict(basename=p.basename, symbol=p.symbol, md5=p.md5)
 
-    @property
-    def ispaw(self):
-        """True if PAW pseudopotential."""
-        return self.pseudo_type == "PAW"
+            for trial, key in _TRIALS2KEY.items():
+                # Get results as function of ecut
+                try:
+                    data = report[trial]
+                except KeyError:
+                    print("%s does not have %s" % (p.basename, trial))
+                    continue
+
+                # Extract the value with highest ecut.
+                high_ecut = list(data.keys())[-1]
+                row.update({trial: data[high_ecut][key]})
+                if trial == "deltafactor":
+                    row.update(dict(df_prime=data[high_ecut]["dfactprime_meV"]))
+
+            rows.append(row)
+
+        from pandas import DataFrame
+        return DataFrame(rows)
+
+    @add_fig_kwargs
+    def plot_dfgbrv_dist(self, **kwargs):
+        """
+        Plot four distribution plots for the deltafactor, deltafactor prime and the 
+        relative errors for the GBRV fcc, bcc structures.
+
+        Return: `matplotlib` figure.
+        """
+        import matplotlib.pyplot as plt
+        fig, ax_list = plt.subplots(nrows=2, ncols=2, squeeze=True)
+        ax_list = ax_list.ravel()
+
+        frame = self.get_dfgbrv_dataframe()
+
+        import seaborn as sns
+        for ax, col in zip(ax_list.ravel(), ["deltafactor", "gbrv_fcc", "df_prime", "gbrv_bcc"]):
+            values = frame[col].dropna() 
+            sns.distplot(values, ax=ax, rug=True, hist=True, kde=False, label=col, bins=kwargs.pop("bins", 50))
+
+            # Add text with Mean or (MARE/RMSRE)
+            text = []; app = text.append
+            if col in ("deltafactor", "df_prime"):
+                app("Mean = %.2f" % values.mean())
+            else:
+                app("MARE = %.2f" % values.abs().mean())
+                app("RMSRE = %.2f" % np.sqrt((values**2).mean()))
+
+            ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
+
+        return fig

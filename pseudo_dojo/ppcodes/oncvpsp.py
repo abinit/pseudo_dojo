@@ -582,6 +582,9 @@ class OncvOutputParser(PseudoGenOutputParser):
                 line = line.strip()
                 self.lines.append(line)
 
+                if line.startswith("fcfact*="):
+                    print(line)
+
                 if line.startswith("DATA FOR PLOTTING"):
                     self.run_completed = True
 
@@ -628,7 +631,7 @@ class OncvOutputParser(PseudoGenOutputParser):
                     setattr(self, k, v)
                 break
 
-        # Parse ATOM and Rerencence configuration
+        # Parse ATOM and Reference configuration
         # Example::
         """
         #

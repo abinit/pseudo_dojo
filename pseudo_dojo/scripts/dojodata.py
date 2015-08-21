@@ -11,8 +11,10 @@ from collections import OrderedDict, namedtuple
 from pprint import pprint
 from tabulate import tabulate
 from monty.os.path import find_exts
-from pymatgen.io.abinitio.pseudos import PseudoTable, Pseudo
+from pymatgen.io.abinitio.pseudos import Pseudo
+from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
+
 
 def dojo_figures(options):
     """
@@ -215,7 +217,6 @@ def dojo_plot(options):
     """Plot DOJO results for a single pseudo."""
     pseudos = options.pseudos
     for pseudo in pseudos:
-        #print(pseudos)
         if not pseudo.has_dojo_report:
             warn("pseudo %s does not contain the DOJO_REPORT section" % pseudo.filepath)
             continue
@@ -231,17 +232,14 @@ def dojo_plot(options):
 
         # Deltafactor
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
-            #report.plot_etotal_vs_ecut(title=pseudo.basename)
             if options.eos: 
+                # Plot EOS curve
                 report.plot_deltafactor_eos(title=pseudo.basename)
-            #fig = report.plot_deltafactor_convergence(title=pseudo.basename, what="dfactprime_meV", show=True)
-            fig = report.plot_deltafactor_convergence(title=pseudo.basename, show=True)
-            #report.plot_deltafactor_convergence(title=pseudo.basename)
 
-        #from bokeh import mpl
-        #from bokeh.plotting import show
-        #show(mpl.to_bokeh(fig, name="test"))
-        #return
+            # Plot total energy convergence.
+            fig = report.plot_deltafactor_convergence(title=pseudo.basename)
+
+            fig = report.plot_etotal_vs_ecut(title=pseudo.basename)
 
         # GBRV
         if any(k in options.what_plot for k in ("all", "gbrv")):
@@ -260,9 +258,9 @@ def dojo_plot(options):
             if report.has_trial("phonon"):
                 report.plot_phonon_convergence(title=pseudo.basename)
 
-        if any(k in options.what_plot for k in ("all", "phwoa")):
-            if report.has_trial("phwoa"):
-                report.plot_phonon_convergence(title=pseudo.basename+"W/O ASR", woasr=True)
+        #if any(k in options.what_plot for k in ("all", "phwoa")):
+        #    if report.has_trial("phwoa"):
+        #        report.plot_phonon_convergence(title=pseudo.basename+"W/O ASR", woasr=True)
 
 
 
@@ -403,7 +401,15 @@ def dojo_table(options):
     #print(tabulate(bad, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
 
+def dojo_dist(options):
+    """
+    Plot the distribution of the deltafactor and of the relative error for the GBRV fcc/bcc tests.
+    """
+    fig = options.pseudos.plot_dfgbrv_dist()
+
+
 def dojo_check(options):
+
     for p in options.pseudos:
 
         try:
@@ -422,10 +428,10 @@ def dojo_check(options):
         #    continue
 
         try:
-            errors = report.check_errors()
-            if errors:
-                print("[%s] Validation problem\n" % p.basename)
-                pprint(errors, indent=4)
+            error = report.check()
+            if error:
+                print("[%s] Validation problem" % p.basename)
+                print(error)
                 print()
 
         except Exception as exc:
@@ -475,7 +481,7 @@ def main():
     dojodata plot H.psp8                ==> Plot dojo data for pseudo H.psp8
     dojodata trials H.psp8 -r 1
     dojodata compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
-    dojodata table .                    ==> Build table (find all psp8 files withing current directory)
+    dojodata table .                    ==> Build table (find all psp8 files within current directory)
     dojodata figure .                   ==> Plot periodic table figures
 """
         return examples
@@ -518,7 +524,8 @@ def main():
     subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
 
     plot_options_parser = argparse.ArgumentParser(add_help=False)
-    plot_options_parser.add_argument("-w", "--what-plot", type=str, default="all", help="Quantity to plot e.g df for deltafactor, gbrv for GBRV tests")
+    plot_options_parser.add_argument("-w", "--what-plot", type=str, default="all", 
+                                      help="Quantity to plot e.g df for deltafactor, gbrv for GBRV tests")
     plot_options_parser.add_argument("-e", "--eos", action="store_true", help="Plot EOS curve")
 
     # Subparser for plot command.
@@ -532,6 +539,10 @@ def main():
 
     # Subparser for table command.
     p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
+
+    # Subparser for dist command.
+    p_dist = subparsers.add_parser('dist', parents=[pseudos_selector_parser], 
+                                   help="Plot distribution of deltafactor and GBRV relative errors.")
 
     # Subparser for trials command.
     p_trials = subparsers.add_parser('trials', parents=[pseudos_selector_parser], help="Plot DOJO trials.")
@@ -559,7 +570,7 @@ def main():
 
     def get_pseudos(options):
         """
-        Find pseudos in paths, return :class:`PseudoTable` object sorted by atomic number Z.
+        Find pseudos in paths, return :class:`DojoTable` object sorted by atomic number Z.
         Accepts filepaths or directory.
         """
         exts=("psp8",)
@@ -568,7 +579,7 @@ def main():
         if len(paths) == 1 and os.path.isdir(paths[0]):
             top = paths[0]
             paths = find_exts(top, exts, exclude_dirs="_*")
-            #table = PseudoTable.from_dir(paths[0])
+            #table = DojoTable.from_dir(paths[0])
 
         pseudos = []
         for p in paths:
@@ -577,7 +588,7 @@ def main():
             except Exception as exc:
                 warn("Error in %s:\n%s. This pseudo will be ignored" % (p, exc))
 
-        table = PseudoTable(pseudos)
+        table = DojoTable(pseudos)
 
         # Here we select a subset of pseudos according to family or rows
         if options.rows:
@@ -590,7 +601,7 @@ def main():
 
         return table.sort_by_z()
 
-    # Build PseudoTable from the paths specified by the user.
+    # Build DojoTable from the paths specified by the user.
     options.pseudos = get_pseudos(options)
 
     if options.seaborn:
@@ -608,4 +619,16 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        do_prof = sys.argv[1] == "prof"
+        if do_prof or do_tracemalloc: sys.argv.pop(1)
+    except: 
+        pass
+
+    if do_prof:
+        import pstats, cProfile
+        cProfile.runctx("main()", globals(), locals(), "Profile.prof")
+        s = pstats.Stats("Profile.prof")
+        s.strip_dirs().sort_stats("time").print_stats()
+    else:
+        sys.exit(main())

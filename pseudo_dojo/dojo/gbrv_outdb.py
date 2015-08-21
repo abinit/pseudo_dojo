@@ -2,7 +2,6 @@
 """The GBRV results for binary and ternary compunds"""
 from __future__ import division, print_function, unicode_literals
 
-import sys
 import os
 import json
 import numpy as np
@@ -13,7 +12,7 @@ from monty.io import FileLock
 from monty.string import list_strings
 from atomicfile import AtomicFile
 from pandas import DataFrame
-from monty.collections import AttrDict, dict2namedtuple
+from monty.collections import dict2namedtuple #AttrDict,
 from monty.functools import lazy_property
 from pymatgen.core.periodic_table import sort_symbols_by_Z
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
@@ -83,7 +82,7 @@ class GbrvRecord(dict):
         if all(hasattr(p, "as_dict") for p in pseudos_or_dict):
             def get_info(p):
                 """Extract the most important info from the pseudo."""
-                symbol = p.symbol
+                #symbol = p.symbol
                 d = p.as_dict()
                 return {k: d[k] for k in keys}
 
@@ -281,7 +280,8 @@ class GbrvOutdb(MutableMapping):
             # Here I initialize the object with the data read from file.
             new = cls(dojo_dir, dojo_pptable)
             for formula, dict_list in d.items():
-                new[formula] = [GbrvRecord.from_dict(d, new.struct_type, dojo_pptable) for d in dict_list]
+                new[formula] = [GbrvRecord.from_dict(d, new.struct_type, dojo_pptable) 
+                                for d in dict_list]
 
             return new
 
@@ -307,9 +307,7 @@ class GbrvOutdb(MutableMapping):
         return os.path.join(dirpath, self.basename)
 
     def to_json(self):
-        d = {}
-        d["struct_type"] = self.struct_type
-        d["dojo_dir"] = self.dojo_dir
+        d = dict(struct_type=self.struct_type, dojo_dir=self.dojo_dir)
         for formula, records in self.items():
             d[formula] = [rec.as_dict() for rec in records]
 
@@ -530,14 +528,34 @@ class GbrvOutdb(MutableMapping):
         Returns:
             frame: pandas :class:`DataFrame` 
         """
+        def get_df(p):
+            dfact_meV, df_prime = None, None
+            
+            if p.has_dojo_report:
+                try:
+                    data = p.dojo_report["deltafactor"]
+                    high_ecut = list(data.keys())[-1]
+                    dfact_meV = data[high_ecut]["dfact_meV"]
+                    df_prime = data[high_ecut]["dfactprime_meV"]
+                except KeyError:
+                    pass
+
+            return dict(dfact_meV=dfact_meV, df_prime=df_prime)
+
+        def get_meta(p):
+            """Return dict with pseudo metadata."""
+            meta = {"basename": p.basename, "md5": p.md5}
+            meta.update(get_df(p))
+            return meta
+
         rows = []
         for formula, records in self.items():
             for rec in records:
                 d = dict(formula=formula, struct_type=self.struct_type, 
-                     basenames=set(p.basename for p in rec.pseudos),
-                     pseudos_meta={p.symbol: {"basename": p.basename, "md5": p.md5} for p in rec.pseudos},
-                     symbols={p.symbol for p in rec.pseudos},
-                    )
+                         basenames=set(p.basename for p in rec.pseudos),
+                         pseudos_meta={p.symbol: get_meta(p) for p in rec.pseudos},
+                         symbols={p.symbol for p in rec.pseudos},
+                        )
 
                 has_data = 0
                 for acc in ("normal", "high"):
@@ -667,9 +685,9 @@ class GbrvDataFrame(DataFrame):
                     continue
 
                 row = dict(formula=trial, struct_type=struct_type, 
-                            basenames=set([p.basename]),
-                            pseudos_meta={p.symbol: {"basename": p.basename, "md5": p.md5}},
-                            symbols={p.symbol})
+                           basenames=set([p.basename]),
+                           pseudos_meta={p.symbol: {"basename": p.basename, "md5": p.md5}},
+                           symbols={p.symbol})
                                                                                             
                 for acc in cls.ALL_ACCURACIES:
                     # FIXME: ecut should depend on accuracy.
@@ -712,7 +730,8 @@ class GbrvDataFrame(DataFrame):
             fig.tight_layout()
             plt.show()
 
-        return cls(rows)
+        new = cls(rows)
+        return new
 
     @lazy_property
     def symbols(self):
@@ -726,7 +745,6 @@ class GbrvDataFrame(DataFrame):
     #def multiple_pseudos(self):
     #    # Loop over the rows. Collect all the {symbol: md5}
     #    meta_set, multiple = set(), []
-
     #    for idx, row in self.iterrows(): 
     #        for esymb, meta in row.pseudos_meta.items():
     #            meta = tuple([(k, v) for k, v in meta.items()])
@@ -766,20 +784,36 @@ class GbrvDataFrame(DataFrame):
         import seaborn as sns
 
         ax.grid(True)
-        for acc in ("normal", "high"):
+        #for acc in ("normal", "high"):
+        for acc in ("high",):
             col = acc + "_rel_err"
-            sns.distplot(self[col].dropna() , ax=ax, rug=True, hist=False, label=col)
+            values = self[col].dropna() 
+            sns.distplot(values, ax=ax, rug=True, hist=False, label=col)
+
+            # Add text with Mean or (MARE/RMSRE)
+            text = []; app = text.append
+            app("MARE = %.2f" % values.abs().mean())
+            app("RMSRE = %.2f" % np.sqrt((values**2).mean()))
+                                                                       
+            ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
 
         return fig
 
     def subframe_for_symbol(self, symbol):
         """Extract the rows with the given element symbol. Return new `GbrvDataFrame`."""
-        #rows = [row for idx, row in self.iterrows() if symbol in row.symbols]
+        # Extract the rows containing this pseudo and create new frame.
         rows = []
         for idx, row in self.iterrows():
             if symbol not in row.symbols: continue
-            pseudo_basename = row.pseudos_meta[symbol]["basename"]
-            rows.append(row.set_value("pseudo_basename", pseudo_basename))
+            meta = row.pseudos_meta[symbol]
+
+            pseudo_basename = meta["basename"]
+            dfact_meV, df_prime = meta["dfact_meV"], meta["df_prime"]
+            row = row.set_value("dfact_meV", dfact_meV)
+            row = row.set_value("dfactprime_meV", df_prime)
+            row = row.set_value("pseudo_basename", pseudo_basename)
+
+            rows.append(row)
 
         return self.__class__(rows)
 
@@ -794,13 +828,17 @@ class GbrvDataFrame(DataFrame):
                 i.e. it's the one with the minimum absolute error.
         """
         pname = pseudo.basename if hasattr(pseudo, "basename") else pseudo
-                                                                             
-        # Extract the rows containing this pseudo and add it a new column
-        #rows = [row for idx, row in self.iterrows() if pname in row.basenames]
+
         rows = []
         for idx, row in self.iterrows():
             if pname not in row.basenames: continue
-            rows.append(row.set_value("pseudo_basename", pname))
+            meta = row.pseudos_meta[p.symbol]
+            row.set_value("pseudo_basename", pname)
+            # Add values of deltafactor
+            #dfact_meV, df_prime = extract_df(row)
+            #row.set_value("dfact_meV", dfact_meV)
+            #row.set_value("dfactprime_meV", df_prime)
+            rows.append(row)
 
         new = self.__class__(rows)
         if best_for_acc is None: 
@@ -862,53 +900,80 @@ class GbrvDataFrame(DataFrame):
 
         import seaborn as sns
         sns.set(style="whitegrid", palette="pastel")
-        ax, fig, plt = get_ax_fig_plt(None)
+        #ax, fig, plt = get_ax_fig_plt(None)
 
-        sns.stripplot(x="pseudo_basename", y="high_rel_err", data=frame, hue="formula", jitter=True,
-                      size=10, marker="o", edgecolor="gray", alpha=.25, #palette="Set2", 
+        import matplotlib.pyplot as plt
+        fig, ax_list = plt.subplots(nrows=2, ncols=1, squeeze=True)
+        ax0, ax1 = ax_list.ravel()
+
+        ax1 = ax_list[1]
+        sns.stripplot(x="pseudo_basename", y="high_rel_err", data=frame, hue="formula", ax=ax1,
+                      jitter=True, size=10, marker="o", edgecolor="gray", alpha=.25, #palette="Set2", 
         )
 
-        ax.grid(True)
-        ax.axhline(y=-0.4, linewidth=2, color='r', linestyle="--")
-        ax.axhline(y=0.0, linewidth=2, color='k', linestyle="--")
-        ax.axhline(y=+0.4, linewidth=2, color='r', linestyle="--")
+        ax1.grid(True)
+        ax1.axhline(y=-0.4, linewidth=2, color='r', linestyle="--")
+        ax1.axhline(y=0.0, linewidth=2, color='k', linestyle="--")
+        ax1.axhline(y=+0.4, linewidth=2, color='r', linestyle="--")
+
+        # Plot the deltafactor for the different pseudos on another Axes.
+        xlabels = ax1.xaxis.get_majorticklabels()
+
+        #xs, ys, ls  = [], [], []
+        rows = []
+        for xlabel in xlabels:
+            #print(dir(xlabel))
+            (x, y), basename = xlabel.get_position(), xlabel.get_text()
+
+            g = frame[frame["pseudo_basename"] == basename]
+            df = g.iloc[0]["dfact_meV"]
+            #print(x, y, df)
+            rows.append(dict(pseudo_basename=basename, dfact_meV=df))
+            #xs.append(x)
+            #ys.append(df)
+            #ls.append(basename)
+
+        #print(xs)
+        #ax0.plot(xs, ys, "-o")
+        frame = DataFrame(rows)
+        frame.plot("pseudo_basename", "dfact_meV", ax=ax0, style="-o")
 
         return fig
 
-    @add_fig_kwargs
-    def plot_allpseudos_with_symbol(self, symbol, accuracy="normal", **kwargs):
-        # For each pseudo:
-        # Extract the sub-frame for this pseudo and keep the rows with the 
-        # best result for the given accuracy
-        ax, fig, plt = get_ax_fig_plt(None)
+    #@add_fig_kwargs
+    #def plot_allpseudos_with_symbol(self, symbol, accuracy="normal", **kwargs):
+    #    # For each pseudo:
+    #    # Extract the sub-frame for this pseudo and keep the rows with the 
+    #    # best result for the given accuracy
+    #    ax, fig, plt = get_ax_fig_plt(None)
 
-        key = accuracy + "_rel_err"
+    #    key = accuracy + "_rel_err"
 
-        # Find all pseudos with the given symbol in the table.
-        frame = self.subframe_for_symbol(symbol)
+    #    # Find all pseudos with the given symbol in the table.
+    #    frame = self.subframe_for_symbol(symbol)
 
-        #for pseudo in frame.pseudos:
-        #    frame.plot_error_pseudo(pseudo, ax=None)
+    #    #for pseudo in frame.pseudos:
+    #    #    frame.plot_error_pseudo(pseudo, ax=None)
 
-        #import seaborn as sns
-        # Initialize a grid of plots with an Axes for each walk
-        #grid = sns.FacetGrid(df, col="walk", hue="walk", col_wrap=5, size=1.5)
-        #grid = sns.FacetGrid(frame, col=key)#, hue="walk", col_wrap=5, size=1.5)
+    #    #import seaborn as sns
+    #    # Initialize a grid of plots with an Axes for each walk
+    #    #grid = sns.FacetGrid(df, col="walk", hue="walk", col_wrap=5, size=1.5)
+    #    #grid = sns.FacetGrid(frame, col=key)#, hue="walk", col_wrap=5, size=1.5)
 
-        # Draw a horizontal line to show the starting point
-        #grid.map(plt.axhline, y=0, ls=":", c=".5")
+    #    # Draw a horizontal line to show the starting point
+    #    #grid.map(plt.axhline, y=0, ls=":", c=".5")
 
-        # Draw a line plot to show the trajectory of each random walk
-        #grid.map(plt.plot, "formula", key, marker="o", ms=4)
+    #    # Draw a line plot to show the trajectory of each random walk
+    #    #grid.map(plt.plot, "formula", key, marker="o", ms=4)
 
-        # Adjust the tick positions and labels
-        #grid.set(xticks=np.arange(5), yticks=[-3, 3],
-        #         xlim=(-.5, 4.5), ylim=(-3.5, 3.5))
+    #    # Adjust the tick positions and labels
+    #    #grid.set(xticks=np.arange(5), yticks=[-3, 3],
+    #    #         xlim=(-.5, 4.5), ylim=(-3.5, 3.5))
 
-        # Adjust the arrangement of the plots
-        #grid.fig.tight_layout(w_pad=1)
+    #    # Adjust the arrangement of the plots
+    #    #grid.fig.tight_layout(w_pad=1)
 
-        return fig
+    #    return fig
 
     @add_fig_kwargs
     def hist_allpseudos_with_symbols(self, symbol, ax=None, **kwargs):
@@ -924,7 +989,7 @@ class GbrvDataFrame(DataFrame):
 
         for name, group in grouped:
             print(name) #; print(group)
-            acc= "high"
+            acc = "high"
             col = acc + "_rel_err"
             s = group[col].dropna()
             if len(s) in [0, 1]: continue

@@ -97,6 +97,7 @@ install_requires = [
     "tabulate",
     "validictory",
     "atomicfile",
+    "periodic_table_plotter",
     #"matplotlib>=1.1",
 ]
 
