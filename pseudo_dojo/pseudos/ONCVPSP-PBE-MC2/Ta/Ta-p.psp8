@@ -4754,6 +4754,18 @@ Ta 73.00   11    3       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 41.0
+        }, 
+        "low": {
+            "ecut": 15.0
+        }, 
+        "normal": {
+            "ecut": 31.0
+        }
+    }, 
+    "md5": "2cf2becab722f9d538b50bea1b16aa27", 
     "phonon": {
         "11.0": [
             0.0, 

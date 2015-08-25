@@ -4673,6 +4673,17 @@ Hf 72.00   11    3       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 20.0
+        }, 
+        "low": {
+            "ecut": 18.0
+        }, 
+        "normal": {
+            "ecut": 20.0
+        }
+    }, 
     "md5": "43917f6da7be6cfc02c0ff06e7173911", 
     "phonon": {
         "8.0": [

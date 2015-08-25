@@ -3873,6 +3873,17 @@ Cr 24.00    3    4       4      psp8
         70.0, 
         80.0
     ], 
+    "hints": {
+        "high": {
+            "ecut": 60.0
+        }, 
+        "low": {
+            "ecut": 60.0
+        }, 
+        "normal": {
+            "ecut": 60.0
+        }
+    }, 
     "md5": "0f0823a871675cdd0514fe5f949da994", 
     "ppgen_hints": {
         "high": {

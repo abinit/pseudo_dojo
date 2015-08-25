@@ -4304,6 +4304,17 @@ N  7.00    1    2       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 34.0
+        }, 
+        "low": {
+            "ecut": 30.0
+        }, 
+        "normal": {
+            "ecut": 32.0
+        }
+    }, 
     "md5": "6402edae5c1195c223177855d76f155d", 
     "ppgen_hints": {
         "high": {

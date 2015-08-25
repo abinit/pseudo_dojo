@@ -36,7 +36,8 @@ def dojo_figures(options):
         #print(best) 
         l = {k: getattr(best, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
                                            'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err', 
-                                           'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon')} 
+                                           'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
+                                           'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint')} 
         out = best.name.replace('psp8', 'out')
         outfile = name+'/'+out
             
@@ -158,7 +159,30 @@ def dojo_figures(options):
         except (KeyError, TypeError):
             print('high_phon with func fail: ', elt)
             return float('NaN')
+    
+    def high_ecut(elt):
+        """ecut high [Ha] """
+        try:
+            return elt['high_ecut_hint']
+        except (KeyError, TypeError):
+            print('high_ecut with func fail: ', elt)
+            return float('NaN')
 
+    def low_ecut(elt):
+        """ecut low [Ha] """
+        try:
+            return elt['low_ecut_hint']
+        except (KeyError, TypeError):
+            print('low_ecut with func fail: ', elt)
+            return float('NaN')
+
+    def normal_ecut(elt):
+        """ecut normal [Ha] """
+        try:
+            return elt['normal_ecut_hint']
+        except (KeyError, TypeError):
+            print('normal_ecut with func fail: ', elt)
+            return float('NaN')
 
     els=[]
     elsgbrv=[]
@@ -197,6 +221,14 @@ def dojo_figures(options):
     epd.ptable(functions=[bcc,fcc], font={'color':color}, cmaps=mpl_cm.jet, vmin=-max_rel_err, vmax=max_rel_err)
     plt.show()
     #plt.savefig('gbrv.eps', format='eps')
+
+    # plot the hints periodic table
+    epd = ElementDataPlotterRangefixer(elements=els, data=data)
+    cm = mpl_cm.cool
+    cm.set_under('w', 1.0)
+    epd.ptable(functions=[low_ecut, high_ecut, normal_ecut], font={'color':color}, vmin=8, vmax=80,  cmaps=cmap)
+    plt.show()
+    #plt.savefig('rc.eps', format='eps')
 
     # plot the radii periodic table
     epd = ElementDataPlotterRangefixer(elements=els, data=data)
@@ -438,37 +470,51 @@ def dojo_check(options):
             print("Error: ", p.basename + str(exc))
 
 
-def dojo_validate(options):
-    from pymatgen.util.io_utils import ask_yesno
+def dojo_make_hints(options):
+    from pymatgen.util.io_utils import ask_yesno, prompt
+    import numpy as np
 
     for pseudo in options.pseudos:
         try:
             report = pseudo.dojo_report
-            #if report.is_validated:
-            #    print("Pseudo %s is already validated!" % pseudo.basename)
-            #report.plot_deltafactor_convergence(title=pseudo.basename, what="dfactprime_meV")
 
             hints = report.compute_hints()
             print("hints for %s computed from deltafactor prime: %s" % (pseudo.basename, hints))
-            
+            report.plot_deltafactor_convergence()           
+ 
             ans = ask_yesno("Do you accept the hints? [Y]")
-            print('test')
-            ans = False
             if ans:
-                print("got true")
-                report.validate(hints)
+                report.add_hints(hints)
+                print(report.has_hints)
                 pseudo.write_dojo_report(report)
             else:
                 print("The dojoreport contains ecuts :\n%s" % report.ecuts)
                 new_ecuts = prompt("Enter new ecuts to compute (comma-separated values or empty string to abort)")
-                if new_ecuts:
+                if len(new_ecuts) == 0:
                     print("Exit requested by user")
                     return 
-
-                # Be careful with the format here! it should be %.1f
-                new_ecuts = np.array(new_ecuts.split(","))
+                new_ecuts = np.array([float(k) for k in new_ecuts.strip().split(",")])
+                print(new_ecuts)
                 report.add_ecuts(new_ecuts)
                 pseudo.write_dojo_report(report)
+
+        except None: #Exception as exc:
+            print(pseudo.basename, "raised: ", str(exc))
+
+def dojo_validate(options):
+    for pseudo in options.pseudos:
+        try:
+            #test if already validated
+
+            #test if hints are present
+
+            #test if all trials are existing for these hints
+
+            #test hash
+
+            #aks the final question, and a name for refference
+           
+            raise NotImplementedError('vallidation is not implemented yet')
 
         except Exception as exc:
             print(pseudo.basename, "raised: ", str(exc))
@@ -553,6 +599,10 @@ def main():
 
     # Subparser for validate command.
     p_validate = subparsers.add_parser('validate', parents=[pseudos_selector_parser], help="Validate pseudos")
+
+    # Subparser for make_hints command.
+    p_make_hints = subparsers.add_parser('make_hints', parents=[pseudos_selector_parser], help="Add hints for cutoffs for pseudos")
+
 
     # Parse command line.
     try:

@@ -4140,6 +4140,17 @@ C  6.00    1    2       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 41.0
+        }, 
+        "low": {
+            "ecut": 33.0
+        }, 
+        "normal": {
+            "ecut": 35.0
+        }
+    }, 
     "md5": "cd078858c6ac6fadb14ef2edba24ac95", 
     "phonon": {
         "33.0": [

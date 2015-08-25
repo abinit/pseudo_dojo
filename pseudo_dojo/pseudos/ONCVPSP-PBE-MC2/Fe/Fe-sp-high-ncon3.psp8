@@ -4583,6 +4583,17 @@ Fe 26.00    3    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 71.0
+        }, 
+        "low": {
+            "ecut": 59.0
+        }, 
+        "normal": {
+            "ecut": 67.0
+        }
+    }, 
     "md5": "ee310dad67a973e433085d2e36e4fb00", 
     "phonon": {
         "61.0": [

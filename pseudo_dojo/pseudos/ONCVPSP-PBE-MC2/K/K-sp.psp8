@@ -3546,6 +3546,17 @@ K 19.00    3    3       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 52.0
+        }, 
+        "low": {
+            "ecut": 26.0
+        }, 
+        "normal": {
+            "ecut": 36.0
+        }
+    }, 
     "md5": "51cae20b8ffc404ea470e5ab641cee63", 
     "phonon": {
         "28.0": [

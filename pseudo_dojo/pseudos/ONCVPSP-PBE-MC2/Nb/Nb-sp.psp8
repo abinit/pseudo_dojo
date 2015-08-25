@@ -4914,6 +4914,17 @@ Nb 41.00    6    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 45.0
+        }, 
+        "low": {
+            "ecut": 31.0
+        }, 
+        "normal": {
+            "ecut": 35.0
+        }
+    }, 
     "md5": "0746dda22d301ad297caae8c9b7e91a4", 
     "phonon": {
         "31.0": [

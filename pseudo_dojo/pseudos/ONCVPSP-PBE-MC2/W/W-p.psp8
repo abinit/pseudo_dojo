@@ -4590,6 +4590,17 @@ W 74.00   11    3       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 39.0
+        }, 
+        "low": {
+            "ecut": 15.0
+        }, 
+        "normal": {
+            "ecut": 19.0
+        }
+    }, 
     "md5": "d4a523ea05dc7cfa629ef4e1153b9b4a", 
     "phonon": {
         "15.0": [

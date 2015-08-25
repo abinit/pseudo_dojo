@@ -2176,6 +2176,17 @@ Be  4.00    0    2       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 62.0
+        }, 
+        "low": {
+            "ecut": 35.0
+        }, 
+        "normal": {
+            "ecut": 46.0
+        }
+    }, 
     "md5": "159f19a795910d9f2d8f97decc9e017d", 
     "phonon": {
         "30.0": [

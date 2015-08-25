@@ -4154,6 +4154,18 @@ Ir 77.00   11    3       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 27.0
+        }, 
+        "low": {
+            "ecut": 21.0
+        }, 
+        "normal": {
+            "ecut": 23.0
+        }
+    }, 
+    "md5": "692d150f222b69314eaacfd1e6bcb7c5", 
     "phonon": {
         "15.0": [
             0.0, 

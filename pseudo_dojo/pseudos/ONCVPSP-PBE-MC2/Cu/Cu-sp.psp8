@@ -4747,6 +4747,17 @@ Cu 29.00    3    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 72.0
+        }, 
+        "low": {
+            "ecut": 46.0
+        }, 
+        "normal": {
+            "ecut": 58.0
+        }
+    }, 
     "md5": "166c5e82ded1ef87e58889b0efbbb021", 
     "phonon": {
         "44.0": [
