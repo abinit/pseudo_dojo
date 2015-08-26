@@ -55,7 +55,8 @@ class DojoWork(Work):
         old_report[dojo_trial][dojo_ecut] = report
         try:
             self.pseudo.write_dojo_report(old_report)
-        except None: #(OSError, IOError, TypeError):
+        except (OSError, IOError, TypeError):
+        #except None: 
             print("Something wrong in write_dojo_report")
 
 
