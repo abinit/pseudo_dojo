@@ -1547,6 +1547,17 @@ He  2.00    0    1       4      psp8
         60.0, 
         70.0
     ], 
+    "hints": {
+        "high": {
+            "ecut": 60.0
+        }, 
+        "low": {
+            "ecut": 50.0
+        }, 
+        "normal": {
+            "ecut": 50.0
+        }
+    }, 
     "md5": "b641aa96f6adafae34cd5bed9dcf7862", 
     "phonon": {
         "36.0": [

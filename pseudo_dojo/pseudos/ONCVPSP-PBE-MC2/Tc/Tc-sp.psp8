@@ -4913,6 +4913,17 @@ Tc 43.00    6    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 40.0
+        }, 
+        "low": {
+            "ecut": 30.0
+        }, 
+        "normal": {
+            "ecut": 34.0
+        }
+    }, 
     "md5": "eef62717ff94dbb5d9cb7e15dffda1b6", 
     "phonon": {
         "34.0": [

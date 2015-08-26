@@ -1,0 +1,122 @@
+set  pointsize 4
+
+set title "Si.plot Ion Pseudopotentials"
+
+set xlabel "Radius (a_B)"
+
+plot    "<grep '!p' Si.plot" using 2:4 title "S" with lines lt 1,\
+        "<grep '!p' Si.plot" using 2:5 title "P" with lines lt 3,\
+        "<grep '!p' Si.plot" using 2:6 title "D" with lines lt 5,\
+        "<grep '!L' Si.plot" using 2:3 title "Loc" with lines lt 2
+
+pause -1 "Hit enter to continue"
+
+set title "Si.plot Charge Densities"
+
+set xlabel "Radius (a_B)"
+
+plot    "<grep '!r' Si.plot" using 2:3 title "rhoV" with lines lt 1,\
+        "<grep '!r' Si.plot" using 2:4 title "rhoC" with lines lt 2,\
+        "<grep '!r' Si.plot" using 2:5 title "rhoM" with lines lt 3
+
+
+pause -1 "Hit enter to continue"
+
+set title "Si.plot Wave Functions"
+
+set xlabel "Radius (a_B)"
+
+plot    "<grep '&     0' Si.plot" using 3:4 title "S full" with lines lt 1,\
+        "<grep '&     0' Si.plot" using 3:5 title "S pseudo" with lines lt 2
+
+pause -1 "Hit enter to continue"
+
+set title "Si.plot Projector Wave Functions"
+
+set xlabel "Radius (a_B)"
+
+plot    "<grep '@     0' Si.plot" using 3:4 title "S1 pseudo" with lines lt 1,\
+        "<grep '@     0' Si.plot" using 3:5 title "S2 pseudo" with lines lt 2
+
+pause -1 "Hit enter to continue"
+
+set title "Si.plot ARCTAN(Log Derivatives)"
+
+set xlabel "Energy (Ha)"
+
+plot    "<grep '!      0' Si.plot" using 3:4 title "S    full" with lines lt 1,\
+        "<grep '!      0' Si.plot" using 3:5 title "S2 pseudo" with lines lt 2
+
+pause -1 "Hit enter to continue"
+
+set title "Si.plot Wave Functions"
+
+set xlabel "Radius (a_B)"
+
+plot    "<grep '&     1' Si.plot" using 3:4 title "P full" with lines lt 3,\
+        "<grep '&     1' Si.plot" using 3:5 title "P pseudo" with lines lt 4
+
+pause -1 "Hit enter to continue"
+
+set title "Si.plot Projector Wave Functions"
+
+set xlabel "Radius (a_B)"
+
+plot    "<grep '@     1' Si.plot" using 3:4 title "P1 pseudo" with lines lt 3,\
+        "<grep '@     1' Si.plot" using 3:5 title "P2 pseudo" with lines lt 4
+
+pause -1 "Hit enter to continue"
+
+set title "Si.plot ARCTAN(Log Derivatives)"
+
+set xlabel "Energy (Ha)"
+
+plot    "<grep '!      1' Si.plot" using 3:4 title "P    full" with lines lt 3,\
+        "<grep '!      1' Si.plot" using 3:5 title "P2 pseudo" with lines lt 4
+
+pause -1 "Hit enter to continue"
+
+set title "Si.plot Wave Functions"
+
+set xlabel "Radius (a_B)"
+
+plot    "<grep '&     2' Si.plot" using 3:4 title "D full" with lines lt 5,\
+        "<grep '&     2' Si.plot" using 3:5 title "D pseudo" with lines lt 6
+
+pause -1 "Hit enter to continue"
+
+set title "Si.plot Projector Wave Functions"
+
+set xlabel "Radius (a_B)"
+
+plot    "<grep '@     2' Si.plot" using 3:4 title "D1 pseudo" with lines lt 5,\
+        "<grep '@     2' Si.plot" using 3:5 title "D2 pseudo" with lines lt 6
+
+pause -1 "Hit enter to continue"
+
+set title "Si.plot ARCTAN(Log Derivatives)"
+
+set xlabel "Energy (Ha)"
+
+plot    "<grep '!      2' Si.plot" using 3:4 title "D    full" with lines lt 5,\
+        "<grep '!      2' Si.plot" using 3:5 title "D2 pseudo" with lines lt 6
+
+pause -1 "Hit enter to continue"
+
+set  logscale y
+
+set  grid
+
+set  yrange [5.e-6:2.e-2]
+
+set title "Si.plot Energy Error per Electron (Ha)"
+
+set xlabel "Cutoff Energy (Ha)"
+
+plot    "<grep '!C     0' Si.plot" using 3:4 title "S" with lines lt 1,\
+        "<grep '!C     1' Si.plot" using 3:4 title "P" with lines lt 3,\
+        "<grep '!C     2' Si.plot" using 3:4 title "D" with lines lt 5
+
+
+pause -1 "Hit enter to continue"
+

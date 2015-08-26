@@ -3546,6 +3546,17 @@ Ca 20.00    3    3       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 34.0
+        }, 
+        "low": {
+            "ecut": 24.0
+        }, 
+        "normal": {
+            "ecut": 28.0
+        }
+    }, 
     "md5": "4c22760d6ac36e35c46407bf1e1b7c5f", 
     "phonon": {
         "26.0": [

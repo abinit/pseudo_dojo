@@ -138,6 +138,7 @@ def build_flow(pseudo, options):
         for ecut in [ecut_list[0], ecut_list[-1]]:
             str_ecut = '%.1f' % ecut
             if "phwoa" in report and str_ecut in report["phwoa"].keys(): continue
+            print('phwoa')
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,

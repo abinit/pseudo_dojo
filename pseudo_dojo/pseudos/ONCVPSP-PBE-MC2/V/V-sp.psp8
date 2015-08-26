@@ -4583,6 +4583,17 @@ V 23.00    3    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 44.0
+        }, 
+        "low": {
+            "ecut": 34.0
+        }, 
+        "normal": {
+            "ecut": 36.0
+        }
+    }, 
     "md5": "8fd1105b6fbbf6bbb0f13a679d940c17", 
     "phonon": {
         "34.0": [

@@ -4665,6 +4665,17 @@ Co 27.00    3    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 50.0
+        }, 
+        "low": {
+            "ecut": 46.0
+        }, 
+        "normal": {
+            "ecut": 48.0
+        }
+    }, 
     "md5": "3f83318d55baf3907f454cee29e0cac3", 
     "phonon": {
         "40.0": [

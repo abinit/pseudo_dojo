@@ -4750,6 +4750,18 @@ Ag 47.00    8    2       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 41.0
+        }, 
+        "low": {
+            "ecut": 33.0
+        }, 
+        "normal": {
+            "ecut": 39.0
+        }
+    }, 
+    "md5": "bdd0ec6ffd4470e6a14cedaf584e63d8", 
     "phonon": {
         "29.0": [
             0.0, 

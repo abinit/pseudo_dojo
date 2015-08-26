@@ -4914,6 +4914,17 @@ Mo 42.00    6    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 36.0
+        }, 
+        "low": {
+            "ecut": 26.0
+        }, 
+        "normal": {
+            "ecut": 34.0
+        }
+    }, 
     "md5": "8fc6ef4e56b29f9e2cd9e3315b00537c", 
     "phonon": {
         "28.0": [

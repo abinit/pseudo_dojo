@@ -1573,6 +1573,17 @@ H  1.00    0    1       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 60.0
+        }, 
+        "low": {
+            "ecut": 35.0
+        }, 
+        "normal": {
+            "ecut": 50.0
+        }
+    }, 
     "md5": "15a6e46aca0afed09986939978e0ca9b", 
     "phonon": {
         "30.0": [

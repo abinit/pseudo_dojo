@@ -4747,6 +4747,17 @@ Ti 22.00    3    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 44.0
+        }, 
+        "low": {
+            "ecut": 34.0
+        }, 
+        "normal": {
+            "ecut": 36.0
+        }
+    }, 
     "md5": "c0cad9016dd7cdc6ac8caf2eccb8bec6", 
     "phonon": {
         "30.0": [

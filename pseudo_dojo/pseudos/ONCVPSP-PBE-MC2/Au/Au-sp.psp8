@@ -4629,6 +4629,18 @@ Au 79.00   10    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 44.0
+        }, 
+        "low": {
+            "ecut": 30.0
+        }, 
+        "normal": {
+            "ecut": 32.0
+        }
+    }, 
+    "md5": "c7548c2e924b1c7a0b0b71bc4f8ef2d7", 
     "phonon": {
         "26.0": [
             0.0, 

@@ -4501,6 +4501,17 @@ Ni 28.00    3    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 60.0
+        }, 
+        "low": {
+            "ecut": 46.0
+        }, 
+        "normal": {
+            "ecut": 48.0
+        }
+    }, 
     "md5": "62e8728421df7a816e99ee3ba60e7ea5", 
     "phonon": {
         "44.0": [

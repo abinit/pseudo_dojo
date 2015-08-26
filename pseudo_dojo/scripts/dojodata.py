@@ -31,12 +31,20 @@ def dojo_figures(options):
 
     rows, names = [], []
     for name, group in grouped:
+        #TODO via commandline option
+        #take the best delta
         best = group.sort("high_dfact_meV").iloc[0]
-        names.append(name)
+        #semicore
+        #selection = group.sort("valence").iloc[-1]
+        #valence
+        #selection = group.sort("valence").iloc[0]
         
+        names.append(name)
+        #print(best) 
         l = {k: getattr(best, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
                                            'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err', 
-                                           'high_gbrv_fcc_a0_rel_err', 'high_ecut')} 
+                                           'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
+                                           'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint')} 
         out = best.name.replace('psp8', 'out')
         outfile = name+'/'+out
             
@@ -93,8 +101,10 @@ def dojo_figures(options):
                                              va='center',
                                              fontdict=fontdict)
 
+            qs_labels = [k.split('[')[0] for k in self.labels]
+
             if self.guide_square:
-                self.guide_square.set_labels(self.labels)
+                self.guide_square.set_labels(qs_labels)
                 pc = PatchCollection(self.guide_square.patches, match_original=True)
                 self._ax.add_collection(pc)
             self._ax.autoscale_view()
@@ -105,16 +115,16 @@ def dojo_figures(options):
  
     # functions for plotting
     def rcmin(elt):
-        """R_c min"""
+        """R_c min [Bohr]"""
         return elt['rcmin']
     def rcmax(elt):
-        """R_c max"""
+        """R_c max [Bohr]"""
         return elt['rcmax']
     def ar(elt):
-        """Atomic Radius"""
+        """Atomic Radius [Bohr]"""
         return elt['atomic_radii']*0.018897161646320722
     def df(elt):
-        """Delta Factor"""
+        """Delta Factor [meV / atom]"""
         try:
             return elt['high_dfact_meV']
         except KeyError:
@@ -126,22 +136,64 @@ def dojo_figures(options):
         except KeyError:
             return float('NaN')
     def bcc(elt):
-        """GBRV BCC"""
+        """GBRV BCC [% relative error]"""
         try:
             return elt['high_gbrv_bcc_a0_rel_err']
         except KeyError:
             print('bcc func fail: ', elt)
             return float('NaN')
+
     def fcc(elt):
-        """GBRV FCC"""
+        """GBRV FCC [% relative error]"""
         try:
             return elt['high_gbrv_fcc_a0_rel_err']
         except KeyError:
-            print('fcc func fail: ', elt)
+            #print('fcc func fail: ', elt)
+            return float('NaN')
+
+    def low_phon_with(elt):
+        """Acoustic mode low_cut """
+        try:
+            return elt['low_phonon'][0]
+        except (KeyError, TypeError):
+            #print('low_phon wiht func fail: ', elt)
+            return float('NaN')
+
+    def high_phon_with(elt):
+        """AC mode [\mu eV] """
+        try:
+            return elt['high_phonon'][0]*1000
+        except (KeyError, TypeError):
+            #print('high_phon with func fail: ', elt)
+            return float('NaN')
+    
+    def high_ecut(elt):
+        """ecut high [Ha] """
+        try:
+            return elt['high_ecut_hint']
+        except (KeyError, TypeError):
+            #print('high_ecut with func fail: ', elt)
+            return float('NaN')
+
+    def low_ecut(elt):
+        """ecut low [Ha] """
+        try:
+            return elt['low_ecut_hint']
+        except (KeyError, TypeError):
+            #print('low_ecut with func fail: ', elt)
+            return float('NaN')
+
+    def normal_ecut(elt):
+        """ecut normal [Ha] """
+        try:
+            return elt['normal_ecut_hint']
+        except (KeyError, TypeError):
+            #print('normal_ecut with func fail: ', elt)
             return float('NaN')
 
     els=[]
     elsgbrv=[]
+    elsphon=[]
     rel_ers=[]
     for el in rows:
         symbol = el['name'].split('.')[0].split('-')[0]
@@ -155,13 +207,19 @@ def dojo_figures(options):
             elsgbrv.append(symbol)
         else:
             print('failed reading gbrv: ', symbol, el['high_gbrv_bcc_a0_rel_err'], el['high_gbrv_fcc_a0_rel_err'])
-            print(el)
+            # print(el)
+        try:
+            if len(el['high_phonon']) > 2:
+                elsphon.append(symbol)
+        except (KeyError, TypeError):
+            pass
+      
 
     max_rel_err = max(rel_ers)
 
     # plot the periodic table with df and dfp
     epd = ElementDataPlotterRangefixer(elements=els, data=data)
-    epd.ptable(functions=[df,dfp], font={'color':color}, cmaps=cmap, vmin=0)
+    epd.ptable(functions=[df,dfp], font={'color':color}, cmaps=cmap, vmin=0, vmax=6)
     plt.show()
     #plt.savefig('df.eps', format='eps')
 
@@ -171,9 +229,25 @@ def dojo_figures(options):
     plt.show()
     #plt.savefig('gbrv.eps', format='eps')
 
+    # plot the hints periodic table
+    epd = ElementDataPlotterRangefixer(elements=els, data=data)
+    cm = mpl_cm.cool
+    cm.set_under('w', 1.0)
+    epd.ptable(functions=[low_ecut, high_ecut, normal_ecut], font={'color':color}, vmin=8, vmax=80,  cmaps=cmap)
+    plt.show()
+    #plt.savefig('rc.eps', format='eps')
+
     # plot the radii periodic table
     epd = ElementDataPlotterRangefixer(elements=els, data=data)
     epd.ptable(functions=[rcmin, rcmax, ar], font={'color':color}, vmin=0, vmax=4, cmaps=cmap)
+    plt.show()
+    #plt.savefig('rc.eps', format='eps')
+
+    # plot the accoustic mode periodic table
+    epd = ElementDataPlotterRangefixer(elements=elsphon, data=data)
+    cm = mpl_cm.winter
+    cm.set_under('orange', 1.0)
+    epd.ptable(functions=[high_phon_with], font={'color':color}, cmaps=cm, vmin=-2, vmax=0)
     plt.show()
     #plt.savefig('rc.eps', format='eps')
 
@@ -286,7 +360,7 @@ def dojo_table(options):
             names.append(name)
             #print(best.keys())
             #print(best.name)
-            l = {k: getattr(best, k) for k in ("name", "Z", 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 'high_ecut')} 
+            l = {k: getattr(best, k) for k in ("name", "Z", 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 'high_ecut_deltafactor')} 
             rows.append(l)
 
         import pandas
@@ -307,7 +381,7 @@ def dojo_table(options):
 
     accuracies = ["low", "normal", "high"]
     accuracies = ["low"]
-    keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut"]
+    keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut_deltafactor"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
     print(columns)
 
@@ -336,14 +410,14 @@ def dojo_table(options):
     accuracies = ["low", "high"]
     data = data[
         [acc + "_dfact_meV" for acc in accuracies]
-      + [acc + "_ecut" for acc in accuracies]
+      + [acc + "_ecut_deltafactor" for acc in accuracies]
 #      + [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
 #      + [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
     ]
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))
     columns = [acc + "_dfact_meV" for acc in accuracies] 
-    columns += [acc + "_ecut" for acc in accuracies] 
+    columns += [acc + "_ecut_deltafactor" for acc in accuracies] 
 #    columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies] 
 #    columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
 
@@ -357,8 +431,9 @@ def dojo_table(options):
     print(tabulate(data.describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
     bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean()]
-    print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
-    print(tabulate(bad, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+    good = data[data["high_dfact_meV"] < data["high_dfact_meV"].mean()]
+    print("\nPSEUDOS with high_dfact < mean:\n") # ".center(80, "*"))
+    print(tabulate(good, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
     #gbrv_fcc_bad = data[data["high_gbrv_fcc_a0_rerr"] > (data["high_gbrv_fcc_a0_rerr"].abs()).mean()]
     #print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
@@ -383,6 +458,7 @@ def dojo_check(options):
             print("Exception: ", exc)
             continue
 
+        report.print_table()
         # Comment this to fix the md5 checksum in the pseudos
         #p.check_and_fix_dojo_md5()
 
@@ -401,34 +477,69 @@ def dojo_check(options):
             print("Error: ", p.basename + str(exc))
 
 
-def dojo_validate(options):
+def dojo_make_hints(options):
+    from pymatgen.util.io_utils import ask_yesno, prompt
+    import numpy as np
+
     for pseudo in options.pseudos:
         try:
             report = pseudo.dojo_report
-            #if report.is_validated:
-            #    print("Pseudo %s is already validated!" % pseudo.basename)
-            #report.plot_deltafactor_convergence(title=pseudo.basename, what="dfactprime_meV")
 
             hints = report.compute_hints()
             print("hints for %s computed from deltafactor prime: %s" % (pseudo.basename, hints))
+            report.plot_deltafactor_convergence()           
+ 
+            ans = ask_yesno("Do you accept the hints? [Y]")
+            if ans:
+                report.add_hints(hints)
+                print(report.has_hints)
+                pseudo.write_dojo_report(report)
+            else:
+                print("The dojoreport contains ecuts :\n%s" % report.ecuts)
+                new_ecuts = prompt("Enter new ecuts to compute (comma-separated values or empty string to abort)")
+                if len(new_ecuts) == 0:
+                    print("Exit requested by user")
+                    return 
+                new_ecuts = np.array([float(k) for k in new_ecuts.strip().split(",")])
+                print(new_ecuts)
+                report.add_ecuts(new_ecuts)
+                pseudo.write_dojo_report(report)
 
-            #ans = prompt("Do you accept the hints? [Y]")
-            #ans = False
-            #if ans:
-            #    print("got true")
-            #    #report.validate(hints)
-            #    #pseudo.write_dojo_report(report)
-            #else:
-            #    print("The dojoreport contains ecuts :\n%s" % report.ecuts)
-            #    #new_ecuts = prompt("Enter new ecuts to compute (comma-separated values or empty string to abort)")
-            #    #if new_ecuts:
-            #    #    print("Exit requested by user")
-            #    #    return 
+        except None: #Exception as exc:
+            print(pseudo.basename, "raised: ", str(exc))
 
-            #    # Be careful with the format here! it should be %.1f
-            #    #new_ecuts = np.array(new_ecuts.split(","))
-            #    #report.add_ecuts(new_ecuts)
-            #    #pseudo.write_dojo_report(report)
+def dojo_validate(options):
+    for pseudo in options.pseudos:
+        try:
+
+            pseudos = options.pseudos
+            data, errors = pseudos.get_dojo_dataframe()
+
+
+
+            #test if already validated
+
+            #test if hints are present
+
+            #test if all trials are existing for these hints
+
+            accuracies = ["low", "normal", "high"]
+            keys = ['hint', 'deltafactor', 'gbrv_bcc', 'gbrv_fcc', 'phonon']
+
+            tablefmt = "grid"
+            floatfmt=".2f"
+
+	    for acc in accuracies:
+                columns = ["symbol"] + [acc + "_ecut_" + k for k in keys]
+                print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+
+
+
+            #test hash
+
+            #aks the final question, and a name for refference
+           
+            raise NotImplementedError('vallidation is not implemented yet')
 
         except Exception as exc:
             print(pseudo.basename, "raised: ", str(exc))
@@ -513,6 +624,10 @@ def main():
 
     # Subparser for validate command.
     p_validate = subparsers.add_parser('validate', parents=[pseudos_selector_parser], help="Validate pseudos")
+
+    # Subparser for make_hints command.
+    p_make_hints = subparsers.add_parser('make_hints', parents=[pseudos_selector_parser], help="Add hints for cutoffs for pseudos")
+
 
     # Parse command line.
     try:

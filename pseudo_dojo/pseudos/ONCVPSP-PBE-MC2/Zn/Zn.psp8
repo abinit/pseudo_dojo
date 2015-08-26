@@ -4396,6 +4396,17 @@ Zn 30.00    5    2       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 37.0
+        }, 
+        "low": {
+            "ecut": 33.0
+        }, 
+        "normal": {
+            "ecut": 35.0
+        }
+    }, 
     "md5": "5d7ad0716b51ec723a17ca909af8b34d", 
     "ppgen_hints": {
         "high": {

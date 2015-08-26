@@ -4829,6 +4829,17 @@ Sc 21.00    3    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 37.0
+        }, 
+        "low": {
+            "ecut": 29.0
+        }, 
+        "normal": {
+            "ecut": 33.0
+        }
+    }, 
     "md5": "b9b39aa157676082bddccac8b9683fd1", 
     "phonon": {
         "33.0": [

@@ -4665,6 +4665,17 @@ Cr 24.00    3    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 60.0
+        }, 
+        "low": {
+            "ecut": 54.0
+        }, 
+        "normal": {
+            "ecut": 56.0
+        }
+    }, 
     "md5": "2c99561a47dd92fc29aee2f43afbb454", 
     "phonon": {
         "48.0": [

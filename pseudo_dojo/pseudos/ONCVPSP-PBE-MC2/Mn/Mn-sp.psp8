@@ -4665,6 +4665,17 @@ Mn 25.00    3    4       4      psp8
             ]
         }
     }, 
+    "hints": {
+        "high": {
+            "ecut": 65.0
+        }, 
+        "low": {
+            "ecut": 61.0
+        }, 
+        "normal": {
+            "ecut": 63.0
+        }
+    }, 
     "md5": "08c795216485ebbb1297b65ab10dac8c", 
     "phonon": {
         "57.0": [
