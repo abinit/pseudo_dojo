@@ -553,7 +553,7 @@ def main():
     dojodata trials H.psp8 -r 1
     dojodata compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
     dojodata table .                    ==> Build table (find all psp8 files within current directory)
-    dojodata figure .                   ==> Plot periodic table figures
+    dojodata figures .                   ==> Plot periodic table figures
 """
         return examples
 
@@ -606,7 +606,7 @@ def main():
     p_compare = subparsers.add_parser('compare', parents=[pseudos_selector_parser, plot_options_parser], help="Compare pseudos")
 
     # Subparser for figures
-    p_figures = subparsers.add_parser('figures', parents=[pseudos_selector_parser, plot_options_parser], help="Plot table figures")
+    p_figures = subparsers.add_parser('figures', parents=[pseudos_selector_parser], help="Plot table figures")
 
     # Subparser for table command.
     p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
@@ -652,7 +652,8 @@ def main():
 
         paths = options.pseudos
         if len(paths) == 1 and os.path.isdir(paths[0]):
-            top = paths[0]
+            top = os.path.abspath(paths[0])
+            #print("top", top)
             paths = find_exts(top, exts, exclude_dirs="_*")
             #table = DojoTable.from_dir(paths[0])
 
