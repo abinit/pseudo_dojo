@@ -14,7 +14,7 @@ from monty.os.path import find_exts
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
-
+from pandas import DataFrame, concat
 
 def dojo_figures(options):
     """
@@ -24,49 +24,46 @@ def dojo_figures(options):
     """
     pseudos = options.pseudos
 
-    data, errors = pseudos.get_dojo_dataframe()
+    data_dojo, errors = pseudos.get_dojo_dataframe()
 
-    """Select best entries"""
+    # add data that is not part of the dojo report
+    data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
+    for index, p in data_dojo.iterrows():
+        out = p.name.replace('psp8', 'out')
+        outfile = p.symbol+'/'+out
+        parser = OncvOutputParser(outfile)
+        parser.scan()
+        data_pseudo.loc[index] = [int(parser.nv), parser.valence, parser.rc_min, parser.rc_max]
+  
+    data = concat([data_dojo, data_pseudo], axis=1)     
+
+    """Select entries per element"""
     grouped = data.groupby("symbol")
 
     rows, names = [], []
     for name, group in grouped:
-        #TODO via commandline option
-        #take the best delta
-        best = group.sort("high_dfact_meV").iloc[0]
-        #semicore
-        #selection = group.sort("valence").iloc[-1]
-        #valence
-        #selection = group.sort("valence").iloc[0]
-        
+    
+        if False: # options.semicore
+            select = group.sort("nv").iloc[-1]
+        elif False: # options.valence
+            select = group.sort("nv").iloc[0]
+        else:
+            select = group.sort("high_dfact_meV").iloc[0]        
+
         names.append(name)
-        #print(best) 
-        l = {k: getattr(best, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
-                                           'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err', 
-                                           'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
-                                           'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint')} 
-        out = best.name.replace('psp8', 'out')
-        outfile = name+'/'+out
-            
-        parser = OncvOutputParser(outfile)
-        parser.scan()
 
-        data = {'valence': parser.valence, 'rcmin': parser.rc_min, 'rcmax': parser.rc_max} 
-
-        l.update(data)
-#        for v in l.values():
-#            if str(v) == 'nan':
-#                print('\n\nnan detected in best:\n ', best)
-
+        l = {k: getattr(select, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
+                                             'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err', 
+                                             'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
+                                             'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
+                                             'nv', 'valence', 'rcmin', 'rcmax')} 
         rows.append(l)
-
 
     import matplotlib.pyplot as plt
     from ptplotter.plotter import ElementDataPlotter
     import matplotlib.cm as mpl_cm
     from matplotlib.collections import PatchCollection 
     import numpy as np
-
 
     class ElementDataPlotterRangefixer(ElementDataPlotter):
         """
@@ -191,15 +188,17 @@ def dojo_figures(options):
             #print('normal_ecut with func fail: ', elt)
             return float('NaN')
 
-    els=[]
-    elsgbrv=[]
-    elsphon=[]
-    rel_ers=[]
+    els = []
+    elsgbrv = []
+    elsphon = []
+    rel_ers = []
+    elements_data = {}    
+
     for el in rows:
         symbol = el['name'].split('.')[0].split('-')[0]
         rel_ers.append(max(abs(el['high_gbrv_bcc_a0_rel_err']),abs(el['high_gbrv_fcc_a0_rel_err'])))
         if el['high_dfact_meV'] > 0:
-            data[symbol] = el
+            elements_data[symbol] = el
             els.append(symbol)
         else:
             print('failed reading df  :', symbol, el['high_dfact_meV'])
@@ -218,27 +217,27 @@ def dojo_figures(options):
     max_rel_err = max(rel_ers)
 
     # plot the periodic table with df and dfp
-    epd = ElementDataPlotterRangefixer(elements=els, data=data)
+    epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
     epd.ptable(functions=[df,dfp], font={'color':color}, cmaps=cmap, vmin=0, vmax=6)
     plt.show()
     #plt.savefig('df.eps', format='eps')
 
     # plot the GBVR results periodic table
-    epd = ElementDataPlotterRangefixer(elements=elsgbrv, data=data)
+    epd = ElementDataPlotterRangefixer(elements=elsgbrv, data=elements_data)
     epd.ptable(functions=[bcc,fcc], font={'color':color}, cmaps=mpl_cm.jet, vmin=-max_rel_err, vmax=max_rel_err)
     plt.show()
     #plt.savefig('gbrv.eps', format='eps')
 
     # plot the hints periodic table
-    epd = ElementDataPlotterRangefixer(elements=els, data=data)
+    epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
     cm = mpl_cm.cool
     cm.set_under('w', 1.0)
-    epd.ptable(functions=[low_ecut, high_ecut, normal_ecut], font={'color':color}, vmin=8, vmax=80,  cmaps=cmap)
+    epd.ptable(functions=[low_ecut, high_ecut, normal_ecut], font={'color':color}, vmin=6, vmax=80,  cmaps=cmap)
     plt.show()
     #plt.savefig('rc.eps', format='eps')
 
     # plot the radii periodic table
-    epd = ElementDataPlotterRangefixer(elements=els, data=data)
+    epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
     epd.ptable(functions=[rcmin, rcmax, ar], font={'color':color}, vmin=0, vmax=4, cmaps=cmap)
     plt.show()
     #plt.savefig('rc.eps', format='eps')
