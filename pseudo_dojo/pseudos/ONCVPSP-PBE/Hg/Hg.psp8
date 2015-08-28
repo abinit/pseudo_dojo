@@ -3280,6 +3280,17 @@ Hg 80.00   12    2       4      psp8
         35.0, 
         45.0
     ], 
+    "hints": {
+        "high": {
+            "ecut": 45.0
+        }, 
+        "low": {
+            "ecut": 33.0
+        }, 
+        "normal": {
+            "ecut": 35.0
+        }
+    }, 
     "md5": "77743fc45683ca97d81d101607ac24d1", 
     "ppgen_hints": {
         "high": {

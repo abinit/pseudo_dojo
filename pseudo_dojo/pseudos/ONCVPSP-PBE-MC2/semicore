@@ -1,4 +1,3 @@
-Ag/Ag.psp8
 Ag/Ag-sp.psp8
 Al/Al.psp8
 Ar/Ar.psp8
@@ -17,14 +16,14 @@ Co/Co-sp.psp8
 Cr/Cr-sp-high.psp8
 Cs/Cs-sp.psp8
 Cu/Cu-sp.psp8
-Fe/Fe-sp-high-ncon3.psp8
-F/F-dmax.psp8
+Fe/Fe-sp-high.psp8
+F/F.psp8
 Ga/Ga-d.psp8
 Ge/Ge-d.psp8
-He/He-ploc.psp8
+He/He.psp8
 Hf/Hf-spdf.psp8
 Hg/Hg.psp8
-H/H-high.psp8
+H/H.psp8
 I/I.psp8
 In/In-d.psp8
 Ir/Ir-p.psp8
@@ -34,12 +33,12 @@ Li/Li-s-high.psp8
 Mg/Mg.psp8
 Mn/Mn-sp.psp8
 Mo/Mo-sp.psp8
-Na/Na-sp-nonlcc.psp8
+Na/Na-sp.psp8
 Nb/Nb-sp.psp8
-Ne/Ne-nonlcc.psp8
+Ne/Ne.psp8
 Ni/Ni-sp.psp8
 N/N.psp8
-O/O-dmax.psp8
+O/O.psp8
 Os/Os-p.psp8
 Pb/Pb-d.psp8
 Pd/Pd-sp.psp8
@@ -52,7 +51,6 @@ Rh/Rh-sp.psp8
 Rn/Rn.psp8
 Ru/Ru-sp.psp8
 Sb/Sb-d.psp8
-Sb/Sb.psp8
 Sc/Sc-sp.psp8
 Se/Se-d.psp8
 Si/Si.psp8
@@ -62,7 +60,6 @@ S/S.psp8
 Ta/Ta-p.psp8
 Tc/Tc-sp.psp8
 Te/Te-d.psp8
-Te/Te.psp8
 Ti/Ti-sp.psp8
 Tl/Tl-d.psp8
 V/V-sp.psp8

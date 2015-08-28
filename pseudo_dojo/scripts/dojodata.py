@@ -359,7 +359,8 @@ def dojo_table(options):
             names.append(name)
             #print(best.keys())
             #print(best.name)
-            l = {k: getattr(best, k) for k in ("name", "Z", 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 'high_ecut_deltafactor')} 
+            l = {k: getattr(best, k) for k in ("name", "Z", 'high_b0_GPa', 'high_b1', 'high_v0', 
+                                               'high_dfact_meV', 'high_ecut_deltafactor')} 
             rows.append(l)
 
         import pandas
@@ -379,10 +380,9 @@ def dojo_table(options):
         pprint(errors)
 
     accuracies = ["low", "normal", "high"]
-    accuracies = ["low"]
-    keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut_deltafactor"]
+    keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut_deltafactor", "ecut_hint"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
-    print(columns)
+    #print(columns)
 
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]
     #data = data[data["high_dfact_meV"] <= 9]
@@ -406,33 +406,58 @@ def dojo_table(options):
     if not wrong.empty:
         print("WRONG".center(80, "*") + "\n", wrong)
 
-    accuracies = ["low", "high"]
-    data = data[
-        [acc + "_dfact_meV" for acc in accuracies]
-      + [acc + "_ecut_deltafactor" for acc in accuracies]
-#      + [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
-#      + [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
-    ]
+    try:
+        data = data[
+                 [acc + "_dfact_meV" for acc in accuracies]
+               + [acc + "_ecut_deltafactor" for acc in accuracies]
+               + [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
+               + [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
+               + [acc + "_ecut_hint" for acc in accuracies]
+                   ]
+    except KeyError:
+        data = data[
+                 [acc + "_dfact_meV" for acc in accuracies]
+               + [acc + "_ecut_deltafactor" for acc in accuracies]
+               + [acc + "_ecut_hint" for acc in accuracies]
+                   ]
+        
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))
+    tablefmt = "grid"
+    floatfmt=".3f"
+
+    accuracies = ['low', 'high']
     columns = [acc + "_dfact_meV" for acc in accuracies] 
     columns += [acc + "_ecut_deltafactor" for acc in accuracies] 
-#    columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies] 
-#    columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
-
-    tablefmt = "grid"
-    floatfmt=".2f"
     print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+    if len(data) > 5: 
+        print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+
+
+    try:
+    	columns = [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies] 
+    	columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
+    	print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+        if len(data) > 5:
+            print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+    except KeyError:
+        print('No GBRV data')    
+
+    accuracies = ['low', 'normal', 'high']
+    columns = [acc + "_ecut_hint" for acc in accuracies]
+    print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+    if len(data) > 5:
+        print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+
+
+
     #print(data.to_string(columns=columns))
 
-    print("\nSTATS:\n") #.center(80, "="))
-    #print(data.describe())
-    print(tabulate(data.describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
-
-    bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean()]
-    good = data[data["high_dfact_meV"] < data["high_dfact_meV"].mean()]
-    print("\nPSEUDOS with high_dfact < mean:\n") # ".center(80, "*"))
-    print(tabulate(good, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+    if len(data) > 5: 
+        bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean() + data["high_dfact_meV"].std()]
+        good = data[data["high_dfact_meV"] < data["high_dfact_meV"].mean()]
+        print("\nPSEUDOS with high_dfact > mean plus one std (%.3f + %.3f):\n" % (data["high_dfact_meV"].mean(), data["high_dfact_meV"].std())) # ".center(80, "*"))
+        print(tabulate(bad[["high_dfact_meV", "high_ecut_deltafactor"]], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
     #gbrv_fcc_bad = data[data["high_gbrv_fcc_a0_rerr"] > (data["high_gbrv_fcc_a0_rerr"].abs()).mean()]
     #print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
@@ -457,9 +482,9 @@ def dojo_check(options):
             print("Exception: ", exc)
             continue
 
-        report.print_table()
+        #print(report)
         # Comment this to fix the md5 checksum in the pseudos
-        #p.check_and_fix_dojo_md5()
+        p.check_and_fix_dojo_md5()
 
         #if "ppgen_hints" not in report: # and "deltafactor" not in report:
         #    print(p.basename, "old version without ppgen_hints")
@@ -508,19 +533,35 @@ def dojo_make_hints(options):
             print(pseudo.basename, "raised: ", str(exc))
 
 def dojo_validate(options):
-    for pseudo in options.pseudos:
+    for p in options.pseudos:
+        
+        data, errors = options.pseudos.get_dojo_dataframe()
+
         try:
-
-            pseudos = options.pseudos
-            data, errors = pseudos.get_dojo_dataframe()
-
-
+        
+            try:
+                report = p.dojo_report
+            except Exception as exc:
+                print("Invalid dojo_report in:", p.basename)
+                print("Exception: ", exc)
+                continue
 
             #test if already validated
 
             #test if hints are present
 
-            #test if all trials are existing for these hints
+            print("Testing if all trials are existing for the hints.")
+            print("=================================================")
+
+            try:
+                error = report.check()
+                if error:
+                    print("[%s] Validation problem" % p.basename)
+                    print(error)
+                    print()
+
+            except Exception as exc:
+                print("Error: ", p.basename + str(exc))
 
             accuracies = ["low", "normal", "high"]
             keys = ['hint', 'deltafactor', 'gbrv_bcc', 'gbrv_fcc', 'phonon']
@@ -530,18 +571,21 @@ def dojo_validate(options):
 
 	    for acc in accuracies:
                 columns = ["symbol"] + [acc + "_ecut_" + k for k in keys]
-                print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
-
-
+                headers = ["symbol"] + [k for k in keys]
+                print('ECUTS for accuracy %s:' % acc)
+                print(tabulate(data[columns], headers=headers, tablefmt=tablefmt, floatfmt=floatfmt))
 
             #test hash
 
+            #plot the model core charge
+
+            #plot the log derivatives
+            #  ask of the energy up to which the log ders are fine            
+
             #aks the final question, and a name for refference
            
-            raise NotImplementedError('vallidation is not implemented yet')
-
         except Exception as exc:
-            print(pseudo.basename, "raised: ", str(exc))
+            print(p.basename, "raised: ", str(exc))
 
 
 def main():

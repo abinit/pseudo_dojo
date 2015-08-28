@@ -3,7 +3,7 @@ Au    ONCVPSP  r_core=  1.46  1.56  1.46  1.51
 8      11   3     4   500     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 4.99000000  0.25000000  0.00000000    rchrg fchrg qchrg
 2     2     2     2     0    nproj
-0                 extension_switch
+1                 extension_switch
 0                         9.4439943112116D+00 -1.9659299438132D-01
 1  0.0000000000000D+00 -5.1123838495926D-10 -5.2110415427187D-09
 2  1.0000000000000D-02  8.0919024120817D-02  4.7167182285388D-02
@@ -3583,9 +3583,6 @@ Au 79.00   10    4       4      psp8
 
 <DOJO_REPORT>
 {
-    "symbol": "Au", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
     "ecuts": [
         26.0, 
         28.0, 
@@ -3601,20 +3598,24 @@ Au 79.00   10    4       4      psp8
         54.0, 
         56.0
     ], 
+    "md5": "c9bfdaba2cec483c35cbe15a8af10f26", 
     "ppgen_hints": {
         "high": {
-            "pawecutdg": 36.0, 
-            "ecut": 36.0
+            "ecut": 36.0, 
+            "pawecutdg": 36.0
         }, 
         "low": {
-            "pawecutdg": 32.0, 
-            "ecut": 32.0
+            "ecut": 32.0, 
+            "pawecutdg": 32.0
         }, 
         "normal": {
-            "pawecutdg": 34.0, 
-            "ecut": 34.0
+            "ecut": 34.0, 
+            "pawecutdg": 34.0
         }
-    }
+    }, 
+    "pseudo_type": "norm-conserving", 
+    "symbol": "Au", 
+    "version": "1.0"
 }
 </DOJO_REPORT>
 
