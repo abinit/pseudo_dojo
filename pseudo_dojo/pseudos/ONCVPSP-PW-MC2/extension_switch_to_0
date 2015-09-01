@@ -1,0 +1,1 @@
+sed 's/1                 extension_switch/0                 extension_switch/g' -i */*.psp8
