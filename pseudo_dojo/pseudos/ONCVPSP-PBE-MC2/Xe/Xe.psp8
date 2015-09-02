@@ -4193,7 +4193,7 @@ Xe 54.00    9    2       4      psp8
             "ecut": 19.0
         }, 
         "normal": {
-            "ecut": 59.0
+            "ecut": 25.0
         }
     }, 
     "md5": "78490aafe5b68d35a1a40dd949b11d7e", 

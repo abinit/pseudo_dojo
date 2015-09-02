@@ -1,5 +1,5 @@
 # atsym z nc nv iexc psfile
-O 8 1 2 4 psp8
+O 8 1 2 -001013 psp8
 # n l f
 1 0 2.0
 2 0 2.0
@@ -9,7 +9,7 @@ O 8 1 2 4 psp8
 # l rc ep ncon nbas qcut
 0 1.25 0.0 4 8 8.5
 1 1.35 0.0 4 8 9.4
-2 1.25 0.1 4 8 6.0
+2 1.25 0.2 4 8 6.0
 # lloc lpopt rc5 dvloc0
 4 5 1.2 0.0
 # l nproj debl

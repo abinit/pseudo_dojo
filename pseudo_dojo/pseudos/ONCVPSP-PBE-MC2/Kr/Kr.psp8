@@ -4072,13 +4072,13 @@ Kr 36.00    6    2       4      psp8
     ], 
     "hints": {
         "high": {
-            "ecut": 38.0
+            "ecut": 36.0
         }, 
         "low": {
-            "ecut": 24.0
+            "ecut": 22.0
         }, 
         "normal": {
-            "ecut": 32.0
+            "ecut": 26.0
         }
     }, 
     "md5": "780b1f7fc07dc513fed5fec0ed16cef8", 

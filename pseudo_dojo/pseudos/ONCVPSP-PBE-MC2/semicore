@@ -12,12 +12,12 @@ Ca/Ca-sp.psp8
 C/C.psp8
 Cd/Cd-sp.psp8
 Cl/Cl.psp8
-Co/Co-sp.psp8
+Co/Co-sp-high.psp8
 Cr/Cr-sp-high.psp8
 Cs/Cs-sp.psp8
-Cu/Cu-sp.psp8
+Cu/Cu-sp-high.psp8
 Fe/Fe-sp-high.psp8
-F/F.psp8
+F/F-high.psp8
 Ga/Ga-d.psp8
 Ge/Ge-d.psp8
 He/He.psp8
@@ -35,8 +35,8 @@ Mn/Mn-sp-high.psp8
 Mo/Mo-sp.psp8
 Na/Na-sp.psp8
 Nb/Nb-sp.psp8
-Ne/Ne.psp8
-Ni/Ni-sp.psp8
+Ne/Ne-high.psp8
+Ni/Ni-sp-high.psp8
 N/N.psp8
 O/O-high.psp8
 Os/Os-p.psp8

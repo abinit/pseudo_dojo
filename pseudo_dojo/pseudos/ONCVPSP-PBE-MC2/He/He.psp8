@@ -1552,7 +1552,7 @@ He  2.00    0    1       4      psp8
             "ecut": 60.0
         }, 
         "low": {
-            "ecut": 50.0
+            "ecut": 44.0
         }, 
         "normal": {
             "ecut": 50.0

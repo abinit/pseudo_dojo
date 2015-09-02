@@ -2813,7 +2813,7 @@ Ar 18.00    3    2       4      psp8
     ], 
     "hints": {
         "high": {
-            "ecut": 39.0
+            "ecut": 37.0
         }, 
         "low": {
             "ecut": 31.0

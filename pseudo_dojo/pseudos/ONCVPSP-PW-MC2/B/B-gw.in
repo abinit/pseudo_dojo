@@ -1,5 +1,5 @@
 # atsym z nc nv iexc psfile
-B 5 1 2 4 psp8
+B 5 1 2 -001013 psp8
 # n l f
 1 0 2.0
 2 0 2.0
