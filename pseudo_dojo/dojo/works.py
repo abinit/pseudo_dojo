@@ -307,9 +307,9 @@ class DeltaFactory(object):
     """Factory class producing work objects for the computation of the delta factor."""
     Error = DeltaFactoryError
 
-    def __init__(self):
+    def __init__(self, xc='PBE'):
         # Get a reference to the deltafactor database
-        self._dfdb = df_database()
+        self._dfdb = df_database(xc=xc)
 
     def get_cif_path(self, symbol):
         """Returns the path to the CIF file associated to the given symbol."""

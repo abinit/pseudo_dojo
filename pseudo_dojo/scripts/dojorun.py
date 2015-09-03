@@ -96,7 +96,12 @@ def build_flow(pseudo, options):
 
     # Computation of the deltafactor.
     if "df" in options.trials:
-        factory = DeltaFactory()
+        #FIXME
+        #factory = DeltaFactory(xc=pseudo.xc)
+        if os.path.isfile('LDA'):
+            factory = DeltaFactory(xc='LDA')
+        else:
+            factory = DeltaFactory()
         for ecut in ecut_list:
             if "deltafactor" in report and ecut in report["deltafactor"].keys(): continue
             pawecutdg = 2 * ecut if pseudo.ispaw else None

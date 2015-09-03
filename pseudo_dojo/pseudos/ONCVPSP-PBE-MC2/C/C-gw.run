@@ -1,0 +1,474 @@
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+unlimited
+[Tue Sep  1 13:39:51 2015] Number of launches: 13
+
+Work #0: <PhononDojoWork, node_id=350037, workdir=C-gw.psp8_DOJO/GammaPhononsAt33.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w0_t0 |  [34mSubmitted[0m  | 6634548@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:04Q |  350038 |
+| w0_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350039 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #1: <PhononDojoWork, node_id=350040, workdir=C-gw.psp8_DOJO/GammaPhononsAt35.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w1_t0 |  [34mSubmitted[0m  | 6634550@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:04Q |  350041 |
+| w1_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350042 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #2: <PhononDojoWork, node_id=350043, workdir=C-gw.psp8_DOJO/GammaPhononsAt37.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w2_t0 |  [34mSubmitted[0m  | 6634552@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:03Q |  350044 |
+| w2_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350045 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #3: <PhononDojoWork, node_id=350046, workdir=C-gw.psp8_DOJO/GammaPhononsAt39.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w3_t0 |  [34mSubmitted[0m  | 6634554@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:03Q |  350047 |
+| w3_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350048 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #4: <PhononDojoWork, node_id=350049, workdir=C-gw.psp8_DOJO/GammaPhononsAt41.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w4_t0 |  [34mSubmitted[0m  | 6634556@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:03Q |  350050 |
+| w4_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350051 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #5: <PhononDojoWork, node_id=350052, workdir=C-gw.psp8_DOJO/GammaPhononsAt43.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w5_t0 |  [34mSubmitted[0m  | 6634558@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:02Q |  350053 |
+| w5_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350054 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #6: <PhononDojoWork, node_id=350055, workdir=C-gw.psp8_DOJO/GammaPhononsAt45.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w6_t0 |  [34mSubmitted[0m  | 6634560@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:02Q |  350056 |
+| w6_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350057 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #7: <PhononDojoWork, node_id=350058, workdir=C-gw.psp8_DOJO/GammaPhononsAt47.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w7_t0 |  [34mSubmitted[0m  | 6634562@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:02Q |  350059 |
+| w7_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350060 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #8: <PhononDojoWork, node_id=350061, workdir=C-gw.psp8_DOJO/GammaPhononsAt49.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w8_t0 |  [34mSubmitted[0m  | 6634564@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:01Q |  350062 |
+| w8_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350063 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #9: <PhononDojoWork, node_id=350064, workdir=C-gw.psp8_DOJO/GammaPhononsAt51.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w9_t0 |  [34mSubmitted[0m  | 6634566@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:01Q |  350065 |
+| w9_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350066 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #10: <PhononDojoWork, node_id=350067, workdir=C-gw.psp8_DOJO/GammaPhononsAt53.0>, Finalized=False
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w10_t0 |  [34mSubmitted[0m  | 6634567@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:00Q |  350068 |
+| w10_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350069 |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #11: <PhononDojoWork, node_id=350070, workdir=C-gw.psp8_DOJO/GammaPhononsAt61.0>, Finalized=False
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w11_t0 |  [34mSubmitted[0m  | 6634569@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:00Q |  350071 |
+| w11_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350072 |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #12: <PhononDojoWork, node_id=350073, workdir=C-gw.psp8_DOJO/GammaPhononsAt63.0>, Finalized=False
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w12_t0 |  [34mSubmitted[0m  | 6634571@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:00:00Q |  350074 |
+| w12_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350075 |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+[Tue Sep  1 13:49:49 2015] Number of launches: 7
+
+Work #0: <PhononDojoWork, node_id=350037, workdir=C-gw.psp8_DOJO/GammaPhononsAt33.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w0_t0 | [32mCompleted[0m | 6634548@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:24R |  350038 |
+| w0_t1 | [34mSubmitted[0m | 6634672@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:02Q |  350039 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #1: <PhononDojoWork, node_id=350040, workdir=C-gw.psp8_DOJO/GammaPhononsAt35.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w1_t0 | [32mCompleted[0m | 6634550@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:26R |  350041 |
+| w1_t1 | [34mSubmitted[0m | 6634673@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:01Q |  350042 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #2: <PhononDojoWork, node_id=350043, workdir=C-gw.psp8_DOJO/GammaPhononsAt37.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w2_t0 | [32mCompleted[0m | 6634552@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:27R |  350044 |
+| w2_t1 | [34mSubmitted[0m | 6634674@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:01Q |  350045 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #3: <PhononDojoWork, node_id=350046, workdir=C-gw.psp8_DOJO/GammaPhononsAt39.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w3_t0 | [32mCompleted[0m | 6634554@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:28R |  350047 |
+| w3_t1 | [34mSubmitted[0m | 6634675@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:01Q |  350048 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #4: <PhononDojoWork, node_id=350049, workdir=C-gw.psp8_DOJO/GammaPhononsAt41.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w4_t0 | [32mCompleted[0m | 6634556@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:30R |  350050 |
+| w4_t1 | [34mSubmitted[0m | 6634676@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:00Q |  350051 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #5: <PhononDojoWork, node_id=350052, workdir=C-gw.psp8_DOJO/GammaPhononsAt43.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w5_t0 | [32mCompleted[0m | 6634558@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:30R |  350053 |
+| w5_t1 | [34mSubmitted[0m | 6634677@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:00Q |  350054 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #6: <PhononDojoWork, node_id=350055, workdir=C-gw.psp8_DOJO/GammaPhononsAt45.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w6_t0 | [32mCompleted[0m | 6634560@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:31R |  350056 |
+| w6_t1 | [34mSubmitted[0m | 6634678@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:00Q |  350057 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #7: <PhononDojoWork, node_id=350058, workdir=C-gw.psp8_DOJO/GammaPhononsAt47.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w7_t0 |   [35mRunning[0m   | 6634562@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:02R |  350059 |
+| w7_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350060 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #8: <PhononDojoWork, node_id=350061, workdir=C-gw.psp8_DOJO/GammaPhononsAt49.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w8_t0 |   [35mRunning[0m   | 6634564@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:02R |  350062 |
+| w8_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350063 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #9: <PhononDojoWork, node_id=350064, workdir=C-gw.psp8_DOJO/GammaPhononsAt51.0>, Finalized=False
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w9_t0 |  [34mSubmitted[0m  | 6634566@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:09:59Q |  350065 |
+| w9_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350066 |
++-------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #10: <PhononDojoWork, node_id=350067, workdir=C-gw.psp8_DOJO/GammaPhononsAt53.0>, Finalized=False
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w10_t0 |  [34mSubmitted[0m  | 6634567@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:09:59Q |  350068 |
+| w10_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350069 |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #11: <PhononDojoWork, node_id=350070, workdir=C-gw.psp8_DOJO/GammaPhononsAt61.0>, Finalized=False
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w11_t0 |  [34mSubmitted[0m  | 6634569@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:09:58Q |  350071 |
+| w11_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350072 |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #12: <PhononDojoWork, node_id=350073, workdir=C-gw.psp8_DOJO/GammaPhononsAt63.0>, Finalized=False
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |    Status   |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w12_t0 |  [34mSubmitted[0m  | 6634571@main |   12|  1|2.0 |   NA|NA|NA   |  ScfTask   |   (0, 1, 0)   | 0:09:58Q |  350074 |
+| w12_t1 | Initialized[0m |     None     |    1|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 0, 0)   |   None   |  350075 |
++--------+-------------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+[Tue Sep  1 13:59:50 2015] Number of launches: 6
+
+Work #0: <PhononDojoWork, node_id=350037, workdir=C-gw.psp8_DOJO/GammaPhononsAt33.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #1: <PhononDojoWork, node_id=350040, workdir=C-gw.psp8_DOJO/GammaPhononsAt35.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #2: <PhononDojoWork, node_id=350043, workdir=C-gw.psp8_DOJO/GammaPhononsAt37.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w2_t0 | [32mCompleted[0m | 6634552@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:27R |  350044 |
+| w2_t1 |  [35mRunning[0m  | 6634674@main |   12|  1|2.0 |   0|  19|  1 | AbinitTask |   (0, 1, 0)   | 0:00:03R |  350045 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #3: <PhononDojoWork, node_id=350046, workdir=C-gw.psp8_DOJO/GammaPhononsAt39.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w3_t0 | [32mCompleted[0m | 6634554@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:28R |  350047 |
+| w3_t1 |  [35mRunning[0m  | 6634675@main |   12|  1|2.0 |   0|  19|  1 | AbinitTask |   (0, 1, 0)   | 0:00:03R |  350048 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #4: <PhononDojoWork, node_id=350049, workdir=C-gw.psp8_DOJO/GammaPhononsAt41.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w4_t0 | [32mCompleted[0m | 6634556@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:30R |  350050 |
+| w4_t1 |  [35mRunning[0m  | 6634676@main |   12|  1|2.0 |   0|   7|  1 | AbinitTask |   (0, 1, 0)   | 0:00:03R |  350051 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #5: <PhononDojoWork, node_id=350052, workdir=C-gw.psp8_DOJO/GammaPhononsAt43.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w5_t0 | [32mCompleted[0m | 6634558@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:30R |  350053 |
+| w5_t1 |  [35mRunning[0m  | 6634677@main |   12|  1|2.0 |   0|   7|  1 | AbinitTask |   (0, 1, 0)   | 0:00:03R |  350054 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #6: <PhononDojoWork, node_id=350055, workdir=C-gw.psp8_DOJO/GammaPhononsAt45.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w6_t0 | [32mCompleted[0m | 6634560@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:31R |  350056 |
+| w6_t1 | [34mSubmitted[0m | 6634678@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:10:00Q |  350057 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #7: <PhononDojoWork, node_id=350058, workdir=C-gw.psp8_DOJO/GammaPhononsAt47.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w7_t0 | [32mCompleted[0m | 6634562@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:34R |  350059 |
+| w7_t1 | [34mSubmitted[0m | 6634701@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:02Q |  350060 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #8: <PhononDojoWork, node_id=350061, workdir=C-gw.psp8_DOJO/GammaPhononsAt49.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w8_t0 | [32mCompleted[0m | 6634564@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:37R |  350062 |
+| w8_t1 | [34mSubmitted[0m | 6634702@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:01Q |  350063 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #9: <PhononDojoWork, node_id=350064, workdir=C-gw.psp8_DOJO/GammaPhononsAt51.0>, Finalized=False
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w9_t0 | [32mCompleted[0m | 6634566@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:37R |  350065 |
+| w9_t1 | [34mSubmitted[0m | 6634703@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:01Q |  350066 |
++-------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #10: <PhononDojoWork, node_id=350067, workdir=C-gw.psp8_DOJO/GammaPhononsAt53.0>, Finalized=False
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w10_t0 | [32mCompleted[0m | 6634567@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:44R |  350068 |
+| w10_t1 | [34mSubmitted[0m | 6634704@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:01Q |  350069 |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #11: <PhononDojoWork, node_id=350070, workdir=C-gw.psp8_DOJO/GammaPhononsAt61.0>, Finalized=False
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w11_t0 | [32mCompleted[0m | 6634569@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:55R |  350071 |
+| w11_t1 | [34mSubmitted[0m | 6634705@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:00Q |  350072 |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #12: <PhononDojoWork, node_id=350073, workdir=C-gw.psp8_DOJO/GammaPhononsAt63.0>, Finalized=False
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w12_t0 | [32mCompleted[0m | 6634571@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:55R |  350074 |
+| w12_t1 | [34mSubmitted[0m | 6634706@main |   12|  1|2.0 |   NA|NA|NA   | AbinitTask |   (0, 1, 0)   | 0:00:00Q |  350075 |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #0: <PhononDojoWork, node_id=350037, workdir=C-gw.psp8_DOJO/GammaPhononsAt33.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #1: <PhononDojoWork, node_id=350040, workdir=C-gw.psp8_DOJO/GammaPhononsAt35.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #2: <PhononDojoWork, node_id=350043, workdir=C-gw.psp8_DOJO/GammaPhononsAt37.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #3: <PhononDojoWork, node_id=350046, workdir=C-gw.psp8_DOJO/GammaPhononsAt39.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #4: <PhononDojoWork, node_id=350049, workdir=C-gw.psp8_DOJO/GammaPhononsAt41.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #5: <PhononDojoWork, node_id=350052, workdir=C-gw.psp8_DOJO/GammaPhononsAt43.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #6: <PhononDojoWork, node_id=350055, workdir=C-gw.psp8_DOJO/GammaPhononsAt45.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #7: <PhononDojoWork, node_id=350058, workdir=C-gw.psp8_DOJO/GammaPhononsAt47.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #8: <PhononDojoWork, node_id=350061, workdir=C-gw.psp8_DOJO/GammaPhononsAt49.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #9: <PhononDojoWork, node_id=350064, workdir=C-gw.psp8_DOJO/GammaPhononsAt51.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #10: <PhononDojoWork, node_id=350067, workdir=C-gw.psp8_DOJO/GammaPhononsAt53.0>, Finalized=False
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w10_t0 | [32mCompleted[0m | 6634567@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:44R |  350068 |
+| w10_t1 |  [35mRunning[0m  | 6634704@main |   12|  1|2.0 |   0|  19|  1 | AbinitTask |   (0, 1, 0)   | 0:00:00R |  350069 |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #11: <PhononDojoWork, node_id=350070, workdir=C-gw.psp8_DOJO/GammaPhononsAt61.0>, Finalized=False
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w11_t0 | [32mCompleted[0m | 6634569@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:55R |  350071 |
+| w11_t1 |  [35mRunning[0m  | 6634705@main |   12|  1|2.0 |   0|  15|  1 | AbinitTask |   (0, 1, 0)   | 0:00:00R |  350072 |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #12: <PhononDojoWork, node_id=350073, workdir=C-gw.psp8_DOJO/GammaPhononsAt63.0>, Finalized=False
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+|  Task  |   Status  |    Queue     |  MPI|Omp|Gb  | Err|Warn|Com |   Class    | Rest|Sub|Corr |   Time   | Node_ID |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+| w12_t0 | [32mCompleted[0m | 6634571@main |   12|  1|2.0 |   0|   0|  1 |  ScfTask   |   (0, 1, 0)   | 0:00:55R |  350074 |
+| w12_t1 |  [35mRunning[0m  | 6634706@main |   12|  1|2.0 |   0|   7|  1 | AbinitTask |   (0, 1, 0)   | 0:00:00R |  350075 |
++--------+-----------+--------------+--------------+--------------+------------+---------------+----------+---------+
+
+
+Work #0: <PhononDojoWork, node_id=350037, workdir=C-gw.psp8_DOJO/GammaPhononsAt33.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #1: <PhononDojoWork, node_id=350040, workdir=C-gw.psp8_DOJO/GammaPhononsAt35.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #2: <PhononDojoWork, node_id=350043, workdir=C-gw.psp8_DOJO/GammaPhononsAt37.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #3: <PhononDojoWork, node_id=350046, workdir=C-gw.psp8_DOJO/GammaPhononsAt39.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #4: <PhononDojoWork, node_id=350049, workdir=C-gw.psp8_DOJO/GammaPhononsAt41.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #5: <PhononDojoWork, node_id=350052, workdir=C-gw.psp8_DOJO/GammaPhononsAt43.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #6: <PhononDojoWork, node_id=350055, workdir=C-gw.psp8_DOJO/GammaPhononsAt45.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #7: <PhononDojoWork, node_id=350058, workdir=C-gw.psp8_DOJO/GammaPhononsAt47.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #8: <PhononDojoWork, node_id=350061, workdir=C-gw.psp8_DOJO/GammaPhononsAt49.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #9: <PhononDojoWork, node_id=350064, workdir=C-gw.psp8_DOJO/GammaPhononsAt51.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #10: <PhononDojoWork, node_id=350067, workdir=C-gw.psp8_DOJO/GammaPhononsAt53.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #11: <PhononDojoWork, node_id=350070, workdir=C-gw.psp8_DOJO/GammaPhononsAt61.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+Work #12: <PhononDojoWork, node_id=350073, workdir=C-gw.psp8_DOJO/GammaPhononsAt63.0>, Finalized=[32mTrue[0m
+  Finalized works are not shown. Use verbose > 0 to force output.
+
+all_ok reached
+
+
+Submitted on Tue Sep  1 13:39:46 2015
+Completed on Tue Sep  1 14:19:48 2015
+Elapsed time 0:40:02.826585
+Flow completed successfully
+
+Calling flow.finalize()
