@@ -137,13 +137,14 @@ class DeltaFactorDatabase(object):
 
     _FILES = [
         "WIEN2k.txt",
+        "WIEN2k.txt",
         "VASP.txt",
         "VASP-relaxed.txt",
     ]
 
     Error = DeltaFactorDatabaseError
 
-    def __init__(self):
+    def __init__(self, xc='PBE'):
         dirpath = os.path.abspath(os.path.dirname(__file__))
         self.dirpath = os.path.join(dirpath, "data")
 
@@ -158,7 +159,9 @@ class DeltaFactorDatabase(object):
 
         self._cif_paths = d = {}
 
-        cif_dirpath = os.path.join(self.dirpath, "CIFs")
+        loc = "CIFs" if xc == "PBE" else "CIFs"+"-"+xc
+
+        cif_dirpath = os.path.join(self.dirpath, loc)
         for entry in os.listdir(cif_dirpath):
             if entry.endswith(".cif"):
                 symbol, ext = os.path.splitext(entry)
@@ -292,11 +295,11 @@ def check_cif_wien2k_consistency():
 __DELTAF_DATABASE = None
 
 
-def df_database():
+def df_database(xc='PBE'):
     """Returns the deltafactor database with the reference results."""
     global __DELTAF_DATABASE
     if __DELTAF_DATABASE is None:
-        __DELTAF_DATABASE = DeltaFactorDatabase()
+        __DELTAF_DATABASE = DeltaFactorDatabase(xc=xc)
 
     return __DELTAF_DATABASE
 
