@@ -16,6 +16,7 @@ from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pandas import DataFrame, concat
 
+
 def dojo_figures(options):
     """
     Create figures for a dojo table.
@@ -300,6 +301,11 @@ def dojo_plot(options):
         #    if report.has_trial("phwoa"):
         #        report.plot_phonon_convergence(title=pseudo.basename+"W/O ASR", woasr=True)
 
+
+def dojo_notebook(options):
+    from pseudo_dojo.pseudos import make_open_notebook
+    for p in options.pseudos:
+        make_open_notebook(p.filepath)
 
 
 def dojo_compare(options):
@@ -596,7 +602,8 @@ def main():
     dojodata trials H.psp8 -r 1
     dojodata compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
     dojodata table .                    ==> Build table (find all psp8 files within current directory)
-    dojodata figures .                   ==> Plot periodic table figures
+    dojodata figures .                  ==> Plot periodic table figures
+    dojodata notebook H.psp8            ==> Generated ipython notebook and open it in the browser
 """
         return examples
 
@@ -644,6 +651,9 @@ def main():
 
     # Subparser for plot command.
     p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser, plot_options_parser], help="Plot DOJO_REPORT data.")
+
+    # Subparser for notebook command.
+    p_notebook = subparsers.add_parser('notebook', parents=[pseudos_selector_parser], help="Generate notebook notebook.")
 
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[pseudos_selector_parser, plot_options_parser], help="Compare pseudos")

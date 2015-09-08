@@ -58,12 +58,19 @@ def dojotable_absdir(basedir):
 #    return ncfiles
 
 
-def write_notebook(pseudopath, with_eos=False):
+def write_notebook(pseudopath, with_eos=False, tmpfile=None):
     """
     Write an ipython notebook to pseudopath.
+    By default, the notebook is created in the same directory
+    as pseudopath but with the extension `ipynb` unless `tmpfile` is set to True.
+    In the later case, a temporay file is created.
 
     Args:
+        pseudo: Path to the pseudopotential file.
         with_eos: True if EOS plots are wanted.
+
+    Returns:
+        The path to the ipython notebook.
 
     See http://nbviewer.ipython.org/gist/fperez/9716279
     """
@@ -91,7 +98,7 @@ sns.set(style='ticks', palette='Set2')"""),
 # Construct the pseudo object and get the DojoReport
 from pymatgen.io.abinitio.pseudos import Pseudo
 pseudo = Pseudo.from_file('%s')
-report = pseudo.dojo_report""" % os.path.basename(pseudopath)),
+report = pseudo.dojo_report""" % os.path.abspath(pseudopath)),
 
         nbf.new_heading_cell("ONCVPSP Input File:"),
         nbf.new_code_cell("""\
@@ -132,10 +139,7 @@ plotter = onc_parser.make_plotter()"""),
         nbf.new_heading_cell("Model core charge and form factors computed by ABINIT"),
         nbf.new_code_cell("""\
 with pseudo.open_pspsfile() as psps:
-    psps.plot_modelcore_rspace()
-    psps.plot_modelcore_qspace()
-    psps.plot_vlspl()
-    psps.plot_ffspl()"""),
+    psps.plot()"""),
 
         nbf.new_heading_cell("Convergence of the total energy:"),
         nbf.new_code_cell("""\
@@ -184,6 +188,24 @@ fig = report.plot_deltafactor_convergence(what=("-dfact_meV", "-dfactprime_meV")
     # Next, we write it to a file on disk that we can then open as a new notebook.
     # Note: This should be as easy as: nbf.write(nb, fname), but the current api is 
     # a little more verbose and needs a real file-like object.
-    root, ext = os.path.splitext(pseudopath)
-    with open(root + '.ipynb', 'wt') as f:
+    if tmpfile is None:
+        root, ext = os.path.splitext(pseudopath)
+        nbpath = root + '.ipynb'
+    else:
+        import tempfile
+        _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
+
+    with open(nbpath, 'wt') as f:
         nbf.write(nb, f, 'ipynb')
+
+    return nbpath
+
+
+def make_open_notebook(pseudopath, with_eos=True):
+    """
+    Generate an ipython notebook from the pseudopotential path and  
+    open it in the browser.
+    """
+    path = write_notebook(pseudopath, tmpfile=True)
+    os.system("ipython notebook %s" % path)
+
