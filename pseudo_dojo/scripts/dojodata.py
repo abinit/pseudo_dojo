@@ -370,6 +370,8 @@ def dojo_table(options):
     #data.tabulate()
     #return
 
+    print(data.columns)
+
     if False:
         """Select best entries"""
         #best = {}
@@ -406,9 +408,9 @@ def dojo_table(options):
         pprint(errors)
 
     accuracies = ["low", "normal", "high"]
-    keys = ["dfact_meV", "v0", "b0_GPa", "b1", "ecut_deltafactor", "ecut_hint"]
+    keys = ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1", "ecut_deltafactor", "ecut_hint"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
-    #print(columns)
+    print(columns)
 
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]
     #data = data[data["high_dfact_meV"] <= 9]
@@ -443,6 +445,7 @@ def dojo_table(options):
     try:
         data = data[
                  [acc + "_dfact_meV" for acc in accuracies]
+               + [acc + "_dfactprime_meV" for acc in accuracies]
                + [acc + "_ecut_deltafactor" for acc in accuracies]
                + [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
                + [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
@@ -467,6 +470,13 @@ def dojo_table(options):
     columns += [acc + "_ecut_deltafactor" for acc in accuracies] 
     print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
     if len(data) > 5: 
+        print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+
+    accuracies = ['low', 'high']
+    columns = [acc + "_dfactprime_meV" for acc in accuracies]
+    columns += [acc + "_ecut_deltafactor" for acc in accuracies]
+    print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+    if len(data) > 5:
         print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
     try:
