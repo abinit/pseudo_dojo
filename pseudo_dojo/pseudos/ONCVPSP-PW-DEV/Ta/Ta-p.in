@@ -24,7 +24,7 @@ Ta 73 11 3 -001013 psp8
 # lloc lpopt rc5 dvloc0
 4 5 1.85 0.0
 # l nproj debl
-0 2 1.2
+0 2 1.0
 1 2 1.5
 2 2 1.8
 # icmod fcfact

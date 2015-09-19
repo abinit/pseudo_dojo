@@ -574,7 +574,6 @@ class OncvOutputParser(PseudoGenOutputParser):
         """
         if not os.path.exists(self.filepath):
             raise self.Error("File %s does not exist" % self.filepath)
-
         # Read data and store it in lines
         self.lines = []
         with open(self.filepath) as fh:
@@ -617,7 +616,11 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         if self.calc_type not in ["scalar-relativistic", "non-relativistic"]:
             print("will raise %s because found %s" % (self.Error, self.calc_type))
-            raise self.Error("Fully relativistic case is not supported")
+            #raise self.Error("Fully relativistic case is not supported")
+            print("calctype :", self.calc_type)
+            fullr = True
+        else:
+            fullr = False
 
         # Read configuration (not very robust because we assume the user didn't change the template but oh well)
         header = "# atsym  z    nc    nv    iexc   psfile"
@@ -641,8 +644,19 @@ class OncvOutputParser(PseudoGenOutputParser):
             2    1    6.00    -3.5117357D+00
             3    0    2.00    -3.9736459D-01
             3    1    2.00    -1.4998149D-01
+        
+        full rel:
+        #   n    l    f              energy (Ha)
+        #   n    l    f        l+1/2             l-1/2		     
+            1    0    2.00    -2.4703720D+03			   
+            2    0    2.00    -4.2419865D+02			   
+
         """
-        header = "#   n    l    f        energy (Ha)"
+        #header = "#   n    l    f        energy (Ha)"
+        if fullr: 
+            header = "#   n    l    f        l+1/2             l-1/2" 
+        else:
+            header = "#   n    l    f        energy (Ha)"
         nc, nv = int(self.nc), int(self.nv)
         for i, line in enumerate(self.lines):
             if line.startswith(header):

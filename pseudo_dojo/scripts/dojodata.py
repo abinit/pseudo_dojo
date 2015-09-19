@@ -72,9 +72,21 @@ def dojo_figures(options):
  
         def draw(self, colorbars=True, **kwargs):
             self.cbars = []
-            for coll, cmap, label in zip(self.collections, self.cmaps, self.cbar_labels):
+            clims = kwargs.get('clims', None)
+            n = len(self.collections)
+            if clims is None:
+                clims = [None]*n
+            elif len(clims) == 1:
+                clims = [clims[0]]*n
+            elif len(clims) == n:
+                pass
+            else:
+                raise RuntimeError('incorrect number of clims provided in draw')
+            for coll, cmap, label, clim  in zip(self.collections, self.cmaps, self.cbar_labels, clims):
+                #print(clim)
                 pc = PatchCollection(coll, cmap=cmap)
-                pc.set_clim(kwargs.get('vmin', None), kwargs.get('vmax', None))
+                pc.set_clim(vmin=clim[0],vmax=clim[1])
+                #print(pc.get_clim())
                 pc.set_array(np.array([ p.value for p in coll ]))
                 self._ax.add_collection(pc)
 
@@ -135,18 +147,22 @@ def dojo_figures(options):
     def bcc(elt):
         """GBRV BCC [% relative error]"""
         try:
-            return elt['high_gbrv_bcc_a0_rel_err']
+            v_bcc =  elt['high_gbrv_bcc_a0_rel_err'] if str(elt['high_gbrv_bcc_a0_rel_err']) != 'nan' else -99
+        #    print(v_bcc)
+            return v_bcc
         except KeyError:
             print('bcc func fail: ', elt)
-            return float('NaN')
+            return -99 #float('NaN')
 
     def fcc(elt):
         """GBRV FCC [% relative error]"""
         try:
-            return elt['high_gbrv_fcc_a0_rel_err']
+            v_fcc =  elt['high_gbrv_fcc_a0_rel_err'] if str(elt['high_gbrv_fcc_a0_rel_err']) != 'nan' else -99
+        #    print(v_fcc)
+            return v_fcc 
         except KeyError:
-            #print('fcc func fail: ', elt)
-            return float('NaN')
+            print('fcc func fail: ', elt)
+            return -99 #float('NaN')
 
     def low_phon_with(elt):
         """Acoustic mode low_cut """
@@ -216,15 +232,25 @@ def dojo_figures(options):
 
     max_rel_err = max(rel_ers)
 
+    # plot the GBRV/DF results periodic table
+    epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
+    cm1 = mpl_cm.jet
+    cm2 = mpl_cm.cool
+    cm1.set_under('w', 1.0)
+    epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2], 
+               clims=[[-max_rel_err,max_rel_err],[-max_rel_err, max_rel_err], [0,3]])
+    plt.show()
+    #plt.savefig('gbrv.eps', format='eps')
+
     # plot the periodic table with df and dfp
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
-    epd.ptable(functions=[df,dfp], font={'color':color}, cmaps=cmap, vmin=0, vmax=6)
+    epd.ptable(functions=[df,dfp], font={'color':color}, cmaps=cmap, clims=[[0, 6]])
     plt.show()
     #plt.savefig('df.eps', format='eps')
 
     # plot the GBVR results periodic table
     epd = ElementDataPlotterRangefixer(elements=elsgbrv, data=elements_data)
-    epd.ptable(functions=[bcc,fcc], font={'color':color}, cmaps=mpl_cm.jet, vmin=-max_rel_err, vmax=max_rel_err)
+    epd.ptable(functions=[bcc,fcc], font={'color':color}, cmaps=mpl_cm.jet, clims=[[-max_rel_err, max_rel_err]])
     plt.show()
     #plt.savefig('gbrv.eps', format='eps')
 
@@ -232,13 +258,13 @@ def dojo_figures(options):
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
     cm = mpl_cm.cool
     cm.set_under('w', 1.0)
-    epd.ptable(functions=[low_ecut, high_ecut, normal_ecut], font={'color':color}, vmin=6, vmax=80,  cmaps=cmap)
+    epd.ptable(functions=[low_ecut, high_ecut, normal_ecut], font={'color':color}, clims=[[6, 80]],  cmaps=cmap)
     plt.show()
     #plt.savefig('rc.eps', format='eps')
 
     # plot the radii periodic table
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
-    epd.ptable(functions=[rcmin, rcmax, ar], font={'color':color}, vmin=0, vmax=4, cmaps=cmap)
+    epd.ptable(functions=[rcmin, rcmax, ar], font={'color':color}, clims=[[0, 4]], cmaps=cmap)
     plt.show()
     #plt.savefig('rc.eps', format='eps')
 
@@ -246,7 +272,7 @@ def dojo_figures(options):
     epd = ElementDataPlotterRangefixer(elements=elsphon, data=data)
     cm = mpl_cm.winter
     cm.set_under('orange', 1.0)
-    epd.ptable(functions=[high_phon_with], font={'color':color}, cmaps=cm, vmin=-2, vmax=0)
+    epd.ptable(functions=[high_phon_with], font={'color':color}, cmaps=cm, clims=[[-2, 0]])
     plt.show()
     #plt.savefig('rc.eps', format='eps')
 
@@ -387,8 +413,9 @@ def dojo_table(options):
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]
     #data = data[data["high_dfact_meV"] <= 9]
 
-    def calc_rerrors(data):
+#    def calc_rerrors(data):
         # Relative error
+    try:
         data["low_dfact_abserr"] = data["low_dfact_meV"] - data["high_dfact_meV"]
         data["normal_dfact_abserr"] =  data["normal_dfact_meV"] - data["high_dfact_meV"]
         data["low_dfact_rerr"] = 100 * (data["low_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
@@ -400,11 +427,18 @@ def dojo_table(options):
             data["low_" + k + "_rerr"] = 100 * (data["low_" + k] - data["high_" + k]) / data["high_" + k]
             data["normal_" + k + "_rerr"] = 100 * (data["normal_" + k] - data["high_" + k]) / data["high_" + k]
 
-        return data
+        for acc in ['low', 'normal', 'high']:
+            data[acc + "_abs_fcc"] = abs(data[acc + "_gbrv_fcc_a0_rel_err"])
+            data[acc + "_abs_bcc"] = abs(data[acc + "_gbrv_bcc_a0_rel_err"])
+    except None:
+        pass
+#        return data
 
     wrong = data[data["high_b1"] < 0]
     if not wrong.empty:
         print("WRONG".center(80, "*") + "\n", wrong)
+
+#    data = calc_errors(data)
 
     try:
         data = data[
@@ -412,6 +446,8 @@ def dojo_table(options):
                + [acc + "_ecut_deltafactor" for acc in accuracies]
                + [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
                + [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
+               + [acc + "_abs_fcc" for acc in accuracies]
+               + [acc + "_abs_bcc" for acc in accuracies]
                + [acc + "_ecut_hint" for acc in accuracies]
                    ]
     except KeyError:
@@ -433,10 +469,11 @@ def dojo_table(options):
     if len(data) > 5: 
         print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
-
     try:
     	columns = [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies] 
     	columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
+        columns += [acc + "_abs_fcc" for acc in accuracies]
+        columns += [acc + "_abs_bcc" for acc in accuracies]
     	print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
         if len(data) > 5:
             print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
