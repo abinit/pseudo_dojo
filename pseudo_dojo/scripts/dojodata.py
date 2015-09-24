@@ -415,8 +415,6 @@ def dojo_table(options):
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]
     #data = data[data["high_dfact_meV"] <= 9]
 
-#    def calc_rerrors(data):
-        # Relative error
     try:
         data["low_dfact_abserr"] = data["low_dfact_meV"] - data["high_dfact_meV"]
         data["normal_dfact_abserr"] =  data["normal_dfact_meV"] - data["high_dfact_meV"]
@@ -428,13 +426,16 @@ def dojo_table(options):
             data["normal_" + k + "_abserr"] = data["normal_" + k] - data["high_" + k]
             data["low_" + k + "_rerr"] = 100 * (data["low_" + k] - data["high_" + k]) / data["high_" + k]
             data["normal_" + k + "_rerr"] = 100 * (data["normal_" + k] - data["high_" + k]) / data["high_" + k]
-
+    except:
+        pass
+ 
+    try:
         for acc in ['low', 'normal', 'high']:
             data[acc + "_abs_fcc"] = abs(data[acc + "_gbrv_fcc_a0_rel_err"])
             data[acc + "_abs_bcc"] = abs(data[acc + "_gbrv_bcc_a0_rel_err"])
-    except None:
+    except KeyError:
+        print('no GBRV data')
         pass
-#        return data
 
     wrong = data[data["high_b1"] < 0]
     if not wrong.empty:
