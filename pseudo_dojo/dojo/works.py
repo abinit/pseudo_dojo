@@ -367,6 +367,7 @@ class DeltaFactory(object):
 
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
+        print(structure)
 
         # Magnetic elements:
         # Start from previous SCF run to avoid getting trapped in local minima 
