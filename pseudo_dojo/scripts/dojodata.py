@@ -231,16 +231,23 @@ def dojo_figures(options):
             pass
       
 
-    max_rel_err = max(rel_ers)
+    max_rel_err = 0.05 * int((max(rel_ers) / 0.05) + 1)
 
     # plot the GBRV/DF results periodic table
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
     cm1 = mpl_cm.jet
-    cm2 = mpl_cm.cool
+    cm2 = mpl_cm.jet
     cm1.set_under('w', 1.0)
     epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2], 
-               clims=[[-max_rel_err,max_rel_err],[-max_rel_err, max_rel_err], [0,3]])
+               clims=[[-max_rel_err,max_rel_err],[-max_rel_err, max_rel_err], [-4,4]])
     plt.show()
+    for cm2 in [mpl_cm.PiYG_r, mpl_cm.PRGn_r,mpl_cm.RdYlGn_r]:
+         epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
+         epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2],
+               clims=[[-max_rel_err,max_rel_err],[-max_rel_err, max_rel_err], [0,3]])
+         plt.show()
+
+
     #plt.savefig('gbrv.eps', format='eps')
 
     # plot the periodic table with df and dfp
@@ -449,6 +456,8 @@ def dojo_table(options):
 
 #    data = calc_errors(data)
 
+    data.to_json('table.json')
+
     try:
         data = data[
                  [acc + "_dfact_meV" for acc in accuracies]
@@ -467,6 +476,9 @@ def dojo_table(options):
                + [acc + "_ecut_hint" for acc in accuracies]
                    ]
         
+     
+
+
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))
     tablefmt = "grid"
