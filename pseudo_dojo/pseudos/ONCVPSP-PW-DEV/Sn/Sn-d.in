@@ -21,7 +21,7 @@ Sn 50 8 3 -001013 psp8
 # lloc lpopt rc5 dvloc0
 4 5 1.85 0.0
 # l nproj debl
-0 2 1.9
+0 2 3.0
 1 2 2.5
 2 2 2.0
 # icmod fcfact
