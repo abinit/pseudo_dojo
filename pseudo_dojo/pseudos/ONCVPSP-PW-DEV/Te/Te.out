@@ -10225,7 +10225,7 @@ END_GNU
 
 Begin PSPCODE8
 Te    ONCVPSP  r_core=  2.40  2.21  2.61
-     52.0000      6.0000      151103    zatom,zion,pspd
+     52.0000      6.0000      151211    zatom,zion,pspd
      8   -1013   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
   5.99000000  9.00000000  0.00000000    rchrg fchrg qchrg
      2     2     2     0     0    nproj
