@@ -22,42 +22,63 @@ def dojo_figures(options):
     currently for all pseudo's in the search space the one with the best df per element is chosen 
     this should probably come from a dojotable eventually
     """
-    pseudos = options.pseudos
 
-    data_dojo, errors = pseudos.get_dojo_dataframe()
+    if True:
+	"""
+        read the data from a data file in in staed of psp files
+        """
+        rows = []
+        with open('data') as data_file:
+	    for line in data_file:
+                line.rstrip('\n')
+                print(line)
+		data = line.split(',')
+                print(data)
+                data_dict = {'name': data[0],
+                             'high_dfact_meV': float(data[1]),
+                             'rell_high_dfact_meV': float(data[2]),
+                             'high_dfactprime_meV': float(data[3])}
+                if data[5] != 'nan':
+                             data_dict['high_gbrv_bcc_a0_rel_err'] = float(data[5])
+                             data_dict['high_gbrv_fcc_a0_rel_err'] = float(data[7])
+                rows.append(data_dict)
+    else:
+	pseudos = options.pseudos
 
-    # add data that is not part of the dojo report
-    data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
-    for index, p in data_dojo.iterrows():
-        out = p.name.replace('psp8', 'out')
-        outfile = p.symbol+'/'+out
-        parser = OncvOutputParser(outfile)
-        parser.scan()
-        data_pseudo.loc[index] = [int(parser.nv), parser.valence, parser.rc_min, parser.rc_max]
+    	data_dojo, errors = pseudos.get_dojo_dataframe()
+
+    	# add data that is not part of the dojo report
+    	data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
+    	for index, p in data_dojo.iterrows():
+            out = p.name.replace('psp8', 'out')
+	    outfile = p.symbol+'/'+out
+       	    parser = OncvOutputParser(outfile)
+            parser.scan()
+            data_pseudo.loc[index] = [int(parser.nv), parser.valence, parser.rc_min, parser.rc_max]
   
-    data = concat([data_dojo, data_pseudo], axis=1)     
+        data = concat([data_dojo, data_pseudo], axis=1)     
 
-    """Select entries per element"""
-    grouped = data.groupby("symbol")
+        """Select entries per element"""
+        grouped = data.groupby("symbol")
 
-    rows, names = [], []
-    for name, group in grouped:
+        rows, names = [], []
+        for name, group in grouped:
     
-        if False: # options.semicore
-            select = group.sort("nv").iloc[-1]
-        elif False: # options.valence
-            select = group.sort("nv").iloc[0]
-        else:
-            select = group.sort("high_dfact_meV").iloc[0]        
+            if False: # options.semicore
+                select = group.sort("nv").iloc[-1]
+            elif False: # options.valence
+                select = group.sort("nv").iloc[0]
+            else:
+                select = group.sort("high_dfact_meV").iloc[0]        
 
-        names.append(name)
+            names.append(name)
 
-        l = {k: getattr(select, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
+            l = {k: getattr(select, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
                                              'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err', 
                                              'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
                                              'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
                                              'nv', 'valence', 'rcmin', 'rcmax')} 
-        rows.append(l)
+            rows.append(l)
 
     import matplotlib.pyplot as plt
     from ptplotter.plotter import ElementDataPlotter
@@ -209,17 +230,22 @@ def dojo_figures(options):
     elsphon = []
     rel_ers = []
     elements_data = {}    
-
     for el in rows:
         symbol = el['name'].split('.')[0].split('-')[0]
-        rel_ers.append(max(abs(el['high_gbrv_bcc_a0_rel_err']),abs(el['high_gbrv_fcc_a0_rel_err'])))
+        try:
+            rel_ers.append(max(abs(el['high_gbrv_bcc_a0_rel_err']),abs(el['high_gbrv_fcc_a0_rel_err'])))
+        except (TypeError, KeyError):
+            pass
         if el['high_dfact_meV'] > 0:
             elements_data[symbol] = el
             els.append(symbol)
         else:
             print('failed reading df  :', symbol, el['high_dfact_meV'])
-        if el['high_gbrv_bcc_a0_rel_err'] > -100 and el['high_gbrv_fcc_a0_rel_err'] > -100:
-            elsgbrv.append(symbol)
+        try:
+            if el['high_gbrv_bcc_a0_rel_err'] > -100 and el['high_gbrv_fcc_a0_rel_err'] > -100:
+                elsgbrv.append(symbol)
+        except KeyError:
+            pass
         else:
             print('failed reading gbrv: ', symbol, el['high_gbrv_bcc_a0_rel_err'], el['high_gbrv_fcc_a0_rel_err'])
             # print(el)
@@ -238,7 +264,7 @@ def dojo_figures(options):
     cm2 = mpl_cm.jet
     cm1.set_under('w', 1.0)
     epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2], 
-               clims=[[-max_rel_err,max_rel_err],[-max_rel_err, max_rel_err], [-4,4]])
+               clims=[[-0.6,0.6],[-0.6, 0.6], [-4,4]])
     plt.show()
     for cm2 in [mpl_cm.PiYG_r, mpl_cm.PRGn_r,mpl_cm.RdYlGn_r]:
          epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
