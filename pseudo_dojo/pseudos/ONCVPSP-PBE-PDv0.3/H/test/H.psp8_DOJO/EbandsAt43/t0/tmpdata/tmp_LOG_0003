@@ -1,0 +1,28 @@
+ 
+--- !COMMENT
+message: |
+    The Bravais lattice determined only from the primitive
+    vectors, bravais(1)=  6, is more symmetric
+    than the real one, iholohedry=  3, obtained by taking into
+    account the atomic positions. Start deforming the primitive vector set.
+src_file: symbrav.F90
+src_line: 201
+...
+ 
+  dtset%nelect=   4.00000000000000     
+ 
+================================================================================
+== DATASET  1 ==================================================================
+-   nproc =   20
+ 
+ wfconv:    40 bands initialized randomly with npw=  6331, for ikpt=    31
+ wfconv:    40 bands initialized randomly with npw=  6329, for ikpt=    32
+ wfconv:    40 bands initialized randomly with npw=  6327, for ikpt=    33
+ wfconv:    40 bands initialized randomly with npw=  6320, for ikpt=    34
+ wfconv:    40 bands initialized randomly with npw=  6324, for ikpt=    35
+ wfconv:    40 bands initialized randomly with npw=  6336, for ikpt=    36
+ wfconv:    40 bands initialized randomly with npw=  6334, for ikpt=    37
+ wfconv:    40 bands initialized randomly with npw=  6318, for ikpt=    38
+ wfconv:    40 bands initialized randomly with npw=  6316, for ikpt=    39
+ wfconv:    40 bands initialized randomly with npw=  6328, for ikpt=    40
+ Proc.   3 individual time (sec): cpu=         79.5  wall=         80.1
