@@ -327,6 +327,11 @@ def dojo_plot(options):
         #report.has_exceptions
         #report.print_table()
 
+        # ebands
+        if any(k in options.what_plot for k in ("all", "ebands")):
+            if report.has_trial("ebands"):
+                report.plot_ebands(title=pseudo.basename)
+
         # Deltafactor
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
             if options.eos: 
@@ -358,7 +363,6 @@ def dojo_plot(options):
         #if any(k in options.what_plot for k in ("all", "phwoa")):
         #    if report.has_trial("phwoa"):
         #        report.plot_phonon_convergence(title=pseudo.basename+"W/O ASR", woasr=True)
-
 
 
 def dojo_compare(options):
@@ -619,12 +623,15 @@ def dojo_make_hints(options):
             print(pseudo.basename, "raised: ", str(exc))
 
 def dojo_validate(options):
+    from pymatgen.util.io_utils import ask_yesno, prompt
+    from time import gmtime, strftime
     for p in options.pseudos:
-        
+
         data, errors = options.pseudos.get_dojo_dataframe()
 
         try:
         
+            #test if report is present
             try:
                 report = p.dojo_report
             except Exception as exc:
@@ -633,12 +640,32 @@ def dojo_validate(options):
                 continue
 
             #test if already validated
+            if 'validation' in report.keys():
+                print('this pseudo was validated by %s on %s.' % (report['validation']['validated_by'], report['validation']['validated_on']))
+		if not ask_yesno('Would you like to validate again? [Y]'):
+                    continue
 
             #test if hints are present
+            
 
-            print("Testing if all trials are existing for the hints.")
-            print("=================================================")
+            #test for ghosts
+            print('\n= GHOSTS TEST ===========================================\n')
+            if report.has_trial('ebands'):
+                for ecut in report['ebands'].keys():
+                    if "ghost_free_upto_eV" in report["ebands"][ecut].keys():
+                        print('%s: Pseudo is reported to be ghost free up to %s eV' % (ecut, report["ebands"][ecut]["ghost_free_upto_eV"]))
+                    else:
+                        report.plot_ebands(ecut=ecut)
+                        ans = float(prompt('Please enter the energy (eV) up until there is no sign of ghosts:\n'))
+                        if ans > 0:
+                            report["ebands"][ecut]["ghost_free_upto_eV"] = ans
+                            p.write_dojo_report(report)
+            else:
+                print('no ebands trial present, pseudo cannot be validated')
+                continue
 
+            #test trials
+            print('\n= TRIALS TEST ===========================================\n')
             try:
                 error = report.check()
                 if error:
@@ -652,27 +679,36 @@ def dojo_validate(options):
             accuracies = ["low", "normal", "high"]
             keys = ['hint', 'deltafactor', 'gbrv_bcc', 'gbrv_fcc', 'phonon']
 
+            
             tablefmt = "grid"
             floatfmt=".2f"
 
+
+            print('\n= ECUTS  TEST ===========================================\n')
 	    for acc in accuracies:
-                columns = ["symbol"] + [acc + "_ecut_" + k for k in keys]
-                headers = ["symbol"] + [k for k in keys]
+                columns = ["symbol"]
+                headers = ["symbol"]
+                for k in keys:
+                    entry = acc + "_ecut_" + k 
+                    if entry in data.keys():
+                        columns.append(entry)
+                        headers.append(k)
                 print('ECUTS for accuracy %s:' % acc)
                 print(tabulate(data[columns], headers=headers, tablefmt=tablefmt, floatfmt=floatfmt))
 
             #test hash
 
             #plot the model core charge
-
-            #plot the log derivatives
-            #  ask of the energy up to which the log ders are fine            
-
-            #aks the final question, and a name for refference
            
-        except Exception as exc:
+        except None: #Exception as exc:
             print(p.basename, "raised: ", str(exc))
-
+        
+        #ask the final question
+        if ask_yesno('Will you validate this pseudo? [n]'):
+            name = prompt("please enter your name for later reference : ")
+            report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime()) }
+            p.write_dojo_report(report)
+	
 
 def main():
     def str_examples():

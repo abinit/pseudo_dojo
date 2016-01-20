@@ -2072,6 +2072,13 @@ Li  3.00    0    2       4      psp8
             ]
         }
     }, 
+    "ebands": {
+        "42.0": {
+            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Li/Li-s-high.psp8_DOJO/EbandsAt42/t0/outdata/out_GSR.nc", 
+            "ghost_free_upto_eV": 60.0, 
+            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Li/Li-s-high.psp8_DOJO/EbandsAt42"
+        }
+    }, 
     "ecuts": [
         34.0, 
         36.0, 
@@ -3076,6 +3083,10 @@ Li  3.00    0    2       4      psp8
     }, 
     "pseudo_type": "norm-conserving", 
     "symbol": "Li", 
+    "validation": {
+        "validated_by": "Michiel van Setten", 
+        "validated_on": "2016-01-20 15:58:42"
+    }, 
     "version": "1.0"
 }
 </DOJO_REPORT>

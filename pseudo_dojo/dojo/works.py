@@ -428,7 +428,7 @@ class EbandsFactorWork(DojoWork):
  
         #TODO fix magic
 	path = str(self.workdir)
-        outfile = os.path.join(str(self.outdir),"t0","out_GSR.nc")
+        outfile = os.path.join(str(self[0].outdir),"out_GSR.nc")
         results = {'workdir': path, 'GSR-nc': outfile}
         
         print(results)

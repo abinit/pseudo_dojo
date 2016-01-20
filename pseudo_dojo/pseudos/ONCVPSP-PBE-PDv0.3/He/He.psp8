@@ -2216,6 +2216,13 @@ He  2.00    0    1       4      psp8
             ]
         }
     }, 
+    "ebands": {
+        "47.0": {
+            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/He/He.psp8_DOJO/EbandsAt47/t0/outdata/out_GSR.nc", 
+            "ghost_free_upto_eV": 50.0, 
+            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/He/He.psp8_DOJO/EbandsAt47"
+        }
+    }, 
     "ecuts": [
         29.0, 
         31.0, 
@@ -2365,6 +2372,10 @@ He  2.00    0    1       4      psp8
     }, 
     "pseudo_type": "norm-conserving", 
     "symbol": "He", 
+    "validation": {
+        "validated_by": "Michiel van Setten", 
+        "validated_on": "2016-01-20 14:54:41"
+    }, 
     "version": "1.0"
 }
 </DOJO_REPORT>
