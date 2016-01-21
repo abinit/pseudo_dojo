@@ -3,7 +3,7 @@ Fe    ONCVPSP  r_core=  1.16  1.11  1.31
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  3.00000000  0.00000000    rchrg fchrg qchrg
 2     2     2     0     0    nproj
-1                 extension_switch
+0                 extension_switch
 0                         1.1774825965725D+01  1.3479090746102D+00
 1  0.0000000000000D+00 -9.0367313632100D-10  3.6438776440662D-09
 2  1.0000000000000D-02  1.0127941118678D-01 -3.5078259030015D-02

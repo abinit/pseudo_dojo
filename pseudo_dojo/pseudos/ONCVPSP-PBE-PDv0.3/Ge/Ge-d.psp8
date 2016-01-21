@@ -3,7 +3,7 @@ Ge    ONCVPSP  r_core=  1.91  1.82  1.91
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  5.00000000  0.00000000    rchrg fchrg qchrg
 2     2     2     0     0    nproj
-1                 extension_switch
+0                 extension_switch
 0                         6.2185083796351D+00  5.6253003441232D-01
 1  0.0000000000000D+00  1.0293987884324D-12 -2.0938514810886D-11
 2  1.0000000000000D-02  3.1106189772582D-02 -1.0237044953803D-02

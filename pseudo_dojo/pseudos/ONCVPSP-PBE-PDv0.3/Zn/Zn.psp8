@@ -3,7 +3,7 @@ Zn    ONCVPSP  r_core=  2.22  2.22  1.92
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  5.00000000  0.00000000    rchrg fchrg qchrg
 2     2     2     0     0    nproj
-1                 extension_switch
+0                 extension_switch
 0                         4.7855265704940D+00  9.6181644735132D-01
 1  0.0000000000000D+00  1.2341794253246D-12 -1.4620337059068D-11
 2  1.0000000000000D-02  2.7386638743503D-02 -1.0041460503800D-04

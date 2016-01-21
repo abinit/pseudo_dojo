@@ -3,7 +3,7 @@ Cu    ONCVPSP  r_core=  1.20  1.31  1.60
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  5.00000000  0.00000000    rchrg fchrg qchrg
 2     2     2     0     0    nproj
-1                 extension_switch
+0                 extension_switch
 0                         5.7640564240673D+00 -5.1008644201047D-01
 1  0.0000000000000D+00 -1.0644595871412D-08 -2.8340058855214D-08
 2  1.0000000000000D-02  1.1333109540918D-01  3.3551980284928D-02

@@ -341,7 +341,7 @@ class EbandsFactory(object):
         except Exception as exc:
             raise self.Error(str(exc))
 
-        structure = Structure.from_file(cif_path, primitive=True)
+        structure = Structure.from_file(cif_path, primitive=False)
         spin_mode = "unpolarized"
 
         return EbandsFactorWork(
@@ -395,6 +395,7 @@ class EbandsFactorWork(DojoWork):
             toldfe=toldfe,
             prtwf=0,
             nstep=200,
+            chkprim=0,
             mem_test=0
         )
 

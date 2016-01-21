@@ -3,7 +3,7 @@ Sb    ONCVPSP  r_core=  2.00  2.12  1.82
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  5.00000000  0.00000000    rchrg fchrg qchrg
 2     2     2     0     0    nproj
-1                 extension_switch
+0                 extension_switch
 0                         6.8364008168450D+00  7.3362731956064D-01
 1  0.0000000000000D+00 -9.0204510527769D-12  1.3133716336711D-11
 2  1.0000000000000D-02  2.5095448001174D-02 -2.5922716572031D-02

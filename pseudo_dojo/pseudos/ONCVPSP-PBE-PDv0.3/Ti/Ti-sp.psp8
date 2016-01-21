@@ -3,7 +3,7 @@ Ti    ONCVPSP  r_core=  1.36  1.31  1.66
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  3.00000000  0.00000000    rchrg fchrg qchrg
 2     2     2     0     0    nproj
-1                 extension_switch
+0                 extension_switch
 0                         1.0556722744493D+01  1.0945985971425D+00
 1  0.0000000000000D+00 -2.6041540035493D-09  9.6804322335942D-09
 2  1.0000000000000D-02  8.7334452318813D-02 -5.0631765431786D-02

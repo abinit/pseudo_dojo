@@ -3,7 +3,7 @@ Ru    ONCVPSP  r_core=  1.36  1.41  1.31
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  7.00000000  0.00000000    rchrg fchrg qchrg
 2     2     2     0     0    nproj
-1                 extension_switch
+0                 extension_switch
 0                         1.4213472900674D+01  1.0735151889570D+00
 1  0.0000000000000D+00 -1.1856445825131D-09  6.1823646757553D-09
 2  1.0000000000000D-02  7.1054691312667D-02 -4.1056624851237D-02

@@ -3,7 +3,7 @@ Ca    ONCVPSP  r_core=  1.46  1.46  1.85
 8      11   2     4   400     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 3.99000000  1.00000000  0.00000000    rchrg fchrg qchrg
 2     2     2     0     0    nproj
-1                 extension_switch
+0                 extension_switch
 0                         9.7368532757540D+00  8.8996727760543D-01
 1  0.0000000000000D+00 -5.8003513103699D-10  2.4770424600362D-09
 2  1.0000000000000D-02  6.9858472215778D-02 -3.9806392423350D-02
