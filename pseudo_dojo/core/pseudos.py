@@ -10,7 +10,7 @@ from monty.collections import AttrDict
 from monty.string import list_strings
 from pymatgen.core.periodic_table import PeriodicTable
 from pymatgen.util.plotting_utils import add_fig_kwargs #, get_ax_fig_plt
-from pymatgen.io.abinitio.pseudos import PseudoTable 
+from pymatgen.io.abinit.pseudos import PseudoTable 
 
 
 class DojoInfo(AttrDict):

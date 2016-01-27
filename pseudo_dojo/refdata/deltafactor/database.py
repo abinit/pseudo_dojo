@@ -137,7 +137,7 @@ class DeltaFactorDatabase(object):
 
     _FILES = [
         "WIEN2k.txt",
-        "WIEN2k.txt",
+        "WIEN2k-LDA.txt",
         "VASP.txt",
         "VASP-relaxed.txt",
     ]
@@ -145,6 +145,7 @@ class DeltaFactorDatabase(object):
     Error = DeltaFactorDatabaseError
 
     def __init__(self, xc='PBE'):
+        self.xc = xc
         dirpath = os.path.abspath(os.path.dirname(__file__))
         self.dirpath = os.path.join(dirpath, "data")
 
@@ -190,8 +191,12 @@ class DeltaFactorDatabase(object):
                 Default is self._REF_CODE (Wien2K)
         """
         if code is None:
-            code = self._REF_CODE 
+            code = self._REF_CODE
+        if self.xc != 'PBE':
+            code = code + "-" + self.xc
+ 
         try:
+            print(code,self._data[code][symbol])
             return self._data[code][symbol]
         except KeyError:
             raise self.Error("No entry found for code %s, symbol %s" % (code, symbol))
@@ -297,6 +302,7 @@ __DELTAF_DATABASE = None
 
 def df_database(xc='PBE'):
     """Returns the deltafactor database with the reference results."""
+    
     global __DELTAF_DATABASE
     if __DELTAF_DATABASE is None:
         __DELTAF_DATABASE = DeltaFactorDatabase(xc=xc)

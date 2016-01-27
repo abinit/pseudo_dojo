@@ -11,7 +11,7 @@ from collections import OrderedDict, namedtuple
 from pprint import pprint
 from tabulate import tabulate
 from monty.os.path import find_exts
-from pymatgen.io.abinitio.pseudos import Pseudo
+from pymatgen.io.abinit.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pandas import DataFrame, concat
@@ -23,42 +23,63 @@ def dojo_figures(options):
     currently for all pseudo's in the search space the one with the best df per element is chosen 
     this should probably come from a dojotable eventually
     """
-    pseudos = options.pseudos
 
-    data_dojo, errors = pseudos.get_dojo_dataframe()
+    if True:
+	"""
+        read the data from a data file in in staed of psp files
+        """
+        rows = []
+        with open('data') as data_file:
+	    for line in data_file:
+                line.rstrip('\n')
+                print(line)
+		data = line.split(',')
+                print(data)
+                data_dict = {'name': data[0],
+                             'high_dfact_meV': float(data[1]),
+                             'rell_high_dfact_meV': float(data[2]),
+                             'high_dfactprime_meV': float(data[3])}
+                if data[5] != 'nan':
+                             data_dict['high_gbrv_bcc_a0_rel_err'] = float(data[5])
+                             data_dict['high_gbrv_fcc_a0_rel_err'] = float(data[7])
+                rows.append(data_dict)
+    else:
+	pseudos = options.pseudos
 
-    # add data that is not part of the dojo report
-    data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
-    for index, p in data_dojo.iterrows():
-        out = p.name.replace('psp8', 'out')
-        outfile = p.symbol+'/'+out
-        parser = OncvOutputParser(outfile)
-        parser.scan()
-        data_pseudo.loc[index] = [int(parser.nv), parser.valence, parser.rc_min, parser.rc_max]
+    	data_dojo, errors = pseudos.get_dojo_dataframe()
+
+    	# add data that is not part of the dojo report
+    	data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
+    	for index, p in data_dojo.iterrows():
+            out = p.name.replace('psp8', 'out')
+	    outfile = p.symbol+'/'+out
+       	    parser = OncvOutputParser(outfile)
+            parser.scan()
+            data_pseudo.loc[index] = [int(parser.nv), parser.valence, parser.rc_min, parser.rc_max]
   
-    data = concat([data_dojo, data_pseudo], axis=1)     
+        data = concat([data_dojo, data_pseudo], axis=1)     
 
-    """Select entries per element"""
-    grouped = data.groupby("symbol")
+        """Select entries per element"""
+        grouped = data.groupby("symbol")
 
-    rows, names = [], []
-    for name, group in grouped:
+        rows, names = [], []
+        for name, group in grouped:
     
-        if False: # options.semicore
-            select = group.sort("nv").iloc[-1]
-        elif False: # options.valence
-            select = group.sort("nv").iloc[0]
-        else:
-            select = group.sort("high_dfact_meV").iloc[0]        
+            if False: # options.semicore
+                select = group.sort("nv").iloc[-1]
+            elif False: # options.valence
+                select = group.sort("nv").iloc[0]
+            else:
+                select = group.sort("high_dfact_meV").iloc[0]        
 
-        names.append(name)
+            names.append(name)
 
-        l = {k: getattr(select, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
+            l = {k: getattr(select, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
                                              'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err', 
                                              'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
                                              'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
                                              'nv', 'valence', 'rcmin', 'rcmax')} 
-        rows.append(l)
+            rows.append(l)
 
     import matplotlib.pyplot as plt
     from ptplotter.plotter import ElementDataPlotter
@@ -210,17 +231,22 @@ def dojo_figures(options):
     elsphon = []
     rel_ers = []
     elements_data = {}    
-
     for el in rows:
         symbol = el['name'].split('.')[0].split('-')[0]
-        rel_ers.append(max(abs(el['high_gbrv_bcc_a0_rel_err']),abs(el['high_gbrv_fcc_a0_rel_err'])))
+        try:
+            rel_ers.append(max(abs(el['high_gbrv_bcc_a0_rel_err']),abs(el['high_gbrv_fcc_a0_rel_err'])))
+        except (TypeError, KeyError):
+            pass
         if el['high_dfact_meV'] > 0:
             elements_data[symbol] = el
             els.append(symbol)
         else:
             print('failed reading df  :', symbol, el['high_dfact_meV'])
-        if el['high_gbrv_bcc_a0_rel_err'] > -100 and el['high_gbrv_fcc_a0_rel_err'] > -100:
-            elsgbrv.append(symbol)
+        try:
+            if el['high_gbrv_bcc_a0_rel_err'] > -100 and el['high_gbrv_fcc_a0_rel_err'] > -100:
+                elsgbrv.append(symbol)
+        except KeyError:
+            pass
         else:
             print('failed reading gbrv: ', symbol, el['high_gbrv_bcc_a0_rel_err'], el['high_gbrv_fcc_a0_rel_err'])
             # print(el)
@@ -231,16 +257,23 @@ def dojo_figures(options):
             pass
       
 
-    max_rel_err = max(rel_ers)
+    max_rel_err = 0.05 * int((max(rel_ers) / 0.05) + 1)
 
     # plot the GBRV/DF results periodic table
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
     cm1 = mpl_cm.jet
-    cm2 = mpl_cm.cool
+    cm2 = mpl_cm.jet
     cm1.set_under('w', 1.0)
     epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2], 
-               clims=[[-max_rel_err,max_rel_err],[-max_rel_err, max_rel_err], [0,3]])
+               clims=[[-0.6,0.6],[-0.6, 0.6], [-4,4]])
     plt.show()
+    for cm2 in [mpl_cm.PiYG_r, mpl_cm.PRGn_r,mpl_cm.RdYlGn_r]:
+         epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
+         epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2],
+               clims=[[-max_rel_err,max_rel_err],[-max_rel_err, max_rel_err], [0,3]])
+         plt.show()
+
+
     #plt.savefig('gbrv.eps', format='eps')
 
     # plot the periodic table with df and dfp
@@ -294,6 +327,11 @@ def dojo_plot(options):
         #report.has_hints
         #report.has_exceptions
         #report.print_table()
+
+        # ebands
+        if any(k in options.what_plot for k in ("all", "ebands")):
+            if report.has_trial("ebands"):
+                report.plot_ebands(title=pseudo.basename)
 
         # Deltafactor
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
@@ -449,6 +487,8 @@ def dojo_table(options):
 
 #    data = calc_errors(data)
 
+    data.to_json('table.json')
+
     try:
         data = data[
                  [acc + "_dfact_meV" for acc in accuracies]
@@ -467,6 +507,9 @@ def dojo_table(options):
                + [acc + "_ecut_hint" for acc in accuracies]
                    ]
         
+     
+
+
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))
     tablefmt = "grid"
@@ -587,12 +630,15 @@ def dojo_make_hints(options):
             print(pseudo.basename, "raised: ", str(exc))
 
 def dojo_validate(options):
+    from pymatgen.util.io_utils import ask_yesno, prompt
+    from time import gmtime, strftime
     for p in options.pseudos:
-        
+
         data, errors = options.pseudos.get_dojo_dataframe()
 
         try:
         
+            #test if report is present
             try:
                 report = p.dojo_report
             except Exception as exc:
@@ -601,12 +647,32 @@ def dojo_validate(options):
                 continue
 
             #test if already validated
+            if 'validation' in report.keys():
+                print('this pseudo was validated by %s on %s.' % (report['validation']['validated_by'], report['validation']['validated_on']))
+		if not ask_yesno('Would you like to validate again? [Y]'):
+                    continue
 
             #test if hints are present
+            
 
-            print("Testing if all trials are existing for the hints.")
-            print("=================================================")
+            #test for ghosts
+            print('\n= GHOSTS TEST ===========================================\n')
+            if report.has_trial('ebands'):
+                for ecut in report['ebands'].keys():
+                    if "ghost_free_upto_eV" in report["ebands"][ecut].keys():
+                        print('%s: Pseudo is reported to be ghost free up to %s eV' % (ecut, report["ebands"][ecut]["ghost_free_upto_eV"]))
+                    else:
+                        report.plot_ebands(ecut=ecut)
+                        ans = float(prompt('Please enter the energy (eV) up until there is no sign of ghosts:\n'))
+                        if ans > 0:
+                            report["ebands"][ecut]["ghost_free_upto_eV"] = ans
+                            p.write_dojo_report(report)
+            else:
+                print('no ebands trial present, pseudo cannot be validated')
+                continue
 
+            #test trials
+            print('\n= TRIALS TEST ===========================================\n')
             try:
                 error = report.check()
                 if error:
@@ -620,27 +686,36 @@ def dojo_validate(options):
             accuracies = ["low", "normal", "high"]
             keys = ['hint', 'deltafactor', 'gbrv_bcc', 'gbrv_fcc', 'phonon']
 
+            
             tablefmt = "grid"
             floatfmt=".2f"
 
+
+            print('\n= ECUTS  TEST ===========================================\n')
 	    for acc in accuracies:
-                columns = ["symbol"] + [acc + "_ecut_" + k for k in keys]
-                headers = ["symbol"] + [k for k in keys]
+                columns = ["symbol"]
+                headers = ["symbol"]
+                for k in keys:
+                    entry = acc + "_ecut_" + k 
+                    if entry in data.keys():
+                        columns.append(entry)
+                        headers.append(k)
                 print('ECUTS for accuracy %s:' % acc)
                 print(tabulate(data[columns], headers=headers, tablefmt=tablefmt, floatfmt=floatfmt))
 
             #test hash
 
             #plot the model core charge
-
-            #plot the log derivatives
-            #  ask of the energy up to which the log ders are fine            
-
-            #aks the final question, and a name for refference
            
-        except Exception as exc:
+        except None: #Exception as exc:
             print(p.basename, "raised: ", str(exc))
-
+        
+        #ask the final question
+        if ask_yesno('Will you validate this pseudo? [n]'):
+            name = prompt("please enter your name for later reference : ")
+            report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime()) }
+            p.write_dojo_report(report)
+	
 
 def main():
     def str_examples():
@@ -800,6 +875,7 @@ if __name__ == "__main__":
         do_prof = sys.argv[1] == "prof"
         if do_prof or do_tracemalloc: sys.argv.pop(1)
     except: 
+        do_prof = False
         pass
 
     if do_prof:

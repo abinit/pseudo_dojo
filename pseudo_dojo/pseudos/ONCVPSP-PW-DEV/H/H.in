@@ -5,8 +5,8 @@ H 1 0 1 -001013 psp8
 # lmax
 1
 # l rc ep ncon nbas qcut
-0 1.0 0.0 4 7 9.0
-1 0.7 0.05 4 7 11.3
+0 1.0 0.0 4 7 8.5
+1 0.7 0.05 4 7 11.0
 # lloc lpopt rc5 dvloc0
 1 5 0.7 0.0
 # l nproj debl
