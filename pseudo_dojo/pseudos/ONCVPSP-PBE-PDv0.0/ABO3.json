@@ -1,7 +1,7 @@
 {
     "KHgF3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KHgF3", 
             "pseudos_metadata": {
                 "K": {
@@ -55,7 +55,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KHgF3", 
             "pseudos_metadata": {
                 "K": {
@@ -109,7 +109,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KHgF3", 
             "pseudos_metadata": {
                 "K": {
@@ -163,7 +163,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KHgF3", 
             "pseudos_metadata": {
                 "K": {
@@ -217,7 +217,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KHgF3", 
             "pseudos_metadata": {
                 "K": {
@@ -271,7 +271,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KHgF3", 
             "pseudos_metadata": {
                 "K": {
@@ -293,10 +293,10 @@
                     "md5": "c2a5bc9725ff7ac2caaa7120aebcc809"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KHgF3", 
             "pseudos_metadata": {
                 "K": {
@@ -350,7 +350,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KHgF3", 
             "pseudos_metadata": {
                 "K": {
@@ -406,7 +406,7 @@
     ], 
     "SbNCa3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SbNCa3", 
             "pseudos_metadata": {
                 "Sb": {
@@ -460,7 +460,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SbNCa3", 
             "pseudos_metadata": {
                 "Sb": {
@@ -514,7 +514,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SbNCa3", 
             "pseudos_metadata": {
                 "Sb": {
@@ -568,7 +568,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SbNCa3", 
             "pseudos_metadata": {
                 "Sb": {
@@ -622,7 +622,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SbNCa3", 
             "pseudos_metadata": {
                 "Sb": {
@@ -676,7 +676,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SbNCa3", 
             "pseudos_metadata": {
                 "Sb": {
@@ -730,7 +730,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SbNCa3", 
             "pseudos_metadata": {
                 "Sb": {
@@ -784,7 +784,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SbNCa3", 
             "pseudos_metadata": {
                 "Sb": {
@@ -1006,7 +1006,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BaTiO3", 
             "pseudos_metadata": {
                 "Ba": {
@@ -1028,10 +1028,10 @@
                     "md5": "37781653131c4c6ae9f53421b74f6ae5"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BaTiO3", 
             "pseudos_metadata": {
                 "Ba": {
@@ -1053,10 +1053,10 @@
                     "md5": "37781653131c4c6ae9f53421b74f6ae5"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BaTiO3", 
             "pseudos_metadata": {
                 "Ba": {
@@ -1078,7 +1078,7 @@
                     "md5": "37781653131c4c6ae9f53421b74f6ae5"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "KNiF3": [
@@ -1166,7 +1166,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KNiF3", 
             "pseudos_metadata": {
                 "Ni": {
@@ -1303,7 +1303,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KNiF3", 
             "pseudos_metadata": {
                 "Ni": {
@@ -1325,12 +1325,12 @@
                     "md5": "f7ac7631008b822d336da11f82376201"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "KCuF3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KCuF3", 
             "pseudos_metadata": {
                 "K": {
@@ -1384,7 +1384,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KCuF3", 
             "pseudos_metadata": {
                 "K": {
@@ -1438,7 +1438,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KCuF3", 
             "pseudos_metadata": {
                 "K": {
@@ -1492,7 +1492,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KCuF3", 
             "pseudos_metadata": {
                 "K": {
@@ -1548,7 +1548,7 @@
     ], 
     "SrAgF3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrAgF3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -1570,10 +1570,10 @@
                     "md5": "99cdf680e68d74e85fc2948352439e04"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrAgF3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -1595,10 +1595,10 @@
                     "md5": "c2a5bc9725ff7ac2caaa7120aebcc809"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrAgF3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -1652,7 +1652,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrAgF3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -1706,7 +1706,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrAgF3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -1760,7 +1760,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrAgF3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -1782,10 +1782,10 @@
                     "md5": "c2a5bc9725ff7ac2caaa7120aebcc809"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrAgF3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -1839,7 +1839,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrAgF3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -1895,7 +1895,7 @@
     ], 
     "KMgCl3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KMgCl3", 
             "pseudos_metadata": {
                 "K": {
@@ -1917,10 +1917,39 @@
                     "md5": "83c155272559441425284e7bfaa5268a"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": {
+                "ecut": 30, 
+                "v0": 124.16418356216926, 
+                "a0": 4.988830849422006, 
+                "etotals": [
+                    -3746.5762306913116, 
+                    -3746.5760526934137, 
+                    -3746.575697042949, 
+                    -3746.5751782670613, 
+                    -3746.5745177104054, 
+                    -3746.573659413742, 
+                    -3746.572613869562, 
+                    -3746.571402223766, 
+                    -3746.5700403982696
+                ], 
+                "b0": 0.2162501818776931, 
+                "b1": Infinity, 
+                "volumes": [
+                    124.32266376488613, 
+                    124.63660988550453, 
+                    124.95055600612294, 
+                    125.26450212674133, 
+                    125.57844824735974, 
+                    125.89239436797813, 
+                    126.20634048859652, 
+                    126.52028660921492, 
+                    126.83423272983333
+                ], 
+                "num_sites": 5
+            }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KMgCl3", 
             "pseudos_metadata": {
                 "K": {
@@ -1942,10 +1971,39 @@
                     "md5": "83c155272559441425284e7bfaa5268a"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": {
+                "ecut": 30, 
+                "v0": 126.35753976995574, 
+                "a0": 5.018035396937887, 
+                "etotals": [
+                    -2182.5636141744053, 
+                    -2182.5641885962978, 
+                    -2182.5645912212967, 
+                    -2182.564833569843, 
+                    -2182.564924524535, 
+                    -2182.5648631062804, 
+                    -2182.5646481806752, 
+                    -2182.564272710338, 
+                    -2182.56375747034
+                ], 
+                "b0": 0.1963816894737405, 
+                "b1": Infinity, 
+                "volumes": [
+                    125.06139035426803, 
+                    125.37720194607175, 
+                    125.69301353787544, 
+                    126.00882512967915, 
+                    126.32463672148286, 
+                    126.64044831328656, 
+                    126.95625990509028, 
+                    127.27207149689399, 
+                    127.5878830886977
+                ], 
+                "num_sites": 5
+            }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KMgCl3", 
             "pseudos_metadata": {
                 "K": {
@@ -1967,7 +2025,36 @@
                     "md5": "83c155272559441425284e7bfaa5268a"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": {
+                "ecut": 30, 
+                "v0": 127.00622487594241, 
+                "a0": 5.026607818640704, 
+                "etotals": [
+                    -3732.664439764667, 
+                    -3732.664934509363, 
+                    -3732.6652692524517, 
+                    -3732.665464275191, 
+                    -3732.665517500455, 
+                    -3732.6654522671984, 
+                    -3732.6652369264634, 
+                    -3732.664844667447, 
+                    -3732.6642625826944
+                ], 
+                "b0": 0.18493169764856277, 
+                "b1": Infinity, 
+                "volumes": [
+                    125.77380001618671, 
+                    126.09141062228818, 
+                    126.40902122838966, 
+                    126.72663183449114, 
+                    127.04424244059263, 
+                    127.36185304669411, 
+                    127.67946365279559, 
+                    127.99707425889706, 
+                    128.31468486499855
+                ], 
+                "num_sites": 5
+            }
         }
     ], 
     "CaTiO3": [
@@ -3472,7 +3559,7 @@
     ], 
     "SrTiSe3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrTiSe3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -3494,10 +3581,10 @@
                     "md5": "37781653131c4c6ae9f53421b74f6ae5"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrTiSe3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -3519,7 +3606,7 @@
                     "md5": "37781653131c4c6ae9f53421b74f6ae5"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "SrOsO3": [
@@ -4358,7 +4445,7 @@
     ], 
     "SrPtO3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrPtO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -4380,7 +4467,7 @@
                     "md5": "d2d41274880d781eb0ba94a34e2dbdfd"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
             "high": {
@@ -4466,7 +4553,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrPtO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -4520,7 +4607,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrPtO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -4657,7 +4744,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrPtO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -4711,7 +4798,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrPtO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -4848,7 +4935,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrPtO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -4902,7 +4989,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrPtO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -4924,7 +5011,7 @@
                     "md5": "d2d41274880d781eb0ba94a34e2dbdfd"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
             "high": {
@@ -5010,7 +5097,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrPtO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -5032,10 +5119,10 @@
                     "md5": "3d8cea892822f0b4b7704054d4881fe3"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrPtO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -5057,7 +5144,7 @@
                     "md5": "d2d41274880d781eb0ba94a34e2dbdfd"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
             "high": {
@@ -5143,7 +5230,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrPtO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -6531,7 +6618,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -8909,7 +8996,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -8963,7 +9050,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -9317,10 +9404,10 @@
                     "md5": "d0cb93d17c4caed5e71de91019476c3e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -9342,10 +9429,10 @@
                     "md5": "fd1992ec940268e99ee148a7d145173c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -9399,7 +9486,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -9453,7 +9540,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -9507,7 +9594,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -9561,7 +9648,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -9583,10 +9670,10 @@
                     "md5": "d0cb93d17c4caed5e71de91019476c3e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -9640,7 +9727,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -9694,7 +9781,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaAlO3", 
             "pseudos_metadata": {
                 "Al": {
@@ -9716,7 +9803,7 @@
                     "md5": "d0cb93d17c4caed5e71de91019476c3e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "SrSiO3": [
@@ -13380,7 +13467,7 @@
     "struct_type": "ABO3", 
     "BiYO3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiYO3", 
             "pseudos_metadata": {
                 "Y": {
@@ -13402,10 +13489,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiYO3", 
             "pseudos_metadata": {
                 "Y": {
@@ -13427,7 +13514,7 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
             "high": {
@@ -16177,7 +16264,7 @@
     ], 
     "KCdF3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KCdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -16314,7 +16401,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KCdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -16451,7 +16538,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KCdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -16588,7 +16675,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KCdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -16642,7 +16729,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KCdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -17696,7 +17783,7 @@
     ], 
     "SrHfO3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrHfO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -17718,10 +17805,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrHfO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -17743,10 +17830,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrHfO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -17768,10 +17855,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrHfO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -17793,10 +17880,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrHfO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -17818,7 +17905,7 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
             "high": {
@@ -19068,7 +19155,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrFeO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -19122,7 +19209,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrFeO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -19425,7 +19512,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrFeO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -19479,7 +19566,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrFeO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -19616,7 +19703,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrFeO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -19638,7 +19725,7 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
             "high": {
@@ -19724,7 +19811,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrFeO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -19861,7 +19948,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrFeO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -19915,7 +20002,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrFeO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -19969,7 +20056,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrFeO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -20357,7 +20444,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiAuO3", 
             "pseudos_metadata": {
                 "Au": {
@@ -20577,7 +20664,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiAuO3", 
             "pseudos_metadata": {
                 "Au": {
@@ -20714,7 +20801,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiAuO3", 
             "pseudos_metadata": {
                 "Au": {
@@ -20768,7 +20855,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiAuO3", 
             "pseudos_metadata": {
                 "Au": {
@@ -20790,10 +20877,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiAuO3", 
             "pseudos_metadata": {
                 "Au": {
@@ -20815,10 +20902,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiAuO3", 
             "pseudos_metadata": {
                 "Au": {
@@ -20840,10 +20927,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiAuO3", 
             "pseudos_metadata": {
                 "Au": {
@@ -20865,10 +20952,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiAuO3", 
             "pseudos_metadata": {
                 "Au": {
@@ -20890,12 +20977,12 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "AsNCa3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "AsNCa3", 
             "pseudos_metadata": {
                 "As": {
@@ -20949,7 +21036,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "AsNCa3", 
             "pseudos_metadata": {
                 "As": {
@@ -21003,7 +21090,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "AsNCa3", 
             "pseudos_metadata": {
                 "As": {
@@ -21057,7 +21144,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "AsNCa3", 
             "pseudos_metadata": {
                 "As": {
@@ -21111,7 +21198,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "AsNCa3", 
             "pseudos_metadata": {
                 "As": {
@@ -21165,7 +21252,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "AsNCa3", 
             "pseudos_metadata": {
                 "As": {
@@ -21219,7 +21306,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "AsNCa3", 
             "pseudos_metadata": {
                 "As": {
@@ -21273,7 +21360,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "AsNCa3", 
             "pseudos_metadata": {
                 "As": {
@@ -23161,7 +23248,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrCoO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -23183,10 +23270,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrCoO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -23208,10 +23295,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrCoO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -23233,10 +23320,10 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrCoO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -23258,10 +23345,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrCoO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -23283,10 +23370,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrCoO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -23391,7 +23478,7 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
             "high": {
@@ -23477,7 +23564,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrCoO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -23531,7 +23618,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrCoO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -23553,7 +23640,7 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
             "high": {
@@ -24224,7 +24311,7 @@
     ], 
     "LaBRh3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24246,10 +24333,10 @@
                     "md5": "fd1992ec940268e99ee148a7d145173c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24271,10 +24358,10 @@
                     "md5": "cbb0c79a4bf9e04436d03eb76692be0c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24296,10 +24383,10 @@
                     "md5": "d0cb93d17c4caed5e71de91019476c3e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24321,10 +24408,10 @@
                     "md5": "fd1992ec940268e99ee148a7d145173c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24346,10 +24433,10 @@
                     "md5": "cbb0c79a4bf9e04436d03eb76692be0c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24371,10 +24458,10 @@
                     "md5": "d0cb93d17c4caed5e71de91019476c3e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24396,10 +24483,10 @@
                     "md5": "fd1992ec940268e99ee148a7d145173c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24421,10 +24508,10 @@
                     "md5": "cbb0c79a4bf9e04436d03eb76692be0c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24446,10 +24533,10 @@
                     "md5": "d0cb93d17c4caed5e71de91019476c3e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24471,10 +24558,10 @@
                     "md5": "fd1992ec940268e99ee148a7d145173c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24496,10 +24583,10 @@
                     "md5": "cbb0c79a4bf9e04436d03eb76692be0c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24521,10 +24608,10 @@
                     "md5": "d0cb93d17c4caed5e71de91019476c3e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24546,10 +24633,10 @@
                     "md5": "fd1992ec940268e99ee148a7d145173c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24571,10 +24658,10 @@
                     "md5": "cbb0c79a4bf9e04436d03eb76692be0c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24596,10 +24683,10 @@
                     "md5": "d0cb93d17c4caed5e71de91019476c3e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24621,10 +24708,10 @@
                     "md5": "fd1992ec940268e99ee148a7d145173c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24646,10 +24733,10 @@
                     "md5": "cbb0c79a4bf9e04436d03eb76692be0c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24671,10 +24758,10 @@
                     "md5": "d0cb93d17c4caed5e71de91019476c3e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24696,10 +24783,10 @@
                     "md5": "fd1992ec940268e99ee148a7d145173c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24721,10 +24808,10 @@
                     "md5": "cbb0c79a4bf9e04436d03eb76692be0c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24746,10 +24833,10 @@
                     "md5": "d0cb93d17c4caed5e71de91019476c3e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24771,10 +24858,10 @@
                     "md5": "fd1992ec940268e99ee148a7d145173c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24796,10 +24883,10 @@
                     "md5": "cbb0c79a4bf9e04436d03eb76692be0c"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "LaBRh3", 
             "pseudos_metadata": {
                 "B": {
@@ -24821,7 +24908,7 @@
                     "md5": "d0cb93d17c4caed5e71de91019476c3e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "SrRuO3": [
@@ -25658,7 +25745,7 @@
     ], 
     "CsPbBr3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "CsPbBr3", 
             "pseudos_metadata": {
                 "Cs": {
@@ -25680,10 +25767,10 @@
                     "md5": "7ff31064d680fe2c915fa18389a7c34b"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "CsPbBr3", 
             "pseudos_metadata": {
                 "Cs": {
@@ -25705,10 +25792,10 @@
                     "md5": "b459c55be21b3b143c1869c14ece1725"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "CsPbBr3", 
             "pseudos_metadata": {
                 "Cs": {
@@ -25730,10 +25817,10 @@
                     "md5": "7ff31064d680fe2c915fa18389a7c34b"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "CsPbBr3", 
             "pseudos_metadata": {
                 "Cs": {
@@ -25755,12 +25842,12 @@
                     "md5": "b459c55be21b3b143c1869c14ece1725"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "BiScO3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiScO3", 
             "pseudos_metadata": {
                 "Sc": {
@@ -25782,10 +25869,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiScO3", 
             "pseudos_metadata": {
                 "Sc": {
@@ -25807,10 +25894,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiScO3", 
             "pseudos_metadata": {
                 "Sc": {
@@ -25832,10 +25919,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiScO3", 
             "pseudos_metadata": {
                 "Sc": {
@@ -25857,10 +25944,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BiScO3", 
             "pseudos_metadata": {
                 "Sc": {
@@ -25882,7 +25969,7 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "dojo_dir": ".", 
@@ -25971,7 +26058,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrNiO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -26276,7 +26363,7 @@
     ], 
     "SrTiS3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrTiS3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -26332,7 +26419,7 @@
     ], 
     "KPdF3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KPdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -26386,7 +26473,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KPdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -26408,10 +26495,10 @@
                     "md5": "c2a5bc9725ff7ac2caaa7120aebcc809"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KPdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -26465,7 +26552,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KPdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -26519,7 +26606,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KPdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -26573,7 +26660,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KPdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -26595,10 +26682,10 @@
                     "md5": "c2a5bc9725ff7ac2caaa7120aebcc809"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KPdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -26620,10 +26707,10 @@
                     "md5": "9bcabdc26ab32b461e4f11e5e375e1b1"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KPdF3", 
             "pseudos_metadata": {
                 "K": {
@@ -26645,7 +26732,7 @@
                     "md5": "f7ac7631008b822d336da11f82376201"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "MgTiO3": [
@@ -28363,10 +28450,10 @@
                     "md5": "7f5f3ad990e0f6b3f1af0900a45dafe6"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrMnO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -28388,10 +28475,10 @@
                     "md5": "20ea6dc971ca41f2522baf50c8cbfe09"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrMnO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -28413,10 +28500,10 @@
                     "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrMnO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -28438,10 +28525,10 @@
                     "md5": "15c6962ea7ec7f452103d1afb51a3c9e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrMnO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -28463,7 +28550,7 @@
                     "md5": "3b98a9b44696d5576dd0e124c2243f36"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "SrZrO3": [
@@ -28885,7 +28972,7 @@
     ], 
     "PNCa3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "PNCa3", 
             "pseudos_metadata": {
                 "P": {
@@ -28939,7 +29026,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "PNCa3", 
             "pseudos_metadata": {
                 "P": {
@@ -28993,7 +29080,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "PNCa3", 
             "pseudos_metadata": {
                 "P": {
@@ -29047,7 +29134,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "PNCa3", 
             "pseudos_metadata": {
                 "P": {
@@ -29101,7 +29188,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "PNCa3", 
             "pseudos_metadata": {
                 "P": {
@@ -29155,7 +29242,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "PNCa3", 
             "pseudos_metadata": {
                 "P": {
@@ -29209,7 +29296,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "PNCa3", 
             "pseudos_metadata": {
                 "P": {
@@ -29346,7 +29433,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "PNCa3", 
             "pseudos_metadata": {
                 "P": {
@@ -29400,7 +29487,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "PNCa3", 
             "pseudos_metadata": {
                 "P": {
@@ -29454,7 +29541,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "PNCa3", 
             "pseudos_metadata": {
                 "P": {
@@ -29508,7 +29595,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "PNCa3", 
             "pseudos_metadata": {
                 "P": {
@@ -29564,7 +29651,7 @@
     ], 
     "CsPbI3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "CsPbI3", 
             "pseudos_metadata": {
                 "Cs": {
@@ -29586,10 +29673,10 @@
                     "md5": "bf6aed4d31211e7a6e82ac750c210da2"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "CsPbI3", 
             "pseudos_metadata": {
                 "Cs": {
@@ -29611,10 +29698,10 @@
                     "md5": "2a0a0f0f82f3d9581b3fb27d6136e45e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "CsPbI3", 
             "pseudos_metadata": {
                 "Cs": {
@@ -29636,10 +29723,10 @@
                     "md5": "bf6aed4d31211e7a6e82ac750c210da2"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "CsPbI3", 
             "pseudos_metadata": {
                 "Cs": {
@@ -29661,12 +29748,12 @@
                     "md5": "2a0a0f0f82f3d9581b3fb27d6136e45e"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "SrTaO3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrTaO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -29720,7 +29807,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrTaO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -29774,7 +29861,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrTaO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -29828,7 +29915,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrTaO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -29882,7 +29969,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "SrTaO3", 
             "pseudos_metadata": {
                 "Sr": {
@@ -30021,7 +30108,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KZnF3", 
             "pseudos_metadata": {
                 "K": {
@@ -30075,7 +30162,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KZnF3", 
             "pseudos_metadata": {
                 "K": {
@@ -30129,7 +30216,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KZnF3", 
             "pseudos_metadata": {
                 "K": {
@@ -30598,7 +30685,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KZnF3", 
             "pseudos_metadata": {
                 "K": {
@@ -30735,7 +30822,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "KZnF3", 
             "pseudos_metadata": {
                 "K": {
@@ -31174,7 +31261,7 @@
                     "md5": "f763e4b5a56e90a20bb7c984edd88ae9"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
             "high": {
@@ -32009,7 +32096,7 @@
     ], 
     "BaZrTe3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BaZrTe3", 
             "pseudos_metadata": {
                 "Te": {
@@ -32031,10 +32118,10 @@
                     "md5": "5fb017ecf8ec9de93da22860bf71b700"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "BaZrTe3", 
             "pseudos_metadata": {
                 "Te": {
@@ -32056,7 +32143,7 @@
                     "md5": "5fb017ecf8ec9de93da22860bf71b700"
                 }
             }, 
-            "normal": "scheduled"
+            "normal": null
         }
     ], 
     "SrWO3": [
@@ -34142,7 +34229,7 @@
     ], 
     "TlCTi3": [
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "TlCTi3", 
             "pseudos_metadata": {
                 "Tl": {
@@ -34196,7 +34283,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "TlCTi3", 
             "pseudos_metadata": {
                 "Tl": {
@@ -34250,7 +34337,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "TlCTi3", 
             "pseudos_metadata": {
                 "Tl": {
@@ -34304,7 +34391,7 @@
             }
         }, 
         {
-            "high": "scheduled", 
+            "high": null, 
             "formula": "TlCTi3", 
             "pseudos_metadata": {
                 "Tl": {
