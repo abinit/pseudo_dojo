@@ -299,6 +299,151 @@ class PPConvergenceFactory(object):
                                  toldfe=toldfe, spin_mode=spin_mode,
                                  acell=acell, smearing=smearing, workdir=workdir, manager=manager)
 
+class EbandsFactoryError(Exception):
+    """Base Error class."""
+
+
+class EbandsFactory(object):
+    """Factroy class producing work objects for the calculation of ebands for testing for ghosts."""
+    Error = EbandsFactoryError
+
+    def __init__(self, xc='PBE'):
+        # Get a reference to the deltafactor database
+        # used to get a structure
+        self._dfdb = df_database(xc=xc)
+
+    def get_cif_path(self, symbol):
+        """Returns the path to the CIF file associated to the given symbol."""
+        try:
+            return self._dfdb.get_cif_path(symbol)
+        except KeyError:
+            raise self.Error("%s: cannot find CIF file for symbol" % symbol)
+
+    def work_for_pseudo(self, pseudo, accuracy="normal", kppa=3000, ecut=None, pawecutdg=None,
+                        toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
+        """
+        Returns a :class:`Work` object from the given pseudopotential.
+
+        Args:
+            kwargs: Extra variables passed to Abinit.
+
+        .. note::
+
+            0.001 Rydberg is the value used with WIEN2K
+        """
+        pseudo = Pseudo.as_pseudo(pseudo)
+        symbol = pseudo.symbol
+
+        if pseudo.ispaw and pawecutdg is None:
+            raise ValueError("pawecutdg must be specified for PAW calculations.")
+
+        try:
+            cif_path = self.get_cif_path(symbol)
+        except Exception as exc:
+            raise self.Error(str(exc))
+
+        structure = Structure.from_file(cif_path, primitive=False)
+        spin_mode = "unpolarized"
+
+        return EbandsFactorWork(
+            structure, pseudo, kppa,
+            spin_mode=spin_mode, toldfe=toldfe, smearing=smearing,
+            accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
+            workdir=workdir, manager=manager, **kwargs)
+
+
+class EbandsFactorWork(DojoWork):
+    """Work for the calculation of the deltafactor."""
+
+    def __init__(self, structure, pseudo, kppa,
+                 bands_factor=10, ecut=None, pawecutdg=None, ecutsm=0.5,
+                 spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
+                 accuracy="normal", chksymbreak=0, workdir=None, manager=None, **kwargs):
+        """
+        Build a :class:`Work` for the computation of a bandstructure to check for ghosts.
+
+        Args:   
+            structure: :class:`Structure` object
+            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
+            kppa: Number of k-points per atom.
+            spin_mode: Spin polarization mode.
+            toldfe: Tolerance on the energy (Ha)
+            smearing: Smearing technique.
+            workdir: String specifing the working directory.
+            manager: :class:`TaskManager` responsible for the submission of the tasks.
+        """
+        super(EbandsFactorWork, self).__init__(workdir=workdir, manager=manager)
+
+        self._pseudo = Pseudo.as_pseudo(pseudo)
+
+        spin_mode = SpinMode.as_spinmode(spin_mode)
+        smearing = Smearing.as_smearing(smearing)
+
+        # Compute the number of bands from the pseudo and the spin-polarization.
+        # Take 10 times the number of bands to sample the empty space.
+        nval = structure.num_valence_electrons(self.pseudo)
+        spin_fact = 2 if spin_mode.nsppol == 2 else 1
+        nband = bands_factor*int(nval / spin_fact)
+
+        # Set extra_abivars
+        self.ecut, self.pawecutdg = ecut, pawecutdg
+
+        extra_abivars = dict(
+            ecut=ecut,
+            pawecutdg=pawecutdg,
+            ecutsm=ecutsm,
+            nband=nband,
+            toldfe=toldfe,
+            prtwf=0,
+            nstep=200,
+            chkprim=0,
+            mem_test=0
+        )
+
+        extra_abivars.update(**kwargs)
+
+        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=chksymbreak)
+
+        scf_input = abilab.AbinitInput(structure=structure, pseudos=self.pseudo)
+        scf_input.add_abiobjects(ksampling, smearing, spin_mode)
+        scf_input.set_vars(extra_abivars)
+        self.register_scf_task(scf_input)
+
+    @property
+    def pseudo(self):
+        return self._pseudo
+
+    @property
+    def dojo_trial(self):
+        return "ebands"
+
+    def get_results(self):
+        #results = super(EbandsFactorWork, self).get_results()
+
+        #store the path of the GSR nc file in the dojoreport
+
+        #during the validation the bandstrure is plotted and the validator is asked to give the energy up to which
+        #no sign of ghosts is visilbe
+
+        #during plot the band structuur is plotted as long as a filename is present and the file can be found if the 
+        #if the energy is present the energy is given
+ 
+        #TODO fix magic
+	path = str(self.workdir)
+        outfile = os.path.join(str(self[0].outdir),"out_GSR.nc")
+        results = {'workdir': path, 'GSR-nc': outfile}
+        
+        print(results)
+
+        return results
+        
+
+    def on_all_ok(self):
+        """Callback executed when all tasks in self have reached S_OK."""
+        report = self.get_results()
+        self.write_dojo_report(report)
+        return report
+
 
 class DeltaFactoryError(Exception):
     """Base Error class."""
@@ -368,6 +513,7 @@ class DeltaFactory(object):
 
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
+#        print(structure)
 
         # Magnetic elements:
         # Start from previous SCF run to avoid getting trapped in local minima 
