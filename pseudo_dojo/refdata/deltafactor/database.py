@@ -137,13 +137,15 @@ class DeltaFactorDatabase(object):
 
     _FILES = [
         "WIEN2k.txt",
+        "WIEN2k-LDA.txt",
         "VASP.txt",
         "VASP-relaxed.txt",
     ]
 
     Error = DeltaFactorDatabaseError
 
-    def __init__(self):
+    def __init__(self, xc='PBE'):
+        self.xc = xc
         dirpath = os.path.abspath(os.path.dirname(__file__))
         self.dirpath = os.path.join(dirpath, "data")
 
@@ -158,7 +160,9 @@ class DeltaFactorDatabase(object):
 
         self._cif_paths = d = {}
 
-        cif_dirpath = os.path.join(self.dirpath, "CIFs")
+        loc = "CIFs" if xc == "PBE" else "CIFs"+"-"+xc
+
+        cif_dirpath = os.path.join(self.dirpath, loc)
         for entry in os.listdir(cif_dirpath):
             if entry.endswith(".cif"):
                 symbol, ext = os.path.splitext(entry)
@@ -187,8 +191,12 @@ class DeltaFactorDatabase(object):
                 Default is self._REF_CODE (Wien2K)
         """
         if code is None:
-            code = self._REF_CODE 
+            code = self._REF_CODE
+        if self.xc != 'PBE':
+            code = code + "-" + self.xc
+ 
         try:
+            print(code,self._data[code][symbol])
             return self._data[code][symbol]
         except KeyError:
             raise self.Error("No entry found for code %s, symbol %s" % (code, symbol))
@@ -242,7 +250,7 @@ class DeltaFactorDatabase(object):
 
 def check_cif_wien2k_consistency():
     """
-    This function compares the v0 of thestructures read from the CIF files with
+    This function compares the v0 of the structures read from the CIF files with
     with those computed from the text files containing the deltafactor results.
     """
     from pymatgen.core.structure import Structure
@@ -292,11 +300,12 @@ def check_cif_wien2k_consistency():
 __DELTAF_DATABASE = None
 
 
-def df_database():
+def df_database(xc='PBE'):
     """Returns the deltafactor database with the reference results."""
+    
     global __DELTAF_DATABASE
     if __DELTAF_DATABASE is None:
-        __DELTAF_DATABASE = DeltaFactorDatabase()
+        __DELTAF_DATABASE = DeltaFactorDatabase(xc=xc)
 
     return __DELTAF_DATABASE
 

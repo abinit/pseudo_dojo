@@ -374,10 +374,15 @@ class OncvGenerator(PseudoGenerator):
             #    raise RuntimeError("File %s already exists" % filepath)
 
             # Initialize self.pseudo from file.
-            with open(filepath, "w") as fh:
+            with open(filepath, "wt") as fh:
                 fh.write(parser.get_pseudo_str())
 
-            self._pseudo = Pseudo.from_file(filepath)
+            self._pseudo = p = Pseudo.from_file(filepath)
+
+            # Add md5 checksum to dojo_report
+            if p.has_dojo_report:
+                p.dojo_report["md5"] = p.compute_md5()
+                p.write_dojo_report(report=p.dojo_report)
 
         if parser.errors:
             logger.warning("setting status to S_ERROR")

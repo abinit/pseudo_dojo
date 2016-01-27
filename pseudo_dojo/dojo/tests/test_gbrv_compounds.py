@@ -31,15 +31,13 @@ class GbrvCompoundTest(PseudoDojoTest):
             "paral_kgb": 0,
         }
 
-        formula = "LiF"
-        struct_type = "rocksalt"
+        formula, struct_type, accuracy = "LiF", "rocksalt", "normal"
         pseudos = abidata.pseudos("3li.pspnc", "9f.pspnc")
 
-        work = gbrv_factory.relax_and_eos_work(pseudos, formula, struct_type, 
+        work = gbrv_factory.relax_and_eos_work(accuracy, pseudos, formula, struct_type, 
                                                ecut=6, pawecutdg=None, **extra_abivars)
         flow.register_work(work)
 
-        #flow.connect_signals()
         flow.build_and_pickle_dump()
         print("Working in ", flow.workdir)
 

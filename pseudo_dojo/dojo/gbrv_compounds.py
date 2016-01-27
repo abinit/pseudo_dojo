@@ -2,23 +2,20 @@
 """Base class for Dojo Workflows."""
 from __future__ import division, print_function, unicode_literals
 
-import abc
-import sys
-import os
+#import abc
+#import sys
+#import os
 import numpy as np
 from abipy import abilab
 
-from monty.collections import AttrDict
-from monty.pprint import pprint_table
-from pymatgen.core.units import Ha_to_eV
+#from monty.collections import AttrDict
 from pymatgen.io.abinitio.eos import EOS
-from pymatgen.io.abinitio.pseudos import Pseudo, PseudoTable
 from pymatgen.io.abinitio.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
-from pymatgen.io.abinitio.works import Work, build_oneshot_phononwork, OneShotPhononWork
+from pymatgen.io.abinitio.works import Work
 from abipy.core.structure import Structure
+from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.refdata.gbrv import gbrv_database
-from pseudo_dojo.refdata.deltafactor import df_database, df_compute
-from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb #, RocksaltOutdb GbrvRecord, 
+from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
 
 import logging
 logger = logging.getLogger(__name__)
@@ -68,7 +65,7 @@ class GbrvCompoundsFactory(object):
                   (only for magnetic moments for which spin-unpolarized structures are used)
                 - All calculations are done on an 8x8x8 k-point density and with 0.002 Ry Fermi-Dirac smearing
         """
-        pseudos = PseudoTable.as_table(pseudos)
+        pseudos = DojoTable.as_table(pseudos)
 
         if pseudos.allpaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
@@ -83,8 +80,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
     def __init__(self, structure, formula, struct_type, pseudos, accuracy, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
                  spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
-                 ecutsm=0.05, chksymbreak=0,
-                 workdir=None, manager=None, **kwargs):
+                 ecutsm=0.05, chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the relaxed lattice parameter.
 
@@ -122,7 +118,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
             toldfe=toldfe,
             #ecutsm=0.5,
             #nband=nband,
-            #paral_kgb=paral_kgb
+            paral_kgb=kwargs.pop("paral_kgb", 0),
         )
                                        
         self.extra_abivars.update(**kwargs)
@@ -156,7 +152,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
     @property
     def outdb_path(self):
-        """The database with the output results, None if not set."""
+        """The path to the database with the output results, None if not set."""
         try:
             return self._outdb_path
         except AttributeError:
@@ -165,7 +161,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
     def add_eos_tasks(self):
         """
         Read the optimized structure from the netcdf file and add to self a new
-        a new list of ScfTask for the computation of the EOS with the GBRV parameters.
+        a new list of `ScfTask` for the computation of the EOS with the GBRV setup.
         """
         self.history.info("Building EOS tasks")
 
@@ -214,7 +210,6 @@ class GbrvCompoundRelaxAndEosWork(Work):
             eos_fit = EOS.Quadratic().fit(self.volumes, etotals)
         except EOS.Error as exc:
             results.push_exceptions(exc)
-
         #return results
 
         # Function to compute cubic a0 from primitive v0 (depends on struct_type)

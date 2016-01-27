@@ -11,7 +11,7 @@ import logging
 import abipy.abilab as abilab
 
 from warnings import warn
-from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory
+from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory, EbandsFactory
 from pymatgen.io.abinitio.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 
@@ -75,6 +75,14 @@ def build_flow(pseudo, options):
         ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
         ecut_list = copy.copy(report["ecuts"])
 
+    try:
+        ecut_hint = int(report["hints"]["normal"]["ecut"])
+    except KeyError:
+        try:
+            ecut_hint = int(report["ppgen_hints"]["normal"]["ecut"])
+        except KeyError:
+	    ecut_hint = ppgen_ecut
+
     #if 'extend' in options:
     #    next_ecut = max(ecut_list) + 2
     #    ecut_list.append(next_ecut)
@@ -96,7 +104,12 @@ def build_flow(pseudo, options):
 
     # Computation of the deltafactor.
     if "df" in options.trials:
-        factory = DeltaFactory()
+        #FIXME
+        #factory = DeltaFactory(xc=pseudo.xc)
+        if os.path.isfile('LDA'):
+            factory = DeltaFactory(xc='LDA')
+        else:
+            factory = DeltaFactory()
         for ecut in ecut_list:
             if "deltafactor" in report and ecut in report["deltafactor"].keys(): continue
             pawecutdg = 2 * ecut if pseudo.ispaw else None
@@ -138,6 +151,7 @@ def build_flow(pseudo, options):
         for ecut in [ecut_list[0], ecut_list[-1]]:
             str_ecut = '%.1f' % ecut
             if "phwoa" in report and str_ecut in report["phwoa"].keys(): continue
+            print('phwoa')
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
@@ -146,6 +160,23 @@ def build_flow(pseudo, options):
                 flow.register_work(work, workdir='GammaPhononsAt'+str(ecut)+'WOA')
             else:
                 warn('cannot create GammaPhononsAt' + str(ecut) + 'WOA work, factory returned None')
+
+    # EBANDS test
+    if "ebands" in options.trials:
+        ebands_factory = EbandsFactory()
+        ecut = ecut_hint    
+        str_ecut = '%.1f' % ecut
+        if "ebands" in report and str_ecut in report["ebands"].keys():
+	    pass
+        else:
+            kppa = 3000
+            pawecutdg = 2 * ecut if pseudo.ispaw else None
+            work = ebands_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
+                                                  bands_factor=20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
+            if work is not None:
+                flow.register_work(work, workdir='EbandsAt'+str(ecut))
+            else:
+                warn('cannot create EbandsAt' + str(ecut) + ' work, factory returned None')
 
 
     if len(flow) > 0:

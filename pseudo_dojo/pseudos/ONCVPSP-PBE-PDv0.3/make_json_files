@@ -1,0 +1,13 @@
+dojodata.py table `cat standard`
+mv table.json standard.json
+dojodata.py table `cat high`
+mv table.json high.json
+dojodata.py table `cat high_partial`
+mv table.json high_partial.json
+dojodata.py table `cat semicore`
+mv table.json semicore.json
+dojodata.py table `cat semicore_partial`
+mv table.json semicore_partial.json
+dojodata.py table `cat gw`
+mv table.json gw.json
+scp *.json hpc.cenaero.be:
