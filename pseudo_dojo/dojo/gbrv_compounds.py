@@ -9,9 +9,9 @@ import numpy as np
 from abipy import abilab
 
 #from monty.collections import AttrDict
-from pymatgen.io.abinitio.eos import EOS
-from pymatgen.io.abinitio.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
-from pymatgen.io.abinitio.works import Work
+from pymatgen.io.abinit.eos import EOS
+from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
+from pymatgen.io.abinit.works import Work
 from abipy.core.structure import Structure
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.refdata.gbrv import gbrv_database
