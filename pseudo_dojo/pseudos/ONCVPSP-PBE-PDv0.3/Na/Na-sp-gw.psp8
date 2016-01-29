@@ -2020,6 +2020,12 @@ Na 11.00    1    3       4      psp8
             ]
         }
     }, 
+    "ebands": {
+        "42.0": {
+            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Na/Na-sp-gw.psp8_DOJO/EbandsAt42/t0/outdata/out_GSR.nc", 
+            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Na/Na-sp-gw.psp8_DOJO/EbandsAt42"
+        }
+    }, 
     "ecuts": [
         30.0, 
         32.0, 

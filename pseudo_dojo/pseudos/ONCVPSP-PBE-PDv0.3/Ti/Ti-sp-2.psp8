@@ -3673,9 +3673,12 @@ Ti 22.00    3    4       4      psp8
 
 <DOJO_REPORT>
 {
-    "symbol": "Ti", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
+    "ebands": {
+        "38.0": {
+            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ti/Ti-sp-2.psp8_DOJO/EbandsAt38/t0/outdata/out_GSR.nc", 
+            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ti/Ti-sp-2.psp8_DOJO/EbandsAt38"
+        }
+    }, 
     "ecuts": [
         30.0, 
         32.0, 
@@ -3691,20 +3694,24 @@ Ti 22.00    3    4       4      psp8
         58.0, 
         60.0
     ], 
+    "md5": "40e9d58d2c1f54f518106c22f02d6e1f", 
     "ppgen_hints": {
         "high": {
-            "pawecutdg": 40.0, 
-            "ecut": 40.0
+            "ecut": 40.0, 
+            "pawecutdg": 40.0
         }, 
         "low": {
-            "pawecutdg": 36.0, 
-            "ecut": 36.0
+            "ecut": 36.0, 
+            "pawecutdg": 36.0
         }, 
         "normal": {
-            "pawecutdg": 38.0, 
-            "ecut": 38.0
+            "ecut": 38.0, 
+            "pawecutdg": 38.0
         }
-    }
+    }, 
+    "pseudo_type": "norm-conserving", 
+    "symbol": "Ti", 
+    "version": "1.0"
 }
 </DOJO_REPORT>
 
