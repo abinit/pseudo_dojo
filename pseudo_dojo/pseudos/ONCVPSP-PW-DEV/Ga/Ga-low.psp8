@@ -3677,9 +3677,12 @@ Ga 31.00    6    2   -1013      psp8
 
 <DOJO_REPORT>
 {
-    "symbol": "Ga", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
+    "ebands": {
+        "11.0": {
+            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PW-DEV/Ga/Ga-low.psp8_DOJO/EbandsAt11/t0/outdata/out_GSR.nc", 
+            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PW-DEV/Ga/Ga-low.psp8_DOJO/EbandsAt11"
+        }
+    }, 
     "ecuts": [
         10.0, 
         12.0, 
@@ -3695,20 +3698,24 @@ Ga 31.00    6    2   -1013      psp8
         38.0, 
         40.0
     ], 
+    "md5": "52e7ca4eb0239fc1b73f531c7a18dee4", 
     "ppgen_hints": {
         "high": {
-            "pawecutdg": 20.0, 
-            "ecut": 20.0
+            "ecut": 20.0, 
+            "pawecutdg": 20.0
         }, 
         "low": {
-            "pawecutdg": 10.0, 
-            "ecut": 10.0
+            "ecut": 10.0, 
+            "pawecutdg": 10.0
         }, 
         "normal": {
-            "pawecutdg": 11.0, 
-            "ecut": 11.0
+            "ecut": 11.0, 
+            "pawecutdg": 11.0
         }
-    }
+    }, 
+    "pseudo_type": "norm-conserving", 
+    "symbol": "Ga", 
+    "version": "1.0"
 }
 </DOJO_REPORT>
 

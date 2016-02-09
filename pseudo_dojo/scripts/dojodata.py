@@ -23,7 +23,7 @@ def dojo_figures(options):
     this should probably come from a dojotable eventually
     """
 
-    if True:
+    if False:
 	"""
         read the data from a data file in in staed of psp files
         """

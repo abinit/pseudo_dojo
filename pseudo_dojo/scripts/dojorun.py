@@ -172,7 +172,7 @@ def build_flow(pseudo, options):
             kppa = 3000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = ebands_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
-                                                  bands_factor=20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
+                                                  bands_factor=15, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
             if work is not None:
                 flow.register_work(work, workdir='EbandsAt'+str(ecut))
             else:

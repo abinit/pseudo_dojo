@@ -4028,6 +4028,12 @@ Rb 37.00    6    3       4      psp8
             ]
         }
     }, 
+    "ebands": {
+        "24.0": {
+            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Rb/Rb-sp.psp8_DOJO/EbandsAt24/t0/outdata/out_GSR.nc", 
+            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Rb/Rb-sp.psp8_DOJO/EbandsAt24"
+        }
+    }, 
     "ecuts": [
         14.0, 
         16.0, 

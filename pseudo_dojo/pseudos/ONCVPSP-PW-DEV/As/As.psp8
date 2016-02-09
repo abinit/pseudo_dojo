@@ -3677,9 +3677,12 @@ As 33.00    6    2   -1013      psp8
 
 <DOJO_REPORT>
 {
-    "symbol": "As", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
+    "ebands": {
+        "14.0": {
+            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PW-DEV/As/As.psp8_DOJO/EbandsAt14/t0/outdata/out_GSR.nc", 
+            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PW-DEV/As/As.psp8_DOJO/EbandsAt14"
+        }
+    }, 
     "ecuts": [
         16.0, 
         18.0, 
@@ -3695,20 +3698,24 @@ As 33.00    6    2   -1013      psp8
         44.0, 
         46.0
     ], 
+    "md5": "50547d4f08d144a3bead390c2781561f", 
     "ppgen_hints": {
         "high": {
-            "pawecutdg": 26.0, 
-            "ecut": 26.0
+            "ecut": 26.0, 
+            "pawecutdg": 26.0
         }, 
         "low": {
-            "pawecutdg": 13.0, 
-            "ecut": 13.0
+            "ecut": 13.0, 
+            "pawecutdg": 13.0
         }, 
         "normal": {
-            "pawecutdg": 14.0, 
-            "ecut": 14.0
+            "ecut": 14.0, 
+            "pawecutdg": 14.0
         }
-    }
+    }, 
+    "pseudo_type": "norm-conserving", 
+    "symbol": "As", 
+    "version": "1.0"
 }
 </DOJO_REPORT>
 
