@@ -1,0 +1,38 @@
+#======================================================================
+
+# CRYSTAL DATA
+
+#----------------------------------------------------------------------
+
+data_VESTA_phase_1
+
+
+_pd_phase_name                         'LDA antimony'
+_cell_length_a                         4.29477
+_cell_length_b                         4.29477
+_cell_length_c                         10.91266
+_cell_angle_alpha                      90
+_cell_angle_beta                       90
+_cell_angle_gamma                      120
+_symmetry_space_group_name_H-M         'P 1'
+_symmetry_Int_Tables_number            1
+
+loop_
+_symmetry_equiv_pos_as_xyz
+   'x, y, z'
+
+loop_
+   _atom_site_label
+   _atom_site_occupancy
+   _atom_site_fract_x
+   _atom_site_fract_y
+   _atom_site_fract_z
+   _atom_site_adp_type
+   _atom_site_B_iso_or_equiv
+   _atom_site_type_symbol
+   Sb1        1.0     0.000000      0.000000      0.736841     Biso  1.000000 Sb
+   Sb2        1.0     0.000000      0.000000      0.263159     Biso  1.000000 Sb
+   Sb3        1.0     0.666667      0.333333      0.070174     Biso  1.000000 Sb
+   Sb4        1.0     0.333333      0.666667      0.929826     Biso  1.000000 Sb
+   Sb5        1.0     0.333333      0.666667      0.403508     Biso  1.000000 Sb
+   Sb6        1.0     0.666667      0.333333      0.596492     Biso  1.000000 Sb

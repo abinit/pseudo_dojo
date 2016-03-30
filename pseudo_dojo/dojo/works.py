@@ -635,23 +635,26 @@ class DeltaFactorWork(DojoWork):
             # Compute deltafactor estimator.
             dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
                                eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
-            dfact = dfact if not isinstance(dfact, complex) else float('NaN')
 
             dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa)
-
-            dfactprime_meV = dfactprime_meV if not isinstance(dfactprime_meV, complex) else float('NaN')
 
             print("delta", eos_fit)
             print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
 
-            results.update({
+            res = {
                 "dfact_meV": dfact,
                 "v0": eos_fit.v0,
                 "b0": eos_fit.b0,
                 "b0_GPa": eos_fit.b0_GPa,
                 "b1": eos_fit.b1,
                 "dfactprime_meV": dfactprime_meV
-            })
+            }
+
+            for k,v in res.items():
+                v = v if not isinstance(v, complex) else float('NaN')
+                res[k] = v          
+  
+            results.update(res)
 
             d = {k: results[k] for k in 
                 ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes", "num_sites", "dfactprime_meV")}

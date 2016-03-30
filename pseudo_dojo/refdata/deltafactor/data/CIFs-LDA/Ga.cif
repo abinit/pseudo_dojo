@@ -1,0 +1,46 @@
+data_Wien2k_Data
+_cell_length_a    4.421015
+_cell_length_b    7.500454
+_cell_length_c    4.438686
+_cell_angle_alpha   90.000000
+_cell_angle_beta    90.000000
+_cell_angle_gamma   90.000000
+_symmetry_space_group_name_H-M         'Cmca   '
+_symmetry_space_group_number   64
+
+_refine_date  ' 8- 5-2015'
+_refine_method 'generated from Wien2k code' 
+_refine_special_details 
+;
+Structure converted from Wien2k struct file, Version 9.1
+File Name /home/kurt/lda/tocif/tmp/tmp.struct                                             
+Title 'Ga LDA'
+;
+
+loop_
+_symmetry_equiv_pos_as_xyz
+   +x,+y,+z
+   -x,-y+1/2,+z+1/2
+   -x,+y+1/2,-z+1/2
+   +x,-y,-z
+   -x,-y,-z
+   +x,+y+1/2,-z+1/2
+   +x,-y+1/2,+z+1/2
+   -x,+y,+z
+   +x+1/2,+y+1/2,+z
+   -x+1/2,-y,+z+1/2
+   -x+1/2,+y,-z+1/2
+   +x+1/2,-y+1/2,-z
+   -x+1/2,-y+1/2,-z
+   +x+1/2,+y,-z+1/2
+   +x+1/2,-y,+z+1/2
+   -x+1/2,+y+1/2,+z
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+Ga001  Ga  0.00000000  0.65603400  0.58397800
+#End data_Wien2k_Data
+

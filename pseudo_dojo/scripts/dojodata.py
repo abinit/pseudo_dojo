@@ -15,6 +15,7 @@ from pymatgen.io.abinitio.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pandas import DataFrame, concat
+from pymatgen.io.abinitio.netcdf import NetcdfReaderError
 
 def dojo_figures(options):
     """
@@ -73,11 +74,18 @@ def dojo_figures(options):
 
             names.append(name)
 
-            l = {k: getattr(select, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
+            try:
+                l = {k: getattr(select, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
                                              'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err', 
                                              'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
                                              'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
                                              'nv', 'valence', 'rcmin', 'rcmax')} 
+            except AttributeError:
+                l = {k: getattr(select, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
+                                             'high_dfactprime_meV', 'high_ecut', 
+                                             'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
+                                             'nv', 'valence', 'rcmin', 'rcmax')}
+       
             rows.append(l)
 
     import matplotlib.pyplot as plt
@@ -255,8 +263,10 @@ def dojo_figures(options):
         except (KeyError, TypeError):
             pass
       
-
-    max_rel_err = 0.05 * int((max(rel_ers) / 0.05) + 1)
+    try:
+        max_rel_err = 0.05 * int((max(rel_ers) / 0.05) + 1)
+    except ValueError:
+        max_rel_err = 0.20
 
     # plot the GBRV/DF results periodic table
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
@@ -313,6 +323,10 @@ def dojo_figures(options):
 def dojo_plot(options):
     """Plot DOJO results for a single pseudo."""
     pseudos = options.pseudos
+    if os.path.isfile('LDA'):
+        xc='LDA'
+    else:
+        xc=None
     for pseudo in pseudos:
         if not pseudo.has_dojo_report:
             warn("pseudo %s does not contain the DOJO_REPORT section" % pseudo.filepath)
@@ -330,7 +344,10 @@ def dojo_plot(options):
         # ebands
         if any(k in options.what_plot for k in ("all", "ebands")):
             if report.has_trial("ebands"):
-                report.plot_ebands(title=pseudo.basename)
+                try:
+                    report.plot_ebands(title=pseudo.basename)
+                except NetcdfReaderError:
+                    pass
 
         # Deltafactor
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
@@ -339,7 +356,7 @@ def dojo_plot(options):
                 report.plot_deltafactor_eos(title=pseudo.basename)
 
             # Plot total energy convergence.
-            fig = report.plot_deltafactor_convergence(title=pseudo.basename)
+            fig = report.plot_deltafactor_convergence(title=pseudo.basename, xc=xc)
 
             fig = report.plot_etotal_vs_ecut(title=pseudo.basename)
 
@@ -480,7 +497,10 @@ def dojo_table(options):
 
 #    data = calc_errors(data)
 
-    data.to_json('table.json')
+    try:
+        data.to_json('table.json')
+    except ValueError:
+        print('writing table to json failed')
 
     try:
         data = data[
@@ -497,6 +517,7 @@ def dojo_table(options):
         data = data[
                  [acc + "_dfact_meV" for acc in accuracies]
                + [acc + "_ecut_deltafactor" for acc in accuracies]
+               + [acc + "_dfactprime_meV" for acc in accuracies]
                + [acc + "_ecut_hint" for acc in accuracies]
                    ]
         
@@ -595,13 +616,18 @@ def dojo_make_hints(options):
     from pymatgen.util.io_utils import ask_yesno, prompt
     import numpy as np
 
+    if os.path.isfile('LDA'):
+        xc='LDA'
+    else:
+        xc=None
+
     for pseudo in options.pseudos:
         try:
             report = pseudo.dojo_report
 
             hints = report.compute_hints()
             print("hints for %s computed from deltafactor prime: %s" % (pseudo.basename, hints))
-            report.plot_deltafactor_convergence()           
+            report.plot_deltafactor_convergence(xc=xc)           
  
             ans = ask_yesno("Do you accept the hints? [Y]")
             if ans:

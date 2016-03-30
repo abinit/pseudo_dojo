@@ -289,8 +289,11 @@ def main():
         #exc_log = open(exc_filename, "w")
         exc_log = sys.stderr
 
+        print(pseudos)
+
         for pseudo in pseudos:
             pseudo = Pseudo.as_pseudo(pseudo)
+          
             report = pseudo.dojo_report
             if "version" not in report: continue
 

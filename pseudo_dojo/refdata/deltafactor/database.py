@@ -136,16 +136,16 @@ class DeltaFactorDatabase(object):
     _REF_CODE = "WIEN2k"
 
     _FILES = [
-        "WIEN2k.txt",
+        "WIEN2k-PBE.txt",
         "WIEN2k-LDA.txt",
-        "VASP.txt",
-        "VASP-relaxed.txt",
+        "VASP-PBE.txt",
+        "VASP-relaxed-PBE.txt",
     ]
 
     Error = DeltaFactorDatabaseError
 
-    def __init__(self, xc='PBE'):
-        self.xc = xc
+    def __init__(self, xc=None):
+        self.xc = 'PBE' if xc is None else xc
         dirpath = os.path.abspath(os.path.dirname(__file__))
         self.dirpath = os.path.join(dirpath, "data")
 
@@ -159,9 +159,8 @@ class DeltaFactorDatabase(object):
                 d[code] = read_data_from_filepath(file_path)
 
         self._cif_paths = d = {}
-
-        loc = "CIFs" if xc == "PBE" else "CIFs"+"-"+xc
-
+        
+        loc = "CIFs" + "-" + self.xc
         cif_dirpath = os.path.join(self.dirpath, loc)
         for entry in os.listdir(cif_dirpath):
             if entry.endswith(".cif"):
@@ -192,8 +191,8 @@ class DeltaFactorDatabase(object):
         """
         if code is None:
             code = self._REF_CODE
-        if self.xc != 'PBE':
-            code = code + "-" + self.xc
+
+        code = code + "-" + self.xc
  
         try:
             print(code,self._data[code][symbol])
@@ -206,6 +205,7 @@ class DeltaFactorDatabase(object):
         import matplotlib.pyplot as plt
 
         if ref_code is None: ref_code = self._REF_CODE 
+        ref_code = ref_code + "-" + self.xc
 
         ref_data = self._data[ref_code]
 
@@ -300,9 +300,8 @@ def check_cif_wien2k_consistency():
 __DELTAF_DATABASE = None
 
 
-def df_database(xc='PBE'):
+def df_database(xc=None):
     """Returns the deltafactor database with the reference results."""
-    
     global __DELTAF_DATABASE
     if __DELTAF_DATABASE is None:
         __DELTAF_DATABASE = DeltaFactorDatabase(xc=xc)
@@ -310,9 +309,9 @@ def df_database(xc='PBE'):
     return __DELTAF_DATABASE
 
 
-def df_wien2k(symbol, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
+def df_wien2k(symbol, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False, xc=None):
     """Compute the deltafactor wrt to WIEN2k"""
-    wien2k = df_database().get_entry(symbol)
+    wien2k = df_database(xc=xc).get_entry(symbol)
     b0 = wien2k.b0
     if b0_GPa: b0 = wien2k.b0_GPa
     #print(v0f, b0f, b1f, wien2k.v0, b0, wien2k.b1)

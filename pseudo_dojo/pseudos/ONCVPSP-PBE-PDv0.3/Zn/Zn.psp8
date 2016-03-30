@@ -4026,6 +4026,12 @@ Zn 30.00    5    2       4      psp8
             ]
         }
     }, 
+    "ebands": {
+        "35.0": {
+            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Zn/Zn.psp8_DOJO/EbandsAt35/t0/outdata/out_GSR.nc", 
+            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Zn/Zn.psp8_DOJO/EbandsAt35"
+        }
+    }, 
     "ecuts": [
         25.0, 
         27.0, 
