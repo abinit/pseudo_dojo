@@ -4033,6 +4033,12 @@ Hg 80.00   12    2       4      psp8
             ]
         }
     }, 
+    "ebands": {
+        "25.0": {
+            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Hg/Hg.psp8_DOJO/EbandsAt25/t0/outdata/out_GSR.nc", 
+            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Hg/Hg.psp8_DOJO/EbandsAt25"
+        }
+    }, 
     "ecuts": [
         15.0, 
         17.0, 

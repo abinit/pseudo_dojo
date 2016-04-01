@@ -4033,6 +4033,12 @@ Os 76.00   11    3       4      psp8
             ]
         }
     }, 
+    "ebands": {
+        "20.0": {
+            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Os/Os-p.psp8_DOJO/EbandsAt20/t0/outdata/out_GSR.nc", 
+            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Os/Os-p.psp8_DOJO/EbandsAt20"
+        }
+    }, 
     "ecuts": [
         10.0, 
         12.0, 
