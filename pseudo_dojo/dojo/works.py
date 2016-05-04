@@ -11,10 +11,10 @@ from abipy import abilab
 from monty.collections import AttrDict
 from monty.pprint import pprint_table
 from pymatgen.core.units import Ha_to_eV
-from pymatgen.io.abinitio.eos import EOS
-from pymatgen.io.abinitio.pseudos import Pseudo
-from pymatgen.io.abinitio.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
-from pymatgen.io.abinitio.works import Work, build_oneshot_phononwork, OneShotPhononWork
+from pymatgen.io.abinit.eos import EOS
+from pymatgen.io.abinit.pseudos import Pseudo
+from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
+from pymatgen.io.abinit.works import Work, build_oneshot_phononwork, OneShotPhononWork
 from abipy.core.structure import Structure
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
@@ -55,7 +55,8 @@ class DojoWork(Work):
         old_report[dojo_trial][dojo_ecut] = report
         try:
             self.pseudo.write_dojo_report(old_report)
-        except None: #(OSError, IOError, TypeError):
+        except (OSError, IOError, TypeError):
+        #except None: 
             print("Something wrong in write_dojo_report")
 
 

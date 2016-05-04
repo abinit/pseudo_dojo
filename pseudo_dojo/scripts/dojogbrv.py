@@ -159,7 +159,7 @@ usage example:
                                         with the scheduler.
 """
 
-    def show_examples_and_exit(err_msg, error_code=1):
+    def show_examples_and_exit(err_msg=None, error_code=1):
         """Display the usage of the script."""
         sys.stderr.write(str_examples())
         if err_msg: sys.stderr.write("Fatal Error\n" + err_msg + "\n")

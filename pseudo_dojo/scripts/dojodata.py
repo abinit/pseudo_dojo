@@ -11,11 +11,12 @@ from collections import OrderedDict, namedtuple
 from pprint import pprint
 from tabulate import tabulate
 from monty.os.path import find_exts
-from pymatgen.io.abinitio.pseudos import Pseudo
+from pymatgen.io.abinit.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pandas import DataFrame, concat
 from pymatgen.io.abinitio.netcdf import NetcdfReaderError
+
 
 def dojo_figures(options):
     """
@@ -382,6 +383,12 @@ def dojo_plot(options):
         #        report.plot_phonon_convergence(title=pseudo.basename+"W/O ASR", woasr=True)
 
 
+def dojo_notebook(options):
+    from pseudo_dojo.pseudos import make_open_notebook
+    for p in options.pseudos:
+        make_open_notebook(p.filepath)
+
+
 def dojo_compare(options):
     """Plot and compare DOJO results for multiple pseudos."""
     pseudos = options.pseudos
@@ -744,7 +751,8 @@ def main():
     dojodata trials H.psp8 -r 1
     dojodata compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
     dojodata table .                    ==> Build table (find all psp8 files within current directory)
-    dojodata figure .                   ==> Plot periodic table figures
+    dojodata figures .                  ==> Plot periodic table figures
+    dojodata notebook H.psp8            ==> Generated ipython notebook and open it in the browser
 """
         return examples
 
@@ -793,11 +801,14 @@ def main():
     # Subparser for plot command.
     p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser, plot_options_parser], help="Plot DOJO_REPORT data.")
 
+    # Subparser for notebook command.
+    p_notebook = subparsers.add_parser('notebook', parents=[pseudos_selector_parser], help="Generate notebook notebook.")
+
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[pseudos_selector_parser, plot_options_parser], help="Compare pseudos")
 
     # Subparser for figures
-    p_figures = subparsers.add_parser('figures', parents=[pseudos_selector_parser, plot_options_parser], help="Plot table figures")
+    p_figures = subparsers.add_parser('figures', parents=[pseudos_selector_parser], help="Plot table figures")
 
     # Subparser for table command.
     p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
@@ -818,7 +829,6 @@ def main():
 
     # Subparser for make_hints command.
     p_make_hints = subparsers.add_parser('make_hints', parents=[pseudos_selector_parser], help="Add hints for cutoffs for pseudos")
-
 
     # Parse command line.
     try:
@@ -843,7 +853,8 @@ def main():
 
         paths = options.pseudos
         if len(paths) == 1 and os.path.isdir(paths[0]):
-            top = paths[0]
+            top = os.path.abspath(paths[0])
+            #print("top", top)
             paths = find_exts(top, exts, exclude_dirs="_*")
             #table = DojoTable.from_dir(paths[0])
 
@@ -889,6 +900,7 @@ if __name__ == "__main__":
         do_prof = sys.argv[1] == "prof"
         if do_prof or do_tracemalloc: sys.argv.pop(1)
     except: 
+        do_prof = False
         pass
 
     if do_prof:

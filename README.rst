@@ -7,7 +7,7 @@ form of additional tools or modules you develop, or even simple things such as b
 Please report any bugs and issues at pseudo_dojo's `Github page <https://github.com/gmatteo/pseudo_dojo>`_. 
 
 Getting pseudo_dojo
-================
+===================
 
 Stable version
 --------------

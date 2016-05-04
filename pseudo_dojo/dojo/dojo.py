@@ -3,9 +3,9 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 
-from pymatgen.io.abinitio.tasks import TaskManager
-from pymatgen.io.abinitio.flows import Flow
-from pymatgen.io.abinitio.pseudos import Pseudo
+from pymatgen.io.abinit.tasks import TaskManager
+from pymatgen.io.abinit.flows import Flow
+from pymatgen.io.abinit.pseudos import Pseudo
 from pseudo_dojo.dojo.works import PPConvergenceFactory, DeltaFactory, GbrvFactory
 
 import logging

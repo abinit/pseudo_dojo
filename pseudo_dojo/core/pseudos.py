@@ -10,7 +10,7 @@ from monty.collections import AttrDict
 from monty.string import list_strings
 from pymatgen.core.periodic_table import PeriodicTable
 from pymatgen.util.plotting_utils import add_fig_kwargs #, get_ax_fig_plt
-from pymatgen.io.abinitio.pseudos import PseudoTable 
+from pymatgen.io.abinit.pseudos import PseudoTable 
 
 
 class DojoInfo(AttrDict):
@@ -85,12 +85,10 @@ class DojoTable(PseudoTable):
         paths = []
         for dir in dirs:
             paths.extend(os.path.join(dir, f) for f in os.listdir(dir) 
-                         if f.endswith(meta.pseudo_ext)
-                         and f not in exclude #!= "Sr-sp.psp8"
-                         )
+                         if f.endswith(meta.pseudo_ext) and
+                         f not in exclude)
 
-        new = cls(paths).sort_by_z()
-        return new
+        return cls(paths).sort_by_z()
 
     @classmethod
     def from_djson(cls, djson_path):
