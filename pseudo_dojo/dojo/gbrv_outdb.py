@@ -14,7 +14,7 @@ from atomicfile import AtomicFile
 from pandas import DataFrame
 from monty.collections import dict2namedtuple #AttrDict,
 from monty.functools import lazy_property
-from pymatgen.core.periodic_table import sort_symbols_by_Z
+from pymatgen.core.periodic_table import Element #sort_symbols_by_Z
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formula
@@ -22,6 +22,16 @@ from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formul
 
 import logging
 logger = logging.getLogger(__name__)
+
+
+def sort_symbols_by_Z(symbols):
+    """
+    Given a list of element symbols, sort the strings according to Z, 
+    Return sorted list.
+
+    >>> assert sort_symbols_by_Z(["Si", "H"]) == ["H", "Si"]
+    """
+    return list(sorted(symbols, key=lambda s: Element(s).Z))
 
 
 class GbrvRecord(dict):

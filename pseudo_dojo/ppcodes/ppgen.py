@@ -12,7 +12,7 @@ import time
 from itertools import product
 from monty.os.path import which
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
-from pymatgen.io.abinitio.pseudos import Pseudo
+from pymatgen.io.abinit.pseudos import Pseudo
 
 import logging
 logger = logging.getLogger(__name__)

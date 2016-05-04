@@ -804,7 +804,6 @@ def main():
     # Subparser for make_hints command.
     p_make_hints = subparsers.add_parser('make_hints', parents=[pseudos_selector_parser], help="Add hints for cutoffs for pseudos")
 
-
     # Parse command line.
     try:
         options = parser.parse_args()

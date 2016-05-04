@@ -85,12 +85,10 @@ class DojoTable(PseudoTable):
         paths = []
         for dir in dirs:
             paths.extend(os.path.join(dir, f) for f in os.listdir(dir) 
-                         if f.endswith(meta.pseudo_ext)
-                         and f not in exclude #!= "Sr-sp.psp8"
-                         )
+                         if f.endswith(meta.pseudo_ext) and
+                         f not in exclude)
 
-        new = cls(paths).sort_by_z()
-        return new
+        return cls(paths).sort_by_z()
 
     @classmethod
     def from_djson(cls, djson_path):
