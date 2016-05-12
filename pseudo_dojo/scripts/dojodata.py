@@ -18,6 +18,12 @@ from pandas import DataFrame, concat
 from pymatgen.io.abinitio.netcdf import NetcdfReaderError
 
 
+def straceback():
+    """Returns a string with the traceback."""
+    import traceback
+    return traceback.format_exc()
+
+
 def dojo_figures(options):
     """
     Create figures for a dojo table.
@@ -652,8 +658,10 @@ def dojo_make_hints(options):
                 report.add_ecuts(new_ecuts)
                 pseudo.write_dojo_report(report)
 
-        except None: #Exception as exc:
+        except Exception as exc:
+            print(straceback())
             print(pseudo.basename, "raised: ", str(exc))
+
 
 def dojo_validate(options):
     from pymatgen.util.io_utils import ask_yesno, prompt
@@ -733,7 +741,8 @@ def dojo_validate(options):
 
             #plot the model core charge
            
-        except None: #Exception as exc:
+        except Exception as exc:
+            print(straceback())
             print(p.basename, "raised: ", str(exc))
         
         #ask the final question
