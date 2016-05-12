@@ -1,0 +1,12 @@
+/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Cs/Cs-sp_r.psp8: Cannot parse pspcod, pspxc in line
+ Cs    ONCVPSP  r_core=  2.27  1.86  2.02  1.86
+Traceback (most recent call last):
+  File "/projects/acad/napsimu/local/virtualenvs/setten/dojo-new/bin/dojorun.py", line 6, in <module>
+    exec(compile(open(__file__).read(), __file__, 'exec'))
+  File "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/scripts/dojorun.py", line 349, in <module>
+    sys.exit(main())
+  File "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/scripts/dojorun.py", line 249, in main
+    flow = build_flow(options.path, options)
+  File "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/scripts/dojorun.py", line 43, in build_flow
+    workdir = pseudo.basename + "_DOJO"
+AttributeError: 'NoneType' object has no attribute 'basename'

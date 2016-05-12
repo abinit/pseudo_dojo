@@ -1,0 +1,28 @@
+data_VESTA_phase_1
+_pd_phase_name                         'O                                     '
+_cell_length_a                         5.44740
+_cell_length_b                         3.34287
+_cell_length_c                         4.33557
+_cell_angle_alpha                      90
+_cell_angle_beta                       37.39263
+_cell_angle_gamma                      90
+_symmetry_space_group_name_H-M         'P 1'
+_symmetry_Int_Tables_number            1
+
+loop_
+_symmetry_equiv_pos_as_xyz
+   'x, y, z'
+
+loop_
+   _atom_site_label
+   _atom_site_occupancy
+   _atom_site_fract_x
+   _atom_site_fract_y
+   _atom_site_fract_z
+   _atom_site_adp_type
+   _atom_site_B_iso_or_equiv
+   _atom_site_type_symbol
+   O1         1.0     0.000237      0.000000      0.138847     Biso  1.000000 O
+   O2         1.0     0.999763      0.000000      0.861154     Biso  1.000000 O
+   O3         1.0     0.500187      0.500000      0.138847     Biso  1.000000 O
+   O4         1.0     0.499813      0.500000      0.861154     Biso  1.000000 O

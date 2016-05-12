@@ -1,0 +1,40 @@
+#======================================================================
+
+# CRYSTAL DATA
+
+#----------------------------------------------------------------------
+
+data_VESTA_phase_1
+
+
+_pd_phase_name                         'LDA iodine'
+_cell_length_a                         7.15989
+_cell_length_b                         4.31104
+_cell_length_c                         9.55259
+_cell_angle_alpha                      90
+_cell_angle_beta                       90
+_cell_angle_gamma                      90
+_symmetry_space_group_name_H-M         'P 1'
+_symmetry_Int_Tables_number            1
+
+loop_
+_symmetry_equiv_pos_as_xyz
+   'x, y, z'
+
+loop_
+   _atom_site_label
+   _atom_site_occupancy
+   _atom_site_fract_x
+   _atom_site_fract_y
+   _atom_site_fract_z
+   _atom_site_adp_type
+   _atom_site_B_iso_or_equiv
+   _atom_site_type_symbol
+   I1         1.0     0.000000      0.178515      0.123017     Biso  1.000000 I
+   I2         1.0     0.500000      0.678515      0.123017     Biso  1.000000 I
+   I3         1.0     0.000000      0.321485      0.623017     Biso  1.000000 I
+   I4         1.0     0.500000      0.821485      0.623017     Biso  1.000000 I
+   I5         1.0     0.000000      0.678515      0.376983     Biso  1.000000 I
+   I6         1.0     0.500000      0.178515      0.376983     Biso  1.000000 I
+   I7         1.0     0.000000      0.821485      0.876983     Biso  1.000000 I
+   I8         1.0     0.500000      0.321485      0.876983     Biso  1.000000 I

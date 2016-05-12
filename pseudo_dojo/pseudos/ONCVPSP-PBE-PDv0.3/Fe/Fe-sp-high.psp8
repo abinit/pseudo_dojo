@@ -3972,6 +3972,12 @@ Fe 26.00    3    4       4      psp8
             ]
         }
     }, 
+    "ebands": {
+        "67.0": {
+            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Fe/Fe-sp-high.psp8_DOJO/EbandsAt67/t0/outdata/out_GSR.nc", 
+            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Fe/Fe-sp-high.psp8_DOJO/EbandsAt67"
+        }
+    }, 
     "ecuts": [
         57.0, 
         59.0, 

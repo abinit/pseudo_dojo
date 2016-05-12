@@ -10,4 +10,6 @@ dojodata.py table `cat semicore_partial`
 mv table.json semicore_partial.json
 dojodata.py table `cat gw`
 mv table.json gw.json
+dojodata.py table `cat all`
+mv table.json all.json
 scp *.json hpc.cenaero.be:
