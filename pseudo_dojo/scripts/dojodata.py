@@ -353,8 +353,8 @@ def dojo_plot(options):
             if report.has_trial("ebands"):
                 try:
                     report.plot_ebands(title=pseudo.basename)
-                except NetcdfReaderError:
-                    pass
+                except NetcdfReaderError as exc:
+                    print(exc)
 
         # Deltafactor
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
