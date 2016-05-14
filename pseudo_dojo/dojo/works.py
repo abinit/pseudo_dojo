@@ -56,7 +56,6 @@ class DojoWork(Work):
         try:
             self.pseudo.write_dojo_report(old_report)
         except (OSError, IOError, TypeError):
-        #except None: 
             print("Something wrong in write_dojo_report")
 
 
@@ -299,6 +298,7 @@ class PPConvergenceFactory(object):
                                  toldfe=toldfe, spin_mode=spin_mode,
                                  acell=acell, smearing=smearing, workdir=workdir, manager=manager)
 
+
 class EbandsFactoryError(Exception):
     """Base Error class."""
 
@@ -308,8 +308,7 @@ class EbandsFactory(object):
     Error = EbandsFactoryError
 
     def __init__(self, xc='PBE'):
-        # Get a reference to the deltafactor database
-        # used to get a structure
+        # Get a reference to the deltafactor database. Used to get a structure
         self._dfdb = df_database(xc=xc)
 
     def get_cif_path(self, symbol):
@@ -429,15 +428,14 @@ class EbandsFactorWork(DojoWork):
         #if the energy is present the energy is given
  
         #TODO fix magic
-	path = str(self.workdir)
-        outfile = os.path.join(str(self[0].outdir),"out_GSR.nc")
+        path = str(self.workdir)
+        outfile = os.path.join(str(self[0].outdir), "out_GSR.nc")
         results = {'workdir': path, 'GSR-nc': outfile}
         
         print(results)
 
         return results
         
-
     def on_all_ok(self):
         """Callback executed when all tasks in self have reached S_OK."""
         report = self.get_results()
@@ -513,7 +511,7 @@ class DeltaFactory(object):
 
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
-#        print(structure)
+        #print(structure)
 
         # Magnetic elements:
         # Start from previous SCF run to avoid getting trapped in local minima 
@@ -651,17 +649,18 @@ class DeltaFactorWork(DojoWork):
                 "dfactprime_meV": dfactprime_meV
             }
 
-            for k,v in res.items():
+            for k, v in res.items():
                 v = v if not isinstance(v, complex) else float('NaN')
                 res[k] = v          
   
             results.update(res)
 
             d = {k: results[k] for k in 
-                ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes", "num_sites", "dfactprime_meV")}
+                  ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes",
+                   "num_sites", "dfactprime_meV")}
 
             # Write data for the computation of the delta factor
-            with open(self.outdir.path_in("deltadata.txt"), "w") as fh:
+            with open(self.outdir.path_in("deltadata.txt"), "wt") as fh:
                 fh.write("# Deltafactor = %s meV\n" % dfact)
                 fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
                 for v, e in zip(self.volumes, etotals):
@@ -918,8 +917,9 @@ class GbrvRelaxAndEosWork(DojoWork):
 
     def on_all_ok(self):
         """
-        This method is called when self reaches S_OK. It reads the optimized structure from the netcdf file and builds
-        a new work for the computation of the EOS with the GBRV parameters.
+        This method is called when self reaches S_OK. It reads the optimized structure
+        from the netcdf file and builds a new work for the computation of the EOS
+        with the GBRV parameters.
         """
         if not self.add_eos_done:
             self.add_eos_tasks()
@@ -937,8 +937,8 @@ class DFPTError(Exception):
 class DFPTPhononFactory(object):
     """
     Factory class producing `Workflow` objects for DFPT Phonon calculations.
-    In particular to test if the acoustic modes are zero, or at least from which cuttoff they can be made zero by
-    imposing the accoustic sum rule.
+    The work tests if the acoustic modes at Gamma are zero, or at least from which cuttoff
+    they can be made zero by imposing the accoustic sum rule.
     """
 
     Error = DFPTError
@@ -980,6 +980,7 @@ class DFPTPhononFactory(object):
             kwargs.pop('accuracy')
         except KeyError:
             pass
+
         kwargs.pop('smearing')
         # to be applicable to all systems we treat all as is they were metals
         # some systems have a non primitive cell to allow for a anti ferromagnetic structure > chkprim = 0
@@ -1010,7 +1011,7 @@ class DFPTPhononFactory(object):
             # rfatpol=[1, natom],  # Set of atoms to displace.
             # rfdir=[1, 1, 1],     # Along this set of reduced coordinate axis
             multi[i+1].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=rfasr, 
-                              rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
+                                rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
 
             # rfasr = 1 is not correct
             # response calculations can not be restarted > nstep = 200, a problem to solve here is that abinit continues

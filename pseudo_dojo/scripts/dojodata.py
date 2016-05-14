@@ -4,18 +4,18 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import os
 import argparse
-import pandas as pd
+#import pandas as pd
 
 from warnings import warn
-from collections import OrderedDict, namedtuple
+#from collections import OrderedDict, namedtuple
 from pprint import pprint
 from tabulate import tabulate
 from monty.os.path import find_exts
-from pymatgen.io.abinit.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pandas import DataFrame, concat
-from pymatgen.io.abinitio.netcdf import NetcdfReaderError
+from pymatgen.io.abinit.pseudos import Pseudo
+from pymatgen.io.abinit.netcdf import NetcdfReaderError
 
 
 def straceback():
@@ -162,24 +162,29 @@ def dojo_figures(options):
     def rcmin(elt):
         """R_c min [Bohr]"""
         return elt['rcmin']
+
     def rcmax(elt):
         """R_c max [Bohr]"""
         return elt['rcmax']
+
     def ar(elt):
         """Atomic Radius [Bohr]"""
         return elt['atomic_radii']*0.018897161646320722
+
     def df(elt):
         """Delta Factor [meV / atom]"""
         try:
             return elt['high_dfact_meV']
         except KeyError:
             return float('NaN')
+
     def dfp(elt):
         """Delta Factor Prime"""
         try:
             return elt['high_dfactprime_meV']
         except KeyError:
             return float('NaN')
+
     def bcc(elt):
         """GBRV BCC [% relative error]"""
         try:
@@ -244,13 +249,15 @@ def dojo_figures(options):
     elsgbrv = []
     elsphon = []
     rel_ers = []
-    elements_data = {}    
+    elements_data = {}
+
     for el in rows:
         symbol = el['name'].split('.')[0].split('-')[0]
         try:
             rel_ers.append(max(abs(el['high_gbrv_bcc_a0_rel_err']),abs(el['high_gbrv_fcc_a0_rel_err'])))
         except (TypeError, KeyError):
             pass
+
         if el['high_dfact_meV'] > 0:
             elements_data[symbol] = el
             els.append(symbol)
@@ -331,9 +338,10 @@ def dojo_plot(options):
     """Plot DOJO results for a single pseudo."""
     pseudos = options.pseudos
     if os.path.isfile('LDA'):
-        xc='LDA'
+        xc = 'LDA'
     else:
-        xc=None
+        xc = None
+
     for pseudo in pseudos:
         if not pseudo.has_dojo_report:
             warn("pseudo %s does not contain the DOJO_REPORT section" % pseudo.filepath)
@@ -510,10 +518,7 @@ def dojo_table(options):
 
 #    data = calc_errors(data)
 
-    try:
-        data.to_json('table.json')
-    except ValueError:
-        print('writing table to json failed')
+    data.to_json('table.json')
 
     try:
         data = data[
@@ -533,10 +538,6 @@ def dojo_table(options):
                + [acc + "_dfactprime_meV" for acc in accuracies]
                + [acc + "_ecut_hint" for acc in accuracies]
                    ]
-        
-     
-
-
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))
     tablefmt = "grid"
@@ -557,11 +558,11 @@ def dojo_table(options):
         print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
     try:
-    	columns = [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies] 
-    	columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
+        columns = [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
+        columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
         columns += [acc + "_abs_fcc" for acc in accuracies]
         columns += [acc + "_abs_bcc" for acc in accuracies]
-    	print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+        print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
         if len(data) > 5:
             print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
     except KeyError:
@@ -630,9 +631,9 @@ def dojo_make_hints(options):
     import numpy as np
 
     if os.path.isfile('LDA'):
-        xc='LDA'
+        xc = 'LDA'
     else:
-        xc=None
+        xc = None
 
     for pseudo in options.pseudos:
         try:
@@ -750,11 +751,11 @@ def dojo_validate(options):
             name = prompt("please enter your name for later reference : ")
             report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime()) }
             p.write_dojo_report(report)
-	
+
 
 def main():
     def str_examples():
-        examples = """\
+        return """\
     Usage example:\n
     dojodata plot H.psp8                ==> Plot dojo data for pseudo H.psp8
     dojodata trials H.psp8 -r 1
@@ -763,7 +764,6 @@ def main():
     dojodata figures .                  ==> Plot periodic table figures
     dojodata notebook H.psp8            ==> Generated ipython notebook and open it in the browser
 """
-        return examples
 
     def show_examples_and_exit(err_msg=None, error_code=1):
         """Display the usage of the script."""
@@ -858,12 +858,11 @@ def main():
         Find pseudos in paths, return :class:`DojoTable` object sorted by atomic number Z.
         Accepts filepaths or directory.
         """
-        exts=("psp8",)
+        exts = ("psp8",)
 
         paths = options.pseudos
         if len(paths) == 1 and os.path.isdir(paths[0]):
             top = os.path.abspath(paths[0])
-            #print("top", top)
             paths = find_exts(top, exts, exclude_dirs="_*")
             #table = DojoTable.from_dir(paths[0])
 
@@ -907,10 +906,9 @@ def main():
 if __name__ == "__main__":
     try:
         do_prof = sys.argv[1] == "prof"
-        if do_prof or do_tracemalloc: sys.argv.pop(1)
+        if do_prof: sys.argv.pop(1)
     except: 
         do_prof = False
-        pass
 
     if do_prof:
         import pstats, cProfile

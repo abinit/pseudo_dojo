@@ -223,7 +223,7 @@ class GbrvRecord(dict):
         d = self["accuracy"]
 
         num_sites, volumes, etotals = d["num_sites"], np.array(d["volumes"]), np.array(d["etotals"])
-        from pymatgen.io.abinitio.eos import EOS
+        from pymatgen.io.abinit.eos import EOS
         eos = EOS.Quadratic()
 
         # Use same fit as the one employed for the deltafactor.

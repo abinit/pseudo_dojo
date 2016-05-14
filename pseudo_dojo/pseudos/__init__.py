@@ -96,7 +96,7 @@ sns.set(style='ticks', palette='Set2')"""),
 
         nbf.new_code_cell("""\
 # Construct the pseudo object and get the DojoReport
-from pymatgen.io.abinitio.pseudos import Pseudo
+from pymatgen.io.abinit.pseudos import Pseudo
 pseudo = Pseudo.from_file('%s')
 report = pseudo.dojo_report""" % os.path.abspath(pseudopath)),
 

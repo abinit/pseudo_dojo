@@ -12,7 +12,7 @@ import abipy.abilab as abilab
 
 from warnings import warn
 from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory, EbandsFactory
-from pymatgen.io.abinitio.pseudos import Pseudo
+from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 
 
@@ -63,8 +63,8 @@ def build_flow(pseudo, options):
     # Build ecut mesh.
     try:
         ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
-
         ecut_list = copy.copy(report["ecuts"])
+
     except KeyError:
         print('New pseudo without report from the generator, the convergence study is started from 16H')
         report["ppgen_hints"] = {}
@@ -81,7 +81,7 @@ def build_flow(pseudo, options):
         try:
             ecut_hint = int(report["ppgen_hints"]["normal"]["ecut"])
         except KeyError:
-	    ecut_hint = ppgen_ecut
+            ecut_hint = ppgen_ecut
 
     #if 'extend' in options:
     #    next_ecut = max(ecut_list) + 2
@@ -110,8 +110,13 @@ def build_flow(pseudo, options):
             factory = DeltaFactory(xc='LDA')
         else:
             factory = DeltaFactory()
+
         for ecut in ecut_list:
-            if "deltafactor" in report and ecut in report["deltafactor"].keys(): continue
+            str_ecut = '%.1f' % ecut
+            if "deltafactor" in report and str_ecut in report["deltafactor"]:
+                print("[deltafactor]: ignoring ecut=", str_ecut, "because it's already in the DOJO_REPORT")
+                continue
+
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             # Build and register the workflow.
             work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg, **extra_abivars)
@@ -121,10 +126,16 @@ def build_flow(pseudo, options):
     if "gbrv" in options.trials:
         gbrv_factory = GbrvFactory()
         gbrv_structs = ("fcc", "bcc")
+
         for struct_type in gbrv_structs:
             dojo_trial = "gbrv_" + struct_type
+
             for ecut in ecut_list:
-                if dojo_trial in report and ecut in report[dojo_trial].keys(): continue
+                str_ecut = '%.1f' % ecut
+                if dojo_trial in report and str_ecut in report[dojo_trial]:
+                    print("[gbrv]: ignoring ecut=", str_ecut, "because it's already in the DOJO_REPORT")
+                    continue
+
                 pawecutdg = 2 * ecut if pseudo.ispaw else None
                 # FIXME: we use ntime=3, because structure relaxations go bananas after the third step.
                 work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, ntime=5, pawecutdg=pawecutdg, **extra_abivars)
@@ -133,9 +144,13 @@ def build_flow(pseudo, options):
     # PHONON test
     if "phonon" in options.trials:
         phonon_factory = DFPTPhononFactory()
+
         for ecut in ecut_list:
             str_ecut = '%.1f' % ecut
-            if "phonon" in report and str_ecut in report["phonon"].keys(): continue
+            if "phonon" in report and str_ecut in report["phonon"]:
+                print("[phonon]: ignoring ecut=", str_ecut, "because it's already in the DOJO_REPORT")
+                continue
+
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
@@ -148,10 +163,13 @@ def build_flow(pseudo, options):
     # PHONON WihtOut Asr test
     if "phwoa" in options.trials:
         phonon_factory = DFPTPhononFactory()
+
         for ecut in [ecut_list[0], ecut_list[-1]]:
             str_ecut = '%.1f' % ecut
-            if "phwoa" in report and str_ecut in report["phwoa"].keys(): continue
-            print('phwoa')
+            if "phwoa" in report and str_ecut in report["phwoa"]:
+                print("[phwoa]: ignoring ecut=", str_ecut, "because it's already in the DOJO_REPORT")
+                continue
+
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
@@ -166,18 +184,18 @@ def build_flow(pseudo, options):
         ebands_factory = EbandsFactory()
         ecut = ecut_hint    
         str_ecut = '%.1f' % ecut
-        if "ebands" in report and str_ecut in report["ebands"].keys():
-	    pass
+
+        if "ebands" in report and str_ecut in report["ebands"]:
+            print("[ebands]: ignoring ecut=", str_ecut, "because it's already in the DOJO_REPORT")
         else:
             kppa = 3000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = ebands_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
                                                   bands_factor=15, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
             if work is not None:
-                flow.register_work(work, workdir='EbandsAt'+str(ecut))
+                flow.register_work(work, workdir='EbandsAt' + str(ecut))
             else:
                 warn('cannot create EbandsAt' + str(ecut) + ' work, factory returned None')
-
 
     if len(flow) > 0:
         return flow.allocate()
@@ -196,7 +214,6 @@ def main():
 
     def show_examples_and_exit(error_code=1):
         """Display the usage of the script."""
-        #sys.stderr.write(str_examples()+'\n')
         print(str_examples())
         sys.exit(error_code)
 
@@ -250,11 +267,11 @@ def main():
         if flow is None: 
             warn("DOJO_REPORT is already computed for pseudo %s." % options.path)
             return 0
+
         if options.dry_run:
             flow.build_and_pickle_dump()
         else:
             # Run the flow with the scheduler.
-            #print("nlaunch: %d" % flow.rapidfire())
             flow.make_scheduler().start()
 
     else:
