@@ -15,7 +15,7 @@ from pymatgen.io.abinit.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pandas import DataFrame, concat
-from pymatgen.io.abinitio.netcdf import NetcdfReaderError
+from pymatgen.io.abinit.netcdf import NetcdfReaderError
 
 
 def dojo_figures(options):
