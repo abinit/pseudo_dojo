@@ -11,9 +11,6 @@ __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
 __maintainer__ = "Matteo Giantomassi"
 
-##########################################################################################
-# Helper functions.
-
 
 def str_examples():
     examples = """Example usage:\n
@@ -26,11 +23,10 @@ def str_examples():
 def show_examples_and_exit(err_msg=None, error_code=0):
     """Display the usage of the script."""
     sys.stderr.write(str_examples())
-    if err_msg: 
+    if err_msg:
         sys.stderr.write("Fatal Error\n" + err_msg + "\n")
     sys.exit(error_code)
 
-##########################################################################################
 
 def main():
     parser = ArgumentParser(epilog=str_examples())
@@ -67,7 +63,6 @@ def main():
 
     return 0
 
-################################################################################
 
 if __name__ == "__main__":
     sys.exit(main())

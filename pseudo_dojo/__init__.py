@@ -2,7 +2,11 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 
+from collections import defaultdict, OrderedDict, Mapping
 from monty.dev import deprecated
+from monty.design_patterns import singleton
+from pseudo_dojo.core.pseudos import DojoTable
+from pseudo_dojo.pseudos import dojotable_absdir
 
 
 @deprecated(message="Official PseudoDojo API will be released soon!")
@@ -11,8 +15,8 @@ def get_pseudos(top):
     Find pseudos within top, return :class:`PseudoTable` object sorted by atomic number Z.
     """
     from monty.os.path import find_exts
-    from pymatgen.io.abinitio.pseudos import PseudoTable, Pseudo
-    exts=("psp8",)
+    from pymatgen.io.abinit.pseudos import PseudoTable, Pseudo
+    exts = ("psp8",)
     pseudos = []
     for p in find_exts(top, exts, exclude_dirs="_*"):
         try:
@@ -22,12 +26,6 @@ def get_pseudos(top):
             warn("Exception in pseudo %s:\n%s" % (p.filepath, exc))
             
     return PseudoTable(pseudos).sort_by_z()
-
-
-from collections import defaultdict, OrderedDict, Mapping
-from monty.design_patterns import singleton
-from pseudo_dojo.core.pseudos import DojoTable
-from pseudo_dojo.pseudos import dojotable_absdir
 
 
 class TableMetadata(object):
@@ -45,30 +43,6 @@ class TableMetadata(object):
         self.dojo_absdir = dojotable_absdir(table_dir)
         self.djson_name = djson_name
         self.djson_path = os.path.join(self.dojo_absdir, djson_name)
-
-    #def __set__(self, obj, val):
-    #    """Read-only data descriptor"""
-    #    raise AttributeError("Dojo Tables are read-only!")
-
-    #def __get__(self, obj, cls):
-    #    print("in get with obj ", obj, "and cls", cls)
-    #    x = cls
-    #    #x = obj
-    #    if not hasattr(x, "_dtables"):
-    #        x._dtables = defaultdict(dict)
-
-    #    if (self.table_dir in x._dtables and 
-    #        self.djson_name in x._dtables[self.table_dir]):
-    #        print("Returning cached table")
-    #        return x._dtables[self.table_dir][self.djson_name]
-
-    #    print("Not found, will compute and store the table")
-
-    #    new_table = 1
-    #    new_table = DojoTable.from_djson(self.djson_path)
-
-    #    x._dtables[self.table_dir][self.djson_name] = new_table
-    #    return new_table
 
 
 @singleton
@@ -105,17 +79,23 @@ class OfficialTables(Mapping):
 
     def __getitem__(self, key):
         v = self._tables[key]
-        if not isinstance(v, TableMetadata): return v 
 
-        # Parse files, construct table and store it.
+        # Return v if v is table else parse the files, construct table and store it.
+        if not isinstance(v, TableMetadata):
+            return v
+
         new_table = DojoTable.from_djson(v.djson_path)
         new_table.dojo_name = key
         self._tables[key] = new_table
 
         return new_table
 
-    #def nc_tables(self, **kwargs):
-    #    return [table for for name, table in self.items() if table.dojo_info.isnc]
+    @property
+    def all_nctables(self):
+        """Return the list of norm-conserving tables."""
+        return [table for name, table in self.items() if table.dojo_info.isnc]
 
-    #def paw_tables(self, **kwargs):
-    #    return [table for for name, table in self.items() if table.dojo_info.ispaw]
+    @property
+    def all_pawtables(self):
+        """Return the list of PAW tables."""
+        return [table for name, table in self.items() if table.dojo_info.ispaw]
