@@ -4,19 +4,19 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import os
 import argparse
-#import pandas as pd
+import numpy as np
 
+from time import gmtime, strftime
 from warnings import warn
-#from collections import OrderedDict, namedtuple
 from pprint import pprint
 from tabulate import tabulate
-from monty.os.path import find_exts
-from pseudo_dojo.core.pseudos import DojoTable
-from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pandas import DataFrame, concat
+from monty.os.path import find_exts
+from pymatgen.util.io_utils import ask_yesno, prompt
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.io.abinit.netcdf import NetcdfReaderError
-
+from pseudo_dojo.core.pseudos import DojoTable
+from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 
 def straceback():
     """Returns a string with the traceback."""
@@ -99,7 +99,6 @@ def dojo_figures(options):
     from ptplotter.plotter import ElementDataPlotter
     import matplotlib.cm as mpl_cm
     from matplotlib.collections import PatchCollection 
-    import numpy as np
 
     class ElementDataPlotterRangefixer(ElementDataPlotter):
         """
@@ -189,7 +188,7 @@ def dojo_figures(options):
         """GBRV BCC [% relative error]"""
         try:
             v_bcc =  elt['high_gbrv_bcc_a0_rel_err'] if str(elt['high_gbrv_bcc_a0_rel_err']) != 'nan' else -99
-        #    print(v_bcc)
+            # print(v_bcc)
             return v_bcc
         except KeyError:
             print('bcc func fail: ', elt)
@@ -199,7 +198,7 @@ def dojo_figures(options):
         """GBRV FCC [% relative error]"""
         try:
             v_fcc =  elt['high_gbrv_fcc_a0_rel_err'] if str(elt['high_gbrv_fcc_a0_rel_err']) != 'nan' else -99
-        #    print(v_fcc)
+            #print(v_fcc)
             return v_fcc 
         except KeyError:
             print('fcc func fail: ', elt)
@@ -262,7 +261,7 @@ def dojo_figures(options):
             elements_data[symbol] = el
             els.append(symbol)
         else:
-            print('failed reading df  :', symbol, el['high_dfact_meV'])
+            print('failed reading high_dfact_meV:', symbol, el['high_dfact_meV'])
         try:
             if el['high_gbrv_bcc_a0_rel_err'] > -100 and el['high_gbrv_fcc_a0_rel_err'] > -100:
                 elsgbrv.append(symbol)
@@ -290,6 +289,7 @@ def dojo_figures(options):
     epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2], 
                clims=[[-0.6,0.6],[-0.6, 0.6], [-4,4]])
     plt.show()
+
     for cm2 in [mpl_cm.PiYG_r, mpl_cm.PRGn_r,mpl_cm.RdYlGn_r]:
          epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
          epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2],
@@ -350,7 +350,6 @@ def dojo_plot(options):
         report = pseudo.dojo_report
         #print(pseudo)
         #print(report)
-
         #print("trials passed: ", report.trials)
         #report.has_hints
         #report.has_exceptions
@@ -516,8 +515,7 @@ def dojo_table(options):
     if not wrong.empty:
         print("WRONG".center(80, "*") + "\n", wrong)
 
-#    data = calc_errors(data)
-
+    #data = calc_errors(data)
     data.to_json('table.json')
 
     try:
@@ -574,8 +572,6 @@ def dojo_table(options):
     if len(data) > 5:
         print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
-
-
     #print(data.to_string(columns=columns))
 
     if len(data) > 5: 
@@ -599,6 +595,8 @@ def dojo_dist(options):
 def dojo_check(options):
 
     for p in options.pseudos:
+        # FIXME FR pseudos are broken
+        #if "_r" in p.basename: continue
         try:
             report = p.dojo_report
         except Exception as exc:
@@ -664,15 +662,12 @@ def dojo_make_hints(options):
 
 
 def dojo_validate(options):
-    from pymatgen.util.io_utils import ask_yesno, prompt
-    from time import gmtime, strftime
-    for p in options.pseudos:
-
-        data, errors = options.pseudos.get_dojo_dataframe()
+    pseudos = options.pseudos
+    for p in pseudos:
+        data, errors = pseudos.get_dojo_dataframe()
 
         try:
-        
-            #test if report is present
+            # test if report is present
             try:
                 report = p.dojo_report
             except Exception as exc:
@@ -682,12 +677,12 @@ def dojo_validate(options):
 
             #test if already validated
             if 'validation' in report.keys():
-                print('this pseudo was validated by %s on %s.' % (report['validation']['validated_by'], report['validation']['validated_on']))
+                print('this pseudo was validated by %s on %s.' % (
+                      report['validation']['validated_by'], report['validation']['validated_on']))
 		if not ask_yesno('Would you like to validate again? [Y]'):
                     continue
 
             #test if hints are present
-            
 
             #test for ghosts
             print('\n= GHOSTS TEST ===========================================\n')
@@ -705,7 +700,7 @@ def dojo_validate(options):
                 print('no ebands trial present, pseudo cannot be validated')
                 continue
 
-            #test trials
+            # test trials
             print('\n= TRIALS TEST ===========================================\n')
             try:
                 error = report.check()
@@ -720,10 +715,8 @@ def dojo_validate(options):
             accuracies = ["low", "normal", "high"]
             keys = ['hint', 'deltafactor', 'gbrv_bcc', 'gbrv_fcc', 'phonon']
 
-            
             tablefmt = "grid"
             floatfmt=".2f"
-
 
             print('\n= ECUTS  TEST ===========================================\n')
 	    for acc in accuracies:
@@ -737,17 +730,15 @@ def dojo_validate(options):
                 print('ECUTS for accuracy %s:' % acc)
                 print(tabulate(data[columns], headers=headers, tablefmt=tablefmt, floatfmt=floatfmt))
 
-            #test hash
-
-            #plot the model core charge
+            # test hash
            
         except Exception as exc:
             print(straceback())
             print(p.basename, "raised: ", str(exc))
         
-        #ask the final question
+        # ask the final question
         if ask_yesno('Will you validate this pseudo? [n]'):
-            name = prompt("please enter your name for later reference : ")
+            name = prompt("Please enter your name for later reference: ")
             report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime()) }
             p.write_dojo_report(report)
 
@@ -755,13 +746,13 @@ def dojo_validate(options):
 def main():
     def str_examples():
         return """\
-    Usage example:\n
-    dojodata plot H.psp8                ==> Plot dojo data for pseudo H.psp8
-    dojodata trials H.psp8 -r 1
-    dojodata compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
-    dojodata table .                    ==> Build table (find all psp8 files within current directory)
-    dojodata figures .                  ==> Plot periodic table figures
-    dojodata notebook H.psp8            ==> Generated ipython notebook and open it in the browser
+Usage example:\n
+    dojodata.py plot H.psp8                ==> Plot dojo data for pseudo H.psp8
+    dojodata.py trials H.psp8 -r 1
+    dojodata.py compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
+    dojodata.py table .                    ==> Build table (find all psp8 files within current directory)
+    dojodata.py figures .                  ==> Plot periodic table figures
+    dojodata.py notebook H.psp8            ==> Generated ipython notebook and open it in the browser
 """
 
     def show_examples_and_exit(err_msg=None, error_code=1):
@@ -807,13 +798,16 @@ def main():
     plot_options_parser.add_argument("-e", "--eos", action="store_true", help="Plot EOS curve")
 
     # Subparser for plot command.
-    p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser, plot_options_parser], help="Plot DOJO_REPORT data.")
+    p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser, plot_options_parser],
+                                   help="Plot DOJO_REPORT data.")
 
     # Subparser for notebook command.
-    p_notebook = subparsers.add_parser('notebook', parents=[pseudos_selector_parser], help="Generate notebook notebook.")
+    p_notebook = subparsers.add_parser('notebook', parents=[pseudos_selector_parser],
+                                       help="Generate notebook notebook.")
 
     # Subparser for compare.
-    p_compare = subparsers.add_parser('compare', parents=[pseudos_selector_parser, plot_options_parser], help="Compare pseudos")
+    p_compare = subparsers.add_parser('compare', parents=[pseudos_selector_parser, plot_options_parser],
+                                      help="Compare pseudos")
 
     # Subparser for figures
     p_figures = subparsers.add_parser('figures', parents=[pseudos_selector_parser], help="Plot table figures")
@@ -836,7 +830,8 @@ def main():
     p_validate = subparsers.add_parser('validate', parents=[pseudos_selector_parser], help="Validate pseudos")
 
     # Subparser for make_hints command.
-    p_make_hints = subparsers.add_parser('make_hints', parents=[pseudos_selector_parser], help="Add hints for cutoffs for pseudos")
+    p_make_hints = subparsers.add_parser('make_hints', parents=[pseudos_selector_parser],
+                                         help="Add hints for cutoffs for pseudos")
 
     # Parse command line.
     try:
@@ -867,11 +862,16 @@ def main():
 
         pseudos = []
         for p in paths:
+            # FIXME FR pseudos are broken
+            #if "_r" in os.path.basename(p): continue
             try:
-                pseudos.append(Pseudo.from_file(p))
+                pseudo = Pseudo.from_file(p)
+                if pseudo is None: print(p, "gave None")
+                pseudos.append(pseudo)
             except Exception as exc:
                 warn("Error in %s:\n%s. This pseudo will be ignored" % (p, exc))
 
+        #print("pseudos:", pseudos)
         table = DojoTable(pseudos)
 
         # Here we select a subset of pseudos according to family or rows

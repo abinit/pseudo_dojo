@@ -24,7 +24,7 @@ def get_pseudos(top):
         except Exception as exc:
             from warnings import warn
             warn("Exception in pseudo %s:\n%s" % (p.filepath, exc))
-            
+
     return PseudoTable(pseudos).sort_by_z()
 
 
@@ -51,20 +51,18 @@ class OfficialTables(Mapping):
     def __init__(self):
         self._tables = tables = OrderedDict()
 
-        # Naming scheme
-        # [PP_TYPE]-[TABLE_NAME]-[XC_NAME]-[SO|""]-version
+        # Naming scheme: [PP_TYPE]-[XC_NAME]-[TABLE_NAME_WITH_VERSION]-[DJSON_NAME]
         #
-        # where: 
+        # where:
         #
         #  PP_TYPE in ("PAW", "NC") defines the pseudos type.
-        #  TABLE_NAME is the name of the table e.g. ONCVPSP, JTH ...
         #  XC_NAME gives the functional type e.g. PBE
-        #  SO is present if the table contains the Spin-orbit term.
+        #  TABLE_NAME_WITH_VERSION is the name of the table e.g. ONCVPSP, JTH ...
+        #  DJSON_NAME is the name of the djson file located in the pseudodojo directory.
+        #  In the case of NC pseudos, the SO term is treated via djson e.g. "accuracy-so.djson"
         #  maybe FR|SR for fully or scalar-relativistic?
-        #  version is the version number.
-        # 
-        # Maybe descriptor?
-        tables["ONC-DOJO-PBE"] = TableMetadata("ONCVPSP-PBE", "accuracy.djson")
+        #
+        tables["ONCVPSP-PBE-PDv0.2-accuracy"] = TableMetadata("ONCVPSP-PBE-PDv0.2", "accuracy.djson")
 
         #tables["ONCV-GYGYv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "htc.djson")
         #tables["PAW-JTHv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "accuracy.djson")
@@ -78,13 +76,14 @@ class OfficialTables(Mapping):
         return self._tables.__len__()
 
     def __getitem__(self, key):
+        """Called by self[key]"""
         v = self._tables[key]
 
         # Return v if v is table else parse the files, construct table and store it.
         if not isinstance(v, TableMetadata):
             return v
 
-        new_table = DojoTable.from_djson(v.djson_path)
+        new_table = DojoTable.from_djson_file(v.djson_path)
         new_table.dojo_name = key
         self._tables[key] = new_table
 
@@ -93,9 +92,9 @@ class OfficialTables(Mapping):
     @property
     def all_nctables(self):
         """Return the list of norm-conserving tables."""
-        return [table for name, table in self.items() if table.dojo_info.isnc]
+        return [table for _, table in self.items() if table.dojo_info.isnc]
 
     @property
     def all_pawtables(self):
         """Return the list of PAW tables."""
-        return [table for name, table in self.items() if table.dojo_info.ispaw]
+        return [table for _, table in self.items() if table.dojo_info.ispaw]

@@ -15,7 +15,7 @@ from pymatgen.io.abinit.pseudos import PseudoTable
 
 class DojoInfo(AttrDict):
     """
-    Dictionary with metadata associated to the table.
+    Dictionary with metadata associated to the PseudoDojo table.
     """
     # See http://validictory.readthedocs.org/en/latest/usage.html#schema-options
     JSON_SCHEMA = {
@@ -24,7 +24,7 @@ class DojoInfo(AttrDict):
             "pseudo_type": {"type": "string", "enum": ["norm-conserving", "PAW"]},
             "xc_type": {"type": "string", "enum": ["GGA-PBE",]},
             "authors": {"type": "array"},
-            "generation_date": {"type": "string", "format": "date"},
+            #"generation_date": {"type": "string", "format": "date"},
             "description": {"type": "string"},
             "reference": {"type": "string"},
             "dojo_dir": {"type": "string"},
@@ -37,6 +37,11 @@ class DojoInfo(AttrDict):
         """Validate DojoInfo with validictory."""
         import validictory
         validictory.validate(self, self.JSON_SCHEMA)
+
+    @classmethod
+    def get_template_dict(cls):
+        """Return a dictionary with the keys that must be filled by the user."""
+        return {k: str(v) for k, v in cls.JSON_SCHEMA["properties"].items()}
 
     @property
     def isnc(self):
@@ -58,7 +63,7 @@ class DojoTable(PseudoTable):
     @classmethod
     def from_dojodir(cls, top, exclude_basenames=None):
         """
-        Initialize the table of pseudos from one of the top level directories located 
+        Initialize the table of pseudos from one of the top level directories located
         in the pseudo_dojo.pseudos directory.
 
         Args:
@@ -132,10 +137,11 @@ class DojoTable(PseudoTable):
         }
         """
         with open(djson_path, "rt") as fh:
-            d = json.loads(fh.read())
+            d = json.load(fh)
 
         dojo_info = DojoInfo(**d["dojo_info"])
         dojo_info.validate_json_schema()
+        print(d.keys())
         meta = d["pseudos_metadata"]
 
         top = os.path.dirname(djson_path)
@@ -147,30 +153,41 @@ class DojoTable(PseudoTable):
         new = cls(paths).sort_by_z()
         new.set_dojo_info(dojo_info)
 
-        errors = new.dojo_find_errors(md5dict)
-        if errors:
-            raise ValueError("\n".join(errors))
+        # TODO: To be activated
+        #errors = new.dojo_find_errors(md5dict)
+        #if errors:
+        #    raise ValueError("\n".join(errors))
 
         return new
 
     def to_djson(self, **kwargs):
-        d = {}
+        """
+        Build and return a dictionary with **partial** information
+        on the table. This dictionary can be used as template for
+        the creation of a new djson file.
+        """
         # Add template for dojo_info section
-        d["dojo_info"] = {}
+        d = {"dojo_info": DojoInfo.get_template_dict()}
+
+        def djson_entry(p):
+            jdict = p.as_dict()
+            return {k: jdict[k] for k in ["basename", "Z_val", "l_max", "md5"]}
 
         # Add pseudo_metadata section.
-        # If there are multiple pseudos per element, we create a list of dict
-        d["pseudos_metatada"] = meta = {}
+        # If there are multiple pseudos per element, we create a list of dicts.
+        # Authors of the table, will select one.
+        d["pseudos_metadata"] = meta = {}
         for p in self:
             if p.symbol in meta:
+                continue # FIXME
                 old = meta[p.symbol]
                 if not isinstance(old, list): old = [old]
-                old.append(p.as_dict())
+                old.append(djson_entry(p))
                 meta[p.symbol] = old
             else:
-                meta[p.symbol] = p.as_dict()
+                meta[p.symbol] = djson_entry(p)
 
-        return d 
+        return d
 
     @property
     def dojo_info(self):
@@ -205,10 +222,12 @@ class DojoTable(PseudoTable):
         errors = []
         eapp = errors.append
 
-        unique_symbols = set([p.symbol for p in self])
+        # One pseudo per element.
+        unique_symbols = set(p.symbol for p in self)
         if len(unique_symbols) != len(self):
             eapp("Found multiple pseudos for a given element.")
 
+        # Test pseudopotential and dojo_report.
         for p in self:
             if not p.has_dojo_report:
                 eapp("%s does not have the DOJO_REPORT section" % repr(p))
@@ -285,6 +304,7 @@ class DojoTable(PseudoTable):
         import seaborn as sns
         for ax, col in zip(ax_list.ravel(), ["deltafactor", "gbrv_fcc", "df_prime", "gbrv_bcc"]):
             values = frame[col].dropna()
+            #print(type(values))
             sns.distplot(values, ax=ax, rug=True, hist=True, kde=False, label=col, bins=kwargs.pop("bins", 50))
 
             # Add text with Mean or (MARE/RMSRE)
