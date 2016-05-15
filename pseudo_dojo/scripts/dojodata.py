@@ -26,35 +26,35 @@ def dojo_figures(options):
     """
 
     if False:
-	"""
+        """
         read the data from a data file in in staed of psp files
         """
         rows = []
         with open('data') as data_file:
-	    for line in data_file:
+            for line in data_file:
                 line.rstrip('\n')
                 print(line)
-		data = line.split(',')
+                data = line.split(',')
                 print(data)
                 data_dict = {'name': data[0],
-                             'high_dfact_meV': float(data[1]),
-                             'rell_high_dfact_meV': float(data[2]),
-                             'high_dfactprime_meV': float(data[3])}
+                            'high_dfact_meV': float(data[1]),
+                            'rell_high_dfact_meV': float(data[2]),
+                            'high_dfactprime_meV': float(data[3])}
                 if data[5] != 'nan':
-                             data_dict['high_gbrv_bcc_a0_rel_err'] = float(data[5])
-                             data_dict['high_gbrv_fcc_a0_rel_err'] = float(data[7])
+                    data_dict['high_gbrv_bcc_a0_rel_err'] = float(data[5])
+                    data_dict['high_gbrv_fcc_a0_rel_err'] = float(data[7])
                 rows.append(data_dict)
     else:
-	pseudos = options.pseudos
+        pseudos = options.pseudos
 
-    	data_dojo, errors = pseudos.get_dojo_dataframe()
+        data_dojo, errors = pseudos.get_dojo_dataframe()
 
-    	# add data that is not part of the dojo report
-    	data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
-    	for index, p in data_dojo.iterrows():
+        # add data that is not part of the dojo report
+        data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
+        for index, p in data_dojo.iterrows():
             out = p.name.replace('psp8', 'out')
-	    outfile = p.symbol+'/'+out
-       	    parser = OncvOutputParser(outfile)
+            outfile = p.symbol+'/'+out
+            parser = OncvOutputParser(outfile)
             parser.scan()
             data_pseudo.loc[index] = [int(parser.nv), parser.valence, parser.rc_min, parser.rc_max]
   
@@ -156,24 +156,29 @@ def dojo_figures(options):
     def rcmin(elt):
         """R_c min [Bohr]"""
         return elt['rcmin']
+
     def rcmax(elt):
         """R_c max [Bohr]"""
         return elt['rcmax']
+
     def ar(elt):
         """Atomic Radius [Bohr]"""
         return elt['atomic_radii']*0.018897161646320722
+
     def df(elt):
         """Delta Factor [meV / atom]"""
         try:
             return elt['high_dfact_meV']
         except KeyError:
             return float('NaN')
+
     def dfp(elt):
         """Delta Factor Prime"""
         try:
             return elt['high_dfactprime_meV']
         except KeyError:
             return float('NaN')
+
     def bcc(elt):
         """GBRV BCC [% relative error]"""
         try:
@@ -551,11 +556,11 @@ def dojo_table(options):
         print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
     try:
-    	columns = [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies] 
-    	columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies] 
+        columns = [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
+        columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
         columns += [acc + "_abs_fcc" for acc in accuracies]
         columns += [acc + "_abs_bcc" for acc in accuracies]
-    	print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+        print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
         if len(data) > 5:
             print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
     except KeyError:
@@ -652,8 +657,9 @@ def dojo_make_hints(options):
                 report.add_ecuts(new_ecuts)
                 pseudo.write_dojo_report(report)
 
-        except None: #Exception as exc:
+        except Exception as exc:
             print(pseudo.basename, "raised: ", str(exc))
+
 
 def dojo_validate(options):
     from pymatgen.util.io_utils import ask_yesno, prompt
@@ -664,7 +670,7 @@ def dojo_validate(options):
 
         try:
         
-            #test if report is present
+            # test if report is present
             try:
                 report = p.dojo_report
             except Exception as exc:
@@ -672,16 +678,15 @@ def dojo_validate(options):
                 print("Exception: ", exc)
                 continue
 
-            #test if already validated
+            # test if already validated
             if 'validation' in report.keys():
                 print('this pseudo was validated by %s on %s.' % (report['validation']['validated_by'], report['validation']['validated_on']))
-		if not ask_yesno('Would you like to validate again? [Y]'):
+            if not ask_yesno('Would you like to validate again? [Y]'):
                     continue
 
-            #test if hints are present
-            
+            # test if hints are present
 
-            #test for ghosts
+            # test for ghosts
             print('\n= GHOSTS TEST ===========================================\n')
             if report.has_trial('ebands'):
                 for ecut in report['ebands'].keys():
@@ -697,7 +702,7 @@ def dojo_validate(options):
                 print('no ebands trial present, pseudo cannot be validated')
                 continue
 
-            #test trials
+            # test trials
             print('\n= TRIALS TEST ===========================================\n')
             try:
                 error = report.check()
@@ -716,9 +721,8 @@ def dojo_validate(options):
             tablefmt = "grid"
             floatfmt=".2f"
 
-
             print('\n= ECUTS  TEST ===========================================\n')
-	    for acc in accuracies:
+            for acc in accuracies:
                 columns = ["symbol"]
                 headers = ["symbol"]
                 for k in keys:
@@ -729,19 +733,19 @@ def dojo_validate(options):
                 print('ECUTS for accuracy %s:' % acc)
                 print(tabulate(data[columns], headers=headers, tablefmt=tablefmt, floatfmt=floatfmt))
 
-            #test hash
+            # test hash
 
-            #plot the model core charge
+            # plot the model core charge
            
-        except None: #Exception as exc:
+        except Exception as exc:
             print(p.basename, "raised: ", str(exc))
         
-        #ask the final question
+        # ask the final question
         if ask_yesno('Will you validate this pseudo? [n]'):
             name = prompt("please enter your name for later reference : ")
             report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime()) }
             p.write_dojo_report(report)
-	
+
 
 def main():
     def str_examples():

@@ -56,7 +56,6 @@ class DojoWork(Work):
         try:
             self.pseudo.write_dojo_report(old_report)
         except (OSError, IOError, TypeError):
-        #except None: 
             print("Something wrong in write_dojo_report")
 
 
@@ -299,6 +298,7 @@ class PPConvergenceFactory(object):
                                  toldfe=toldfe, spin_mode=spin_mode,
                                  acell=acell, smearing=smearing, workdir=workdir, manager=manager)
 
+
 class EbandsFactoryError(Exception):
     """Base Error class."""
 
@@ -429,14 +429,13 @@ class EbandsFactorWork(DojoWork):
         #if the energy is present the energy is given
  
         #TODO fix magic
-	path = str(self.workdir)
+        path = str(self.workdir)
         outfile = os.path.join(str(self[0].outdir),"out_GSR.nc")
         results = {'workdir': path, 'GSR-nc': outfile}
         
         print(results)
 
         return results
-        
 
     def on_all_ok(self):
         """Callback executed when all tasks in self have reached S_OK."""

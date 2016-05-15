@@ -12,7 +12,7 @@ import abipy.abilab as abilab
 
 from warnings import warn
 from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory, EbandsFactory
-from pymatgen.io.abinitio.pseudos import Pseudo
+from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 
 
@@ -81,7 +81,7 @@ def build_flow(pseudo, options):
         try:
             ecut_hint = int(report["ppgen_hints"]["normal"]["ecut"])
         except KeyError:
-	    ecut_hint = ppgen_ecut
+            ecut_hint = ppgen_ecut
 
     #if 'extend' in options:
     #    next_ecut = max(ecut_list) + 2
@@ -167,7 +167,7 @@ def build_flow(pseudo, options):
         ecut = ecut_hint    
         str_ecut = '%.1f' % ecut
         if "ebands" in report and str_ecut in report["ebands"].keys():
-	    pass
+            pass
         else:
             kppa = 3000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
@@ -177,7 +177,6 @@ def build_flow(pseudo, options):
                 flow.register_work(work, workdir='EbandsAt'+str(ecut))
             else:
                 warn('cannot create EbandsAt' + str(ecut) + ' work, factory returned None')
-
 
     if len(flow) > 0:
         return flow.allocate()
@@ -196,7 +195,6 @@ def main():
 
     def show_examples_and_exit(error_code=1):
         """Display the usage of the script."""
-        #sys.stderr.write(str_examples()+'\n')
         print(str_examples())
         sys.exit(error_code)
 
