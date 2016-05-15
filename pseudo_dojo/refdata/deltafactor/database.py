@@ -135,6 +135,7 @@ class DeltaFactorDatabase(object):
     # Reference code.
     _REF_CODE = "WIEN2k"
 
+    # FIXME: This should be a dict xc --> FILE_LIST
     _FILES = [
         "WIEN2k-PBE.txt",
         "WIEN2k-LDA.txt",

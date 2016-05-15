@@ -10,11 +10,8 @@ __version__ = "0.1"
 __maintainer__ = "Matteo Giantomassi"
 
 def check(options):
-
-
-
+    """Check pseudopotential"""
     return 0
-
 
 #def regenerate(options):
 #    return 0
@@ -64,7 +61,7 @@ if __name__ == "__main__":
     try:
         do_prof = sys.argv[1] == "prof"
         if do_prof: sys.argv.pop(1)
-    except: 
+    except Exception:
         do_prof = False
 
     if do_prof:

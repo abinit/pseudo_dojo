@@ -624,8 +624,7 @@ def dojo_check(options):
 
 
 def dojo_make_hints(options):
-    from pymatgen.util.io_utils import ask_yesno, prompt
-    import numpy as np
+    
 
     if os.path.isfile('LDA'):
         xc = 'LDA'

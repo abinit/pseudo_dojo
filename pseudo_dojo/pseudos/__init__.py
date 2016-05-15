@@ -18,7 +18,7 @@ def dojotable_absdir(basedir):
     Return the absolute dirpath of the table from its basename
     """
     if basedir not in DOJOTABLE_BASEDIRS:
-        raise RuntimeError("%s is not registerd in DOJOTABLE_BASEDIRS, change pseudo_dojo/pseudos/__init__.py") 
+        raise RuntimeError("%s is not registered in DOJOTABLE_BASEDIRS, change pseudo_dojo/pseudos/__init__.py") 
 
     return os.path.join(here, basedir)
 
