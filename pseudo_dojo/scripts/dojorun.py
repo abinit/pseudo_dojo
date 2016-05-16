@@ -44,7 +44,6 @@ def build_flow(pseudo, options):
     if os.path.exists(workdir): 
         warn("Directory %s already exists" % workdir)
         return None
-        #raise ValueError("%s exists" % workdir)
 
     flow = abilab.Flow(workdir=workdir, manager=options.manager)
 

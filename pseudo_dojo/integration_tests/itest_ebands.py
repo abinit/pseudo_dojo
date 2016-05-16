@@ -9,7 +9,12 @@ from pseudo_dojo.dojo.works import EbandsFactory
 
 def itest_ebands(fwp, tvars):
     """Testing the ebands flow:"""
-    pseudo = abidata.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
+    #pseudo = abidata.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
+    pseudo =  abilab.Pseudo.from_file("./Pb-d-3_r.psp8").as_tmpfile()
+    print(pseudo)
+    #return
+    spin_mode = "unpolarized"
+    spin_mode = "spinor"
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
     ebands_factory = EbandsFactory(xc="PBE")
@@ -17,9 +22,9 @@ def itest_ebands(fwp, tvars):
     ecut = 8
     pawecutdg = 2 * ecut if pseudo.ispaw else None
     kppa = 20  # this value is for testing purpose 
-    work = ebands_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
-                                                  bands_factor=2, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
-
+    work = ebands_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, 
+                                          spin_mode=spin_mode, bands_factor=2, smearing="fermi_dirac:0.0005",
+                                          mem_test=0)
     flow.register_work(work)
 
     flow.allocate()

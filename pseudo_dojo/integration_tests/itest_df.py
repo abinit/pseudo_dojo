@@ -14,7 +14,8 @@ def itest_deltafactor(fwp, tvars):
     Testing the flow used for the computation of the deltafactor.
    """
     # Path of the pseudopotential to test.
-    pseudo = abidata.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
+    #pseudo = abidata.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
+    pseudo =  abilab.Pseudo.from_file("./Pb-d-3_r.psp8")
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
 
@@ -26,7 +27,9 @@ def itest_deltafactor(fwp, tvars):
     ecut = 2
     pawecutdg = ecut * 2 if pseudo.ispaw else None
 
-    work = DeltaFactory().work_for_pseudo(pseudo, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, paral_kgb=tvars.paral_kgb)
+    work = DeltaFactory().work_for_pseudo(pseudo, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, 
+                                          include_so=True,
+                                          paral_kgb=tvars.paral_kgb)
 
     # Register the workflow.
     flow.register_work(work)

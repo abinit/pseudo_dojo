@@ -201,7 +201,7 @@ class PseudoConvergence(DojoWork):
         inp.set_vars(
             ecut=ecut,
             toldfe=self.toldfe,
-            prtwf=1,
+            prtwf=-1,
         )
 
         self.ecuts.append(ecut)
@@ -318,31 +318,34 @@ class EbandsFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, pseudo, accuracy="normal", kppa=3000, ecut=None, pawecutdg=None,
+    def work_for_pseudo(self, pseudo, accuracy="normal", kppa=3000, ecut=None, pawecutdg=None, spin_mode="unpolarized",
                         toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
+            pseudo: filepath or :class:`Pseudo` object.
+            kppa: Number of k-points per atom.
+            ecut: Cutoff energy in Hartree
+            pawecutdg: Cutoff energy of the fine grid (PAW only)
+            spin_mode: Spin polarization option
+            toldfe: Tolerance on the total energy (Ha).
+            smearing: Smearing technique.
+            workdir: Working directory.
+            manager: :class:`TaskManager` object.
             kwargs: Extra variables passed to Abinit.
-
-        .. note::
-
-            0.001 Rydberg is the value used with WIEN2K
         """
         pseudo = Pseudo.as_pseudo(pseudo)
-        symbol = pseudo.symbol
-
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
         try:
-            cif_path = self.get_cif_path(symbol)
+            cif_path = self.get_cif_path(pseudo.symbol)
         except Exception as exc:
             raise self.Error(str(exc))
 
+        # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
-        spin_mode = "unpolarized"
 
         return EbandsFactorWork(
             structure, pseudo, kppa,
@@ -354,6 +357,7 @@ class EbandsFactory(object):
 class EbandsFactorWork(DojoWork):
     """Work for the calculation of the deltafactor."""
 
+    # THIS IS WRONG! toldfe for band structure, lot of bands computed with SCF!
     def __init__(self, structure, pseudo, kppa,
                  bands_factor=10, ecut=None, pawecutdg=None, ecutsm=0.5,
                  spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
@@ -365,6 +369,7 @@ class EbandsFactorWork(DojoWork):
             structure: :class:`Structure` object
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             kppa: Number of k-points per atom.
+            bands_factor: Number of bands computed is given by bands_factor * int(nval / spin_fact)
             spin_mode: Spin polarization mode.
             toldfe: Tolerance on the energy (Ha)
             smearing: Smearing technique.
@@ -382,7 +387,7 @@ class EbandsFactorWork(DojoWork):
         # Take 10 times the number of bands to sample the empty space.
         nval = structure.num_valence_electrons(self.pseudo)
         spin_fact = 2 if spin_mode.nsppol == 2 else 1
-        nband = bands_factor*int(nval / spin_fact)
+        nband = bands_factor * int(nval / spin_fact)
 
         # Set extra_abivars
         self.ecut, self.pawecutdg = ecut, pawecutdg
@@ -393,7 +398,7 @@ class EbandsFactorWork(DojoWork):
             ecutsm=ecutsm,
             nband=nband,
             toldfe=toldfe,
-            prtwf=0,
+            prtwf=-1,
             nstep=200,
             chkprim=0,
             mem_test=0
@@ -401,7 +406,9 @@ class EbandsFactorWork(DojoWork):
 
         extra_abivars.update(**kwargs)
 
-        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=chksymbreak)
+        # Disable time-reversal if nspinor == 2
+        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=chksymbreak,
+                                                use_time_reversal=spin_mode.nspinor==1)
 
         scf_input = abilab.AbinitInput(structure=structure, pseudos=self.pseudo)
         scf_input.add_abiobjects(ksampling, smearing, spin_mode)
@@ -463,11 +470,21 @@ class DeltaFactory(object):
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
     def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, ecut=None, pawecutdg=None,
-                        toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
+                        toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", include_so=False,
+                        workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
-        Args:
+        Args:   
+            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
+            kppa: kpoint per atom
+            ecut: Cutoff energy in Hartree
+            pawecutdg: Cutoff energy of the fine grid (PAW only)
+            toldfe: Tolerance on the energy (Ha)
+            smearing: Smearing technique.
+            include_so: True if pseudo has SO contributions and calculation should be done with nspinor=2
+            workdir: String specifing the working directory.
+            manager: :class:`TaskManager` responsible for the submission of the tasks.
             kwargs: Extra variables passed to Abinit.
 
         .. note::
@@ -476,7 +493,6 @@ class DeltaFactory(object):
         """
         pseudo = Pseudo.as_pseudo(pseudo)
         symbol = pseudo.symbol
-
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
@@ -487,8 +503,7 @@ class DeltaFactory(object):
 
         # Include spin polarization for O, Cr and Mn (antiferromagnetic)
         # and Fe, Co, and Ni (ferromagnetic).
-        # antiferromagnetic Cr, O
-        # ferrimagnetic Mn
+        # antiferromagnetic Cr, O, ferrimagnetic Mn
         spin_mode = "unpolarized"
 
         if symbol in ["Fe", "Co", "Ni"]:
@@ -501,6 +516,7 @@ class DeltaFactory(object):
                 kwargs['spinat'] = 4 * [(0, 0, 0.6)]
 
         if symbol in ["O", "Cr", "Mn"]:
+            # Here we could have problems with include_so since we don't enforce "afm"
             spin_mode = "afm"
             if symbol == 'O':
                 kwargs['spinat'] = [(0, 0, 1.5), (0, 0, 1.5), (0, 0, -1.5), (0, 0, -1.5)]
@@ -508,6 +524,8 @@ class DeltaFactory(object):
                 kwargs['spinat'] = [(0, 0, 1.5), (0, 0, -1.5)]
             elif symbol == 'Mn':
                 kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
+
+        if include_so: spin_mode = "spinor"
 
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
@@ -586,7 +604,8 @@ class DeltaFactorWork(DojoWork):
 
             new_structure = Structure(new_lattice, structure.species, structure.frac_coords)
 
-            ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak)
+            ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak,
+                                                    use_time_reversal=spin_mode.nspinor==1)
 
             scf_input = abilab.AbinitInput(structure=new_structure, pseudos=self.pseudo)
             scf_input.add_abiobjects(ksampling, smearing, spin_mode)
