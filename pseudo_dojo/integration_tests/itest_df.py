@@ -28,7 +28,7 @@ def itest_deltafactor(fwp, tvars):
     pawecutdg = ecut * 2 if pseudo.ispaw else None
 
     work = DeltaFactory().work_for_pseudo(pseudo, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, 
-                                          include_so=True,
+                                          include_soc=True,
                                           paral_kgb=tvars.paral_kgb)
 
     # Register the workflow.

@@ -470,7 +470,7 @@ class DeltaFactory(object):
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
     def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, ecut=None, pawecutdg=None,
-                        toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", include_so=False,
+                        toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", include_soc=False,
                         workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
@@ -482,7 +482,7 @@ class DeltaFactory(object):
             pawecutdg: Cutoff energy of the fine grid (PAW only)
             toldfe: Tolerance on the energy (Ha)
             smearing: Smearing technique.
-            include_so: True if pseudo has SO contributions and calculation should be done with nspinor=2
+            include_soc: True if pseudo has SO contributions and calculation should be done with nspinor=2
             workdir: String specifing the working directory.
             manager: :class:`TaskManager` responsible for the submission of the tasks.
             kwargs: Extra variables passed to Abinit.
@@ -525,7 +525,7 @@ class DeltaFactory(object):
             elif symbol == 'Mn':
                 kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
 
-        if include_so: spin_mode = "spinor"
+        if include_soc: spin_mode = "spinor"
 
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)

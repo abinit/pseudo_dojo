@@ -40,6 +40,12 @@ def build_flow(pseudo, options):
     """Build the flow, returns None if no calculation must be performed.""" 
     pseudo = Pseudo.as_pseudo(pseudo)
 
+    if options.soc and not pseudo.supports_soc:
+        raise TypeError("SOC is on but pseudo does not support spin-orbit couplit")
+
+    if not options.soc and pseudo.supports_soc and pseudo.path.endswith("psp8"):
+        warn("[STRANGE]: Your psp8 pseudos supports SOC but options.soc is off")
+
     workdir = pseudo.basename + "_DOJO"
     if os.path.exists(workdir): 
         warn("Directory %s already exists" % workdir)
@@ -118,11 +124,13 @@ def build_flow(pseudo, options):
 
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             # Build and register the workflow.
-            work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg, **extra_abivars)
+            work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg,  
+                                           include_soc=options.soc, **extra_abivars)
             flow.register_work(work, workdir='WDF' + str(ecut))
 
     # GBRV tests.
     if "gbrv" in options.trials:
+        assert not options.soc
         gbrv_factory = GbrvFactory()
         gbrv_structs = ("fcc", "bcc")
 
@@ -142,6 +150,7 @@ def build_flow(pseudo, options):
 
     # PHONON test
     if "phonon" in options.trials:
+        assert not options.soc
         phonon_factory = DFPTPhononFactory()
 
         for ecut in ecut_list:
@@ -161,6 +170,7 @@ def build_flow(pseudo, options):
 
     # PHONON WihtOut Asr test
     if "phwoa" in options.trials:
+        assert not options.soc
         phonon_factory = DFPTPhononFactory()
 
         for ecut in [ecut_list[0], ecut_list[-1]]:
@@ -180,6 +190,7 @@ def build_flow(pseudo, options):
 
     # EBANDS test
     if "ebands" in options.trials:
+        assert not options.soc
         ebands_factory = EbandsFactory()
         ecut = ecut_hint    
         str_ecut = '%.1f' % ecut
@@ -223,12 +234,15 @@ def main():
     parser.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
     parser.add_argument('-p', '--plot', default=False, action="store_true", help="Plot convergence when the flow is done")
     parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store", help="Extend the ecut grid with the new-ecut point")
+    parser.add_argument('--soc', default=False, action="store_true", help=(
+                        "Perform non-collinear run (nspinor==2, kptopt=3). Pseudo must have spin-orbit characteristic"))
 
     def parse_trials(s):
         if s == "all": return ["df", "gbrv", "phonon", "phowa"]
         return s.split(",")
 
-    parser.add_argument('--trials', default="all",  type=parse_trials, help=("List of tests e.g --trials=df,gbrv,phonon,phwoa\n"
+    parser.add_argument('--trials', default="all",  type=parse_trials, 
+                        help=("List of tests e.g --trials=df,gbrv,phonon,phwoa\n"
                         "  df:     test delta factor against all electron refference\n"
                         "  gbrv:   test fcc and bcc lattice parameters agains AE refference\n"
                         "  phonon: test phonon mode at gamma convergence\n"
