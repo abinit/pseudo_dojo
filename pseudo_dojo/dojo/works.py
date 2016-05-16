@@ -585,7 +585,7 @@ class DeltaFactorWork(DojoWork):
             ecutsm=ecutsm,
             toldfe=toldfe,
             #nband=nband,
-            prtwf=0 if not connect else 1,
+            prtwf=-1 if not connect else 1,
             #paral_kgb=paral_kgb,
             chkprim=0,
             nstep=200,
@@ -801,7 +801,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             ecut=ecut,
             pawecutdg=pawecutdg,
             toldfe=toldfe,
-            prtwf=0,
+            prtwf=-1,
             #ecutsm=0.5,
             nband=nband,
             #paral_kgb=paral_kgb
