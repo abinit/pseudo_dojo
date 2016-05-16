@@ -1061,7 +1061,8 @@ class DFPTPhononFactory(object):
             try:
                 v0 = nat * report['deltafactor'][float(ecut_str)]['v0']
             except KeyError:
-                # the df calculation at this ecut is not done already so the phonon task can not be created
+                logger.info("The df calculation at this ecut is not done already so the phonon task can not be created")
+                logger.info("Returning None")
                 return None
 
         structure.scale_lattice(v0)

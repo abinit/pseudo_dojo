@@ -1,4 +1,4 @@
-"""Integration tests for pseudodojo."""
+"""Integration tests for deltafactor calculations with Abinit and AbiPy."""
 from __future__ import print_function, division, unicode_literals, absolute_import
 
 import pytest
@@ -10,8 +10,9 @@ from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory
 
 
 def itest_deltafactor(fwp, tvars):
-    """Testing the flow used for the computation of the deltafactor."""
-
+    """
+    Testing the flow used for the computation of the deltafactor.
+   """
     # Path of the pseudopotential to test.
     pseudo = abidata.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
 
