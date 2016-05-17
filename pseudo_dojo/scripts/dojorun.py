@@ -39,6 +39,8 @@ class RedirectStdStreams(object):
 def build_flow(pseudo, options):
     """Build the flow, returns None if no calculation must be performed.""" 
     pseudo = Pseudo.as_pseudo(pseudo)
+    if pseudo is None:
+        raise TypeError("Cannot generated Pseudo object from input data. Check your file")
 
     if options.soc and not pseudo.supports_soc:
         raise TypeError("SOC is on but pseudo does not support spin-orbit couplit")
@@ -305,7 +307,6 @@ def main():
 
         pseudos = []
         for d in dirs:
-            #print(d)
             pseudos.extend(os.path.join(d, p) for p in os.listdir(d) if p.endswith(".psp8"))
 
         if not pseudos:
@@ -319,7 +320,7 @@ def main():
         #exc_log = open(exc_filename, "w")
         exc_log = sys.stderr
 
-        print(pseudos)
+        #print(pseudos)
 
         for pseudo in pseudos:
             pseudo = Pseudo.as_pseudo(pseudo)
