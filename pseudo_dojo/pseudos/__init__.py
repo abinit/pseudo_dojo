@@ -9,8 +9,7 @@ import os
 here = os.path.dirname(__file__)
 
 DOJOTABLE_BASEDIRS = [
-    "ONCVPSP-PBE",
-    "ONCVPSP-PBE-MC2",
+    "ONCVPSP-PBE-PDv0.2",
 ]
 
 
@@ -18,55 +17,21 @@ def dojotable_absdir(basedir):
     """
     Return the absolute dirpath of the table from its basename
     """
-    assert basedir in DOJOTABLE_BASEDIRS
+    if basedir not in DOJOTABLE_BASEDIRS:
+        raise RuntimeError("%s is not registered in DOJOTABLE_BASEDIRS, change pseudo_dojo/pseudos/__init__.py") 
+
     return os.path.join(here, basedir)
-
-
-#def find_ncfiles(top):
-#    """
-#    Find all netcdf files starting from the top-level directory top.
-#    Filenames must be unique. Directories whose start with "tmp_" are
-#    excluded from the search.
-#
-#    Returns:
-#        dictionary with mapping: basename --> absolute path.
-#    """
-#    SILENT = 0
-#    ncfiles = {}
-#    for dirpath, dirnames, filenames in os.walk(top):
-#
-#        if "tmp_" in dirpath:
-#            continue
-#
-#        for basename in filenames:
-#            apath = os.path.join(dirpath, basename)
-#            if basename.endswith(".nc"):
-#
-#                if basename in ncfiles:
-#                    err_msg =  "Found duplicated basename %s\n" % basename
-#                    err_msg += "Stored: %s, new %s\n" % (ncfiles[basename], apath)
-#
-#                    if not SILENT:
-#                        import warnings
-#                        warnings.warn(err_msg)
-#                        #raise ValueError(err_msg)
-#                        SILENT += 1
-#
-#                else:
-#                    ncfiles[basename] = apath 
-#
-#    return ncfiles
 
 
 def write_notebook(pseudopath, with_eos=False, tmpfile=None):
     """
-    Write an ipython notebook to pseudopath.
+    Read a pseudopotential file and write an ipython notebook.
     By default, the notebook is created in the same directory
     as pseudopath but with the extension `ipynb` unless `tmpfile` is set to True.
     In the later case, a temporay file is created.
 
     Args:
-        pseudo: Path to the pseudopotential file.
+        pseudopath: Path to the pseudopotential file.
         with_eos: True if EOS plots are wanted.
 
     Returns:
@@ -79,7 +44,7 @@ def write_notebook(pseudopath, with_eos=False, tmpfile=None):
     #import IPython.nbformat as nbf
 
     nb = nbf.new_notebook()
-    
+
     cells = [
 
         nbf.new_heading_cell("This is an auto-generated notebook for %s" % os.path.basename(pseudopath)),
@@ -96,13 +61,13 @@ sns.set(style='ticks', palette='Set2')"""),
 
         nbf.new_code_cell("""\
 # Construct the pseudo object and get the DojoReport
-from pymatgen.io.abinitio.pseudos import Pseudo
+from pymatgen.io.abinit.pseudos import Pseudo
 pseudo = Pseudo.from_file('%s')
 report = pseudo.dojo_report""" % os.path.abspath(pseudopath)),
 
         nbf.new_heading_cell("ONCVPSP Input File:"),
         nbf.new_code_cell("""\
-input_file = pseudo.filepath.replace(".psp8", ".in") 
+input_file = pseudo.filepath.replace(".psp8", ".in")
 %cat $input_file"""),
 
         nbf.new_code_cell("""\
@@ -163,12 +128,12 @@ fig = report.plot_deltafactor_convergence(what=("-dfact_meV", "-dfactprime_meV")
         nbf.new_heading_cell("Convergence of phonon frequencies at $\Gamma$:"),
         nbf.new_code_cell("fig = report.plot_phonon_convergence(show=False)"),
 
-#        nbf.new_heading_cell("Comparison with the other pseudos in this table"),
-#        nbf.new_code_cell("""\
-#from pseudo_dojo import get_pseudos
-#pseudos = get_pseudos(".")
-#if len(pseudos) > 1:
-#    pseudos.dojo_compare()"""),
+        #nbf.new_heading_cell("Comparison with the other pseudos in this table"),
+        #nbf.new_code_cell("""\
+        #from pseudo_dojo import get_pseudos
+        #pseudos = get_pseudos(".")
+        #if len(pseudos) > 1:
+        #    pseudos.dojo_compare()"""),
 
     ]
 
@@ -186,7 +151,7 @@ fig = report.plot_deltafactor_convergence(what=("-dfact_meV", "-dfactprime_meV")
     nb['worksheets'].append(nbf.new_worksheet(cells=cells))
 
     # Next, we write it to a file on disk that we can then open as a new notebook.
-    # Note: This should be as easy as: nbf.write(nb, fname), but the current api is 
+    # Note: This should be as easy as: nbf.write(nb, fname), but the current api is
     # a little more verbose and needs a real file-like object.
     if tmpfile is None:
         root, ext = os.path.splitext(pseudopath)
@@ -203,7 +168,7 @@ fig = report.plot_deltafactor_convergence(what=("-dfact_meV", "-dfactprime_meV")
 
 def make_open_notebook(pseudopath, with_eos=True):
     """
-    Generate an ipython notebook from the pseudopotential path and  
+    Generate an ipython notebook from the pseudopotential path and
     open it in the browser.
     """
     path = write_notebook(pseudopath, tmpfile=True)

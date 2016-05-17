@@ -43,6 +43,7 @@ with open(release_file) as f:
     code = compile(f.read(), release_file, 'exec')
     exec(code)
 
+
 #def find_packages():
 #    """Find all packages."""
 #    return find_packages(exclude=())
@@ -53,11 +54,9 @@ def find_package_data():
     # This is not enough for these things to appear in an sdist.
     # We need to muck with the MANIFEST to get this to work
     package_data = {
-        'pseudo_dojo.refdata.deltafactor.data' : ['*.txt', 'CIFs/*', 'history/*'],
-        'pseudo_dojo.refdata.gbrv.data' : ['*.csv'],
-        'pseudo_dojo.pseudos' : [
-            "ONCVPSP-PBE/*/*",
-            ],
+        'pseudo_dojo.refdata.deltafactor.data': ['*.txt', 'CIFs/*', 'history/*'],
+        'pseudo_dojo.refdata.gbrv.data': ['*.csv'],
+        'pseudo_dojo.pseudos': ["ONCVPSP-PBE/*/*",],
     }
     return package_data
 
@@ -65,7 +64,6 @@ def find_package_data():
 def find_scripts():
     """Find pseudo_dojo scripts."""
     scripts = []
-    #
     # All python files in abipy/scripts
     pyfiles = glob(os.path.join('pseudo_dojo','scripts',"*.py") )
     scripts.extend(pyfiles)
@@ -91,13 +89,16 @@ def cleanup():
 install_requires = [
     "periodictable",
     "six",
-    "numpy>=1.5",
-    "scipy>=0.10",
-    "pymatgen>=3.0.8",
+    "numpy",
+    "scipy",
     "tabulate",
+    "pandas",
     "validictory",
     "atomicfile",
     "periodic_table_plotter",
+    "monty",
+    #"pymatgen>=3.5.4",
+    #"abipy>=0.2",
     #"matplotlib>=1.1",
 ]
 

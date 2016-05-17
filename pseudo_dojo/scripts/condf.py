@@ -10,8 +10,8 @@ import numpy as np
 import pprint
 
 from pymatgen.util.convergence import determine_convergence
-from pymatgen.io.abinitio.netcdf import NetcdfReader
-from pymatgen.io.abinitio.pseudos import Pseudo
+from pymatgen.io.abinit.netcdf import NetcdfReader
+from pymatgen.io.abinit.pseudos import Pseudo
 
 
 class DeltaFactorData(object):

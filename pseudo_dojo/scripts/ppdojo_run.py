@@ -6,8 +6,8 @@ import sys
 import argparse
 
 from pprint import pprint
-from pymatgen.io.abinitio import TaskManager
-from pymatgen.io.abinitio.pseudos import PseudoTable 
+from pymatgen.io.abinit import TaskManager
+from pymatgen.io.abinit.pseudos import PseudoTable 
 from pseudo_dojo.dojo import Dojo, HintsAndGbrvDojo
 
 __author__ = "Matteo Giantomassi"

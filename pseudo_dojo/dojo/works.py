@@ -201,7 +201,7 @@ class PseudoConvergence(DojoWork):
         inp.set_vars(
             ecut=ecut,
             toldfe=self.toldfe,
-            prtwf=1,
+            prtwf=-1,
         )
 
         self.ecuts.append(ecut)
@@ -308,8 +308,7 @@ class EbandsFactory(object):
     Error = EbandsFactoryError
 
     def __init__(self, xc='PBE'):
-        # Get a reference to the deltafactor database
-        # used to get a structure
+        # Get a reference to the deltafactor database. Used to get a structure
         self._dfdb = df_database(xc=xc)
 
     def get_cif_path(self, symbol):
@@ -319,31 +318,34 @@ class EbandsFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, pseudo, accuracy="normal", kppa=3000, ecut=None, pawecutdg=None,
+    def work_for_pseudo(self, pseudo, accuracy="normal", kppa=3000, ecut=None, pawecutdg=None, spin_mode="unpolarized",
                         toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
+            pseudo: filepath or :class:`Pseudo` object.
+            kppa: Number of k-points per atom.
+            ecut: Cutoff energy in Hartree
+            pawecutdg: Cutoff energy of the fine grid (PAW only)
+            spin_mode: Spin polarization option
+            toldfe: Tolerance on the total energy (Ha).
+            smearing: Smearing technique.
+            workdir: Working directory.
+            manager: :class:`TaskManager` object.
             kwargs: Extra variables passed to Abinit.
-
-        .. note::
-
-            0.001 Rydberg is the value used with WIEN2K
         """
         pseudo = Pseudo.as_pseudo(pseudo)
-        symbol = pseudo.symbol
-
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
         try:
-            cif_path = self.get_cif_path(symbol)
+            cif_path = self.get_cif_path(pseudo.symbol)
         except Exception as exc:
             raise self.Error(str(exc))
 
+        # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
-        spin_mode = "unpolarized"
 
         return EbandsFactorWork(
             structure, pseudo, kppa,
@@ -355,6 +357,7 @@ class EbandsFactory(object):
 class EbandsFactorWork(DojoWork):
     """Work for the calculation of the deltafactor."""
 
+    # THIS IS WRONG! toldfe for band structure, lot of bands computed with SCF!
     def __init__(self, structure, pseudo, kppa,
                  bands_factor=10, ecut=None, pawecutdg=None, ecutsm=0.5,
                  spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
@@ -366,6 +369,7 @@ class EbandsFactorWork(DojoWork):
             structure: :class:`Structure` object
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             kppa: Number of k-points per atom.
+            bands_factor: Number of bands computed is given by bands_factor * int(nval / spin_fact)
             spin_mode: Spin polarization mode.
             toldfe: Tolerance on the energy (Ha)
             smearing: Smearing technique.
@@ -383,7 +387,7 @@ class EbandsFactorWork(DojoWork):
         # Take 10 times the number of bands to sample the empty space.
         nval = structure.num_valence_electrons(self.pseudo)
         spin_fact = 2 if spin_mode.nsppol == 2 else 1
-        nband = bands_factor*int(nval / spin_fact)
+        nband = bands_factor * int(nval / spin_fact)
 
         # Set extra_abivars
         self.ecut, self.pawecutdg = ecut, pawecutdg
@@ -394,7 +398,7 @@ class EbandsFactorWork(DojoWork):
             ecutsm=ecutsm,
             nband=nband,
             toldfe=toldfe,
-            prtwf=0,
+            prtwf=-1,
             nstep=200,
             chkprim=0,
             mem_test=0
@@ -402,7 +406,9 @@ class EbandsFactorWork(DojoWork):
 
         extra_abivars.update(**kwargs)
 
-        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=chksymbreak)
+        # Disable time-reversal if nspinor == 2
+        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=chksymbreak,
+                                                use_time_reversal=spin_mode.nspinor==1)
 
         scf_input = abilab.AbinitInput(structure=structure, pseudos=self.pseudo)
         scf_input.add_abiobjects(ksampling, smearing, spin_mode)
@@ -430,7 +436,7 @@ class EbandsFactorWork(DojoWork):
  
         #TODO fix magic
         path = str(self.workdir)
-        outfile = os.path.join(str(self[0].outdir),"out_GSR.nc")
+        outfile = os.path.join(str(self[0].outdir), "out_GSR.nc")
         results = {'workdir': path, 'GSR-nc': outfile}
         
         print(results)
@@ -464,11 +470,21 @@ class DeltaFactory(object):
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
     def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, ecut=None, pawecutdg=None,
-                        toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
+                        toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", include_soc=False,
+                        workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
-        Args:
+        Args:   
+            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
+            kppa: kpoint per atom
+            ecut: Cutoff energy in Hartree
+            pawecutdg: Cutoff energy of the fine grid (PAW only)
+            toldfe: Tolerance on the energy (Ha)
+            smearing: Smearing technique.
+            include_soc: True if pseudo has SO contributions and calculation should be done with nspinor=2
+            workdir: String specifing the working directory.
+            manager: :class:`TaskManager` responsible for the submission of the tasks.
             kwargs: Extra variables passed to Abinit.
 
         .. note::
@@ -477,7 +493,6 @@ class DeltaFactory(object):
         """
         pseudo = Pseudo.as_pseudo(pseudo)
         symbol = pseudo.symbol
-
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
@@ -488,8 +503,7 @@ class DeltaFactory(object):
 
         # Include spin polarization for O, Cr and Mn (antiferromagnetic)
         # and Fe, Co, and Ni (ferromagnetic).
-        # antiferromagnetic Cr, O
-        # ferrimagnetic Mn
+        # antiferromagnetic Cr, O, ferrimagnetic Mn
         spin_mode = "unpolarized"
 
         if symbol in ["Fe", "Co", "Ni"]:
@@ -502,6 +516,7 @@ class DeltaFactory(object):
                 kwargs['spinat'] = 4 * [(0, 0, 0.6)]
 
         if symbol in ["O", "Cr", "Mn"]:
+            # Here we could have problems with include_so since we don't enforce "afm"
             spin_mode = "afm"
             if symbol == 'O':
                 kwargs['spinat'] = [(0, 0, 1.5), (0, 0, 1.5), (0, 0, -1.5), (0, 0, -1.5)]
@@ -510,9 +525,11 @@ class DeltaFactory(object):
             elif symbol == 'Mn':
                 kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
 
+        if include_soc: spin_mode = "spinor"
+
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
-#        print(structure)
+        #print(structure)
 
         # Magnetic elements:
         # Start from previous SCF run to avoid getting trapped in local minima 
@@ -568,7 +585,7 @@ class DeltaFactorWork(DojoWork):
             ecutsm=ecutsm,
             toldfe=toldfe,
             #nband=nband,
-            prtwf=0 if not connect else 1,
+            prtwf=-1 if not connect else 1,
             #paral_kgb=paral_kgb,
             chkprim=0,
             nstep=200,
@@ -587,7 +604,8 @@ class DeltaFactorWork(DojoWork):
 
             new_structure = Structure(new_lattice, structure.species, structure.frac_coords)
 
-            ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak)
+            ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak,
+                                                    use_time_reversal=spin_mode.nspinor==1)
 
             scf_input = abilab.AbinitInput(structure=new_structure, pseudos=self.pseudo)
             scf_input.add_abiobjects(ksampling, smearing, spin_mode)
@@ -650,17 +668,18 @@ class DeltaFactorWork(DojoWork):
                 "dfactprime_meV": dfactprime_meV
             }
 
-            for k,v in res.items():
+            for k, v in res.items():
                 v = v if not isinstance(v, complex) else float('NaN')
                 res[k] = v          
   
             results.update(res)
 
             d = {k: results[k] for k in 
-                ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes", "num_sites", "dfactprime_meV")}
+                  ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes",
+                   "num_sites", "dfactprime_meV")}
 
             # Write data for the computation of the delta factor
-            with open(self.outdir.path_in("deltadata.txt"), "w") as fh:
+            with open(self.outdir.path_in("deltadata.txt"), "wt") as fh:
                 fh.write("# Deltafactor = %s meV\n" % dfact)
                 fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
                 for v, e in zip(self.volumes, etotals):
@@ -782,7 +801,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             ecut=ecut,
             pawecutdg=pawecutdg,
             toldfe=toldfe,
-            prtwf=0,
+            prtwf=-1,
             #ecutsm=0.5,
             nband=nband,
             #paral_kgb=paral_kgb
@@ -917,8 +936,9 @@ class GbrvRelaxAndEosWork(DojoWork):
 
     def on_all_ok(self):
         """
-        This method is called when self reaches S_OK. It reads the optimized structure from the netcdf file and builds
-        a new work for the computation of the EOS with the GBRV parameters.
+        This method is called when self reaches S_OK. It reads the optimized structure
+        from the netcdf file and builds a new work for the computation of the EOS
+        with the GBRV parameters.
         """
         if not self.add_eos_done:
             self.add_eos_tasks()
@@ -936,8 +956,8 @@ class DFPTError(Exception):
 class DFPTPhononFactory(object):
     """
     Factory class producing `Workflow` objects for DFPT Phonon calculations.
-    In particular to test if the acoustic modes are zero, or at least from which cuttoff they can be made zero by
-    imposing the accoustic sum rule.
+    The work tests if the acoustic modes at Gamma are zero, or at least from which cuttoff
+    they can be made zero by imposing the accoustic sum rule.
     """
 
     Error = DFPTError
@@ -979,6 +999,7 @@ class DFPTPhononFactory(object):
             kwargs.pop('accuracy')
         except KeyError:
             pass
+
         kwargs.pop('smearing')
         # to be applicable to all systems we treat all as is they were metals
         # some systems have a non primitive cell to allow for a anti ferromagnetic structure > chkprim = 0
@@ -1009,7 +1030,7 @@ class DFPTPhononFactory(object):
             # rfatpol=[1, natom],  # Set of atoms to displace.
             # rfdir=[1, 1, 1],     # Along this set of reduced coordinate axis
             multi[i+1].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=rfasr, 
-                              rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
+                                rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
 
             # rfasr = 1 is not correct
             # response calculations can not be restarted > nstep = 200, a problem to solve here is that abinit continues
@@ -1059,7 +1080,8 @@ class DFPTPhononFactory(object):
             try:
                 v0 = nat * report['deltafactor'][float(ecut_str)]['v0']
             except KeyError:
-                # the df calculation at this ecut is not done already so the phonon task can not be created
+                logger.info("The df calculation at this ecut is not done already so the phonon task can not be created")
+                logger.info("Returning None")
                 return None
 
         structure.scale_lattice(v0)
