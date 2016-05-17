@@ -615,9 +615,9 @@ class OncvOutputParser(PseudoGenOutputParser):
         self.calc_type, self.version = toks[0], toks[-1]
 
         if self.calc_type not in ["scalar-relativistic", "non-relativistic"]:
-            print("will raise %s because found %s" % (self.Error, self.calc_type))
-            #raise self.Error("Fully relativistic case is not supported")
-            print("calctype :", self.calc_type)
+            # print("will raise %s because found %s" % (self.Error, self.calc_type))
+            # raise self.Error("Fully relativistic case is not supported")
+            # print("calctype :", self.calc_type)
             fullr = True
         else:
             fullr = False

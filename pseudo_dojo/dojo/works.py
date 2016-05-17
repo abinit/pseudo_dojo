@@ -442,7 +442,7 @@ class EbandsFactorWork(DojoWork):
         print(results)
 
         return results
-        
+
     def on_all_ok(self):
         """Callback executed when all tasks in self have reached S_OK."""
         report = self.get_results()

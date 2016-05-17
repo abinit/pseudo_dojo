@@ -196,7 +196,6 @@ def build_flow(pseudo, options):
         ebands_factory = EbandsFactory()
         ecut = ecut_hint    
         str_ecut = '%.1f' % ecut
-
         if "ebands" in report and str_ecut in report["ebands"]:
             print("[ebands]: ignoring ecut=", str_ecut, "because it's already in the DOJO_REPORT")
         else:
