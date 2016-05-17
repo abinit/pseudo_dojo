@@ -78,6 +78,7 @@ def read_data_from_filepath(filepath):
 
     return data
 
+
 def read_tables_from_file(filepath):
     import pandas as pd
     columns = ["v0", "b0_GPa", "b1", "deltaf"]
