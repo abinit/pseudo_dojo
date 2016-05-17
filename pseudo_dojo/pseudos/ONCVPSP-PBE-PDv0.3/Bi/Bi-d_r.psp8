@@ -1,5 +1,3 @@
-will raise <class 'pseudo_dojo.ppcodes.oncvpsp.PseudoGenOutputParserError'> because found fully-relativistic
-calctype : fully-relativistic
 Bi    ONCVPSP  r_core=  2.31  2.52  2.10
 83.0000     15.0000      160401    zatom,zion,pspd
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
