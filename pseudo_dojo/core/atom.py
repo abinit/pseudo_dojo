@@ -124,19 +124,6 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
     def has_s(self):
         return self.s is not None
 
-    def to_apeinput(self):
-        """Returns a string with the quantum numbers in the APE format."""
-        if self.s is None:
-            string = "%s | %s | %s " % (self.n, self.l, self.occ)
-        elif self.s == 2:
-            raise NotImplementedError("Spin")
-        elif self.j is not None:
-            raise NotImplementedError("Spinor")
-        else:
-            raise ValueError("Don't know how to convert %s" % self)
-
-        return [string]
-
 
 class AtomicConfiguration(object):
     """Atomic configuration defining the all-electron atom."""
@@ -553,7 +540,7 @@ def plot_aepp(ae_funcs, pp_funcs=None, **kwargs):
         ax.set_title(title)
 
         lines, legends = [], []
-        for (state, ae_phi) in ae_funcs.items():
+        for state, ae_phi in ae_funcs.items():
             if pp_funcs is not None and state not in pp_funcs:
                 continue
 
@@ -616,7 +603,7 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
                                                                                          
     num_logds, spl_idx = len(ae_logders), 0
 
-    for (state, pp_logd) in pp_logders.items():
+    for state, pp_logd in pp_logders.items():
         spl_idx += 1
         ax = fig.add_subplot(num_logds, 1, spl_idx)
 

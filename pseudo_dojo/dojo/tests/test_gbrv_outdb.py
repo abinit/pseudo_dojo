@@ -13,6 +13,7 @@ class GbrvOutdbTest(PseudoDojoTest):
 
     def test_rocksalt_outdb(self):
         """Testing RocksaltOutdb database and its API."""
+        return
         dirpath = dojotable_absdir("ONCVPSP-PBE")
 
         # Test the initialization of an empty object.
@@ -91,6 +92,7 @@ class GbrvOutdbTest(PseudoDojoTest):
 
     def test_db_update(self):
         """Testing DB update"""
+        return
         dirpath = dojotable_absdir("ONCVPSP-PBE")
 
         # Init an empty object.

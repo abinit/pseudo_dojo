@@ -73,7 +73,7 @@ class RadialFunctionTest(PseudoDojoTest):
         # Integral in 3D
         self.assert_almost_equal(rf.integral3d(), 1.0)
 
-        for (r, v) in rf:
+        for r, v in rf:
             rf.derivatives(r)
 
         rslice, vslice = rf[1:4]

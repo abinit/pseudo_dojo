@@ -8,8 +8,8 @@ __author__ = 'setten'
 import os
 import sys
 import abipy.abilab as abilab
-from pseudo_dojo.dojo.works import DeltaFactorWork, DFPTPhononFactory
-from pseudo_dojo.dojo.works import DeltaFactory
+
+from pseudo_dojo.dojo.works import DeltaFactorWork, DFPTPhononFactory, DeltaFactory
 
 
 def build_flow(options):

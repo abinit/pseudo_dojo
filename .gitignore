@@ -40,6 +40,7 @@ pip-log.txt
 .tox
 .cache
 nosetests.xml
+_integration_tests_
 
 # Translations
 *.mo
