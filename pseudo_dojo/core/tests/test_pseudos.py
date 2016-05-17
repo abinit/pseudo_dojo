@@ -13,7 +13,7 @@ class DojoTableTest(PseudoDojoTest):
 
     def test_from_dojodir(self):
         """Initializing DojoTable from directory."""
-        table = DojoTable.from_dojodir(dojotable_absdir("ONCVPSP-PBE"))
+        table = DojoTable.from_dojodir(dojotable_absdir("ONCVPSP-PBE-DEV"))
 
         # This table contains multiple pseudos for element!
         # and dojo_check_errors should detect it.
@@ -25,7 +25,7 @@ class DojoTableTest(PseudoDojoTest):
 
     def test_from_djson(self):
         """Initializing DojoTable from djson file."""
-        djson_path = os.path.join(dojotable_absdir("ONCVPSP-PBE"), "accuracy.djson")
+        djson_path = os.path.join(dojotable_absdir("ONCVPSP-PBE-DEV"), "accuracy.djson")
         table = DojoTable.from_djson(djson_path)
 
         # The table must have a dojo_info dict

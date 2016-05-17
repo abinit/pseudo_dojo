@@ -9,8 +9,9 @@ import os
 here = os.path.dirname(__file__)
 
 DOJOTABLE_BASEDIRS = [
-    "ONCVPSP-PBE",
-    "ONCVPSP-PBE-MC2",
+    "ONCVPSP-PBE-DEV",
+    "ONCVPSP-PBE-PDv0.3",
+    "ONCVPSP-PW-DEV"
 ]
 
 

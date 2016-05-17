@@ -15,8 +15,9 @@ def test_oncvoutput_parser():
     """Test the parsing of the output file produced by ONCVPSPS."""
 
     # TODO: Full-relativistic case not yet supported.
-    with pytest.raises(OncvOutputParser.Error):
-        OncvOutputParser(filepath("08_O_r.out"))
+    # disabled the raising so that the output parser can be used to generate the psp8 files from the out files
+    #with pytest.raises(OncvOutputParser.Error):
+    #    OncvOutputParser(filepath("08_O_r.out"))
 
     # Non-relativistic results
     p = OncvOutputParser(filepath("08_O_nr.out"))
