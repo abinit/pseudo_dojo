@@ -407,8 +407,8 @@ class EbandsFactorWork(DojoWork):
         extra_abivars.update(**kwargs)
 
         # Disable time-reversal if nspinor == 2
-        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=chksymbreak)
-                                                #use_time_reversal=spin_mode.nspinor==1)
+        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=chksymbreak,
+                                                use_time_reversal=spin_mode.nspinor==1)
 
         scf_input = abilab.AbinitInput(structure=structure, pseudos=self.pseudo)
         scf_input.add_abiobjects(ksampling, smearing, spin_mode)
@@ -605,7 +605,7 @@ class DeltaFactorWork(DojoWork):
             new_structure = Structure(new_lattice, structure.species, structure.frac_coords)
 
             ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak)
-                                                    #use_time_reversal=spin_mode.nspinor==1)
+                                                    use_time_reversal=spin_mode.nspinor==1)
 
             scf_input = abilab.AbinitInput(structure=new_structure, pseudos=self.pseudo)
             scf_input.add_abiobjects(ksampling, smearing, spin_mode)
