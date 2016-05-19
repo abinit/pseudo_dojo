@@ -604,7 +604,7 @@ class DeltaFactorWork(DojoWork):
 
             new_structure = Structure(new_lattice, structure.species, structure.frac_coords)
 
-            ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak)
+            ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak,
                                                     use_time_reversal=spin_mode.nspinor==1)
 
             scf_input = abilab.AbinitInput(structure=new_structure, pseudos=self.pseudo)
