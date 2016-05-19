@@ -3,7 +3,7 @@ Au    ONCVPSP  r_core=  1.46  1.56  1.46  1.51
 8      11   3     4   500     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 4.99000000  9.00000000  0.00000000    rchrg fchrg qchrg
 2     4     4     2    nproj
-2                 extension_switch
+3                 extension_switch
 4     4     2    nprojso
 0                        -1.9501972834005D-01  9.4761840139877D+00
 1  0.0000000000000D+00 -5.2728628685550D-09 -5.0751869373755D-10
