@@ -30,7 +30,7 @@ def get_pseudos(top):
 
 class TableMetadata(object):
     """
-     Metadata associated to one of the official `PseudoDojo` tables.
+    Metadata associated to one of the official `PseudoDojo` tables.
     """
     def __init__(self, table_dir, djson_name):
         """
@@ -89,12 +89,24 @@ class OfficialTables(Mapping):
 
         return new_table
 
-    @property
-    def all_nctables(self):
-        """Return the list of norm-conserving tables."""
-        return [table for _, table in self.items() if table.dojo_info.isnc]
+    #def select_tables(self, pp_type=None, xc=None):
+    #    """
+    #    """
+    #    tables = self.values()
+    #    tables = [table for table in tables if table.dojo_info.pp_type == pp_type]
+    #    tables = [table for table in tables if table.dojo_info.xc == xc]
+    #    return tables
 
-    @property
-    def all_pawtables(self):
+    def all_nctables(self, xc=None):
+        """Return the list of norm-conserving tables."""
+        tables = [table for table in self.values() if table.dojo_info.isnc]
+        if xc is not None:
+            tables = [t for t in tables if t.xc == xc]
+        return tables
+
+    def all_pawtables(self=None, xc=None):
         """Return the list of PAW tables."""
-        return [table for _, table in self.items() if table.dojo_info.ispaw]
+        tables = [table for table in self.values() if table.dojo_info.ispaw]
+        if xc is not None:
+            tables = [t for t in tables if t.xc == xc]
+        return tables

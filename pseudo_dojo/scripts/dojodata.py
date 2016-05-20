@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 from __future__ import division, print_function, unicode_literals
+
 import sys
 import os
 import argparse
 import numpy as np
+
 from time import gmtime, strftime
 from warnings import warn
 from pprint import pprint
 from tabulate import tabulate
 from monty.os.path import find_exts
+from monty.termcolor import cprint #, get_terminal_size
 from pymatgen.util.io_utils import ask_yesno, prompt
 from pymatgen.io.abinit.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import DojoTable
@@ -332,6 +335,8 @@ def dojo_figures(options):
     plt.show()
     #plt.savefig('rc.eps', format='eps')
 
+    return 0
+
 
 def dojo_plot(options):
     """Plot DOJO results for a single pseudo."""
@@ -394,15 +399,19 @@ def dojo_plot(options):
         #    if report.has_trial("phwoa"):
         #        report.plot_phonon_convergence(title=pseudo.basename+"W/O ASR", woasr=True)
 
+        return 0
+
 
 def dojo_notebook(options):
     from pseudo_dojo.pseudos import make_open_notebook
     for p in options.pseudos:
         make_open_notebook(p.filepath)
 
+    return 0
+
 
 def dojo_compare(options):
-    """Plot and compare DOJO results for multiple pseudos."""
+    """Ccompare DOJO results for multiple pseudos."""
     pseudos = options.pseudos
     for z in pseudos.zlist: 
         pseudos_z = pseudos[z]
@@ -410,6 +419,8 @@ def dojo_compare(options):
             pseudos_z.dojo_compare(what=options.what_plot)
         else:
             print("Find only one pseudo for Z=%s" % z)
+
+    return 0
 
 
 def dojo_trials(options):
@@ -433,6 +444,7 @@ def dojo_trials(options):
     ax = data["high_dfact_meV"].hist()
     ax.set_xlabel("Deltafactor [meV]")
     plt.show()
+    return 0
 
 
 def dojo_table(options):
@@ -543,6 +555,7 @@ def dojo_table(options):
     accuracies = ['low', 'high']
     columns = [acc + "_dfact_meV" for acc in accuracies] 
     columns += [acc + "_ecut_deltafactor" for acc in accuracies] 
+
     print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
     if len(data) > 5: 
         print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
@@ -550,6 +563,7 @@ def dojo_table(options):
     accuracies = ['low', 'high']
     columns = [acc + "_dfactprime_meV" for acc in accuracies]
     columns += [acc + "_ecut_deltafactor" for acc in accuracies]
+
     print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
     if len(data) > 5:
         print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
@@ -563,7 +577,7 @@ def dojo_table(options):
         if len(data) > 5:
             print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
     except KeyError:
-        print('No GBRV data')    
+        cprint('No GBRV data', "red")    
 
     accuracies = ['low', 'normal', 'high']
     columns = [acc + "_ecut_hint" for acc in accuracies]
@@ -583,15 +597,19 @@ def dojo_table(options):
     #print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
     #print(tabulate(bad, headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
+    return 0
+
 
 def dojo_dist(options):
     """
     Plot the distribution of the deltafactor and of the relative error for the GBRV fcc/bcc tests.
     """
     fig = options.pseudos.plot_dfgbrv_dist()
+    return 0
 
 
 def dojo_check(options):
+    """Check validity of pseudodojo report."""
 
     for p in options.pseudos:
         # FIXME FR pseudos are broken
@@ -614,16 +632,18 @@ def dojo_check(options):
         try:
             error = report.check()
             if error:
-                print("[%s] Validation problem" % p.basename)
+                cprint("[%s] Validation error" % p.basename, "red")
                 print(error)
-                print()
+                print("")
 
         except Exception as exc:
-            print("Error: ", p.basename + str(exc))
+            cprint("[%s] Python exception:" % p.basename, "red")
+            print(str(exc))
+
+    return 0
 
 
 def dojo_make_hints(options):
-    
 
     if os.path.isfile('LDA'):
         xc = 'LDA'
@@ -657,6 +677,8 @@ def dojo_make_hints(options):
         except Exception as exc:
             print(straceback())
             print(pseudo.basename, "raised: ", str(exc))
+
+    return 0
 
 
 def dojo_validate(options):
@@ -701,7 +723,7 @@ def dojo_validate(options):
             try:
                 error = report.check()
                 if error:
-                    print("[%s] Validation problem" % p.basename)
+                    cprint("[%s] Validation problem" % p.basename, "red")
                     print(error)
                     print()
 
@@ -740,6 +762,8 @@ def dojo_validate(options):
             report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime()) }
             p.write_dojo_report(report)
 
+    return 0
+
 
 def main():
     def str_examples():
@@ -759,7 +783,6 @@ Usage example:\n
         if err_msg: sys.stderr.write("Fatal Error\n" + err_msg + "\n")
         sys.exit(error_code)
 
-    # Parent parser for commands that need to know on which subset of pseudos we have to operate.
     def parse_rows(s):
         if not s: return []
         tokens = s.split(",")
@@ -769,6 +792,7 @@ Usage example:\n
         if not s: return []
         return s.split(",")
 
+    # Parent parser for commands that need to know on which subset of pseudos we have to operate.
     pseudos_selector_parser = argparse.ArgumentParser(add_help=False)
     pseudos_selector_parser.add_argument('pseudos', nargs="+", help="Pseudopotential file or directory containing pseudos")
     pseudos_selector_parser.add_argument('-s', "--symbols", type=parse_symbols, help=("List of chemical symbols to include or exclude."
@@ -860,16 +884,16 @@ Usage example:\n
 
         pseudos = []
         for p in paths:
-            # FIXME FR pseudos are broken
-            #if "_r" in os.path.basename(p): continue
             try:
                 pseudo = Pseudo.from_file(p)
-                if pseudo is None: print(p, "gave None")
+                if pseudo is None: 
+                    cprint("[%s] Pseudo.from_file returned None. Something wrong in file!", "red")
+                    continue
                 pseudos.append(pseudo)
-            except Exception as exc:
-                warn("Error in %s:\n%s. This pseudo will be ignored" % (p, exc))
 
-        #print("pseudos:", pseudos)
+            except Exception as exc:
+                cprint("[%s] Python exception. This pseudo will be ignored\n%s" % (p, exc), "red")
+
         table = DojoTable(pseudos)
 
         # Here we select a subset of pseudos according to family or rows
@@ -896,8 +920,7 @@ Usage example:\n
         #sns.despine(offset=10, trim=True)
 
     # Dispatch
-    globals()["dojo_" + options.command](options)
-    return 0
+    return globals()["dojo_" + options.command](options)
 
 
 if __name__ == "__main__":

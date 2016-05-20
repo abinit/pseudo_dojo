@@ -10,9 +10,9 @@ here = os.path.dirname(__file__)
 
 DOJOTABLE_BASEDIRS = [
     "ONCVPSP-PBE-DEV",
+    "ONCVPSP-PBE-PDv0.2",
     "ONCVPSP-PBE-PDv0.3",
     "ONCVPSP-PW-DEV"
-    "ONCVPSP-PBE-PDv0.2",
 ]
 
 
@@ -21,7 +21,9 @@ def dojotable_absdir(basedir):
     Return the absolute dirpath of the table from its basename
     """
     if basedir not in DOJOTABLE_BASEDIRS:
-        raise RuntimeError("%s is not registered in DOJOTABLE_BASEDIRS, change pseudo_dojo/pseudos/__init__.py") 
+        raise RuntimeError(
+           "%s is not registered in DOJOTABLE_BASEDIRS\n" 
+           "Change pseudo_dojo/pseudos/__init__.py" % basedir) 
 
     return os.path.join(here, basedir)
 
@@ -176,4 +178,3 @@ def make_open_notebook(pseudopath, with_eos=True):
     """
     path = write_notebook(pseudopath, tmpfile=True)
     os.system("ipython notebook %s" % path)
-

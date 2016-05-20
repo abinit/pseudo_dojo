@@ -1,7 +1,4 @@
 # Meta info on the table.
-
-xc_type = "GGA-PBE"
-
-pseudo_type = "norm-conserving"
-
+xc_name = "PBE"
+pseudo_type = "NC"
 pseudo_ext = "psp8"

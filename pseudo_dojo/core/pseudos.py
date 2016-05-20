@@ -7,8 +7,10 @@ import json
 import numpy as np
 
 from monty.collections import AttrDict
+from monty.functools import lazy_property
 from monty.string import list_strings
 from pymatgen.core.periodic_table import PeriodicTable
+from pymatgen.core.xcfunc import XcFunc
 from pymatgen.util.plotting_utils import add_fig_kwargs #, get_ax_fig_plt
 from pymatgen.io.abinit.pseudos import PseudoTable
 
@@ -21,8 +23,8 @@ class DojoInfo(AttrDict):
     JSON_SCHEMA = {
         "type": "object",
         "properties": {
-            "pseudo_type": {"type": "string", "enum": ["norm-conserving", "PAW"]},
-            "xc_type": {"type": "string", "enum": ["GGA-PBE",]},
+            "pseudo_type": {"type": "string", "enum": ["NC", "PAW"]},
+            "xc_name": {"type": "string", "enum": XcFunc.aliases()},
             "authors": {"type": "array"},
             #"generation_date": {"type": "string", "format": "date"},
             "description": {"type": "string"},
@@ -46,7 +48,7 @@ class DojoInfo(AttrDict):
     @property
     def isnc(self):
         """True if norm-conserving pseudopotential."""
-        return self.pseudo_type == "norm-conserving"
+        return self.pseudo_type == "NC"
 
     @property
     def ispaw(self):
@@ -57,7 +59,8 @@ class DojoInfo(AttrDict):
 class DojoTable(PseudoTable):
     """
     A pseudopotential table provided by the pseudo_dojo.
-    We subclass `PseudoTable` so that we can easily add extra properties or methods, if needed.
+    We subclass `PseudoTable` so that we can easily add 
+    extra properties or methods, if needed.
     """
 
     @classmethod
@@ -111,9 +114,9 @@ class DojoTable(PseudoTable):
 
         {
         "dojo_info": {
-              "pseudo_type": "norm-conserving",
-              "xc_type": "GGA-PBE",
-              "authors": ["M. Giantomassi", "M. J van Setten"],
+              "pseudo_type": "NC",
+              "xc_name": "PBE",
+              "authors": ["J. Doe",],
               "generation_date": "2015-07-20",
               "description": "String",
               "tags": ["accuracy", "tag2"],
@@ -188,6 +191,14 @@ class DojoTable(PseudoTable):
                 meta[p.symbol] = djson_entry(p)
 
         return d
+
+    #@lazy_property
+    #def xc(self):
+    #    """The XcFunc object describing the XC functional used to generate the table."""
+    #    xc = self[0].xc
+    #    if any(p.xc != xc for p in self):
+    #        raise TypeError("Found pseudos generated with different xc functionals")
+    #    return xc
 
     @property
     def dojo_info(self):
