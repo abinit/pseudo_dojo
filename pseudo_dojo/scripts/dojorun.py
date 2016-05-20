@@ -40,14 +40,11 @@ def build_flow(pseudo, options):
     """Build the flow, returns None if no calculation must be performed.""" 
     pseudo = Pseudo.as_pseudo(pseudo)
 
-    try:
-        if options.soc and not pseudo.supports_soc:
-            raise TypeError("SOC is on but pseudo does not support spin-orbit couplit")
+    if options.soc and not pseudo.supports_soc:
+        raise TypeError("SOC is on but pseudo does not support spin-orbit couplit")
 
-        if not options.soc and pseudo.supports_soc and pseudo.path.endswith("psp8"):
-            warn("[STRANGE]: Your psp8 pseudos supports SOC but options.soc is off")
-    except (AttributeError):
-        pass
+    if not options.soc and pseudo.supports_soc and pseudo.path.endswith("psp8"):
+        warn("[STRANGE]: Your psp8 pseudos supports SOC but options.soc is off")
 
     workdir = pseudo.basename + "_DOJO"
     if os.path.exists(workdir): 
