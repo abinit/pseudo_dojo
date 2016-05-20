@@ -42,11 +42,14 @@ def build_flow(pseudo, options):
     if pseudo is None:
         raise TypeError("Cannot generated Pseudo object from input data. Check your file")
 
-    if options.soc and not pseudo.supports_soc:
-        raise TypeError("SOC is on but pseudo does not support spin-orbit couplit")
+    try:
+        if options.soc and not pseudo.supports_soc:
+            raise TypeError("SOC is on but pseudo does not support spin-orbit couplit")
 
-    if not options.soc and pseudo.supports_soc and pseudo.path.endswith("psp8"):
-        warn("[STRANGE]: Your psp8 pseudos supports SOC but options.soc is off")
+        if not options.soc and pseudo.supports_soc and pseudo.path.endswith("psp8"):
+            warn("[STRANGE]: Your psp8 pseudos supports SOC but options.soc is off")
+    except (AttributeError):
+        pass
 
     workdir = pseudo.basename + "_DOJO"
     if os.path.exists(workdir): 
