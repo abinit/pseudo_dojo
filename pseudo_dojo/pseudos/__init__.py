@@ -139,7 +139,6 @@ fig = report.plot_deltafactor_convergence(what=("-dfact_meV", "-dfactprime_meV")
         #pseudos = get_pseudos(".")
         #if len(pseudos) > 1:
         #    pseudos.dojo_compare()"""),
-
     ]
 
     if with_eos:
@@ -174,7 +173,18 @@ fig = report.plot_deltafactor_convergence(what=("-dfact_meV", "-dfactprime_meV")
 def make_open_notebook(pseudopath, with_eos=True):
     """
     Generate an ipython notebook from the pseudopotential path and
-    open it in the browser.
+    open it in the browser. Return system exit code.
+
+    Raise:
+        RuntimeError if jupyther or ipython are not in $PATH
     """
-    path = write_notebook(pseudopath, tmpfile=True)
-    os.system("ipython notebook %s" % path)
+    from monty.os.path import which
+    path = write_notebook(pseudopath, with_eos=with_eos, tmpfile=True)
+
+    if which("jupyter") is not None:
+        return os.system("jupyter notebook %s" % path)
+    if which("ipython") is not None:
+        return os.system("ipython notebook %s" % path)
+
+    raise RuntimeError("Cannot find neither jupyther nor ipython. Install them with `pip install`")
+

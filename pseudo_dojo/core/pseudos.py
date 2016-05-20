@@ -144,7 +144,7 @@ class DojoTable(PseudoTable):
 
         dojo_info = DojoInfo(**d["dojo_info"])
         dojo_info.validate_json_schema()
-        print(d.keys())
+        #print(list(d.keys()))
         meta = d["pseudos_metadata"]
 
         top = os.path.dirname(djson_path)

@@ -13,7 +13,7 @@ from pprint import pprint
 from tabulate import tabulate
 from pandas import DataFrame, concat
 from monty.os.path import find_exts
-from monty.termcolor import cprint #, get_terminal_size
+from monty.termcolor import cprint 
 from pymatgen.util.io_utils import ask_yesno, prompt
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.io.abinit.netcdf import NetcdfReaderError
@@ -192,7 +192,7 @@ def dojo_figures(options):
             # print(v_bcc)
             return v_bcc
         except KeyError:
-            print('bcc func fail: ', elt)
+            #print('bcc func fail: ', elt)
             return -99 #float('NaN')
 
     def fcc(elt):
@@ -202,7 +202,7 @@ def dojo_figures(options):
             #print(v_fcc)
             return v_fcc 
         except KeyError:
-            print('fcc func fail: ', elt)
+            #print('fcc func fail: ', elt)
             return -99 #float('NaN')
 
     def low_phon_with(elt):
@@ -263,6 +263,7 @@ def dojo_figures(options):
             els.append(symbol)
         else:
             print('failed reading high_dfact_meV:', symbol, el['high_dfact_meV'])
+
         try:
             if el['high_gbrv_bcc_a0_rel_err'] > -100 and el['high_gbrv_fcc_a0_rel_err'] > -100:
                 elsgbrv.append(symbol)
@@ -271,6 +272,7 @@ def dojo_figures(options):
         else:
             print('failed reading gbrv: ', symbol, el['high_gbrv_bcc_a0_rel_err'], el['high_gbrv_fcc_a0_rel_err'])
             # print(el)
+
         try:
             if len(el['high_phonon']) > 2:
                 elsphon.append(symbol)
@@ -287,7 +289,8 @@ def dojo_figures(options):
     cm1 = mpl_cm.jet
     cm2 = mpl_cm.jet
     cm1.set_under('w', 1.0)
-    epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2], 
+    epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2],
+               #clims=[[-max_rel_err, max_rel_err],[-max_rel_err, max_rel_err], [-20,20]])
                clims=[[-0.6,0.6],[-0.6, 0.6], [-4,4]])
     plt.show()
 
@@ -347,7 +350,7 @@ def dojo_plot(options):
 
     for pseudo in pseudos:
         if not pseudo.has_dojo_report:
-            warn("pseudo %s does not contain the DOJO_REPORT section" % pseudo.filepath)
+            cprint("%s does not contain the DOJO_REPORT section" % pseudo.filepath, "magenta")
             continue
 
         report = pseudo.dojo_report
@@ -364,7 +367,7 @@ def dojo_plot(options):
                 try:
                     report.plot_ebands(title=pseudo.basename)
                 except NetcdfReaderError as exc:
-                    print(exc)
+                    cprint(exc, "red")
 
         # Deltafactor
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
@@ -402,11 +405,17 @@ def dojo_plot(options):
 
 
 def dojo_notebook(options):
+    """
+    Generate an ipython notebook for each pseudopotential and
+    open it in the browser. Return system exit code.
+    """
     from pseudo_dojo.pseudos import make_open_notebook
+    retcode = 0
     for p in options.pseudos:
-        make_open_notebook(p.filepath)
+        retcode += make_open_notebook(p.filepath)
+        if retcode != 0: break
 
-    return 0
+    return retcode
 
 
 def dojo_compare(options):
@@ -611,8 +620,6 @@ def dojo_check(options):
     """Check validity of pseudodojo report."""
 
     for p in options.pseudos:
-        # FIXME FR pseudos are broken
-        #if "_r" in p.basename: continue
         try:
             report = p.dojo_report
         except Exception as exc:
@@ -673,13 +680,14 @@ def dojo_make_hints(options):
                     print("Exit requested by user")
                     return 
                 new_ecuts = np.array([float(k) for k in new_ecuts.strip().split(",")])
-                print(new_ecuts)
+                print("new_ecuts", new_ecuts)
                 report.add_ecuts(new_ecuts)
                 pseudo.write_dojo_report(report)
 
         except Exception as exc:
-            print(pseudo.basename, "raised: ", str(exc))
-            print(straceback())
+            cprint("[%s]: python exception: %s" % (pseudo.basename, type(exc)), "red")
+            if options.verbose:
+                print(straceback())
 
     return 0
 
@@ -808,7 +816,7 @@ Usage example:
         help=("List of chemical symbols to include or exclude."
               "Example --symbols=He,Li to include He and Li, --symbols=-He to exclude He"))
     pseudos_selector_parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
-                         help='verbose, can be supplied multiple times to increase verbosity')
+                         help='Verbose, can be supplied multiple times to increase verbosity')
 
     # Options for pseudo selection.
     group = pseudos_selector_parser.add_mutually_exclusive_group()
@@ -897,12 +905,13 @@ Usage example:
             try:
                 pseudo = Pseudo.from_file(p)
                 if pseudo is None: 
-                    cprint("[%s] Pseudo.from_file returned None. Something wrong in file!", "red")
+                    cprint("[%s] Pseudo.from_file returned None. Something wrong in file!" % p, "red")
                     continue
                 pseudos.append(pseudo)
 
             except Exception as exc:
-                cprint("[%s] Python exception. This pseudo will be ignored\n%s" % (p, exc), "red")
+                cprint("[%s] Python exception. This pseudo will be ignored" % p.basename, "red")
+                if options.verbose: print(exc)
 
         table = DojoTable(pseudos)
 

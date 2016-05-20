@@ -47,7 +47,9 @@ class TableMetadata(object):
 
 @singleton
 class OfficialTables(Mapping):
-
+    """
+    Official tables provided by the PseudoDojo project.
+    """
     def __init__(self):
         self._tables = tables = OrderedDict()
 
