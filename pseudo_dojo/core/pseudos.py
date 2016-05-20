@@ -10,7 +10,7 @@ from monty.collections import AttrDict
 from monty.functools import lazy_property
 from monty.string import list_strings
 from pymatgen.core.periodic_table import PeriodicTable
-from pymatgen.core.xcfunc import XcFunc
+#from pymatgen.core.xcfunc import XcFunc
 from pymatgen.util.plotting_utils import add_fig_kwargs #, get_ax_fig_plt
 from pymatgen.io.abinit.pseudos import PseudoTable
 
@@ -24,7 +24,7 @@ class DojoInfo(AttrDict):
         "type": "object",
         "properties": {
             "pseudo_type": {"type": "string", "enum": ["NC", "PAW"]},
-            "xc_name": {"type": "string", "enum": XcFunc.aliases()},
+            #"xc_name": {"type": "string", "enum": XcFunc.aliases()},
             "authors": {"type": "array"},
             #"generation_date": {"type": "string", "format": "date"},
             "description": {"type": "string"},
