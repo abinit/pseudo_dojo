@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Script to analyze/plot data reported in the DOJO_REPORT section."""
 from __future__ import division, print_function, unicode_literals
 
 import sys
@@ -10,14 +11,14 @@ from time import gmtime, strftime
 from warnings import warn
 from pprint import pprint
 from tabulate import tabulate
+from pandas import DataFrame, concat
 from monty.os.path import find_exts
 from monty.termcolor import cprint #, get_terminal_size
 from pymatgen.util.io_utils import ask_yesno, prompt
 from pymatgen.io.abinit.pseudos import Pseudo
+from pymatgen.io.abinit.netcdf import NetcdfReaderError
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
-from pandas import DataFrame, concat
-from pymatgen.io.abinit.netcdf import NetcdfReaderError
 
 
 def straceback():
@@ -128,19 +129,17 @@ def dojo_figures(options):
                 self._ax.add_collection(pc)
 
                 if colorbars:
-                    options = {
-                                'orientation':'horizontal',
-                                'pad':0.05, 'aspect':60
-                              }
+                    options = {'orientation':'horizontal',
+                               'pad':0.05, 'aspect':60,}
 
                     options.update(kwargs.get('colorbar-options', {}))
                     cbar = plt.colorbar(pc, **options)
                     cbar.set_label(label)
                     self.cbars.append(cbar)
             fontdict = kwargs.get('font', {'color':'white'})
+
             for s in self.squares:
-                if not s.label:
-                    continue
+                if not s.label: continue
                 x = s.x + s.dx/2
                 y = s.y + s.dy/2
                 self._ax.text(x, y, s.label, ha='center',
@@ -617,8 +616,10 @@ def dojo_check(options):
         try:
             report = p.dojo_report
         except Exception as exc:
-            print("Invalid dojo_report in:", p.basename)
-            print("Exception: ", exc)
+            cprint("[%s] Invalid dojo_report" % p.basename, "red")
+            if options.verbose:
+                print("Python Exception:\n%s", exc)
+                print("")
             continue
 
         #print(report)
@@ -633,12 +634,14 @@ def dojo_check(options):
             error = report.check()
             if error:
                 cprint("[%s] Validation error" % p.basename, "red")
-                print(error)
-                print("")
+                if options.verbose:
+                    print(error)
+                    print("")
 
         except Exception as exc:
             cprint("[%s] Python exception:" % p.basename, "red")
-            print(str(exc))
+            if options.verbose:
+                print(str(exc))
 
     return 0
 
@@ -675,8 +678,8 @@ def dojo_make_hints(options):
                 pseudo.write_dojo_report(report)
 
         except Exception as exc:
-            print(straceback())
             print(pseudo.basename, "raised: ", str(exc))
+            print(straceback())
 
     return 0
 
@@ -691,8 +694,9 @@ def dojo_validate(options):
             try:
                 report = p.dojo_report
             except Exception as exc:
-                print("Invalid dojo_report in:", p.basename)
-                print("Exception: ", exc)
+                cprint("[%s] Invalid dojo_report" % p.basename, "red")
+                if options.verbose:
+                    print("Python exception: ", exc)
                 continue
 
             # test if already validated
@@ -707,7 +711,8 @@ def dojo_validate(options):
             if report.has_trial('ebands'):
                 for ecut in report['ebands'].keys():
                     if "ghost_free_upto_eV" in report["ebands"][ecut].keys():
-                        print('%s: Pseudo is reported to be ghost free up to %s eV' % (ecut, report["ebands"][ecut]["ghost_free_upto_eV"]))
+                        print('%s: Pseudo is reported to be ghost free up to %s eV' % (
+                          ecut, report["ebands"][ecut]["ghost_free_upto_eV"]))
                     else:
                         report.plot_ebands(ecut=ecut)
                         ans = float(prompt('Please enter the energy (eV) up until there is no sign of ghosts:\n'))
@@ -724,11 +729,15 @@ def dojo_validate(options):
                 error = report.check()
                 if error:
                     cprint("[%s] Validation problem" % p.basename, "red")
-                    print(error)
-                    print()
+                    if options.verbose:
+                        print(error)
+                        print()
 
             except Exception as exc:
-                print("Error: ", p.basename + str(exc))
+                cprint("[%s] Python exception" % p.basename, "red")
+                if options.verbose:
+                    print(exc)
+                    print("")
 
             accuracies = ["low", "normal", "high"]
             keys = ['hint', 'deltafactor', 'gbrv_bcc', 'gbrv_fcc', 'phonon']
@@ -749,12 +758,12 @@ def dojo_validate(options):
                 print(tabulate(data[columns], headers=headers, tablefmt=tablefmt, floatfmt=floatfmt))
 
             # test hash
-
             # plot the model core charge
            
         except Exception as exc:
-            print(straceback())
-            print(p.basename, "raised: ", str(exc))
+            cprint("[%s] python exception" % p.basename, "red")
+            if options.verbose:
+                print(straceback())
         
         # ask the final question
         if ask_yesno('Will you validate this pseudo? [n]'):
@@ -768,7 +777,7 @@ def dojo_validate(options):
 def main():
     def str_examples():
         return """\
-Usage example:\n
+Usage example:
     dojodata.py plot H.psp8                ==> Plot dojo data for pseudo H.psp8
     dojodata.py trials H.psp8 -r 1
     dojodata.py compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
@@ -795,8 +804,11 @@ Usage example:\n
     # Parent parser for commands that need to know on which subset of pseudos we have to operate.
     pseudos_selector_parser = argparse.ArgumentParser(add_help=False)
     pseudos_selector_parser.add_argument('pseudos', nargs="+", help="Pseudopotential file or directory containing pseudos")
-    pseudos_selector_parser.add_argument('-s', "--symbols", type=parse_symbols, help=("List of chemical symbols to include or exclude."
-        "Example --symbols=He,Li to include He and Li, --symbols=-He to exclude He"))
+    pseudos_selector_parser.add_argument('-s', "--symbols", type=parse_symbols, 
+        help=("List of chemical symbols to include or exclude."
+              "Example --symbols=He,Li to include He and Li, --symbols=-He to exclude He"))
+    pseudos_selector_parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
+                         help='verbose, can be supplied multiple times to increase verbosity')
 
     # Options for pseudo selection.
     group = pseudos_selector_parser.add_mutually_exclusive_group()
@@ -808,7 +820,6 @@ Usage example:\n
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
-
     parser.add_argument('--seaborn', action="store_true", help="Use seaborn settings")
 
     # Create the parsers for the sub-commands
@@ -880,7 +891,6 @@ Usage example:\n
         if len(paths) == 1 and os.path.isdir(paths[0]):
             top = os.path.abspath(paths[0])
             paths = find_exts(top, exts, exclude_dirs="_*")
-            #table = DojoTable.from_dir(paths[0])
 
         pseudos = []
         for p in paths:
@@ -902,6 +912,7 @@ Usage example:\n
         elif options.family:
             table = table.select_families(options.family)
 
+        # here we select symbols.
         if options.symbols:
             table = table.select_symbols(options.symbols)
 
