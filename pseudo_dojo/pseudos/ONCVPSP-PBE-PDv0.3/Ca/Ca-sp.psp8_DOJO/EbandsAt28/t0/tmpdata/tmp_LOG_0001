@@ -1,0 +1,41 @@
+ 
+--- !COMMENT
+message: |
+    According to the symmetry finder, the unit cell is
+    not primitive, with multiplicity=4.
+    This is allowed, as the input variable chkprim is 0.
+src_file: chkprimit.F90
+src_line: 106
+...
+ 
+  dtset%nelect=   40.0000000000000     
+ 
+--- !WARNING
+message: |
+    nkpt*nsppol (35) is not a multiple of nproc_kpt (17)
+    The k-point parallelisation is not efficient.
+src_file: distrb2.F90
+src_line: 113
+...
+ 
+ 
+--- !WARNING
+message: |
+    Your number of spins*k-points (=35) will not distribute correctly
+    with the current number of processors (=17).
+    You will leave some empty.
+    YOU ARE STRONGLY ADVICED TO ACTIVATE AUTOMATIC PARALLELIZATION!
+    PUT "AUTOPARAL=1" IN THE INPUT FILE.
+src_file: mpi_setup.F90
+src_line: 617
+...
+ 
+ 
+================================================================================
+== DATASET  1 ==================================================================
+-   nproc =   17   -> not optimal: autoparal keyword recommended in input file
+ 
+ wfconv:   800 bands initialized randomly with npw=  8056, for ikpt=     4
+ wfconv:   800 bands initialized randomly with npw=  8026, for ikpt=     5
+ wfconv:   800 bands initialized randomly with npw=  8075, for ikpt=     6
+ Proc.   1 individual time (sec): cpu=       5557.7  wall=       5563.3

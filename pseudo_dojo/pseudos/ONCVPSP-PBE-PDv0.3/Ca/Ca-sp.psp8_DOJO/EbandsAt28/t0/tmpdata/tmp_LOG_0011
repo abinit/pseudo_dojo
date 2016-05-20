@@ -1,0 +1,28 @@
+ 
+--- !COMMENT
+message: |
+    According to the symmetry finder, the unit cell is
+    not primitive, with multiplicity=4.
+    This is allowed, as the input variable chkprim is 0.
+src_file: chkprimit.F90
+src_line: 106
+...
+ 
+  dtset%nelect=   40.0000000000000     
+ 
+--- !WARNING
+message: |
+    nkpt*nsppol (35) is not a multiple of nproc_kpt (17)
+    The k-point parallelisation is not efficient.
+src_file: distrb2.F90
+src_line: 113
+...
+ 
+ 
+================================================================================
+== DATASET  1 ==================================================================
+-   nproc =   17
+ 
+ wfconv:   800 bands initialized randomly with npw=  8052, for ikpt=    34
+ wfconv:   800 bands initialized randomly with npw=  4012, for ikpt=    35
+ Proc.  11 individual time (sec): cpu=       5558.2  wall=       5563.3

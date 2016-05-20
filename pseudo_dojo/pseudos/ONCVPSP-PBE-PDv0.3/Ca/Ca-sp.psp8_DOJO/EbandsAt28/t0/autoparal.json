@@ -1,0 +1,215 @@
+{
+    "@class": "ParalHints", 
+    "@module": "pymatgen.io.abinitio.tasks", 
+    "confs": [
+        {
+            "efficiency": 1.0, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 1, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 1, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.972222222, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 2, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 2, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.897435897, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 3, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 3, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.795454545, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 4, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 4, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 1.0, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 5, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 5, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.583333333, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 6, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 6, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 1.0, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 7, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 7, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.625, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 8, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 8, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.353535354, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 9, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 9, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.4375, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 10, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 10, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.636363636, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 11, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 11, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.224358974, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 12, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 12, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.244755245, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 13, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 13, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.277777778, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 14, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 14, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.333333333, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 15, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 15, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.4375, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 16, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 16, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.68627451, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 17, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 17, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.108024691, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 18, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 18, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.108359133, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 19, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 19, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.109375, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 20, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 20, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.111111111, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 21, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 21, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.113636364, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 22, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 22, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.117056856, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 23, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 23, 
+            "vars": {}
+        }, 
+        {
+            "efficiency": 0.121527778, 
+            "mem_per_cpu": 0.0, 
+            "mpi_ncpus": 24, 
+            "omp_ncpus": 1, 
+            "tot_ncpus": 24, 
+            "vars": {}
+        }
+    ], 
+    "info": {
+        "autoparal": 1, 
+        "max_ncpus": 24, 
+        "mband": 800, 
+        "nkpt": 35, 
+        "nspinor": 1, 
+        "nsppol": 1, 
+        "paral_kgb": 0
+    }, 
+    "optimal_conf": {
+        "efficiency": 0.68627451, 
+        "mem_per_cpu": 0.0, 
+        "mpi_ncpus": 17, 
+        "omp_ncpus": 1, 
+        "tot_ncpus": 17, 
+        "vars": {}
+    }
+}

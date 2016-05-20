@@ -1,0 +1,65 @@
+[PROLOGUE] Starting prologue on node node0311 at date Sat Jan 30 07:18:40 CET 2016
+PBS job detected. Setting extra variables for hydra.
+
+Disk quotas for group napsimu (gid 6000009):
+                         Block Limits                                    |     File Limits
+Filesystem type             GB      quota      limit   in_doubt    grace |    files   quota    limit in_doubt    grace  Remarks
+gpfs       GRP           14868      15000      19500          1     none |  2035927       0        0      100     none 
+Disk quotas for user setten (uid 3000525): 
+     Filesystem  blocks   quota   limit   grace   files   quota   limit   grace
+netapp001:/vol/vol_home_acad/home_acad
+                 43029M  51200M  51200M            424k   4295m   4295m        
+Error: you cant unload a compiler when MPI is still loaded.
+PBS job detected. Setting extra variables for hydra.
+PBS job detected. Setting extra variables for hydra.
+/home/acad/ucl-naps/setten/to_dojo: line 1: workon: command not found
+unlimited
+
+------------ INFO : JOB 6841577.frontal1 NAME w0_t0 -------------
+
+USER               : setten
+PROJECT            : tcos
+QUEUE              : main_ivy
+
+JOB EXIT CODE	   : 0
+
+REQUESTED RESOURCES 
+
+  Number of Cores Requested per Job
+  NCPUS_PJOB       : 17 
+  Total Virtual Memory Requested per Job
+  VMEM_PJOB        : 68816mb 
+  Maximum Virtual Memory Requested per process
+  PVMEM            : 4048mb 
+  Placement Requested
+  PLACE            : free 
+  Execution Time Requested 
+  WALLTIME         : 04:00:00 
+
+USED RESOURCES 
+
+  Virtual Memory used on the master node
+  VMEM             : 1242424kb 
+
+  CPU_Time USED    - To be corrected
+  CPU_Time         : 01:32:39 
+  Wall_Time USED   - Execution Time 
+  Wall_Time        : 01:32:46 
+
+  N_Wall_Time USED - NCPUS_PJOB x Wall_Time
+  N_Wall_Time      : 26:17:02
+
+  Number of Mobilized Resources per Job : 
+      NCPUS_EQUIV_PJOB = max ( NCPUS_PJOB , VMEM_PJOB / VMEM_PCPU )
+      VMEM_PCPU is the amount of memory available per core depending on the type of node requested
+  NCPUS_EQUIV_PJOB : 27 
+
+  R_Wall_Time USED - NCPUS_EQUIV_PJOB x Wall_Time 
+  R_Wall_Time      : 41:44:42
+ 
+ 
+For more details, use qstat -f -x 6841577.frontal1
+
+------------ END INFO : JOB 6841577.frontal1 NAME w0_t0 ---------
+
+[EPILOGUE] Ending epilogue on node node0311 at date Sat Jan 30 08:51:26 CET 2016
