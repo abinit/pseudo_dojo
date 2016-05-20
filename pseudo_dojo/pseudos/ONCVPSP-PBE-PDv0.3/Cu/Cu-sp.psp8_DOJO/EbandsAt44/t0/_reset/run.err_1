@@ -1,0 +1,30 @@
+Image              PC                Routine            Line        Source             
+abinit             00000000034E3922  Unknown               Unknown  Unknown
+abinit             000000000061B017  Unknown               Unknown  Unknown
+abinit             000000000044363F  Unknown               Unknown  Unknown
+abinit             0000000000414F7C  Unknown               Unknown  Unknown
+abinit             000000000040A888  Unknown               Unknown  Unknown
+abinit             00000000004088A6  Unknown               Unknown  Unknown
+libc.so.6          0000003C6B01ED1D  Unknown               Unknown  Unknown
+abinit             0000000000408799  Unknown               Unknown  Unknown
+application called MPI_Abort(MPI_COMM_WORLD, 13) - process 16
+Image              PC                Routine            Line        Source             
+abinit             00000000034E3922  Unknown               Unknown  Unknown
+abinit             000000000061B017  Unknown               Unknown  Unknown
+abinit             000000000044363F  Unknown               Unknown  Unknown
+abinit             0000000000414F7C  Unknown               Unknown  Unknown
+abinit             000000000040A888  Unknown               Unknown  Unknown
+abinit             00000000004088A6  Unknown               Unknown  Unknown
+libc.so.6          0000003C6B01ED1D  Unknown               Unknown  Unknown
+abinit             0000000000408799  Unknown               Unknown  Unknown
+application called MPI_Abort(MPI_COMM_WORLD, 13) - process 14
+Image              PC                Routine            Line        Source             
+abinit             00000000034E3922  Unknown               Unknown  Unknown
+abinit             000000000061B017  Unknown               Unknown  Unknown
+abinit             000000000044363F  Unknown               Unknown  Unknown
+abinit             0000000000414F7C  Unknown               Unknown  Unknown
+abinit             000000000040A888  Unknown               Unknown  Unknown
+abinit             00000000004088A6  Unknown               Unknown  Unknown
+libc.so.6          00000037FA21ED1D  Unknown               Unknown  Unknown
+abinit             0000000000408799  Unknown               Unknown  Unknown
+application called MPI_Abort(MPI_COMM_WORLD, 13) - process 12
