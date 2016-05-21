@@ -11,9 +11,10 @@ import logging
 import abipy.abilab as abilab
 
 from warnings import warn
-from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory, EbandsFactory
+from monty.termcolor import cprint 
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
+from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory, EbandsFactory
 
 
 logger = logging.getLogger(__name__)
@@ -50,7 +51,7 @@ def build_flow(pseudo, options):
 
     workdir = pseudo.basename + "_DOJO"
     if os.path.exists(workdir): 
-        warn("Directory %s already exists" % workdir)
+        cprint("Directory %s already exists" % workdir, "red")
         return None
 
     flow = abilab.Flow(workdir=workdir, manager=options.manager)
@@ -73,7 +74,7 @@ def build_flow(pseudo, options):
         ecut_list = copy.copy(report["ecuts"])
 
     except KeyError:
-        print('New pseudo without report from the generator, the convergence study is started from 16H')
+        cprint('New pseudo without report from the generator, the convergence study is started from 16H', "yellow")
         report["ppgen_hints"] = {}
         report["ppgen_hints"]["high"] = {} 
         report["ppgen_hints"]["high"]["ecut"] = 16.0
@@ -121,7 +122,7 @@ def build_flow(pseudo, options):
         for ecut in ecut_list:
             str_ecut = '%.1f' % ecut
             if "deltafactor" in report and str_ecut in report["deltafactor"]:
-                print("[deltafactor]: ignoring ecut=", str_ecut, "because it's already in the DOJO_REPORT")
+                cprint("[deltafactor]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
                 continue
 
             pawecutdg = 2 * ecut if pseudo.ispaw else None
@@ -142,12 +143,13 @@ def build_flow(pseudo, options):
             for ecut in ecut_list:
                 str_ecut = '%.1f' % ecut
                 if dojo_trial in report and str_ecut in report[dojo_trial]:
-                    print("[gbrv]: ignoring ecut=", str_ecut, "because it's already in the DOJO_REPORT")
+                    cprint("[gbrv]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
                     continue
 
                 pawecutdg = 2 * ecut if pseudo.ispaw else None
-                # FIXME: we use ntime=3, because structure relaxations go bananas after the third step.
-                work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, ntime=5, pawecutdg=pawecutdg, **extra_abivars)
+                # FIXME: we use ntime=5, because structure relaxations go bananas after the third step.
+                work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg, 
+                                                       include_soc=options.soc, ntime=5, **extra_abivars)
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
     # PHONON test
@@ -158,7 +160,7 @@ def build_flow(pseudo, options):
         for ecut in ecut_list:
             str_ecut = '%.1f' % ecut
             if "phonon" in report and str_ecut in report["phonon"]:
-                print("[phonon]: ignoring ecut=", str_ecut, "because it's already in the DOJO_REPORT")
+                cprint("[phonon]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
                 continue
 
             kppa = 1000
@@ -178,7 +180,7 @@ def build_flow(pseudo, options):
         for ecut in [ecut_list[0], ecut_list[-1]]:
             str_ecut = '%.1f' % ecut
             if "phwoa" in report and str_ecut in report["phwoa"]:
-                print("[phwoa]: ignoring ecut=", str_ecut, "because it's already in the DOJO_REPORT")
+                cprint("[phwoa]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
                 continue
 
             kppa = 1000
@@ -188,7 +190,7 @@ def build_flow(pseudo, options):
             if work is not None:
                 flow.register_work(work, workdir='GammaPhononsAt'+str(ecut)+'WOA')
             else:
-                warn('cannot create GammaPhononsAt' + str(ecut) + 'WOA work, factory returned None')
+                cprint('Cannot create GammaPhononsAt %s WOA work, factory returned None' % str(ecut), "red")
 
     # EBANDS test
     if "ebands" in options.trials:
@@ -196,8 +198,9 @@ def build_flow(pseudo, options):
         ebands_factory = EbandsFactory()
         ecut = ecut_hint    
         str_ecut = '%.1f' % ecut
+
         if "ebands" in report and str_ecut in report["ebands"]:
-            print("[ebands]: ignoring ecut=", str_ecut, "because it's already in the DOJO_REPORT")
+            cprint("[ebands]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
         else:
             kppa = 3000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
@@ -217,11 +220,10 @@ def build_flow(pseudo, options):
 
 def main():
     def str_examples():
-        examples = """
-                   Usage Example:\n
-                   ppdojo_run.py Si.psp8  => Build pseudo_dojo flow for Si.fhi\n
-                   """
-        return examples
+        return """\
+Usage Example:
+    ppdojo_run.py Si.psp8  => Build pseudo_dojo flow for Si.fhi
+"""
 
     def show_examples_and_exit(error_code=1):
         """Display the usage of the script."""
@@ -251,6 +253,8 @@ def main():
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
+    parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
+                         help='Verbose, can be supplied multiple times to increase verbosity')
 
     parser.add_argument('path', help='pseudopotential file.')
 
@@ -272,14 +276,13 @@ def main():
         raise ValueError('Invalid log level: %s' % options.loglevel)
     logging.basicConfig(level=numeric_level)
 
-    options.manager = abilab.TaskManager.from_user_config() if options.manager is None else \
-                      abilab.TaskManager.from_file(options.manager)
+    options.manager = abilab.TaskManager.as_manager(options.manager)
 
     if os.path.isfile(options.path):
         # Operate on a single pseudo.
         flow = build_flow(options.path, options)
         if flow is None: 
-            warn("DOJO_REPORT is already computed for pseudo %s." % options.path)
+            cprint("DOJO_REPORT is already computed for pseudo %s." % options.path, "magenta")
             return 0
 
         if options.dry_run:
@@ -298,18 +301,17 @@ def main():
         #print("here", os.path.basename(os.path.dirname(options.path)))
         #print("here", options.path)
         if os.path.basename(os.path.dirname(options.path)) in all_symbols:
-            #print("here")
             dirs = [options.path]
         else:
             dirs = [os.path.join(options.path, d) for d in os.listdir(options.path) if d in all_symbols]
-        print(dirs)
+        #print(dirs)
 
         pseudos = []
         for d in dirs:
             pseudos.extend(os.path.join(d, p) for p in os.listdir(d) if p.endswith(".psp8"))
 
         if not pseudos:
-            warn("Empty list of pseudos")
+            cprint("Empty list of pseudos", "magenta")
             return 0
 
         nflows, nlaunch = 0, 0
@@ -320,7 +322,6 @@ def main():
         exc_log = sys.stderr
 
         #print(pseudos)
-
         for pseudo in pseudos:
             pseudo = Pseudo.as_pseudo(pseudo)
           
@@ -363,12 +364,11 @@ def main():
 
 
 if __name__ == "__main__":
-    do_prof = False
     try:
         do_prof = sys.argv[1] == "prof"
         if do_prof: sys.argv.pop(1)
     except: 
-        pass
+        do_prof = False
 
     if do_prof:
         import pstats, cProfile

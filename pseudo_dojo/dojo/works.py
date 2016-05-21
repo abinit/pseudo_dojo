@@ -729,11 +729,13 @@ class GbrvFactory(object):
 
         return structure
 
-    def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, ref="ae", **kwargs):
+    def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, include_soc=False,
+                           ref="ae", **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
+            include_soc: True if pseudo has SO contributions and calculation should be done with nspinor=2
             kwargs: Extra variables passed to Abinit.
 
         .. note::
@@ -745,14 +747,20 @@ class GbrvFactory(object):
                 - All calculations are done on an 8x8x8 k-point density and with 0.002 Ry Fermi-Dirac smearing
         """
         pseudo = Pseudo.as_pseudo(pseudo)
-
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
+
+	# Select spin_mode from include_soc.
+	spin_mode = "unpolarized"
+        if include_soc:
+	    spin_mode = "spinor"
+	    if not pseudo.supports_soc:
+		raise ValueError("Pseudo %s does not support SOC calculation." % pseudo)
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
         return GbrvRelaxAndEosWork(structure, struct_type, pseudo,
-                                   ecut=ecut, pawecutdg=pawecutdg, **kwargs)
+                                   ecut=ecut, pawecutdg=pawecutdg, spin_mode=spin_mode, **kwargs)
 
 
 def gbrv_nband(pseudo):
@@ -814,8 +822,9 @@ class GbrvRelaxAndEosWork(DojoWork):
         # Kpoint sampling: shiftk depends on struct_type
         shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
         #ngkpt = (1,1,1)
-        self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk)
         self.spin_mode = SpinMode.as_spinmode(spin_mode)
+        self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk,
+                                            use_time_reversal=spin_mode.nspinor==1)
         relax_algo = RelaxationMethod.atoms_and_cell()
 
         inp = abilab.AbinitInput(structure, pseudo)

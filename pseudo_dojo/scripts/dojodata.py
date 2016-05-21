@@ -15,9 +15,8 @@ from pandas import DataFrame, concat
 from monty.os.path import find_exts
 from monty.termcolor import cprint 
 from pymatgen.util.io_utils import ask_yesno, prompt
-from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.io.abinit.netcdf import NetcdfReaderError
-from pseudo_dojo.core.pseudos import DojoTable
+from pseudo_dojo.core.pseudos import DojoPseudo, DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 
 
@@ -42,9 +41,9 @@ def dojo_figures(options):
         with open('data') as data_file:
             for line in data_file:
                 line.rstrip('\n')
-                print(line)
+                #print(line)
                 data = line.split(',')
-                print(data)
+                #print(data)
                 data_dict = {'name': data[0],
                             'high_dfact_meV': float(data[1]),
                             'rell_high_dfact_meV': float(data[2]),
@@ -62,7 +61,7 @@ def dojo_figures(options):
         data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
         for index, p in data_dojo.iterrows():
             out = p.name.replace('psp8', 'out')
-            outfile = p.symbol+'/'+out
+            outfile = os.path.join(p.symbol, out)
             parser = OncvOutputParser(outfile)
             parser.scan()
             data_pseudo.loc[index] = [int(parser.nv), parser.valence, parser.rc_min, parser.rc_max]
@@ -99,9 +98,9 @@ def dojo_figures(options):
             rows.append(l)
 
     import matplotlib.pyplot as plt
-    from ptplotter.plotter import ElementDataPlotter
     import matplotlib.cm as mpl_cm
     from matplotlib.collections import PatchCollection 
+    from ptplotter.plotter import ElementDataPlotter
 
     class ElementDataPlotterRangefixer(ElementDataPlotter):
         """
@@ -120,6 +119,7 @@ def dojo_figures(options):
                 pass
             else:
                 raise RuntimeError('incorrect number of clims provided in draw')
+
             for coll, cmap, label, clim  in zip(self.collections, self.cmaps, self.cbar_labels, clims):
                 #print(clim)
                 pc = PatchCollection(coll, cmap=cmap)
@@ -255,8 +255,8 @@ def dojo_figures(options):
         symbol = el['name'].split('.')[0].split('-')[0]
         try:
             rel_ers.append(max(abs(el['high_gbrv_bcc_a0_rel_err']),abs(el['high_gbrv_fcc_a0_rel_err'])))
-        except (TypeError, KeyError):
-            pass
+        except (TypeError, KeyError) as exc:
+            if options.verbose: print(exc)
 
         if el['high_dfact_meV'] > 0:
             elements_data[symbol] = el
@@ -276,8 +276,8 @@ def dojo_figures(options):
         try:
             if len(el['high_phonon']) > 2:
                 elsphon.append(symbol)
-        except (KeyError, TypeError):
-            pass
+        except (KeyError, TypeError) as exc:
+            if options.verbose: print(exc)
       
     try:
         max_rel_err = 0.05 * int((max(rel_ers) / 0.05) + 1)
@@ -409,10 +409,9 @@ def dojo_notebook(options):
     Generate an ipython notebook for each pseudopotential and
     open it in the browser. Return system exit code.
     """
-    from pseudo_dojo.pseudos import make_open_notebook
     retcode = 0
     for p in options.pseudos:
-        retcode += make_open_notebook(p.filepath)
+        retcode += p.make_open_notebook()
         if retcode != 0: break
 
     return retcode
@@ -440,7 +439,7 @@ def dojo_trials(options):
     #print(data)
 
     if errors:
-        print("ERRORS:")
+        cprint("ERRORS:", "red")
         pprint(errors)
     
     #import matplotlib.pyplot as plt
@@ -462,8 +461,7 @@ def dojo_table(options):
     data, errors = pseudos.get_dojo_dataframe()
     #data.tabulate()
     #return
-
-    print(data.columns)
+    #print(data.columns)
 
     if False:
         """Select best entries"""
@@ -503,7 +501,7 @@ def dojo_table(options):
     accuracies = ["low", "normal", "high"]
     keys = ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1", "ecut_deltafactor", "ecut_hint"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
-    print(columns)
+    #print(columns)
 
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]
     #data = data[data["high_dfact_meV"] <= 9]
@@ -519,8 +517,9 @@ def dojo_table(options):
             data["normal_" + k + "_abserr"] = data["normal_" + k] - data["high_" + k]
             data["low_" + k + "_rerr"] = 100 * (data["low_" + k] - data["high_" + k]) / data["high_" + k]
             data["normal_" + k + "_rerr"] = 100 * (data["normal_" + k] - data["high_" + k]) / data["high_" + k]
-    except:
-        pass
+    except Exception as exc:
+        cprint("Python exception: %s" % type(exc), "red")
+        if options.verbose: print(exc)
  
     try:
         for acc in ['low', 'normal', 'high']:
@@ -535,7 +534,7 @@ def dojo_table(options):
         print("WRONG".center(80, "*") + "\n", wrong)
 
     #data = calc_errors(data)
-    data.to_json('table.json')
+    #data.to_json('table.json')
 
     try:
         data = data[
@@ -728,7 +727,7 @@ def dojo_validate(options):
                             report["ebands"][ecut]["ghost_free_upto_eV"] = ans
                             p.write_dojo_report(report)
             else:
-                print('no ebands trial present, pseudo cannot be validated')
+                cprint('no ebands trial present, pseudo cannot be validated', "red")
                 continue
 
             # test trials
@@ -791,7 +790,7 @@ Usage example:
     dojodata.py compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
     dojodata.py table .                    ==> Build table (find all psp8 files within current directory)
     dojodata.py figures .                  ==> Plot periodic table figures
-    dojodata.py notebook H.psp8            ==> Generated ipython notebook and open it in the browser
+    dojodata.py notebook H.psp8            ==> Generate ipython notebook and open it in the browser
 """
 
     def show_examples_and_exit(err_msg=None, error_code=1):
@@ -903,7 +902,7 @@ Usage example:
         pseudos = []
         for p in paths:
             try:
-                pseudo = Pseudo.from_file(p)
+                pseudo = DojoPseudo.from_file(p)
                 if pseudo is None: 
                     cprint("[%s] Pseudo.from_file returned None. Something wrong in file!" % p, "red")
                     continue

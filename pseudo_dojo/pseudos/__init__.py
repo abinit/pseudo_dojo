@@ -183,6 +183,7 @@ def make_open_notebook(pseudopath, with_eos=True):
 
     if which("jupyter") is not None:
         return os.system("jupyter notebook %s" % path)
+
     if which("ipython") is not None:
         return os.system("ipython notebook %s" % path)
 

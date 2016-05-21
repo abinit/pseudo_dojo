@@ -12,7 +12,15 @@ from monty.string import list_strings
 from pymatgen.core.periodic_table import PeriodicTable
 #from pymatgen.core.xcfunc import XcFunc
 from pymatgen.util.plotting_utils import add_fig_kwargs #, get_ax_fig_plt
-from pymatgen.io.abinit.pseudos import PseudoTable
+from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
+
+
+class DojoPseudo(Pseudo):
+
+    def make_open_notebook(self):
+	from pseudo_dojo.pseudos import make_open_notebook
+        retcode = make_open_notebook(self.filepath)
+	return retcode
 
 
 class DojoInfo(AttrDict):
@@ -62,6 +70,11 @@ class DojoTable(PseudoTable):
     We subclass `PseudoTable` so that we can easily add 
     extra properties or methods, if needed.
     """
+#    def __init__(self, pseudos):
+#	super(DojoTable, self).__init__(pseudos)
+#	# Convert to DojoPseudo instances.
+#	for p in self:
+#	    p.__class__ = DojoPseudo
 
     @classmethod
     def from_dojodir(cls, top, exclude_basenames=None):
