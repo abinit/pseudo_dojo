@@ -15,19 +15,16 @@ def itest_phonons_without_asr(fwp, tvars):
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
 
-    phonon_factory = DFPTPhononFactory()
-
     ecut = 8
     pawecutdg = 2 * ecut if pseudo.ispaw else None
     kppa = 20  # this value is for testing purpose 
 
     # This one requires deltafactor!
-
+    phonon_factory = DFPTPhononFactory()
     work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
                                           tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], rfasr=0)
     assert work is None
     return
-
     print(work)
     flow.register_work(work)
 

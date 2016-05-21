@@ -447,7 +447,7 @@ def dojo_trials(options):
     #data.plot_trials(savefig=options.savefig)
     #data.plot_hist(savefig=options.savefig)
     #data.sns_plot(savefig=options.savefig)
-    print(data["high_dfact_meV"])
+    #print(data["high_dfact_meV"])
     import matplotlib.pyplot as plt
     ax = data["high_dfact_meV"].hist()
     ax.set_xlabel("Deltafactor [meV]")

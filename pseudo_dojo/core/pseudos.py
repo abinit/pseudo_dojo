@@ -14,13 +14,12 @@ from pymatgen.core.periodic_table import PeriodicTable
 from pymatgen.util.plotting_utils import add_fig_kwargs #, get_ax_fig_plt
 from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class DojoPseudo(Pseudo):
-
-    def make_open_notebook(self):
-	from pseudo_dojo.pseudos import make_open_notebook
-        retcode = make_open_notebook(self.filepath)
-	return retcode
+    pass
 
 
 class DojoInfo(AttrDict):
@@ -157,7 +156,6 @@ class DojoTable(PseudoTable):
 
         dojo_info = DojoInfo(**d["dojo_info"])
         dojo_info.validate_json_schema()
-        #print(list(d.keys()))
         meta = d["pseudos_metadata"]
 
         top = os.path.dirname(djson_path)
@@ -205,13 +203,14 @@ class DojoTable(PseudoTable):
 
         return d
 
-    #@lazy_property
-    #def xc(self):
-    #    """The XcFunc object describing the XC functional used to generate the table."""
-    #    xc = self[0].xc
-    #    if any(p.xc != xc for p in self):
-    #        raise TypeError("Found pseudos generated with different xc functionals")
-    #    return xc
+    @lazy_property
+    def xc(self):
+        """The `XcFunc` object describing the XC functional used to generate the table."""
+        xc = self[0].xc
+        if any(p.xc != xc for p in self):
+            logger.critical("Found pseudos generated with different xc functionals. Setting table.xc to None")
+	    xc = None
+        return xc
 
     @property
     def dojo_info(self):

@@ -998,7 +998,6 @@ class DFPTPhononFactory(object):
         qpt: optional, list of qpoints. if not present gamma is added
         the rest are passed as abinit input variables
         """
-
         qpoints = kwargs.pop('qpt', [0.00000000E+00,  0.00000000E+00,  0.00000000E+00])
         qpoints = np.reshape(qpoints, (-1, 3))
 
@@ -1015,6 +1014,7 @@ class DFPTPhononFactory(object):
         # some systems have a non primitive cell to allow for a anti ferromagnetic structure > chkprim = 0
         global_vars = dict(ksampling.to_abivars(), tsmear=0.005, occopt=7, nstep=200, ecut=12.0, paral_kgb=0, chkprim=0)
         global_vars.update(**kwargs)
+
         # if not tolwfr is specified explicitly we remove any other tol and put tolwfr = 1e-16
         tolwfr = 1e-20
         for k in global_vars.keys():
@@ -1025,7 +1025,6 @@ class DFPTPhononFactory(object):
                     global_vars.pop(k)
 
         global_vars['tolwfr'] = tolwfr
-        #global_vars.pop('#comment')
         electrons = structure.num_valence_electrons(pseudos)
         global_vars.update(nband=electrons)
         global_vars.update(nbdbuf=int(electrons/4))
@@ -1090,8 +1089,8 @@ class DFPTPhononFactory(object):
             try:
                 v0 = nat * report['deltafactor'][float(ecut_str)]['v0']
             except KeyError:
-                logger.info("The df calculation at this ecut is not done already so the phonon task can not be created")
-                logger.info("Returning None")
+                logger.critical("The df calculation at this ecut is not done already so the phonon task can not be created")
+                logger.critical("Returning None")
                 return None
 
         structure.scale_lattice(v0)
