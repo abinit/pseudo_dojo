@@ -7,8 +7,8 @@ import abipy.abilab as abilab
 
 from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory
 
-def itest_gbrv_gga_paw_flow(fwp, tvars):
-    """Testing the GBRV flow with GGA and PAW (relaxation + EOS)"""
+def itest_gbrv_gga_pawxml_flow(fwp, tvars):
+    """Testing the GBRV flow with GGA and PAW-XML (relaxation + EOS)"""
     #return
     factory = GbrvFactory()
 

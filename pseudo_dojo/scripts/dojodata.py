@@ -409,16 +409,17 @@ def dojo_notebook(options):
     Generate an ipython notebook for each pseudopotential and
     open it in the browser. Return system exit code.
     """
+    from pseudo_dojo.pseudos import make_open_notebook
     retcode = 0
     for p in options.pseudos:
-        retcode += p.make_open_notebook()
+        retcode += make_open_notebook(p.filepath)
         if retcode != 0: break
 
     return retcode
 
 
 def dojo_compare(options):
-    """Ccompare DOJO results for multiple pseudos."""
+    """Compare DOJO results for multiple pseudos."""
     pseudos = options.pseudos
     for z in pseudos.zlist: 
         pseudos_z = pseudos[z]

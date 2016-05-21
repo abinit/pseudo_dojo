@@ -305,6 +305,7 @@ class EbandsFactoryError(Exception):
 
 class EbandsFactory(object):
     """Factroy class producing work objects for the calculation of ebands for testing for ghosts."""
+
     Error = EbandsFactoryError
 
     def __init__(self, xc='PBE'):
