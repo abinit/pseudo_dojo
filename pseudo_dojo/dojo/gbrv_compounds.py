@@ -3,13 +3,10 @@
 from __future__ import division, print_function, unicode_literals
 
 #import abc
-#import sys
-#import os
 import numpy as np
 from abipy import abilab
 
-#from monty.collections import AttrDict
-from pymatgen.io.abinit.eos import EOS
+from pymatgen.analysis.eos import EOS
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
 from pymatgen.io.abinit.works import Work
 from abipy.core.structure import Structure
@@ -50,7 +47,8 @@ class GbrvCompoundsFactory(object):
 
         return structure
 
-    def relax_and_eos_work(self, accuracy, pseudos, formula, struct_type, ecut=None, pawecutdg=None, ref="ae", **kwargs):
+    def relax_and_eos_work(self, accuracy, pseudos, formula, struct_type, 
+                          ecut=None, pawecutdg=None, ref="ae", **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
@@ -66,7 +64,6 @@ class GbrvCompoundsFactory(object):
                 - All calculations are done on an 8x8x8 k-point density and with 0.002 Ry Fermi-Dirac smearing
         """
         pseudos = DojoTable.as_table(pseudos)
-
         if pseudos.allpaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
@@ -106,7 +103,6 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
         # nband must be large enough to accomodate fractional occupancies.
         fband = kwargs.pop("fband", None)
-
         # FIXME
         #nband = gbrv_nband(self.pseudo)
 
@@ -116,9 +112,9 @@ class GbrvCompoundRelaxAndEosWork(Work):
             ecut=ecut,
             pawecutdg=pawecutdg,
             toldfe=toldfe,
+            paral_kgb=kwargs.pop("paral_kgb", 0),
             #ecutsm=0.5,
             #nband=nband,
-            paral_kgb=kwargs.pop("paral_kgb", 0),
         )
                                        
         self.extra_abivars.update(**kwargs)

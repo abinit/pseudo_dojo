@@ -20,7 +20,6 @@ class GbrvCompoundTest(PseudoDojoTest):
 
     def test_nc_lif_gbrv_factory(self):
         """Testing GBRV work for NC LiF (rocksalt structure)."""
-
         flow = abilab.Flow(workdir=tempfile.mkdtemp())
         gbrv_factory = GbrvCompoundsFactory()
 
