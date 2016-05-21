@@ -585,11 +585,11 @@ class DeltaFactorWork(DojoWork):
             pawecutdg=pawecutdg,
             ecutsm=ecutsm,
             toldfe=toldfe,
-            #nband=nband,
             prtwf=-1 if not connect else 1,
-            #paral_kgb=paral_kgb,
             chkprim=0,
             nstep=200,
+            #paral_kgb=paral_kgb,
+            #nband=nband,
             #mem_test=0,
         )
 
@@ -812,8 +812,8 @@ class GbrvRelaxAndEosWork(DojoWork):
             pawecutdg=pawecutdg,
             toldfe=toldfe,
             prtwf=-1,
-            #ecutsm=0.5,
             nband=nband,
+            #ecutsm=0.5,
             #paral_kgb=paral_kgb
         )
                                        
@@ -1089,7 +1089,7 @@ class DFPTPhononFactory(object):
             try:
                 v0 = nat * report['deltafactor'][float(ecut_str)]['v0']
             except KeyError:
-                logger.critical("The df calculation at this ecut is not done already so the phonon task can not be created")
+                logger.critical("The deltafactor calculation for this ecut is not done. The phonon task can not be created")
                 logger.critical("Returning None")
                 return None
 

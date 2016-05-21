@@ -233,10 +233,12 @@ Usage Example:
     parser = argparse.ArgumentParser(epilog=str_examples())
 
     parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
-    parser.add_argument('-d', '--dry-run', default=False, action="store_true", help="Dry run, build the flow without submitting it")
+    parser.add_argument('-d', '--dry-run', default=False, action="store_true",
+                        help="Dry run, build the flow without submitting it")
     parser.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
     parser.add_argument('-p', '--plot', default=False, action="store_true", help="Plot convergence when the flow is done")
-    parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store", help="Extend the ecut grid with the new-ecut point")
+    parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store",
+                        help="Extend the ecut grid with the new-ecut point")
     parser.add_argument('--soc', default=False, action="store_true", help=(
                         "Perform non-collinear run (nspinor==2, kptopt=3). Pseudo must have spin-orbit characteristic"))
 
@@ -258,11 +260,6 @@ Usage Example:
 
     parser.add_argument('path', help='pseudopotential file.')
 
-    # Create the parsers for the sub-commands
-    #subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
-    # Subparser for single command.
-    #p_build = subparsers.add_parser('build', help="Build dojo.")
-
     try:
         options = parser.parse_args()
     except:
@@ -278,89 +275,17 @@ Usage Example:
 
     options.manager = abilab.TaskManager.as_manager(options.manager)
 
-    if os.path.isfile(options.path):
-        # Operate on a single pseudo.
-        flow = build_flow(options.path, options)
-        if flow is None: 
-            cprint("DOJO_REPORT is already computed for pseudo %s." % options.path, "magenta")
-            return 0
+    flow = build_flow(options.path, options)
+    if flow is None:
+        cprint("DOJO_REPORT is already computed for pseudo %s." % options.path, "magenta")
+        return 1
 
-        if options.dry_run:
-            flow.build_and_pickle_dump()
-        else:
-            # Run the flow with the scheduler.
-            flow.make_scheduler().start()
-
+    if options.dry_run:
+        flow.build_and_pickle_dump()
+        return 0
     else:
-        # Gather all pseudos starting from the current working directory and run the flows iteratively.
-        table = PeriodicTable()
-        all_symbols = set(element.symbol for element in table.all_elements)
-        #all_symbols = ["H"]
-        #print(os.listdir(options.path))
-
-        #print("here", os.path.basename(os.path.dirname(options.path)))
-        #print("here", options.path)
-        if os.path.basename(os.path.dirname(options.path)) in all_symbols:
-            dirs = [options.path]
-        else:
-            dirs = [os.path.join(options.path, d) for d in os.listdir(options.path) if d in all_symbols]
-        #print(dirs)
-
-        pseudos = []
-        for d in dirs:
-            pseudos.extend(os.path.join(d, p) for p in os.listdir(d) if p.endswith(".psp8"))
-
-        if not pseudos:
-            cprint("Empty list of pseudos", "magenta")
-            return 0
-
-        nflows, nlaunch = 0, 0
-        #exc_filename = "allscheds_exceptions.log"
-        #if os.path.exists(exc_filename):
-        #    raise RuntimeError("File %s already exists, remove it before running the script" % exc_filename)
-        #exc_log = open(exc_filename, "w")
-        exc_log = sys.stderr
-
-        #print(pseudos)
-        for pseudo in pseudos:
-            pseudo = Pseudo.as_pseudo(pseudo)
-          
-            report = pseudo.dojo_report
-            if "version" not in report: continue
-
-            flow = build_flow(pseudo, options)
-            if flow is None: 
-                warn("DOJO_REPORT is already computed for pseudo %s." % pseudo.basename)
-                continue
-
-            #if os.path.exists(flow.workdir) or nflows >= 2: continue
-            nflows += 1
-
-            try:
-                flow.make_scheduler().start()
-            except Exception as exc:
-                # Log exception and proceed with the next pseudo.
-                exc_log.write(str(exc))
-
-            new_report = pseudo.read_dojo_report()
-            new_report.plot_deltafactor_convergence()
-            new_report.plot_gbrv_convergence()
-            new_report.plot_phonon_convergence()
-
-            #with open(pseudo.basename + "sched.stdout", "w") as sched_stdout, \
-            #     open(pseudo.basename + "sched.stderr", "w") as sched_stderr: 
-            #    with RedirectStdStreams(stdout=sched_stdout, stderr=sched_stderr):
-            #        try:
-            #            flow.make_scheduler().start()
-            #        except Exception as exc:
-            #            # Log exception and proceed with the next pseudo.
-            #            exc_log.write(str(exc))
-
-        #exc_log.close()
-        #print("nlaunch: %d" % nlaunch)
-        #print("nflows: %d" % nflows)
-
-    return 0
+        # Run the flow with the scheduler.
+        return flow.make_scheduler().start()
 
 
 if __name__ == "__main__":
