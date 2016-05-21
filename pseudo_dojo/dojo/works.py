@@ -11,7 +11,7 @@ from abipy import abilab
 from monty.collections import AttrDict
 from monty.pprint import pprint_table
 from pymatgen.core.units import Ha_to_eV
-from pymatgen.io.abinit.eos import EOS
+from pymatgen.analysis.eos import EOS
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
 from pymatgen.io.abinit.works import Work, build_oneshot_phononwork, OneShotPhononWork
@@ -770,7 +770,8 @@ def gbrv_nband(pseudo):
     nband += 0.5 * nband
     nband = int(nband)
     nband = max(nband,  8)
-    #print("nband", nband)
+    # Use even numer of bands. Needed when nspinor == 2
+    if nband % 2 != 0: nband += 1
     return nband
 
 
@@ -821,10 +822,9 @@ class GbrvRelaxAndEosWork(DojoWork):
 
         # Kpoint sampling: shiftk depends on struct_type
         shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
-        #ngkpt = (1,1,1)
         self.spin_mode = SpinMode.as_spinmode(spin_mode)
         self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk,
-                                            use_time_reversal=spin_mode.nspinor==1)
+                                            use_time_reversal=self.spin_mode.nspinor==1)
         relax_algo = RelaxationMethod.atoms_and_cell()
 
         inp = abilab.AbinitInput(structure, pseudo)
