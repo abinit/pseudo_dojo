@@ -32,6 +32,7 @@ def dojo_figures(options):
     currently for all pseudo's in the search space the one with the best df per element is chosen 
     this should probably come from a dojotable eventually
     """
+    pseudos = options.pseudos
 
     if False:
         """
@@ -53,8 +54,6 @@ def dojo_figures(options):
                     data_dict['high_gbrv_fcc_a0_rel_err'] = float(data[7])
                 rows.append(data_dict)
     else:
-        pseudos = options.pseudos
-
         data_dojo, errors = pseudos.get_dojo_dataframe()
 
         # add data that is not part of the dojo report
@@ -84,13 +83,15 @@ def dojo_figures(options):
             names.append(name)
 
             try:
-                l = {k: getattr(select, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
+                l = {k: getattr(select, k) for k in ('name', "symbol", 'Z', 
+                                             'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
                                              'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err', 
                                              'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
                                              'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
                                              'nv', 'valence', 'rcmin', 'rcmax')} 
             except AttributeError:
-                l = {k: getattr(select, k) for k in ('name', 'Z', 'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
+                l = {k: getattr(select, k) for k in ('name', "symbol", 'Z', 
+                                             'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
                                              'high_dfactprime_meV', 'high_ecut', 
                                              'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
                                              'nv', 'valence', 'rcmin', 'rcmax')}
@@ -173,17 +174,11 @@ def dojo_figures(options):
 
     def df(elt):
         """Delta Factor [meV / atom]"""
-        try:
-            return elt['high_dfact_meV']
-        except KeyError:
-            return float('NaN')
+        return elt.get('high_dfact_meV', float('NaN'))
 
     def dfp(elt):
         """Delta Factor Prime"""
-        try:
-            return elt['high_dfactprime_meV']
-        except KeyError:
-            return float('NaN')
+        return elt.get('high_dfactprime_meV', float('NaN'))
 
     def bcc(elt):
         """GBRV BCC [% relative error]"""
@@ -223,27 +218,15 @@ def dojo_figures(options):
     
     def high_ecut(elt):
         """ecut high [Ha] """
-        try:
-            return elt['high_ecut_hint']
-        except (KeyError, TypeError):
-            #print('high_ecut with func fail: ', elt)
-            return float('NaN')
+        return elt.get('high_ecut_hint', float('NaN'))
 
     def low_ecut(elt):
         """ecut low [Ha] """
-        try:
-            return elt['low_ecut_hint']
-        except (KeyError, TypeError):
-            #print('low_ecut with func fail: ', elt)
-            return float('NaN')
+        return elt.get('low_ecut_hint', float('NaN'))
 
     def normal_ecut(elt):
         """ecut normal [Ha] """
-        try:
-            return elt['normal_ecut_hint']
-        except (KeyError, TypeError):
-            #print('normal_ecut with func fail: ', elt)
-            return float('NaN')
+        return elt.get('normal_ecut_hint', float('NaN'))
 
     els = []
     elsgbrv = []
@@ -252,7 +235,8 @@ def dojo_figures(options):
     elements_data = {}
 
     for el in rows:
-        symbol = el['name'].split('.')[0].split('-')[0]
+        symbol = el["symbol"]
+
         try:
             rel_ers.append(max(abs(el['high_gbrv_bcc_a0_rel_err']),abs(el['high_gbrv_fcc_a0_rel_err'])))
         except (TypeError, KeyError) as exc:
@@ -262,7 +246,7 @@ def dojo_figures(options):
             elements_data[symbol] = el
             els.append(symbol)
         else:
-            print('failed reading high_dfact_meV:', symbol, el['high_dfact_meV'])
+            cprint('[%s] failed reading high_dfact_meV %s:' % (symbol, el['high_dfact_meV']), "magenta")
 
         try:
             if el['high_gbrv_bcc_a0_rel_err'] > -100 and el['high_gbrv_fcc_a0_rel_err'] > -100:
@@ -271,7 +255,7 @@ def dojo_figures(options):
             pass
         else:
             print('failed reading gbrv: ', symbol, el['high_gbrv_bcc_a0_rel_err'], el['high_gbrv_fcc_a0_rel_err'])
-            # print(el)
+            #print(el)
 
         try:
             if len(el['high_phonon']) > 2:
@@ -284,6 +268,10 @@ def dojo_figures(options):
     except ValueError:
         max_rel_err = 0.20
 
+    #if options.verbose:
+        #print("els", els)
+        #return
+
     # plot the GBRV/DF results periodic table
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
     cm1 = mpl_cm.jet
@@ -294,16 +282,15 @@ def dojo_figures(options):
                clims=[[-0.6,0.6],[-0.6, 0.6], [-4,4]])
     plt.show()
 
-    for cm2 in [mpl_cm.PiYG_r, mpl_cm.PRGn_r,mpl_cm.RdYlGn_r]:
-         epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
-         epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2],
-               clims=[[-max_rel_err,max_rel_err],[-max_rel_err, max_rel_err], [0,3]])
-         plt.show()
-
-
+    # Test different color maps
+    #for cm2 in [mpl_cm.PiYG_r, mpl_cm.PRGn_r,mpl_cm.RdYlGn_r]:
+    #     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
+    #     epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2],
+    #           clims=[[-max_rel_err,max_rel_err],[-max_rel_err, max_rel_err], [0,3]])
+    #     plt.show()
     #plt.savefig('gbrv.eps', format='eps')
 
-    # plot the periodic table with df and dfp
+    # plot the periodic table with deltafactor and deltafactor prime.
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
     epd.ptable(functions=[df,dfp], font={'color':color}, cmaps=cmap, clims=[[0, 6]])
     plt.show()
@@ -426,7 +413,7 @@ def dojo_compare(options):
         if len(pseudos_z) > 1:
             pseudos_z.dojo_compare(what=options.what_plot)
         else:
-            print("Find only one pseudo for Z=%s" % z)
+            print("Found only one pseudo for Z=%s" % z)
 
     return 0
 
