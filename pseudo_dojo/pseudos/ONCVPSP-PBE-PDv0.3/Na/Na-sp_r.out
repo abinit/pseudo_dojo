@@ -14031,11 +14031,11 @@ END_GNU
 
 Begin PSPCODE8
 Na    ONCVPSP  r_core=  1.21  1.55
-     11.0000      9.0000      160518    zatom,zion,pspd
+     11.0000      9.0000      160520    zatom,zion,pspd
      8      11   1     4   400     0    pspcod,pspxc,lmax,lloc,mmax,r2well
   3.99000000  0.00000000  0.00000000    rchrg fchrg qchrg
      2     2     0     0    nproj
-     2                 extension_switch
+     3                 extension_switch
      2     0     0    nprojso
    0                        -6.7692322617272D-01  2.5042522448545D+00
      1  0.0000000000000D+00  7.6749162580825D-10  4.1956051965997D-09
