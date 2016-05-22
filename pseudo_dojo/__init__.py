@@ -6,6 +6,7 @@ from collections import defaultdict, OrderedDict, Mapping
 from monty.dev import deprecated
 from monty.functools import lazy_property
 from monty.design_patterns import singleton
+from pymatgen.core.periodic_table import Element
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.pseudos import dojotable_absdir
 
@@ -64,7 +65,6 @@ class OfficialTables(Mapping):
         #  DJSON_NAME is the name of the djson file located in the pseudodojo directory.
         #  In the case of NC pseudos, the SO term is treated via djson e.g. "accuracy-so.djson"
         #  maybe FR|SR for fully or scalar-relativistic?
-        #
         tables["ONCVPSP-PBE-PDv0.2-accuracy"] = TableMetadata("ONCVPSP-PBE-PDv0.2", "accuracy.djson")
 
         #tables["ONCV-GYGYv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "htc.djson")
@@ -129,8 +129,31 @@ class OfficialTables(Mapping):
             pseudos.extend(tab.pseudo_with_symbol(symbol, allow_multi=True))
         return pseudos
 
-    def select_ncpseudos(self, symbol, xc=None):
+    def select_nc_pseudos(self, symbol, xc=None):
         return self.select_pseudos(symbol, pp_type="NC", xc=xc)
 
-    def select_pawpseudos(self, symbol, xc=None):
+    def select_paw_pseudos(self, symbol, xc=None):
         return self.select_pseudos(symbol, pp_type="PAW", xc=xc)
+
+    def plot_numpseudos(self, **kwargs):
+        """Plot periodic table with the number of pseudos available per element."""
+        import matplotlib.pyplot as plt
+        from ptplotter.plotter import ElementDataPlotter
+
+        symbols, data, max_num = [], {}, 0
+        for el in Element:
+            pseudos = self.select_pseudos(el.symbol, pp_type=None, xc=None)
+            symbols.append(el.symbol)
+            max_num = max(max_num, len(pseudos))
+            data[el.symbol] = {"num_pseudos": len(pseudos)}
+
+        def count_pseudos(elt):
+            """Pseudos available"""
+            return elt.get('num_pseudos', 0)
+
+        epd = ElementDataPlotter(elements=symbols, data=data)
+        #epd.ptable(functions=[count_pseudos], cmaps=["jet"], )
+        #epd.cmaps[0].set_clim([0, max_num])
+        #epd.redraw_ptable()
+
+        plt.show()

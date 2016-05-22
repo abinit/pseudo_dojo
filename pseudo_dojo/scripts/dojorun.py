@@ -226,9 +226,9 @@ Usage Example:
 
     parser.add_argument('--trials', default="all",  type=parse_trials, 
                         help=("List of tests e.g --trials=df,gbrv,phonon,phwoa\n"
-                        "  df:     test delta factor against all electron refference\n"
-                        "  gbrv:   test fcc and bcc lattice parameters agains AE refference\n"
-                        "  phonon: test phonon mode at gamma convergence\n"
+                        "  df:     test delta factor against all electron reference.\n"
+                        "  gbrv:   test fcc and bcc lattice parameters against AE reference.\n"
+                        "  phonon: test convergence of phonon modes at gamma.\n"
                         "  phwoa:  test violation of the acoustic sum rule (without enforcing it) at the min and max ecut\n"))
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
