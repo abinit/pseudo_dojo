@@ -14,7 +14,7 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     spin_mode = "unpolarized"
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
-    ebands_factory = EbandsFactory(xc="PBE")
+    ebands_factory = EbandsFactory(xc=pseudo.xc)
 
     ecut = 8
     pawecutdg = 2 * ecut if pseudo.ispaw else None
@@ -45,7 +45,7 @@ def itest_ebands_gga_ncsoc_flow(fwp, tvars):
     spin_mode = "spinor"
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
-    ebands_factory = EbandsFactory(xc="PBE")
+    ebands_factory = EbandsFactory(xc=pseudo.xc)
 
     ecut = 8
     pawecutdg = 2 * ecut if pseudo.ispaw else None

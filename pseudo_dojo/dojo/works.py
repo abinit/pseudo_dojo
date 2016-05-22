@@ -11,6 +11,7 @@ from abipy import abilab
 from monty.collections import AttrDict
 from monty.pprint import pprint_table
 from pymatgen.core.units import Ha_to_eV
+from pymatgen.core.xcfunc import XcFunc
 from pymatgen.analysis.eos import EOS
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
@@ -308,7 +309,7 @@ class EbandsFactory(object):
 
     Error = EbandsFactoryError
 
-    def __init__(self, xc='PBE'):
+    def __init__(self, xc):
         # Get a reference to the deltafactor database. Used to get a structure
         self._dfdb = df_database(xc=xc)
 
@@ -339,6 +340,11 @@ class EbandsFactory(object):
         pseudo = Pseudo.as_pseudo(pseudo)
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
+
+	if pseudo.xc != self._dfdb.xc:
+            raise ValueError(
+                "Pseudo xc differs from the XC used to instantiate the factory\n"
+                "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))
 
         try:
             cif_path = self.get_cif_path(pseudo.symbol)
@@ -496,11 +502,19 @@ class DeltaFactory(object):
         symbol = pseudo.symbol
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
+    
+	if pseudo.xc != self._dfdb.xc:
+            raise ValueError(
+                "Pseudo xc differs from the XC used to instantiate the factory\n"
+                "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))
 
         try:
             cif_path = self.get_cif_path(symbol)
         except Exception as exc:
             raise self.Error(str(exc))
+
+        # WARNING: DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
+        structure = Structure.from_file(cif_path, primitive=False)
 
         # Include spin polarization for O, Cr and Mn (antiferromagnetic)
         # and Fe, Co, and Ni (ferromagnetic).
@@ -527,10 +541,6 @@ class DeltaFactory(object):
                 kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
 
         if include_soc: spin_mode = "spinor"
-
-        # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
-        structure = Structure.from_file(cif_path, primitive=False)
-        #print(structure)
 
         # Magnetic elements:
         # Start from previous SCF run to avoid getting trapped in local minima 
@@ -703,7 +713,10 @@ class DeltaFactorWork(DojoWork):
 
 class GbrvFactory(object):
     """Factory class producing :class:`Work` objects for GBRV calculations."""
-    def __init__(self):
+    def __init__(self, xc):
+	self.xc = XcFunc.asxc(xc)
+	if self.xc != "PBE":
+	    raise ValueError("Gbrv database supports only PBE pseudos")
         self._db = gbrv_database()
 
     def make_ref_structure(self, symbol, struct_type, ref):
@@ -750,6 +763,11 @@ class GbrvFactory(object):
         pseudo = Pseudo.as_pseudo(pseudo)
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
+
+	if pseudo.xc != self.xc:
+	    raise ValueError(
+		"Pseudo xc differs from the XC used to instantiate the factory\n"
+		"Pseudo: %s, Database: %s" % (pseudo.xc, self.xc))
 
 	# Select spin_mode from include_soc.
 	spin_mode = "unpolarized"
@@ -972,10 +990,10 @@ class DFPTPhononFactory(object):
 
     Error = DFPTError
 
-    def __init__(self, manager=None, workdir=None):
+    def __init__(self, xc, manager=None, workdir=None):
         # reference to the deltafactor database
         # use the elemental solid in the gs configuration
-        self._dfdb = df_database()
+        self._dfdb = df_database(xc=xc)
         self.manager = manager
         self.workdir = workdir
 
@@ -991,11 +1009,13 @@ class DFPTPhononFactory(object):
         """
         This function constructs the input files for the phonon calculation:
         GS input + the input files for the phonon calculation.
+
         kwargs:
-        ecut: the ecut at which the input is generated
-        kppa: kpoint per atom
-        smearing: is removed
-        qpt: optional, list of qpoints. if not present gamma is added
+	    ecut: the ecut at which the input is generated
+	    kppa: kpoint per atom
+	    smearing: is removed
+	    qpt: optional, list of qpoints. if not present gamma is added
+
         the rest are passed as abinit input variables
         """
         qpoints = kwargs.pop('qpt', [0.00000000E+00,  0.00000000E+00,  0.00000000E+00])
@@ -1031,6 +1051,10 @@ class DFPTPhononFactory(object):
 
         multi = abilab.MultiDataset(structure=structure, pseudos=pseudos, ndtset=1+len(qpoints))
         multi.set_vars(global_vars)
+
+	# Check xc:
+	#if any(p.xc != self._dbdb.xc for p in multi[0].pseudos):
+	#    raise ValueError("XC found in pseudos do not agree with the one used in the factory")
 
         rfasr = kwargs.pop('rfasr', 2)
 
@@ -1068,6 +1092,10 @@ class DFPTPhononFactory(object):
         kwargs.pop('accuracy')
 
         pseudo = Pseudo.as_pseudo(pseudo)
+	if pseudo.xc != self._dfdb.xc:
+            raise ValueError(
+                "Pseudo xc differs from the XC used to instantiate the factory\n"
+                "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))
 
         structure_or_cif = self.get_cif_path(pseudo.symbol)
 

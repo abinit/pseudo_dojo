@@ -20,7 +20,7 @@ def itest_phonons_without_asr(fwp, tvars):
     kppa = 20  # this value is for testing purpose 
 
     # This one requires deltafactor!
-    phonon_factory = DFPTPhononFactory()
+    phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
     work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
                                           tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], rfasr=0)
     assert work is None

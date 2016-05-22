@@ -319,7 +319,6 @@ class GbrvDatabase(object):
 
 __GBRV_DATABASE = None
 
-
 def gbrv_database():
     """Returns the GBRV database with the reference results."""
     global __GBRV_DATABASE

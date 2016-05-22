@@ -330,10 +330,6 @@ def dojo_figures(options):
 def dojo_plot(options):
     """Plot DOJO results for a single pseudo."""
     pseudos = options.pseudos
-    if os.path.isfile('LDA'):
-        xc = 'LDA'
-    else:
-        xc = None
 
     for pseudo in pseudos:
         if not pseudo.has_dojo_report:
@@ -341,12 +337,13 @@ def dojo_plot(options):
             continue
 
         report = pseudo.dojo_report
-        #print(pseudo)
-        #print(report)
-        #print("trials passed: ", report.trials)
-        #report.has_hints
-        #report.has_exceptions
-        #report.print_table()
+        if options.verbose:
+            print(pseudo)
+            print(report)
+            print("trials passed: ", report.trials)
+            report.has_hints
+            report.has_exceptions
+            #report.print_table()
 
         # ebands
         if any(k in options.what_plot for k in ("all", "ebands")):
@@ -363,8 +360,7 @@ def dojo_plot(options):
                 report.plot_deltafactor_eos(title=pseudo.basename)
 
             # Plot total energy convergence.
-            fig = report.plot_deltafactor_convergence(title=pseudo.basename, xc=xc)
-
+            fig = report.plot_deltafactor_convergence(title=pseudo.basename, xc=pseudo.xc)
             fig = report.plot_etotal_vs_ecut(title=pseudo.basename)
 
         # GBRV
@@ -483,7 +479,7 @@ def dojo_table(options):
         return
 
     if errors:
-        print("ERRORS:")
+        cprint("ERRORS:", "red")
         pprint(errors)
 
     accuracies = ["low", "normal", "high"]
@@ -642,18 +638,13 @@ def dojo_check(options):
 
 def dojo_make_hints(options):
 
-    if os.path.isfile('LDA'):
-        xc = 'LDA'
-    else:
-        xc = None
-
     for pseudo in options.pseudos:
         try:
             report = pseudo.dojo_report
 
             hints = report.compute_hints()
             print("hints for %s computed from deltafactor prime: %s" % (pseudo.basename, hints))
-            report.plot_deltafactor_convergence(xc=xc)           
+            report.plot_deltafactor_convergence(xc=pseudo.xc)
  
             ans = ask_yesno("Do you accept the hints? [Y]")
             if ans:
@@ -681,9 +672,9 @@ def dojo_make_hints(options):
 
 def dojo_validate(options):
     pseudos = options.pseudos
-    for p in pseudos:
-        data, errors = pseudos.get_dojo_dataframe()
+    data, errors = pseudos.get_dojo_dataframe()
 
+    for p in pseudos:
         try:
             # test if report is present
             try:

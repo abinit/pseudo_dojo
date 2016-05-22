@@ -9,11 +9,10 @@ from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory
 
 def itest_gbrv_gga_pawxml_flow(fwp, tvars):
     """Testing the GBRV flow with GGA and PAW-XML (relaxation + EOS)"""
-    #return
-    factory = GbrvFactory()
-
     pseudo = abidata.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
     assert pseudo is not None
+    factory = GbrvFactory(pseudo.xc)
+
     ecut = 4
     pawecutdg = 2 * ecut if pseudo.ispaw else None
 
@@ -37,14 +36,15 @@ def itest_gbrv_gga_pawxml_flow(fwp, tvars):
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
+
 def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
-     """Testing the GBRV flow with GGA and ONCVPSP+SO (relaxation + EOS)"""
+    """Testing the GBRV flow with GGA and ONCVPSP+SO (relaxation + EOS)"""
     #return
-    factory = GbrvFactory()
- 
     pseudo = abilab.Pseudo.from_file("./Pb-d-3_r.psp8")
     assert pseudo is not None
     assert pseudo.supports_soc
+
+    factory = GbrvFactory(pseudo.xc)
     ecut = 4
     pawecutdg = 2 * ecut if pseudo.ispaw else None
  

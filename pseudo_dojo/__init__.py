@@ -4,6 +4,7 @@ import os
 
 from collections import defaultdict, OrderedDict, Mapping
 from monty.dev import deprecated
+from monty.functools import lazy_property
 from monty.design_patterns import singleton
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.pseudos import dojotable_absdir
@@ -91,13 +92,17 @@ class OfficialTables(Mapping):
 
         return new_table
 
-    #def select_tables(self, pp_type=None, xc=None):
-    #    """
-    #    """
-    #    tables = self.values()
-    #    tables = [table for table in tables if table.dojo_info.pp_type == pp_type]
-    #    tables = [table for table in tables if table.dojo_info.xc == xc]
-    #    return tables
+    def select_tables(self, pp_type=None, xc=None):
+        """
+        """
+        tables = self.values()
+        tables = [table for table in tables if table.dojo_info.pp_type == pp_type]
+        tables = [table for table in tables if table.dojo_info.xc == xc]
+        return tables
+
+    #@lazy_property
+    #def available_xcs(self):
+    #    return set(t.xc for t in self.values())
 
     def all_nctables(self, xc=None):
         """Return the list of norm-conserving tables."""
@@ -106,9 +111,26 @@ class OfficialTables(Mapping):
             tables = [t for t in tables if t.xc == xc]
         return tables
 
-    def all_pawtables(self=None, xc=None):
+    def all_pawtables(self, xc=None):
         """Return the list of PAW tables."""
         tables = [table for table in self.values() if table.dojo_info.ispaw]
         if xc is not None:
             tables = [t for t in tables if t.xc == xc]
         return tables
+
+    def select_pseudos(self, symbol, pp_type=None, xc=None):
+        """
+        Return the full list of Pseudo objects available in the DojoTables 
+        with the given `pp_type` and XC functional `xc`.
+        """
+        tables = self.select_tables(pp_type=pp_type, xc=xc)
+        pseudos = []
+        for tab in tables:
+            pseudos.extend(tab.pseudo_with_symbol(symbol, allow_multi=True))
+        return pseudos
+
+    def select_ncpseudos(self, symbol, xc=None):
+        return self.select_pseudos(symbol, pp_type="NC", xc=xc)
+
+    def select_pawpseudos(self, symbol, xc=None):
+        return self.select_pseudos(symbol, pp_type="PAW", xc=xc)

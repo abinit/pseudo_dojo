@@ -10,7 +10,6 @@ import numpy as np
 import logging
 import abipy.abilab as abilab
 
-from warnings import warn
 from monty.termcolor import cprint 
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
@@ -18,23 +17,6 @@ from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory,
 
 
 logger = logging.getLogger(__name__)
-
-
-class RedirectStdStreams(object):
-    """See http://stackoverflow.com/questions/6796492/temporarily-redirect-stdout-stderr"""
-    def __init__(self, stdout=None, stderr=None):
-        self._stdout = stdout or sys.stdout
-        self._stderr = stderr or sys.stderr
-
-    def __enter__(self):
-        self.old_stdout, self.old_stderr = sys.stdout, sys.stderr
-        self.old_stdout.flush(); self.old_stderr.flush()
-        sys.stdout, sys.stderr = self._stdout, self._stderr
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self._stdout.flush(); self._stderr.flush()
-        sys.stdout = self.old_stdout
-        sys.stderr = self.old_stderr
 
 
 def build_flow(pseudo, options):
@@ -49,7 +31,7 @@ def build_flow(pseudo, options):
         raise TypeError("SOC is on but pseudo does not support spin-orbit couplit")
 
     if not options.soc and pseudo.supports_soc and pseudo.path.endswith("psp8"):
-        warn("[STRANGE]: Your psp8 pseudos supports SOC but options.soc is off")
+        cprint("[STRANGE]: Your psp8 pseudo supports SOC but options.soc is off", "magenta")
 
     workdir = pseudo.basename + "_DOJO"
     if os.path.exists(workdir): 
@@ -63,8 +45,8 @@ def build_flow(pseudo, options):
             "fband": 2,
             "nstep": 100,
             "paral_kgb": options.paral_kgb
-            #"nsym": 1,
     }
+    #flow.walknset_vars(extra_abivars)
 
     report = pseudo.read_dojo_report()
     #print(report)
@@ -114,9 +96,7 @@ def build_flow(pseudo, options):
 
     # Computation of the deltafactor.
     if "df" in options.trials:
-        #FIXME
-        #factory = DeltaFactory(xc=pseudo.xc)
-        factory = DeltaFactory()
+        factory = DeltaFactory(xc=pseudo.xc)
 
         for ecut in ecut_list:
             str_ecut = '%.1f' % ecut
@@ -132,10 +112,7 @@ def build_flow(pseudo, options):
 
     # GBRV tests.
     if "gbrv" in options.trials:
-        assert not options.soc
-        gbrv_factory = GbrvFactory()
-        #FIXME
-        #gbrv_factory = GbrvFactory(xc=pseudo.xc)
+        gbrv_factory = GbrvFactory(xc=pseudo.xc)
         gbrv_structs = ("fcc", "bcc")
 
         for struct_type in gbrv_structs:
@@ -156,9 +133,7 @@ def build_flow(pseudo, options):
     # PHONON test
     if "phonon" in options.trials:
         assert not options.soc
-        phonon_factory = DFPTPhononFactory()
-        #FIXME
-        #phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
+        phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
 
         for ecut in ecut_list:
             str_ecut = '%.1f' % ecut
@@ -173,14 +148,12 @@ def build_flow(pseudo, options):
             if work is not None:
                 flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
             else:
-                warn('cannot create GammaPhononsAt' + str(ecut) + ' work, factory returned None')
+                cprint('cannot create GammaPhononsAt%s work, factory returned None' % str(ecut), "magenta")
 
     # PHONON WihtOut Asr test
     if "phwoa" in options.trials:
         assert not options.soc
-        phonon_factory = DFPTPhononFactory()
-        #FIXME
-        #phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
+        phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
 
         for ecut in [ecut_list[0], ecut_list[-1]]:
             str_ecut = '%.1f' % ecut
@@ -200,8 +173,7 @@ def build_flow(pseudo, options):
     # EBANDS test
     if "ebands" in options.trials:
         assert not options.soc
-        ebands_factory = EbandsFactory()
-        #ebands_factory = EbandsFactory(pseudo.xc)
+        ebands_factory = EbandsFactory(pseudo.xc)
         ecut = ecut_hint    
         str_ecut = '%.1f' % ecut
 
@@ -215,7 +187,7 @@ def build_flow(pseudo, options):
             if work is not None:
                 flow.register_work(work, workdir='EbandsAt' + str(ecut))
             else:
-                warn('cannot create EbandsAt' + str(ecut) + ' work, factory returned None')
+                cprint('Cannot create EbandsAt%s work, factory returned None' % str(ecut), "magenta")
 
     if len(flow) > 0:
         return flow.allocate()

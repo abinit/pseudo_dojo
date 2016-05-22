@@ -10,8 +10,8 @@ from monty.collections import AttrDict
 from monty.functools import lazy_property
 from monty.string import list_strings
 from pymatgen.core.periodic_table import PeriodicTable
-#from pymatgen.core.xcfunc import XcFunc
-from pymatgen.util.plotting_utils import add_fig_kwargs #, get_ax_fig_plt
+from pymatgen.core.xcfunc import XcFunc
+from pymatgen.util.plotting_utils import add_fig_kwargs 
 from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
 
 import logging
@@ -30,17 +30,21 @@ class DojoInfo(AttrDict):
     JSON_SCHEMA = {
         "type": "object",
         "properties": {
-            "pseudo_type": {"type": "string", "enum": ["NC", "PAW"]},
-            #"xc_name": {"type": "string", "enum": XcFunc.aliases()},
+            "pp_type": {"type": "string", "enum": ["NC", "PAW"]},
+            "xc_name": {"type": "string", "enum": XcFunc.aliases()},
             "authors": {"type": "array"},
-            #"generation_date": {"type": "string", "format": "date"},
             "description": {"type": "string"},
             "reference": {"type": "string"},
             "dojo_dir": {"type": "string"},
+            #"generation_date": {"type": "string", "format": "date"},
             #"tags": {"type": "array", "items": {"type": "string", "enum": ["accuracy", "efficiency"]}},
-            #non-relativistic, scalar-relativistic or relativistic
+            #"relativity": {"type": "string", "enum": ["non-relativistic", "scalar-relativistic", "relativistic"]
         },
     }
+
+    def __init__(self, *args, **kwargs):
+	super(DojoInfo, self).__init__(*args, **kwargs)
+	self["xc"] = XcFunc.from_name(self["xc_name"])
 
     def validate_json_schema(self):
         """Validate DojoInfo with validictory."""
@@ -55,12 +59,12 @@ class DojoInfo(AttrDict):
     @property
     def isnc(self):
         """True if norm-conserving pseudopotential."""
-        return self.pseudo_type == "NC"
+        return self.pp_type == "NC"
 
     @property
     def ispaw(self):
         """True if PAW pseudopotential."""
-        return self.pseudo_type == "PAW"
+        return self.pp_type == "PAW"
 
 
 class DojoTable(PseudoTable):
@@ -126,7 +130,7 @@ class DojoTable(PseudoTable):
 
         {
         "dojo_info": {
-              "pseudo_type": "NC",
+              "pp_type": "NC",
               "xc_name": "PBE",
               "authors": ["J. Doe",],
               "generation_date": "2015-07-20",
@@ -155,7 +159,12 @@ class DojoTable(PseudoTable):
             d = json.load(fh)
 
         dojo_info = DojoInfo(**d["dojo_info"])
-        dojo_info.validate_json_schema()
+	try:
+	    dojo_info.validate_json_schema()
+	except Exception as exc:
+	    print("Validation error in %s" % djson_path)
+	    raise exc
+
         meta = d["pseudos_metadata"]
 
         top = os.path.dirname(djson_path)
@@ -174,7 +183,7 @@ class DojoTable(PseudoTable):
 
         return new
 
-    def to_djson(self, **kwargs):
+    def to_djson(self):
         """
         Build and return a dictionary with **partial** information
         on the table. This dictionary can be used as template for
@@ -203,14 +212,14 @@ class DojoTable(PseudoTable):
 
         return d
 
-    @lazy_property
-    def xc(self):
-        """The `XcFunc` object describing the XC functional used to generate the table."""
-        xc = self[0].xc
-        if any(p.xc != xc for p in self):
-            logger.critical("Found pseudos generated with different xc functionals. Setting table.xc to None")
-	    xc = None
-        return xc
+    #@lazy_property
+    #def xc(self):
+    #    """The `XcFunc` object describing the XC functional used to generate the table."""
+    #    xc = self[0].xc
+    #    if any(p.xc != xc for p in self):
+    #        logger.critical("Found pseudos generated with different xc functionals. Setting table.xc to None")
+    #        xc = None
+    #    return xc
 
     @property
     def dojo_info(self):
@@ -241,6 +250,9 @@ class DojoTable(PseudoTable):
 
         Args:
             md5dict: dict basename --> md5 hash value
+
+	Return:
+	    List of errors
         """
         errors = []
         eapp = errors.append

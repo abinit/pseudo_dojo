@@ -11,16 +11,12 @@ from pseudo_dojo.core import PseudoDojoTest
 from pseudo_dojo.dojo.works import *
 
 
-#DRY_RUN = False
-DRY_RUN = True
-
-
 class DeltaFactorTest(PseudoDojoTest):
 
     def test_nc_silicon_df(self):
         """Testing df factory for NC silicon."""
         flow = abilab.Flow(workdir=tempfile.mkdtemp())
-        df_factory = DeltaFactory()
+        df_factory = DeltaFactory(xc="PBE")
 
         extra_abivars = {
             "mem_test": 0,
@@ -35,17 +31,10 @@ class DeltaFactorTest(PseudoDojoTest):
         flow.register_work(work)
 
         flow.build_and_pickle_dump()
-        print("Working in ", flow.workdir)
         isok, results = flow.abivalidate_inputs()
         if not isok:
             print(results)
             assert isok
-
-        if not DRY_RUN:
-            flow.make_scheduler().start()
-            assert flow.all_ok
-            assert all(work.finalized for work in flow)
-            assert pseudo.has_dojo_report
 
         flow.rmtree()
 
@@ -55,7 +44,7 @@ class GbrvTest(PseudoDojoTest):
     def test_nc_silicon_gbrv_factory(self):
         """Testing GBRV work for NC silicon."""
         flow = abilab.Flow(workdir=tempfile.mkdtemp())
-        gbrv_factory = GbrvFactory()
+        gbrv_factory = GbrvFactory(xc="PBE")
 
         extra_abivars = {
             "mem_test": 0,
@@ -71,21 +60,11 @@ class GbrvTest(PseudoDojoTest):
             flow.register_work(work)
 
         flow.build_and_pickle_dump()
-        print("Working in ", flow.workdir)
-
         isok, results = flow.abivalidate_inputs()
-        print(results)
         if not isok:
             print(results)
             assert isok
         assert len(flow[0]) == 1
-
-        if not DRY_RUN:
-            flow.make_scheduler().start()
-            assert flow.all_ok
-            assert len(flow[0]) == 1 + 9
-            assert all(work.finalized for work in flow)
-            assert pseudo.has_dojo_report
 
         flow.rmtree()
 
