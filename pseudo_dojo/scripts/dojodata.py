@@ -4,6 +4,7 @@ from __future__ import division, print_function, unicode_literals
 
 import sys
 import os
+import glob
 import argparse
 import numpy as np
 
@@ -55,15 +56,21 @@ def dojo_figures(options):
                 rows.append(data_dict)
     else:
         data_dojo, errors = pseudos.get_dojo_dataframe()
+        if errors:
+            cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
+            if options.verbose:
+                for i, e in enumerate(errors): print("[%s]" % i, e)
 
         # add data that is not part of the dojo report
         data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
         for index, p in data_dojo.iterrows():
-            out = p.name.replace('psp8', 'out')
-            outfile = os.path.join(p.symbol, out)
+            outfile = p.filepath.replace('.psp8', '.out')
             parser = OncvOutputParser(outfile)
             parser.scan()
-            data_pseudo.loc[index] = [int(parser.nv), parser.valence, parser.rc_min, parser.rc_max]
+            if not parser.run_completed:
+                raise RuntimeError("[%s] Corrupted outfile")
+
+            data_pseudo.loc[index] = [parser.nv, parser.valence, parser.rc_min, parser.rc_max]
   
         data = concat([data_dojo, data_pseudo], axis=1)     
 
@@ -251,16 +258,15 @@ def dojo_figures(options):
         try:
             if el['high_gbrv_bcc_a0_rel_err'] > -100 and el['high_gbrv_fcc_a0_rel_err'] > -100:
                 elsgbrv.append(symbol)
-        except KeyError:
-            pass
-        else:
-            print('failed reading gbrv: ', symbol, el['high_gbrv_bcc_a0_rel_err'], el['high_gbrv_fcc_a0_rel_err'])
-            #print(el)
+        except (KeyError, TypeError) as exc:
+            cprint('[%s] failed reading gbrv' % symbol, "magenta")
+            if options.verbose: print(exc)
 
         try:
             if len(el['high_phonon']) > 2:
                 elsphon.append(symbol)
         except (KeyError, TypeError) as exc:
+            cprint('[%s] failed reading high_phonon' % symbol, "magenta")
             if options.verbose: print(exc)
       
     try:
@@ -384,7 +390,7 @@ def dojo_plot(options):
         #    if report.has_trial("phwoa"):
         #        report.plot_phonon_convergence(title=pseudo.basename+"W/O ASR", woasr=True)
 
-        return 0
+    return 0
 
 
 def dojo_notebook(options):
@@ -874,9 +880,17 @@ Usage example:
         exts = ("psp8",)
 
         paths = options.pseudos
-        if len(paths) == 1 and os.path.isdir(paths[0]):
-            top = os.path.abspath(paths[0])
-            paths = find_exts(top, exts, exclude_dirs="_*")
+
+        if len(paths) == 1:
+            # Handle directory argument
+            if os.path.isdir(paths[0]):
+                top = os.path.abspath(paths[0])
+                paths = find_exts(top, exts, exclude_dirs="_*")
+            # Handle "./*.psp8 syntax.
+            elif "*" in paths[0]:
+                paths = glob.glob(paths[0])
+
+        if options.verbose > 1: print("Will read pseudo from: %s" % paths)
 
         pseudos = []
         for p in paths:
@@ -888,7 +902,7 @@ Usage example:
                 pseudos.append(pseudo)
 
             except Exception as exc:
-                cprint("[%s] Python exception. This pseudo will be ignored" % p.basename, "red")
+                cprint("[%s] Python exception. This pseudo will be ignored" % p, "red")
                 if options.verbose: print(exc)
 
         table = DojoTable(pseudos)
@@ -899,7 +913,7 @@ Usage example:
         elif options.family:
             table = table.select_families(options.family)
 
-        # here we select symbols.
+        # here we select chemical symbols.
         if options.symbols:
             table = table.select_symbols(options.symbols)
 
