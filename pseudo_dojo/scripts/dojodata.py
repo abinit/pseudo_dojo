@@ -550,7 +550,7 @@ def dojo_table(options):
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))
     tablefmt = "grid"
-    floatfmt=".3f"
+    floatfmt = ".3f"
 
     accuracies = ['low', 'high']
     columns = [acc + "_dfact_meV" for acc in accuracies] 
@@ -578,7 +578,7 @@ def dojo_table(options):
             print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
     except KeyError as exc:
         cprint('No GBRV data', "red")    
-        if options.verbose: print("Python exception:\n", str(exc)
+        if options.verbose: print("Python exception:\n", str(exc))
 
     accuracies = ['low', 'normal', 'high']
     columns = [acc + "_ecut_hint" for acc in accuracies]
@@ -591,8 +591,10 @@ def dojo_table(options):
     if len(data) > 5: 
         bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean() + data["high_dfact_meV"].std()]
         good = data[data["high_dfact_meV"] < data["high_dfact_meV"].mean()]
-        print("\nPSEUDOS with high_dfact > mean plus one std (%.3f + %.3f):\n" % (data["high_dfact_meV"].mean(), data["high_dfact_meV"].std())) # ".center(80, "*"))
-        print(tabulate(bad[["high_dfact_meV", "high_ecut_deltafactor"]], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+        print("\nPSEUDOS with high_dfact > mean plus one std (%.3f + %.3f):\n" % (
+              data["high_dfact_meV"].mean(), data["high_dfact_meV"].std())) # ".center(80, "*"))
+        print(tabulate(bad[["high_dfact_meV", "high_ecut_deltafactor"]], headers="keys", 
+             tablefmt=tablefmt, floatfmt=floatfmt))
 
     #gbrv_fcc_bad = data[data["high_gbrv_fcc_a0_rerr"] > (data["high_gbrv_fcc_a0_rerr"].abs()).mean()]
     #print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))

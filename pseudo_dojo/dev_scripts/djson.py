@@ -15,6 +15,7 @@ __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
 __maintainer__ = "Matteo Giantomassi"
 
+
 def djson_new(options):
     """Create new djson file. Print document to stdout."""
     # Build full table

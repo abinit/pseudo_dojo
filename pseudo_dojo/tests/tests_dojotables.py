@@ -4,6 +4,7 @@ from __future__ import print_function, division, unicode_literals
 from pseudo_dojo.core import PseudoDojoTest
 from pseudo_dojo import OfficialTables
 
+
 class DojoApiTest(PseudoDojoTest):
 
     def test_official_tables(self):
