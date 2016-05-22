@@ -680,11 +680,11 @@ class DeltaFactorWork(DojoWork):
                    "num_sites", "dfactprime_meV")}
 
             # Write data for the computation of the delta factor
-            with open(self.outdir.path_in("deltadata.txt"), "wt") as fh:
-                fh.write("# Deltafactor = %s meV\n" % dfact)
-                fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
-                for v, e in zip(self.volumes, etotals):
-                    fh.write("%s %s\n" % (v/num_sites, e/num_sites))
+            #with open(self.outdir.path_in("deltadata.txt"), "wt") as fh:
+            #    fh.write("# Deltafactor = %s meV\n" % dfact)
+            #    fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
+            #    for v, e in zip(self.volumes, etotals):
+            #        fh.write("%s %s\n" % (v/num_sites, e/num_sites))
 
         except EOS.Error as exc:
             results.push_exceptions(exc)
