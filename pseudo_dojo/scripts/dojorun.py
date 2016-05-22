@@ -126,8 +126,9 @@ def build_flow(pseudo, options):
 
                 pawecutdg = 2 * ecut if pseudo.ispaw else None
                 # FIXME: we use ntime=5, because structure relaxations go bananas after the third step.
+                ntime = 50
                 work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg, 
-                                                       include_soc=options.soc, ntime=5, **extra_abivars)
+                                                       include_soc=options.soc, ntime=ntime, **extra_abivars)
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
     # PHONON test
