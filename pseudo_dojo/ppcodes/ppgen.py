@@ -412,13 +412,13 @@ class OncvMultiGenerator(object):
     This object receives a template input file and generates multi
     pseudos by changing paricular parameters
     """
-    def __init__(self, filepath):
+    def __init__(self, filepath, calc_type="scalar-relativistic"):
         """
         Args:
             filepath: File with the input file
         """
-        self.calc_type="scalar-relativistic"
         self.filepath = os.path.abspath(filepath)
+        self.calc_type = calc_type
 
         with open(filepath, "r") as fh:
            self.template_lines = fh.readlines()

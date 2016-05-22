@@ -89,7 +89,6 @@ class EbandsTest(PseudoDojoTest):
         if not isok:
             print(results)
             assert isok
-        #assert len(flow[0]) == 1
 
         flow.rmtree()
 

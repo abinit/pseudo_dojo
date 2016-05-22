@@ -2,102 +2,134 @@
 from __future__ import division, print_function, unicode_literals
 
 import os
-import pytest
 
+from pseudo_dojo.core import PseudoDojoTest
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
-
 
 def filepath(basename):
     return os.path.join(os.path.dirname(__file__), basename)
 
 
-def test_oncvoutput_parser():
-    """Test the parsing of the output file produced by ONCVPSPS."""
+class OncvOutputParserTest(PseudoDojoTest):
 
-    # TODO: Full-relativistic case not yet supported.
-    # disabled the raising so that the output parser can be used to generate the psp8 files from the out files
-    #with pytest.raises(OncvOutputParser.Error):
-    #    OncvOutputParser(filepath("08_O_r.out"))
+    def test_nonrelativistica(self):
+        """Parsing the non-relativistic output file produced by ONCVPSPS."""
+        # Non-relativistic results
+        p = OncvOutputParser(filepath("08_O_nr.out"))
+        p.scan(verbose=1)
+        assert p.run_completed
 
-    # Non-relativistic results
-    p = OncvOutputParser(filepath("08_O_nr.out"))
-    print(p)
-    assert not p.fully_relativistic
-    assert p.calc_type == "non-relativistic"
+        print(p)
+        assert p.calc_type == "non-relativistic"
+        assert not p.fully_relativistic
+        assert p.version == "2.1.1"
 
-    assert p.atsym == "O"
-    assert p.z == "8.00"
-    assert p.iexc == "3"
-    assert p.lmax == 1
+        assert p.atsym == "O"
+        assert p.z == "8.00"
+        assert p.iexc == "3"
+        assert p.lmax == 1
+        assert p.nc == 1 
+        assert p.nv == 2
+        assert p.lmax == 1
 
-    rhov, rhoc, rhom = p.densities["rhoV"], p.densities["rhoC"], p.densities["rhoM"]
-    assert rhov.rmesh[0] == 0.0100642
-    assert rhov.rmesh[-1] == 3.9647436
-    assert rhoc.values[0] == 53.3293576
-    assert all(rhom.values == 0.0)
+        rhov, rhoc, rhom = p.densities["rhoV"], p.densities["rhoC"], p.densities["rhoM"]
+        assert rhov.rmesh[0] == 0.0100642
+        assert rhov.rmesh[-1] == 3.9647436
+        assert rhoc.values[0] == 53.3293576
+        assert all(rhom.values == 0.0)
 
-    # Conversion to JSON format.
-    p.to_dict
+        # Conversion to JSON format.
+        p.to_dict
 
-    # Build the plotter
-    plotter = p.make_plotter()
+        # Build the plotter
+        plotter = p.make_plotter()
 
-    # Scalar relativistic output
-    p = OncvOutputParser(filepath("08_O_sr.out"))
-    assert not p.fully_relativistic
-    assert p.calc_type == "scalar-relativistic"
-    assert p.lmax == 1
+    def test_scalar_relativistic(self):
+        """Parsing the scalar-relativistic output file produced by ONCVPSPS."""
+        # Scalar relativistic output
+        p = OncvOutputParser(filepath("08_O_sr.out"))
+        p.scan(verbose=1)
+        assert p.run_completed
 
-    # Test potentials
-    vloc = p.potentials[-1]
-    pl0 = {0: -7.4449470, 1: -14.6551019, -1: -9.5661177}
+        assert not p.fully_relativistic
+        assert p.calc_type == "scalar-relativistic"
+        assert p.version == "2.1.1"
 
-    for l, pot in p.potentials.items():
-        assert pot.rmesh[0], pot.rmesh[-1] == (0.0099448, 3.9647436)
-        print(l)
-        assert pot.values[0] == pl0[l]
-        assert all(pot.rmesh == vloc.rmesh)
+        assert p.atsym == "O"
+        assert p.z == "8.00"
+        assert p.iexc == "3"
+        assert p.nc == 1 
+        assert p.nv == 2
+        assert p.lmax == 1
 
-    # Test wavefunctions
-    ae_wfs, ps_wfs = p.radial_wfs.ae, p.radial_wfs.ps
+        # Test potentials
+        vloc = p.potentials[-1]
+        pl0 = {0: -7.4449470, 1: -14.6551019, -1: -9.5661177}
 
-    ae10, ps10 = ae_wfs[(1, 0)], ps_wfs[(1, 0)]
-    assert ae10[0] == (0.009945, -0.092997)
-    assert ps10[0] == (0.009945,  0.015273)
-    assert ae10[-1] == (3.964744, 0.037697)
-    assert ps10[-1] == (3.964744, 0.037694)
+        for l, pot in p.potentials.items():
+            assert pot.rmesh[0], pot.rmesh[-1] == (0.0099448, 3.9647436)
+            print(l)
+            assert pot.values[0] == pl0[l]
+            assert all(pot.rmesh == vloc.rmesh)
 
-    ae21, ps21 = ae_wfs[(2, 1)], ps_wfs[(2, 1)]
-    assert ae21[0] == (0.009945, 0.001463)
-    assert ps21[0] == (0.009945, 0.000396)
+        # Test wavefunctions
+        ae_wfs, ps_wfs = p.radial_wfs.ae, p.radial_wfs.ps
 
-    # Test projectors
-    prjs = p.projectors
-    assert prjs[(1, 0)][0] == (0.009945, 0.015274)
-    assert prjs[(2, 0)][0] == (0.009945, -0.009284)
-    assert prjs[(1, 0)][-1] == (3.964744, 0.037697)
-    assert prjs[(2, 0)][-1] == (3.964744, 0.330625)
+        ae10, ps10 = ae_wfs[(1, 0)], ps_wfs[(1, 0)]
+        assert ae10[0] == (0.009945, -0.092997)
+        assert ps10[0] == (0.009945,  0.015273)
+        assert ae10[-1] == (3.964744, 0.037697)
+        assert ps10[-1] == (3.964744, 0.037694)
 
-    assert prjs[(1, 1)][0] == (0.009945, 0.000395)
-    assert prjs[(2, 1)][0] == (0.009945, -0.000282)
+        ae21, ps21 = ae_wfs[(2, 1)], ps_wfs[(2, 1)]
+        assert ae21[0] == (0.009945, 0.001463)
+        assert ps21[0] == (0.009945, 0.000396)
 
-    # Test convergence data
-    c = p.ene_vs_ecut
-    assert c[0].energies[0] == 5.019345
-    assert c[0].values[0] == 0.010000
-    assert c[0].energies[-1] == 25.317286
-    assert c[0].values[-1] == 0.000010
-    assert c[1].energies[0] == 19.469226
-    assert c[1].values[0] == 0.010000
+        # Test projectors
+        prjs = p.projectors
+        assert prjs[(1, 0)][0] == (0.009945, 0.015274)
+        assert prjs[(2, 0)][0] == (0.009945, -0.009284)
+        assert prjs[(1, 0)][-1] == (3.964744, 0.037697)
+        assert prjs[(2, 0)][-1] == (3.964744, 0.330625)
 
-    # Test log derivatives
-    ae0, ps0 = p.atan_logders.ae[0], p.atan_logders.ps[0]
-    assert ae0.energies[0], ae0.values[0] == (2.000000, 0.706765)
-    assert ps0.energies[0], ps0.values[0] == (2.000000, 0.703758)
-    assert ae0.energies[-1], ae0.energies[-1] == (-2.000000, 3.906687)
-    assert ps0.energies[-1], ps0.energies[-1] == (-2.000000, 3.906357)
+        assert prjs[(1, 1)][0] == (0.009945, 0.000395)
+        assert prjs[(2, 1)][0] == (0.009945, -0.000282)
 
-    ae1, ps1 = p.atan_logders.ae[1], p.atan_logders.ps[1]
-    assert ae1.energies[0], ae1.values[0]  == (2.000000, -2.523018)
-    assert ps1.values[0] == -2.521334
+        # Test convergence data
+        c = p.ene_vs_ecut
+        assert c[0].energies[0] == 5.019345
+        assert c[0].values[0] == 0.010000
+        assert c[0].energies[-1] == 25.317286
+        assert c[0].values[-1] == 0.000010
+        assert c[1].energies[0] == 19.469226
+        assert c[1].values[0] == 0.010000
 
+        # Test log derivatives
+        ae0, ps0 = p.atan_logders.ae[0], p.atan_logders.ps[0]
+        assert ae0.energies[0], ae0.values[0] == (2.000000, 0.706765)
+        assert ps0.energies[0], ps0.values[0] == (2.000000, 0.703758)
+        assert ae0.energies[-1], ae0.energies[-1] == (-2.000000, 3.906687)
+        assert ps0.energies[-1], ps0.energies[-1] == (-2.000000, 3.906357)
+
+        ae1, ps1 = p.atan_logders.ae[1], p.atan_logders.ps[1]
+        assert ae1.energies[0], ae1.values[0]  == (2.000000, -2.523018)
+        assert ps1.values[0] == -2.521334
+
+    def test_full_relativistic(self):
+        """Parsing the full-relativistic output file produced by ONCVPSPS."""
+        p = OncvOutputParser(filepath("08_O_r.out"))
+        p.scan(verbose=1)
+        assert p.run_completed
+
+        assert p.fully_relativistic
+        assert p.calc_type == "fully-relativistic"
+        assert p.version == "2.1.1"
+
+        assert p.atsym == "O"
+        assert p.z == "8.00"
+        assert p.iexc == "3"
+        assert p.nc == 1 
+        assert p.nv == 2
+        assert p.lmax == 1
+        
+        # TODO: Wavefunctions

@@ -45,7 +45,6 @@ def decorate_ax(ax, xlabel, ylabel, title, lines, legends):
     ax.legend(lines, legends, loc="best", shadow=True)
 
 
-
 class PseudoGenDataPlotter(object):
     """
     Plots the results produced by a pseudopotential generator.
@@ -565,15 +564,16 @@ class OncvOutputParser(PseudoGenOutputParser):
     # Class used to instanciate the plotter.
     Plotter = PseudoGenDataPlotter
 
-    def scan(self):
+    def scan(self, verbose=0):
         """
-        Scan the output, set and set `run_completed` attribute.
+        Scan the output, set `run_completed` attribute.
 
         Raises:
             self.Error if invalid file.
         """
         if not os.path.exists(self.filepath):
             raise self.Error("File %s does not exist" % self.filepath)
+
         # Read data and store it in lines
         self.lines = []
         with open(self.filepath) as fh:
@@ -581,8 +581,7 @@ class OncvOutputParser(PseudoGenOutputParser):
                 line = line.strip()
                 self.lines.append(line)
 
-                if line.startswith("fcfact*="):
-                    print(line)
+                if verbose and line.startswith("fcfact*="): print(line)
 
                 if line.startswith("DATA FOR PLOTTING"):
                     self.run_completed = True
@@ -614,13 +613,9 @@ class OncvOutputParser(PseudoGenOutputParser):
         self.gendate = toks.pop(-1)
         self.calc_type, self.version = toks[0], toks[-1]
 
-        if self.calc_type not in ["scalar-relativistic", "non-relativistic"]:
-            # print("will raise %s because found %s" % (self.Error, self.calc_type))
-            # raise self.Error("Fully relativistic case is not supported")
-            # print("calctype :", self.calc_type)
-            fullr = True
-        else:
-            fullr = False
+        fullr = self.calc_type not in ["scalar-relativistic", "non-relativistic"]
+        if fullr:
+            logger.info("Parsing of wavefunctions and projectors is not yet coded for fully-relativisic pseudos")
 
         # Read configuration (not very robust because we assume the user didn't change the template but oh well)
         header = "# atsym  z    nc    nv    iexc   psfile"
@@ -657,7 +652,11 @@ class OncvOutputParser(PseudoGenOutputParser):
             header = "#   n    l    f        l+1/2             l-1/2" 
         else:
             header = "#   n    l    f        energy (Ha)"
-        nc, nv = int(self.nc), int(self.nv)
+
+        # Convert nc and nv to int.
+        self.nc, self.nv = int(self.nc), int(self.nv)
+        nc, nv = self.nc, self.nv
+
         for i, line in enumerate(self.lines):
             if line.startswith(header):
                 beg, core = i + 1, [], 
@@ -680,8 +679,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
                     valence.append(n + _l2char[l] + "^{%s}" % f)
                 self.valence = "$" + " ".join(valence) + "$"
-                #print("core", self.core)
-                #print("valence",self.valence)
+                #print("core", self.core, "valence",self.valence)
                 break
         else:
             raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
@@ -694,7 +692,6 @@ class OncvOutputParser(PseudoGenOutputParser):
                 break
         else:
             raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
-        #print("lmax", self.lmax)
 
         # Compute the minimun rc(l)
         header = "#   l,   rc,     ep,   ncon, nbas, qcut"

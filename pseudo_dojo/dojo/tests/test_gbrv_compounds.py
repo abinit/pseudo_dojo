@@ -2,8 +2,6 @@
 from __future__ import division, print_function, unicode_literals
 
 import os
-import pytest
-import tempfile
 
 from abipy import abilab
 from abipy import data as abidata
@@ -11,16 +9,11 @@ from pseudo_dojo.core import PseudoDojoTest
 from pseudo_dojo.dojo.gbrv_compounds import *
 
 
-#DRY_RUN = False
-DRY_RUN = True
-#DRY_RUN = False
-
-
 class GbrvCompoundTest(PseudoDojoTest):
 
     def test_nc_lif_gbrv_factory(self):
         """Testing GBRV work for NC LiF (rocksalt structure)."""
-        flow = abilab.Flow(workdir=tempfile.mkdtemp())
+        flow = abilab.Flow.temporary_flow()
         gbrv_factory = GbrvCompoundsFactory()
 
         extra_abivars = {
@@ -46,13 +39,6 @@ class GbrvCompoundTest(PseudoDojoTest):
             assert isok
         assert len(flow[0]) == 1
 
-        if not DRY_RUN:
-            flow.make_scheduler().start()
-            assert flow.all_ok
-            assert len(flow[0]) == 1 + 9
-            assert all(work.finalized for work in flow)
-
-        #assert 0
         flow.rmtree()
 
 
