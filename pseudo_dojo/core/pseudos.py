@@ -114,7 +114,7 @@ class DojoTable(PseudoTable):
         """
         Initialize the pseudopotential table from one of **official** djson files
         located in one of the subdirectories inside pseudo_dojo.pseudos.
-        The table contains one pseudo per element and can be used for production calculations
+        The table contains **one** pseudo per element and can be used for production.
 	Client code usually access these tables via the OfficialTables() interface.
 
         djson_path contains the following dictionary in JSON format:
@@ -150,7 +150,7 @@ class DojoTable(PseudoTable):
             d = json.load(fh)
 
         dojo_info = DojoInfo(**d["dojo_info"])
-	# Valida dojo_info.
+	# Validate dojo_info.
 	try:
 	    dojo_info.validate_json_schema()
 	except Exception as exc:
