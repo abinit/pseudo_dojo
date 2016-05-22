@@ -23,6 +23,7 @@ def djson_new(options):
     print(json.dumps(djson, indent=-1))
     return 0
 
+
 def djson_validate(options):
     """Validate djson file."""
     table = DojoTable.from_djson_file(options.djson_path)
@@ -33,13 +34,13 @@ def djson_validate(options):
 
     return len(errors)
 
+
 def main():
     def str_examples():
         return """\
 Usage example: 
     djson.py  new [DIR]        => Generate new djson file.
     djson.py  validate djson   => Validate djson file.
-
 """
 
     def show_examples_and_exit(err_msg=None, error_code=0):
@@ -75,6 +76,7 @@ Usage example:
 
     # Dispatch
     return globals()["djson_" + options.command](options)
+
 
 if __name__ == "__main__":
     try:

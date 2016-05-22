@@ -16,7 +16,6 @@ from pandas import DataFrame, concat
 from monty.os.path import find_exts
 from monty.termcolor import cprint 
 from pymatgen.util.io_utils import ask_yesno, prompt
-from pymatgen.io.abinit.netcdf import NetcdfReaderError
 from pseudo_dojo.core.pseudos import DojoPseudo, DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 
@@ -112,7 +111,7 @@ def dojo_figures(options):
 
     class ElementDataPlotterRangefixer(ElementDataPlotter):
         """
-        modified plotter that alows to set the clim for the plot
+        modify plotter to alow setting the clim for the plot
         """
  
         def draw(self, colorbars=True, **kwargs):
@@ -133,7 +132,7 @@ def dojo_figures(options):
                 pc = PatchCollection(coll, cmap=cmap)
                 pc.set_clim(vmin=clim[0],vmax=clim[1])
                 #print(pc.get_clim())
-                pc.set_array(np.array([ p.value for p in coll ]))
+                pc.set_array(np.array([p.value for p in coll]))
                 self._ax.add_collection(pc)
 
                 if colorbars:
@@ -356,7 +355,7 @@ def dojo_plot(options):
             if report.has_trial("ebands"):
                 try:
                     report.plot_ebands(title=pseudo.basename)
-                except NetcdfReaderError as exc:
+                except Exception as exc:
                     cprint(exc, "red")
 
         # Deltafactor
@@ -486,8 +485,7 @@ def dojo_table(options):
         import matplotlib.pyplot as plt
         best_frame["high_dfact_meV"].hist(bins=100)
         plt.show()
-
-        return
+        return 0
 
     if errors:
         cprint("ERRORS:", "red")
@@ -521,12 +519,12 @@ def dojo_table(options):
             data[acc + "_abs_fcc"] = abs(data[acc + "_gbrv_fcc_a0_rel_err"])
             data[acc + "_abs_bcc"] = abs(data[acc + "_gbrv_bcc_a0_rel_err"])
     except KeyError:
-        print('no GBRV data')
-        pass
+        cprint('no GBRV data', "magenta")
 
     wrong = data[data["high_b1"] < 0]
     if not wrong.empty:
-        print("WRONG".center(80, "*") + "\n", wrong)
+        cprint("WRONG".center(80, "*"), "red")
+        print(wrong)
 
     #data = calc_errors(data)
     #data.to_json('table.json')
@@ -578,8 +576,9 @@ def dojo_table(options):
         print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
         if len(data) > 5:
             print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
-    except KeyError:
+    except KeyError as exc:
         cprint('No GBRV data', "red")    
+        if options.verbose: print("Python exception:\n", str(exc)
 
     accuracies = ['low', 'normal', 'high']
     columns = [acc + "_ecut_hint" for acc in accuracies]
@@ -613,6 +612,7 @@ def dojo_dist(options):
 def dojo_check(options):
     """Check validity of pseudodojo report."""
 
+    retcode = 0
     for p in options.pseudos:
         try:
             report = p.dojo_report
@@ -620,6 +620,7 @@ def dojo_check(options):
             cprint("[%s] Invalid dojo_report" % p.basename, "red")
             if options.verbose:
                 print("Python Exception:\n%s", exc)
+            retcode += 1
             continue
 
         #print(report)
@@ -633,17 +634,19 @@ def dojo_check(options):
         try:
             error = report.check(check_trials=options.check_trials)
             if error:
+                retcode += 1
                 cprint("[%s] Validation error" % p.basename, "red")
                 if options.verbose:
                     print(error)
                     print("")
 
         except Exception as exc:
+            retcode += 1
             cprint("[%s] Python exception:" % p.basename, "red")
             if options.verbose:
                 print(str(exc))
 
-    return 0
+    return retcode
 
 
 def dojo_make_hints(options):
@@ -775,11 +778,12 @@ def main():
         return """\
 Usage example:
     dojodata.py plot H.psp8                ==> Plot dojo data for pseudo H.psp8
-    dojodata.py trials H.psp8 -r 1
     dojodata.py compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
+    dojodata.py trials H.psp8 -r 1
     dojodata.py table .                    ==> Build table (find all psp8 files within current directory)
     dojodata.py figures .                  ==> Plot periodic table figures
     dojodata.py notebook H.psp8            ==> Generate ipython notebook and open it in the browser
+    dojodata.py check table/*/*_r.psp8 -v --check-trials=gbrv_fcc,gbrv_bcc
 """
 
     def show_examples_and_exit(err_msg=None, error_code=1):
@@ -903,7 +907,7 @@ Usage example:
             if os.path.isdir(paths[0]):
                 top = os.path.abspath(paths[0])
                 paths = find_exts(top, exts, exclude_dirs="_*")
-            # Handle "./*.psp8 syntax.
+            # Handle glob syntax e.g. "./*.psp8" 
             elif "*" in paths[0]:
                 paths = glob.glob(paths[0])
 
