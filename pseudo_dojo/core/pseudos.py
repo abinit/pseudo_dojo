@@ -70,19 +70,12 @@ class DojoInfo(AttrDict):
 class DojoTable(PseudoTable):
     """
     A pseudopotential table provided by the pseudo_dojo.
-    We subclass `PseudoTable` so that we can easily add 
-    extra properties or methods, if needed.
+    We subclass `PseudoTable` so that we can easily add extra properties or methods.
     """
-#    def __init__(self, pseudos):
-#	super(DojoTable, self).__init__(pseudos)
-#	# Convert to DojoPseudo instances.
-#	for p in self:
-#	    p.__class__ = DojoPseudo
-
     @classmethod
     def from_dojodir(cls, top, exclude_basenames=None):
         """
-        Initialize the table of pseudos from one of the top level directories located
+        Initialize the table from one of the top level directories located
         in the pseudo_dojo.pseudos directory.
 
         Args:
@@ -121,12 +114,10 @@ class DojoTable(PseudoTable):
         """
         Initialize the pseudopotential table from one of **official** djson files
         located in one of the subdirectories inside pseudo_dojo.pseudos.
+        The table contains one pseudo per element and can be used for production calculations
+	Client code usually access these tables via the OfficialTables() interface.
 
-        .. important::
-
-            The table contains one pseudo per element and can be used for production calculations
-
-        djson_path contains the dictionary:
+        djson_path contains the following dictionary in JSON format:
 
         {
         "dojo_info": {
@@ -159,6 +150,7 @@ class DojoTable(PseudoTable):
             d = json.load(fh)
 
         dojo_info = DojoInfo(**d["dojo_info"])
+	# Valida dojo_info.
 	try:
 	    dojo_info.validate_json_schema()
 	except Exception as exc:
@@ -185,9 +177,9 @@ class DojoTable(PseudoTable):
 
     def to_djson(self):
         """
-        Build and return a dictionary with **partial** information
-        on the table. This dictionary can be used as template for
-        the creation of a new djson file.
+	Tool used by the PseudoDojo maintainers to build a dictionary 
+        with **partial** information on the table. This dictionary can be used as 
+        template for the creation of a new djson file.
         """
         # Add template for dojo_info section
         d = {"dojo_info": DojoInfo.get_template_dict()}
