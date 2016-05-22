@@ -449,8 +449,13 @@ def dojo_table(options):
     pseudos = options.pseudos
 
     data, errors = pseudos.get_dojo_dataframe()
+
+    if errors:
+        cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
+        if options.verbose:
+            for i, e in enumerate(errors): print("[%s]" % i, e)
+
     #data.tabulate()
-    #return
     #print(data.columns)
 
     if False:
@@ -615,7 +620,6 @@ def dojo_check(options):
             cprint("[%s] Invalid dojo_report" % p.basename, "red")
             if options.verbose:
                 print("Python Exception:\n%s", exc)
-                print("")
             continue
 
         #print(report)
@@ -627,7 +631,7 @@ def dojo_check(options):
         #    continue
 
         try:
-            error = report.check()
+            error = report.check(check_trials=options.check_trials)
             if error:
                 cprint("[%s] Validation error" % p.basename, "red")
                 if options.verbose:
@@ -849,7 +853,20 @@ Usage example:
     p_trials.add_argument("--savefig", type=str, default="", help="Save plot to savefig file")
 
     # Subparser for check command.
+    def parse_trials(s):
+        # TODO: Should use **unique** convention.
+        if s == "all": return [
+            "deltafactor",
+            "gbrv_bcc",
+            "gbrv_fcc",
+            "phonon",
+            "phwoa",
+            "ebands",
+         ]
+        return s.split(",")
+
     p_check = subparsers.add_parser('check', parents=[pseudos_selector_parser], help="Check pseudos")
+    p_check.add_argument("--check-trials", type=parse_trials, default="all", help="List of trials to check")
 
     # Subparser for validate command.
     p_validate = subparsers.add_parser('validate', parents=[pseudos_selector_parser], help="Validate pseudos")
