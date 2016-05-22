@@ -43,6 +43,8 @@ def build_flow(pseudo, options):
     if pseudo is None:
         raise TypeError("Cannot generated Pseudo object from input data. Check your file")
 
+    print(pseudo)
+
     if options.soc and not pseudo.supports_soc:
         raise TypeError("SOC is on but pseudo does not support spin-orbit couplit")
 
@@ -114,10 +116,7 @@ def build_flow(pseudo, options):
     if "df" in options.trials:
         #FIXME
         #factory = DeltaFactory(xc=pseudo.xc)
-        if os.path.isfile('LDA'):
-            factory = DeltaFactory(xc='LDA')
-        else:
-            factory = DeltaFactory()
+        factory = DeltaFactory()
 
         for ecut in ecut_list:
             str_ecut = '%.1f' % ecut
@@ -135,6 +134,8 @@ def build_flow(pseudo, options):
     if "gbrv" in options.trials:
         assert not options.soc
         gbrv_factory = GbrvFactory()
+        #FIXME
+        #gbrv_factory = GbrvFactory(xc=pseudo.xc)
         gbrv_structs = ("fcc", "bcc")
 
         for struct_type in gbrv_structs:
@@ -156,6 +157,8 @@ def build_flow(pseudo, options):
     if "phonon" in options.trials:
         assert not options.soc
         phonon_factory = DFPTPhononFactory()
+        #FIXME
+        #phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
 
         for ecut in ecut_list:
             str_ecut = '%.1f' % ecut
@@ -176,6 +179,8 @@ def build_flow(pseudo, options):
     if "phwoa" in options.trials:
         assert not options.soc
         phonon_factory = DFPTPhononFactory()
+        #FIXME
+        #phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
 
         for ecut in [ecut_list[0], ecut_list[-1]]:
             str_ecut = '%.1f' % ecut
@@ -196,6 +201,7 @@ def build_flow(pseudo, options):
     if "ebands" in options.trials:
         assert not options.soc
         ebands_factory = EbandsFactory()
+        #ebands_factory = EbandsFactory(pseudo.xc)
         ecut = ecut_hint    
         str_ecut = '%.1f' % ecut
 
