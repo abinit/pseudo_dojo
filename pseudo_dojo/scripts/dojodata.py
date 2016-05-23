@@ -16,7 +16,7 @@ from pandas import DataFrame, concat
 from monty.os.path import find_exts
 from monty.termcolor import cprint 
 from pymatgen.util.io_utils import ask_yesno, prompt
-from pseudo_dojo.core.pseudos import dojopseudo_form_file, DojoTable
+from pseudo_dojo.core.pseudos import dojopseudo_from_file, DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 
 
@@ -264,13 +264,18 @@ def dojo_plot(options):
             continue
 
         report = pseudo.dojo_report
+
         if options.verbose:
             print(pseudo)
-            print(report)
-            print("trials passed: ", report.trials)
-            report.has_hints
-            report.has_exceptions
-            #report.print_table()
+	    try:
+		error = report.check()
+		if error:
+		    cprint("[%s] Validation error" % pseudo.basename, "red")
+                    print(error)
+                    print("")
+	    except Exception as exc:
+		cprint("[%s] Python exception in report_check" % pseudo.basename, "red")
+		print(exc)
 
         # ebands
         if report.has_trial("ebands") and any(k in options.what_plot for k in ("all", "ebands")):
@@ -286,7 +291,7 @@ def dojo_plot(options):
                 report.plot_deltafactor_eos(title=pseudo.basename)
 
             # Plot total energy convergence.
-            fig = report.plot_deltafactor_convergence(title=pseudo.basename, xc=pseudo.xc)
+            fig = report.plot_deltafactor_convergence(xc=pseudo.xc, title=pseudo.basename)
             fig = report.plot_etotal_vs_ecut(title=pseudo.basename)
 
         # GBRV
@@ -567,10 +572,12 @@ def dojo_check(options):
             error = report.check(check_trials=options.check_trials)
             if error:
                 retcode += 1
-                cprint("[%s] Validation error" % p.basename, "red")
                 if options.verbose:
+		    cprint("[%s] Validation error" % p.basename, "red")
                     print(error)
                     print("")
+		else:
+		    cprint("[%s] Validation error. Use -v for more info" % p.basename, "red")
 
         except Exception as exc:
             retcode += 1

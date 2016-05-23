@@ -51,10 +51,9 @@ def write_notebook(pseudopath, with_eos=False, tmpfile=None):
     nb = nbf.new_notebook()
 
     cells = [
-
         nbf.new_heading_cell("This is an auto-generated notebook for %s" % os.path.basename(pseudopath)),
         nbf.new_code_cell("""\
-from __future__ import print_function
+from __future__ import print_function, division, unicode_literals
 %matplotlib inline
 import mpld3
 from mpld3 import plugins as plugs
@@ -117,12 +116,12 @@ with pseudo.open_pspsfile() as psps:
 fig = report.plot_etotal_vs_ecut(show=False)"""),
 
         nbf.new_heading_cell("Convergence of the deltafactor results:"),
-        nbf.new_code_cell("""fig = report.plot_deltafactor_convergence(what=("dfact_meV", "dfactprime_meV"), show=False)"""),
+        nbf.new_code_cell("""fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("dfact_meV", "dfactprime_meV"), show=False)"""),
 
         nbf.new_heading_cell("Convergence of $\Delta v_0$, $\Delta b_0$, and $\Delta b_1$ (deltafactor tests)"),
         nbf.new_code_cell("""\
 # Here we plot the difference wrt Wien2k results.
-fig = report.plot_deltafactor_convergence(what=("-dfact_meV", "-dfactprime_meV"), show=False)"""),
+fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-dfactprime_meV"), show=False)"""),
 
         nbf.new_heading_cell("deltafactor EOS for the different cutoff energies:"),
         nbf.new_code_cell("fig = report.plot_deltafactor_eos(show=False)"),
@@ -143,7 +142,7 @@ fig = report.plot_deltafactor_convergence(what=("-dfact_meV", "-dfactprime_meV")
 
     if with_eos:
         # Add EOS plots
-        cells.update([
+        cells.extend([
             nbf.new_heading_cell("GBRV EOS for the FCC structure:"),
             nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="fcc", show=False)"""),
 
