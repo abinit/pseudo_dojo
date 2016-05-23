@@ -341,7 +341,7 @@ class EbandsFactory(object):
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
-	if pseudo.xc != self._dfdb.xc:
+        if pseudo.xc != self._dfdb.xc:
             raise ValueError(
                 "Pseudo xc differs from the XC used to instantiate the factory\n"
                 "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))
@@ -503,7 +503,7 @@ class DeltaFactory(object):
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
     
-	if pseudo.xc != self._dfdb.xc:
+        if pseudo.xc != self._dfdb.xc:
             raise ValueError(
                 "Pseudo xc differs from the XC used to instantiate the factory\n"
                 "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))
@@ -714,9 +714,9 @@ class DeltaFactorWork(DojoWork):
 class GbrvFactory(object):
     """Factory class producing :class:`Work` objects for GBRV calculations."""
     def __init__(self, xc):
-	self.xc = XcFunc.asxc(xc)
-	if self.xc != "PBE":
-	    raise ValueError("Gbrv database supports only PBE pseudos")
+        self.xc = XcFunc.asxc(xc)
+        if self.xc != "PBE":
+            raise ValueError("Gbrv database supports only PBE pseudos")
         self._db = gbrv_database()
 
     def make_ref_structure(self, symbol, struct_type, ref):
@@ -764,17 +764,17 @@ class GbrvFactory(object):
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
-	if pseudo.xc != self.xc:
-	    raise ValueError(
-		"Pseudo xc differs from the XC used to instantiate the factory\n"
-		"Pseudo: %s, Database: %s" % (pseudo.xc, self.xc))
+        if pseudo.xc != self.xc:
+            raise ValueError(
+                "Pseudo xc differs from the XC used to instantiate the factory\n"
+                "Pseudo: %s, Database: %s" % (pseudo.xc, self.xc))
 
-	# Select spin_mode from include_soc.
-	spin_mode = "unpolarized"
+        # Select spin_mode from include_soc.
+        spin_mode = "unpolarized"
         if include_soc:
-	    spin_mode = "spinor"
-	    if not pseudo.supports_soc:
-		raise ValueError("Pseudo %s does not support SOC calculation." % pseudo)
+            spin_mode = "spinor"
+            if not pseudo.supports_soc:
+                raise ValueError("Pseudo %s does not support SOC calculation." % pseudo)
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
  
@@ -1011,10 +1011,10 @@ class DFPTPhononFactory(object):
         GS input + the input files for the phonon calculation.
 
         kwargs:
-	    ecut: the ecut at which the input is generated
-	    kppa: kpoint per atom
-	    smearing: is removed
-	    qpt: optional, list of qpoints. if not present gamma is added
+            ecut: the ecut at which the input is generated
+            kppa: kpoint per atom
+            smearing: is removed
+            qpt: optional, list of qpoints. if not present gamma is added
 
         the rest are passed as abinit input variables
         """
@@ -1052,9 +1052,9 @@ class DFPTPhononFactory(object):
         multi = abilab.MultiDataset(structure=structure, pseudos=pseudos, ndtset=1+len(qpoints))
         multi.set_vars(global_vars)
 
-	# Check xc:
-	#if any(p.xc != self._dbdb.xc for p in multi[0].pseudos):
-	#    raise ValueError("XC found in pseudos do not agree with the one used in the factory")
+        # Check xc:
+        #if any(p.xc != self._dbdb.xc for p in multi[0].pseudos):
+        #raise ValueError("XC found in pseudos do not agree with the one used in the factory")
 
         rfasr = kwargs.pop('rfasr', 2)
 
@@ -1092,7 +1092,7 @@ class DFPTPhononFactory(object):
         kwargs.pop('accuracy')
 
         pseudo = Pseudo.as_pseudo(pseudo)
-	if pseudo.xc != self._dfdb.xc:
+        if pseudo.xc != self._dfdb.xc:
             raise ValueError(
                 "Pseudo xc differs from the XC used to instantiate the factory\n"
                 "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))

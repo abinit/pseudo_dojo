@@ -194,7 +194,6 @@ class DeltaFactorDatabase(object):
         if code is None: code = self._REF_CODE
         code = code + "-" + str(self.xc)
         try:
-            #print(code,self._data[code][symbol])
             return self._data[code][symbol]
         except KeyError:
             raise self.Error("No entry found for code %s, symbol %s" % (code, symbol))
@@ -298,6 +297,7 @@ def check_cif_wien2k_consistency():
 
 # Mapping XC --> Database.
 __DELTAF_DATABASE_XC = None
+
 
 def df_database(xc="PBE"):
     """

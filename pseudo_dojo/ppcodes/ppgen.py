@@ -421,7 +421,7 @@ class OncvMultiGenerator(object):
         self.calc_type = calc_type
 
         with open(filepath, "r") as fh:
-           self.template_lines = fh.readlines()
+            self.template_lines = fh.readlines()
 
     def change_icmod3(self, fcfact_list=(3, 4, 5), rcfact_list=(1.3, 1.35, 1.4, 1.45, 1.5, 1.55)):
         """

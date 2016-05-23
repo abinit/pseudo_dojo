@@ -93,7 +93,7 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
         s: Spin polarization. None if spin is not taken into account.
     """
     # TODO
-    #Spin +1, -1 or 1,2 or 0,1?
+    # Spin +1, -1 or 1,2 or 0,1?
     def __new__(cls, n, l, occ, eig=None, j=None, s=None):
         """Intercepts super.__new__ adding type conversion and default values."""
         eig = float(eig) if eig is not None else eig
@@ -113,7 +113,6 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
     #        return False
     #    else:
     #        raise RuntimeError("Don't know how to compare %s with %s" % (self, other))
-
     #def __lt__(self, other):
 
     @property
@@ -491,7 +490,6 @@ def plot_aepp(ae_funcs, pp_funcs=None, **kwargs):
     title = kwargs.pop("title", None)
     show = kwargs.pop("show", True)
     savefig = kwargs.pop("savefig", None)
-    multi_plot = kwargs.pop("multi_plot", True)
     multi_plot = kwargs.pop("multi_plot", False)
 
     import matplotlib.pyplot as plt

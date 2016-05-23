@@ -87,7 +87,6 @@ def cleanup():
 # List of external packages we rely on.
 # Note setup install will download them from Pypi if they are not available.
 install_requires = [
-    "periodictable",
     "six",
     "numpy",
     "scipy",

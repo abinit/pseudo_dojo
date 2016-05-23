@@ -41,7 +41,7 @@ site <http:// TODO >.
 license = 'GPL'
 
 authors = {
-          'Matteo' : ('Matteo Giantomassi','gmatteo at gmail.com'),
+          'Matteo': ('Matteo Giantomassi','gmatteo at gmail.com'),
           }
 
 author = 'Matteo Giantomass'
@@ -51,6 +51,6 @@ author_email = 'gmatteo at gmail com'
 #url = 'http://abinit.org'
 #download_url = 'http://abinit.org/abipy'
 
-platforms = ['Linux','darwin']
+platforms = ['Linux', 'darwin']
 
 keywords = ["pseudopotentials", "DFT", "ab-initio", "first principles", "ABINIT"]

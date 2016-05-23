@@ -2,7 +2,6 @@
 """Base class for Dojo Workflows."""
 from __future__ import division, print_function, unicode_literals
 
-#import abc
 import numpy as np
 from abipy import abilab
 
@@ -48,7 +47,7 @@ class GbrvCompoundsFactory(object):
         return structure
 
     def relax_and_eos_work(self, accuracy, pseudos, formula, struct_type, 
-                          ecut=None, pawecutdg=None, ref="ae", **kwargs):
+                           ecut=None, pawecutdg=None, ref="ae", **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
