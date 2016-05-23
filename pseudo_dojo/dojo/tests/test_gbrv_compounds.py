@@ -40,8 +40,3 @@ class GbrvCompoundTest(PseudoDojoTest):
         assert len(flow[0]) == 1
 
         flow.rmtree()
-
-
-if __name__ == "__main__":
-    import unittest
-    unittest.main()

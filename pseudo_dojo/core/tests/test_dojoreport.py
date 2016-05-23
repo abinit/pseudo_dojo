@@ -27,14 +27,14 @@ class PseudoTestCase(PseudoDojoTest):
         #h_wdr.check_and_fix_dojo_md5()
         ref_md5 = "0911255f47943a292c3905909f499a84"
         assert h_wdr.compute_md5() == ref_md5
-        #assert "md5" in h_wdr.dojo_report and h_wdr.md5 == ref_md5
+        assert "md5" in h_wdr.dojo_report and h_wdr.md5 == ref_md5
 
         print(repr(h_wdr))
         print(h_wdr.as_dict())
 
         # Test DojoReport
         report = h_wdr.read_dojo_report()
-        #print(report)
+        print(report)
         assert report.symbol == "H" and report.element.symbol == "H"
         assert not report.has_hints
         assert report["pseudo_type"] == "norm-conserving" and report["version"] == "1.0"
@@ -55,6 +55,7 @@ class PseudoTestCase(PseudoDojoTest):
         self.assert_almost_equal(report["deltafactor"][32]["etotals"][1], -63.503524424394556)
         self.assert_almost_equal(report["deltafactor"][32]["volumes"][1],  66.80439150995784)
 
+        # FIXME
         #assert report.has_trial("deltafactor", ecut="32.0")
         #with self.assertRaises(report.Error): report.has_trial("deltafactor", ecut=-1)
         #with self.assertRaises(report.Error): report.has_trial("deltafactor", ecut="32.00")
@@ -93,7 +94,7 @@ class PseudoTestCase(PseudoDojoTest):
             self.assertIsInstance(report.plot_phonon_convergence(show=False), Fig)
 
 
-#class PseudoTableTest(PymatgenTest):
+#class PseudoTableTest(PseudoDojoTest):
 #
 #    def test_methods(self):
 #        """Test PseudoTable methods"""

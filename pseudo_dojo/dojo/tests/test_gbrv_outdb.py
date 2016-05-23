@@ -1,4 +1,4 @@
-from __future__ import print_function, division
+from __future__ import print_function, division, unicode_literals
 
 import sys
 import os
@@ -111,8 +111,3 @@ class GbrvOutdbTest(PseudoDojoTest):
         u = outdb.check_update()
         print(u)
         assert u.nrec_added == 0 and u.nrec_removed == 0
-
-
-if __name__ == "__main__":
-    import unittest
-    unittest.main()
