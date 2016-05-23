@@ -73,6 +73,7 @@ class OfficialTables(Mapping):
         #tables["ONCV-GYGYv0.2-PBE"] = TableMetadata("ONC-PBE-GYGYv0.2", "htc.djson")
         #tables["PAW-JTHv0.2-PBE"] = TableMetadata("PAW-PBE-JTHv0.2", "standard.djson")
         #tables["PAW-PBE-GBRVv0.2"] = TableMetadata("PAW-PBE-GBRVv0.2", "efficiency.djson")
+        # TODO: Add check on md5 of djson files.
 
     # ABC protocol.
     def __iter__(self):
@@ -107,13 +108,17 @@ class OfficialTables(Mapping):
             List of tables.
         """
         tables = self.values()
-        tables = [t for t in tables if t.dojo_info.pp_type == pp_type]
-        tables = [t for t in tables if t.dojo_info.xc == xc]
+        if pp_type is not None:
+            tables = [t for t in tables if t.dojo_info.pp_type == pp_type]
+        if xc is not None:
+            tables = [t for t in tables if t.dojo_info.xc == xc]
+
         return tables
 
-    #@lazy_property
-    #def available_xcs(self):
-    #    return set(t.xc for t in self.values())
+    @lazy_property
+    def available_xcs(self):
+        """List with the XC functionals available."""
+        return sorted(set(t.xc for t in self.values()))
 
     def all_nctables(self, xc=None):
         """

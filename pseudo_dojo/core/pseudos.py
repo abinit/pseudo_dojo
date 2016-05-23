@@ -292,6 +292,11 @@ class OfficialDojoTable(DojoTable):
         #. All pseudos must have a valid dojo report with hints
         #. The md5 value computed from the pseudo potential file must agree
            with the one found in the djson file.
+
+
+    .. attribute:: xc
+
+        XC functional
     """
     @classmethod
     def from_djson_file(cls, djson_path):
@@ -362,15 +367,11 @@ class OfficialDojoTable(DojoTable):
 
         return new
 
-    #@lazy_property
-    #def xc(self):
-    #    """The `XcFunc` object describing the XC functional used to generate the table."""
-    #    xc = self[0].xc
-    #    if any(p.xc != xc for p in self):
-    #        logger.critical("Found pseudos generated with different xc functionals. Setting table.xc to None")
-    #        xc = None
-    #    return xc
-
+    @property
+    def xc(self):
+        """The `XcFunc` object describing the XC functional used to generate the table."""
+	return self._dojo_info.xc
+ 
     @property
     def dojo_info(self):
         try:
