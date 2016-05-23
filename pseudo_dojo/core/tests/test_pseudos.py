@@ -13,12 +13,14 @@ class DojoTableTest(PseudoDojoTest):
         """Initializing DojoTable from directory."""
         table = DojoTable.from_dojodir(dojotable_absdir("ONCVPSP-PBE-DEV"))
 
-        # This table contains multiple pseudos for element!
-        # and dojo_check_errors should detect it.
-        md5dict = {p.basename: p.md5 for p in table}
+        # Produce template file for djson file.
+        table.to_djson()
 
+        # This table contains multiple pseudos for element!
+        # dojo_check_errors should detect it.
+        md5dict = {p.basename: p.md5 for p in table}
         errors = table.dojo_find_errors(md5dict=md5dict, require_hints=False)
-        pprint(errors)
+        if errors: pprint(errors)
         assert errors
 
     #def test_from_djson(self):

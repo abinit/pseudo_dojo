@@ -642,9 +642,8 @@ def dojo_validate(options):
             if 'validation' in report:
                 cprint('this pseudo was validated by %s on %s.' % (
                        report['validation']['validated_by'], report['validation']['validated_on']), "red")
-
-            if not ask_yesno('Would you like to validate again? [Y]'):
-                continue
+		if not ask_yesno('Would you like to validate again? [Y]'):
+		    continue
 
             # test for ghosts
             print('\n= GHOSTS TEST ===========================================\n')
@@ -674,7 +673,7 @@ def dojo_validate(options):
                         print()
 
             except Exception as exc:
-                cprint("[%s] Python exception" % p.basename, "red")
+                cprint("[%s] Python exception: %s" % (p.basename, type(exc)), "red")
                 if options.verbose:
                     print(exc)
                     print("")

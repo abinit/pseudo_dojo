@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-"""
-Script to validate/regenerate djson files.
-"""
+"""Script to validate/regenerate djson files."""
 from __future__ import division, print_function, unicode_literals
 
 import sys
@@ -9,7 +7,7 @@ import argparse
 import json
 
 from pprint import pprint
-from pseudo_dojo.core.pseudos import DojoTable
+from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 
 __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
@@ -27,7 +25,7 @@ def djson_new(options):
 
 def djson_validate(options):
     """Validate djson file."""
-    table = DojoTable.from_djson_file(options.djson_path)
+    table = Official.DojoTable.from_djson_file(options.djson_path)
     print(table)
     errors = table.validate()
     if errors:

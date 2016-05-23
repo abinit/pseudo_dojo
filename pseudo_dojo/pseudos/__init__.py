@@ -44,9 +44,12 @@ def write_notebook(pseudopath, with_eos=False, tmpfile=None):
 
     See http://nbviewer.ipython.org/gist/fperez/9716279
     """
-    from IPython.nbformat import current as nbf
-    #from IPython.nbformat import v3 as nbf
-    #import IPython.nbformat as nbf
+    try:
+        # Here we have a deprecation warning but the API of v4 is different!
+        from nbformat import current as nbf
+        #import nbformat.v3 as nbf
+    except ImportError:
+        from IPython.nbformat import current as nbf
 
     nb = nbf.new_notebook()
 
