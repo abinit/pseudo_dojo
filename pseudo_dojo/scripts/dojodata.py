@@ -961,7 +961,7 @@ if __name__ == "__main__":
     try:
         do_prof = sys.argv[1] == "prof"
         if do_prof: sys.argv.pop(1)
-    except: 
+    except Exception: 
         do_prof = False
 
     if do_prof:
@@ -969,5 +969,5 @@ if __name__ == "__main__":
         cProfile.runctx("main()", globals(), locals(), "Profile.prof")
         s = pstats.Stats("Profile.prof")
         s.strip_dirs().sort_stats("time").print_stats()
-    else Exception:
+    else:
         sys.exit(main())
