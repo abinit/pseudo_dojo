@@ -115,6 +115,7 @@ def dojo_figures(options):
         """
  
         def draw(self, colorbars=True, **kwargs):
+            """Replace super().draw."""
             self.cbars = []
             clims = kwargs.get('clims', None)
             n = len(self.collections)
@@ -351,12 +352,11 @@ def dojo_plot(options):
             #report.print_table()
 
         # ebands
-        if any(k in options.what_plot for k in ("all", "ebands")):
-            if report.has_trial("ebands"):
-                try:
-                    report.plot_ebands(title=pseudo.basename)
-                except Exception as exc:
-                    cprint(exc, "red")
+        if report.has_trial("ebands") and any(k in options.what_plot for k in ("all", "ebands")):
+            try:
+                report.plot_ebands(title=pseudo.basename)
+            except Exception as exc:
+                cprint(exc, "red")
 
         # Deltafactor
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
@@ -667,7 +667,7 @@ def dojo_make_hints(options):
             else:
                 print("The dojoreport contains ecuts :\n%s" % report.ecuts)
                 new_ecuts = prompt("Enter new ecuts to compute (comma-separated values or empty string to abort)")
-                if len(new_ecuts) == 0:
+                if not new_ecuts:
                     print("Exit requested by user")
                     return 
                 new_ecuts = np.array([float(k) for k in new_ecuts.strip().split(",")])
@@ -969,5 +969,5 @@ if __name__ == "__main__":
         cProfile.runctx("main()", globals(), locals(), "Profile.prof")
         s = pstats.Stats("Profile.prof")
         s.strip_dirs().sort_stats("time").print_stats()
-    else:
+    else Exception:
         sys.exit(main())
