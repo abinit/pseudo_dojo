@@ -29,8 +29,8 @@ def straceback():
 def dojo_figures(options):
     """
     Create figures for a dojo table.
-    currently for all pseudo's in the search space the one with the best df per element is chosen 
-    this should probably come from a dojotable eventually
+    Currently for all pseudos in the search space, the one with the best df per element is chosen.
+    This should probably come from a dojotable eventually
     """
     pseudos = options.pseudos
 
@@ -333,7 +333,7 @@ def dojo_figures(options):
 
 
 def dojo_plot(options):
-    """Plot DOJO results for a single pseudo."""
+    """Plot DOJO results for specified pseudos."""
     pseudos = options.pseudos
 
     for pseudo in pseudos:
@@ -394,8 +394,7 @@ def dojo_plot(options):
 
 def dojo_notebook(options):
     """
-    Generate an ipython notebook for each pseudopotential and
-    open it in the browser. Return system exit code.
+    Generate an ipython notebook for each pseudopotential and open it in the browser.
     """
     from pseudo_dojo.pseudos import make_open_notebook
     retcode = 0
@@ -613,7 +612,6 @@ def dojo_dist(options):
 
 def dojo_check(options):
     """Check validity of pseudodojo report."""
-
     retcode = 0
     for p in options.pseudos:
         try:
@@ -652,7 +650,7 @@ def dojo_check(options):
 
 
 def dojo_make_hints(options):
-
+    """Add hints for energy cutoffs"""
     for pseudo in options.pseudos:
         try:
             report = pseudo.dojo_report
@@ -686,6 +684,7 @@ def dojo_make_hints(options):
 
 
 def dojo_validate(options):
+    """Validate the pseudo."""
     pseudos = options.pseudos
     data, errors = pseudos.get_dojo_dataframe()
 
@@ -701,17 +700,18 @@ def dojo_validate(options):
                 continue
 
             # test if already validated
-            if 'validation' in report.keys():
-                print('this pseudo was validated by %s on %s.' % (
-                      report['validation']['validated_by'], report['validation']['validated_on']))
+            if 'validation' in report:
+                cprint('this pseudo was validated by %s on %s.' % (
+                       report['validation']['validated_by'], report['validation']['validated_on']), "red")
+
             if not ask_yesno('Would you like to validate again? [Y]'):
                 continue
 
             # test for ghosts
             print('\n= GHOSTS TEST ===========================================\n')
             if report.has_trial('ebands'):
-                for ecut in report['ebands'].keys():
-                    if "ghost_free_upto_eV" in report["ebands"][ecut].keys():
+                for ecut in report['ebands']:
+                    if "ghost_free_upto_eV" in report["ebands"][ecut]:
                         print('%s: Pseudo is reported to be ghost free up to %s eV' % (
                           ecut, report["ebands"][ecut]["ghost_free_upto_eV"]))
                     else:
@@ -752,7 +752,7 @@ def dojo_validate(options):
                 headers = ["symbol"]
                 for k in keys:
                     entry = acc + "_ecut_" + k 
-                    if entry in data.keys():
+                    if entry in data:
                         columns.append(entry)
                         headers.append(k)
                 print('ECUTS for accuracy %s:' % acc)
@@ -834,28 +834,27 @@ Usage example:
 
     # Subparser for plot command.
     p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser, plot_options_parser],
-                                   help="Plot DOJO_REPORT data.")
+                                   help=dojo_plot.__doc__)
 
     # Subparser for notebook command.
     p_notebook = subparsers.add_parser('notebook', parents=[pseudos_selector_parser],
-                                       help="Generate notebook notebook.")
+                                       help=dojo_notebook.__doc__)
 
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[pseudos_selector_parser, plot_options_parser],
-                                      help="Compare pseudos")
+                                      help=dojo_compare.__doc__)
 
     # Subparser for figures
-    p_figures = subparsers.add_parser('figures', parents=[pseudos_selector_parser], help="Plot table figures")
+    p_figures = subparsers.add_parser('figures', parents=[pseudos_selector_parser], help=dojo_figures.__doc__)
 
     # Subparser for table command.
-    p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help="Build pandas table.")
+    p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help=dojo_table.__doc__)
 
     # Subparser for dist command.
-    p_dist = subparsers.add_parser('dist', parents=[pseudos_selector_parser], 
-                                   help="Plot distribution of deltafactor and GBRV relative errors.")
+    p_dist = subparsers.add_parser('dist', parents=[pseudos_selector_parser], help=dojo_dist.__doc__)
 
     # Subparser for trials command.
-    p_trials = subparsers.add_parser('trials', parents=[pseudos_selector_parser], help="Plot DOJO trials.")
+    p_trials = subparsers.add_parser('trials', parents=[pseudos_selector_parser], help=dojo_trials.__doc__)
     p_trials.add_argument("--savefig", type=str, default="", help="Save plot to savefig file")
 
     # Subparser for check command.
@@ -871,15 +870,15 @@ Usage example:
          ]
         return s.split(",")
 
-    p_check = subparsers.add_parser('check', parents=[pseudos_selector_parser], help="Check pseudos")
+    p_check = subparsers.add_parser('check', parents=[pseudos_selector_parser], help=dojo_check.__doc__)
     p_check.add_argument("--check-trials", type=parse_trials, default="all", help="List of trials to check")
 
     # Subparser for validate command.
-    p_validate = subparsers.add_parser('validate', parents=[pseudos_selector_parser], help="Validate pseudos")
+    p_validate = subparsers.add_parser('validate', parents=[pseudos_selector_parser], help=dojo_validate.__doc__)
 
     # Subparser for make_hints command.
     p_make_hints = subparsers.add_parser('make_hints', parents=[pseudos_selector_parser],
-                                         help="Add hints for cutoffs for pseudos")
+                                         help=dojo_make_hints.__doc__)
 
     # Parse command line.
     try:
