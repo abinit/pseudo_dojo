@@ -203,6 +203,14 @@ class DojoTable(PseudoTable):
             if p.md5 != md5dict[p.basename]:
                 eapp("p.mdf5 != mdf5dict[p.basename]\n%s, %s" % (p.md5, md5dict[p.basename]))
 
+        # Test support for SOC. All the pseudos much have the same level.
+        # At present, this check makes sense only for NC pseudos.
+        # PAW pseudos support SOC within the on-site approach.
+	for i, p in enumerate(self):
+	    if i == 0: p0 = p
+	    if p.supports_soc == p0.supports_soc: continue
+	    eapp("%s has different SOC characteristics" % p)
+
         return errors
 
     def get_dfgbrv_dataframe(self):

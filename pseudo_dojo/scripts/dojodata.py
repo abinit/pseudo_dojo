@@ -115,7 +115,7 @@ def dojo_figures(options):
     def bcc(elt):
         """GBRV BCC [% relative error]"""
         try:
-            v_bcc =  elt['high_gbrv_bcc_a0_rel_err'] if str(elt['high_gbrv_bcc_a0_rel_err']) != 'nan' else -99
+            v_bcc = elt['high_gbrv_bcc_a0_rel_err'] if str(elt['high_gbrv_bcc_a0_rel_err']) != 'nan' else -99
             # print(v_bcc)
             return v_bcc
         except KeyError:
@@ -125,7 +125,7 @@ def dojo_figures(options):
     def fcc(elt):
         """GBRV FCC [% relative error]"""
         try:
-            v_fcc =  elt['high_gbrv_fcc_a0_rel_err'] if str(elt['high_gbrv_fcc_a0_rel_err']) != 'nan' else -99
+            v_fcc = elt['high_gbrv_fcc_a0_rel_err'] if str(elt['high_gbrv_fcc_a0_rel_err']) != 'nan' else -99
             #print(v_fcc)
             return v_fcc 
         except KeyError:

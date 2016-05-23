@@ -1,4 +1,4 @@
-"""Unit tests for PseudoDojo official tables."""
+"""Unit tests for PseudoDojo official tables and public API."""
 from __future__ import print_function, division, unicode_literals
 
 from itertools import product
@@ -26,14 +26,14 @@ class DojoApiTest(PseudoDojoTest):
 
         # Select one particular table to be used for calculations.
         # Main entry point for client code.
-        oncv_table = dojo_tables["ONCVPSP-PBE-PDv0.2-accuracy"]
-        print(oncv_table)
-        assert oncv_table
-        assert oncv_table.xc == "PBE"
-        assert all(p.isnc for p in oncv_table)
-        assert all(p.xc == oncv_table.xc for p in oncv_table)
+        oncv_pbe_table = dojo_tables["ONCVPSP-PBE-PDv0.2-accuracy"]
+        print(oncv_pbe_table)
+        assert oncv_pbe_table
+        assert oncv_pbe_table.xc == "PBE"
+        assert all(p.isnc for p in oncv_pbe_table)
+        assert all(p.xc == oncv_pbe_table.xc for p in oncv_pbe_table)
 
-        frame = oncv_table.get_dfgbrv_dataframe()
+        frame = oncv_pbe_table.get_dfgbrv_dataframe()
         #print(frame)
         #my_table.plot_dfgbrv_dist()
         
@@ -45,6 +45,40 @@ class DojoApiTest(PseudoDojoTest):
         #    if errors: print(errors)
         if retcode:
             raise RuntimeError("dojo_find_errors returned errors. Check djson files.")
+
+        retcode  = 0
+        md5_pseudo = {} 
+        for table in dojo_tables.values():
+            for p in table:
+                if p.md5 not in md5_pseudo:
+                    md5_pseudo[p.md5] = p 
+                else:
+                    # We have a problem. Save the pseudo for future reference.
+                    retcode += 1
+                    if not isinstance(md5_pseudo[p.md5], list):
+                        md5_pseudo[p.md5] = [md5_pseudo[p.md5]]
+                    md5_pseudo[p.md5].append(p)
+
+        if retcode:
+            for k, v in md5_pseudo.items():
+                if not isinstance(v, list): continue
+                print("md5=", v)
+                for p in v: print(p) 
+            raise RuntimeError("Found multiple md5 in pseudo dojo tables.")
+
+        # Test find_pseudo from md5 (in principle one could do this for each pseudo!)
+        #dojo_tables.select_nc_pseudos("Si", xc="PBE"))
+        p = oncv_pbe_table.pseudo_with_symbol("H")
+        same_p = dojo_tables.pseudo_from_symbol_md5(p.symbol, p.md5, "NC", p.xc)
+        assert p.md5 == same_p.md5
+        assert p == same_p
+        assert p.filepath == same_p.filepath
+
+        # Test whether table is complete and if all pseudos have similar SOC characteristics.
+        for table in dojo_tables.values():
+            #assert table.is_complete(zmax=118)
+            h = table.pseudo_with_symbol("H")
+            assert all(p.supports_soc == h.supports_soc for p in table)
 
         # Programmatic interface to loop over tables:
         retcode = 0

@@ -56,7 +56,7 @@ Usage example:
     # Build the main parser.
     parser = argparse.ArgumentParser(epilog=str_examples(), formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    parser.add_argument('-V', '--version', action='version', version="%(prog)s version " + __version__)
+    #parser.add_argument('-V', '--version', action='version', version="%(prog)s version " + __version__)
     parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
                          help='verbose, can be supplied multiple times to increase verbosity')
 

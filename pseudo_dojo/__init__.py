@@ -140,6 +140,29 @@ class OfficialTables(Mapping):
             tables = [t for t in tables if t.xc == xc]
         return tables
 
+    def pseudo_from_symbol_md5(self, symbol, md5, pp_type, xc):
+        """
+        Find pseudo from chemical symbol, md5 checksum, pp_type and xc.
+
+        Raises:
+            ValueError if pseudo is not found.
+        """
+        # This is the __eq__ implemented for Pseudo
+        #return (self.md5 == other.md5 and
+        #        self.__class__ == other.__class__ and
+        #        self.Z == other.Z and
+        #        self.Z_val == other.Z_val and
+        #        self.l_max == other.l_max )
+
+        # Here it's very important the we don't have duplicated md5 in the pseudo dojo tables.
+        # Actually there's a check in test/test_dojotables.py
+        for p in self.select_pseudos(symbol, pp_type=pp_type, xc=xc):
+            if p.md5 == md5: return p
+
+        raise ValueError(
+            "Cannot find pseudo associated to the following parameters:\n"
+            "symbol=%s, md5=%s, pp_type=%s, xc=%s" % (symbol, md5, pp_type, xc))
+
     def select_pseudos(self, symbol, pp_type=None, xc=None):
         """
         Return the full list of Pseudo objects available in the DojoTables 
