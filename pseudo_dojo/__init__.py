@@ -51,25 +51,28 @@ class TableMetadata(object):
 class OfficialTables(Mapping):
     """
     Official tables provided by the PseudoDojo project.
+
+    Naming scheme:
+
+        [PP_TYPE]-[XC_NAME]-[TABLE_NAME_WITH_VERSION]-[DJSON_NAME]
+
+    where:
+
+        #. PP_TYPE in ("PAW", "NC") defines the pseudos type.
+        #. XC_NAME defines the exchange-correlation functional e.g. PBE
+        #. TABLE_NAME_WITH_VERSION is the name of the table e.g. ONCVPSP, JTH ...
+        #. DJSON_NAME is the name of the djson file located in the pseudodojo directory.
+
+    In the case of NC pseudos, the SOC term is treated via djson e.g. "accuracy-soc.djson".
+    maybe FR|SR for fully or scalar-relativistic?
     """
     def __init__(self):
         self._tables = tables = OrderedDict()
 
-        # Naming scheme: [PP_TYPE]-[XC_NAME]-[TABLE_NAME_WITH_VERSION]-[DJSON_NAME]
-        #
-        # where:
-        #
-        #  PP_TYPE in ("PAW", "NC") defines the pseudos type.
-        #  XC_NAME gives the functional type e.g. PBE
-        #  TABLE_NAME_WITH_VERSION is the name of the table e.g. ONCVPSP, JTH ...
-        #  DJSON_NAME is the name of the djson file located in the pseudodojo directory.
-        #  In the case of NC pseudos, the SO term is treated via djson e.g. "accuracy-so.djson"
-        #  maybe FR|SR for fully or scalar-relativistic?
-        tables["ONCVPSP-PBE-PDv0.2-accuracy"] = TableMetadata("ONCVPSP-PBE-PDv0.2", "accuracy.djson")
-
-        #tables["ONCV-GYGYv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "htc.djson")
-        #tables["PAW-JTHv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "accuracy.djson")
-        #tables["PAW-GBRVv0.2-PBE"] = TableMetadata("ONCVPSP-PBE", "efficiency.djson")
+        tables["ONCVPSP-PBE-PDv0.2-accuracy"] = TableMetadata("ONCVPSP-PBE-PDv0.2", "test_accuracy.djson")
+        #tables["ONCV-GYGYv0.2-PBE"] = TableMetadata("ONC-PBE-GYGYv0.2", "htc.djson")
+        #tables["PAW-JTHv0.2-PBE"] = TableMetadata("PAW-PBE-JTHv0.2", "standard.djson")
+        #tables["PAW-PBE-GBRVv0.2"] = TableMetadata("PAW-PBE-GBRVv0.2", "efficiency.djson")
 
     # ABC protocol.
     def __iter__(self):
@@ -94,10 +97,18 @@ class OfficialTables(Mapping):
 
     def select_tables(self, pp_type=None, xc=None):
         """
+        Low-level method used to select tables.
+
+        Args:
+            pp_type: NC for norm-conserving pseudos or PAW. If None no selection is done. 
+            xc: If xc is not None, only the pseudos with this xc functional are selected.
+                else no selection is performed.
+        Return:
+            List of tables.
         """
         tables = self.values()
-        tables = [table for table in tables if table.dojo_info.pp_type == pp_type]
-        tables = [table for table in tables if table.dojo_info.xc == xc]
+        tables = [t for t in tables if t.dojo_info.pp_type == pp_type]
+        tables = [t for t in tables if t.dojo_info.xc == xc]
         return tables
 
     #@lazy_property
@@ -105,14 +116,20 @@ class OfficialTables(Mapping):
     #    return set(t.xc for t in self.values())
 
     def all_nctables(self, xc=None):
-        """Return the list of norm-conserving tables."""
-        tables = [table for table in self.values() if table.dojo_info.isnc]
+        """
+        Return all norm-conserving tables available.
+        If xc is not None, only the pseudos with this xc functional are selected.
+        """
+        tables = [t for t in self.values() if t.dojo_info.isnc]
         if xc is not None:
             tables = [t for t in tables if t.xc == xc]
         return tables
 
     def all_pawtables(self, xc=None):
-        """Return the list of PAW tables."""
+        """
+        Return all PAW tables available.
+        If xc is not None, only the pseudos with this xc functional are selected.
+        """
         tables = [table for table in self.values() if table.dojo_info.ispaw]
         if xc is not None:
             tables = [t for t in tables if t.xc == xc]
@@ -130,30 +147,38 @@ class OfficialTables(Mapping):
         return pseudos
 
     def select_nc_pseudos(self, symbol, xc=None):
+        """
+        Return list of NC pseudos with the given chemical `symbol`.
+        If xc is not None, only the pseudos with this xc functional are selected.
+        """
         return self.select_pseudos(symbol, pp_type="NC", xc=xc)
 
     def select_paw_pseudos(self, symbol, xc=None):
+        """
+        Return list of PAW pseudos with the given chemical `symbol`.
+        If xc is not None, only the pseudos with this xc are selected.
+        """
         return self.select_pseudos(symbol, pp_type="PAW", xc=xc)
 
-    def plot_numpseudos(self, **kwargs):
-        """Plot periodic table with the number of pseudos available per element."""
-        import matplotlib.pyplot as plt
-        from ptplotter.plotter import ElementDataPlotter
+    #def plot_numpseudos(self, **kwargs):
+    #    """Plot periodic table with the number of pseudos available per element."""
+    #    import matplotlib.pyplot as plt
+    #    from ptplotter.plotter import ElementDataPlotter
 
-        symbols, data, max_num = [], {}, 0
-        for el in Element:
-            pseudos = self.select_pseudos(el.symbol, pp_type=None, xc=None)
-            symbols.append(el.symbol)
-            max_num = max(max_num, len(pseudos))
-            data[el.symbol] = {"num_pseudos": len(pseudos)}
+    #    symbols, data, max_num = [], {}, 0
+    #    for el in Element:
+    #        pseudos = self.select_pseudos(el.symbol, pp_type=None, xc=None)
+    #        symbols.append(el.symbol)
+    #        max_num = max(max_num, len(pseudos))
+    #        data[el.symbol] = {"num_pseudos": len(pseudos)}
 
-        def count_pseudos(elt):
-            """Pseudos available"""
-            return elt.get('num_pseudos', 0)
+    #    def count_pseudos(elt):
+    #        """Pseudos available"""
+    #        return elt.get('num_pseudos', 0)
 
-        epd = ElementDataPlotter(elements=symbols, data=data)
-        #epd.ptable(functions=[count_pseudos], cmaps=["jet"], )
-        #epd.cmaps[0].set_clim([0, max_num])
-        #epd.redraw_ptable()
+    #    epd = ElementDataPlotter(elements=symbols, data=data)
+    #    #epd.ptable(functions=[count_pseudos], cmaps=["jet"], )
+    #    #epd.cmaps[0].set_clim([0, max_num])
+    #    #epd.redraw_ptable()
 
-        plt.show()
+    #    plt.show()

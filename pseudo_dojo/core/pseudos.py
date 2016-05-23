@@ -145,11 +145,12 @@ class DojoTable(PseudoTable):
 
         # Add pseudo_metadata section.
         # If there are multiple pseudos per element, we create a list of dicts.
-        # Authors of the table, will select one.
+        # Authors of the table, will have to select one.
         d["pseudos_metadata"] = meta = {}
         for p in self:
             if p.symbol in meta:
-                continue # FIXME
+		# Handle multiple pseudos.
+                #continue # HACK FOR GENERATING djson files for testing purpose.
                 old = meta[p.symbol]
                 if not isinstance(old, list): old = [old]
                 old.append(djson_entry(p))
@@ -327,11 +328,12 @@ class OfficialDojoTable(DojoTable):
         }
         }
         """
+	djson_path = os.path.abspath(djson_path)
         with open(djson_path, "rt") as fh:
             d = json.load(fh)
 
+	# Read and validate dojo_info.
         dojo_info = DojoInfo(**d["dojo_info"])
-	# Validate dojo_info.
 	try:
 	    dojo_info.validate_json_schema()
 	except Exception as exc:
@@ -343,7 +345,11 @@ class OfficialDojoTable(DojoTable):
         top = os.path.dirname(djson_path)
         paths, md5dict = [], {}
         for esymb, m in meta.items():
-            paths.append(os.path.join(top, esymb, m["basename"]))
+	    if isinstance(m, (list, tuple)):
+		raise TypeError("Invalid djson file. Expecting dict but got list: %s" % str(m))
+
+	    path = os.path.join(top, esymb, m["basename"])
+            paths.append(path)
             md5dict[m["basename"]] = m["md5"]
 
         new = cls(paths).sort_by_z()

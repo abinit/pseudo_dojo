@@ -32,11 +32,12 @@ class DojoApiTest(PseudoDojoTest):
         #assert oncv_table.xc == "PBE"
         assert all(p.isnc for p in oncv_table)
         #assert all(p.xc == oncv_table.xc for p in oncv_table)
-        #frame = oncv_table.get_dfgbrv_dataframe()
+
+        frame = oncv_table.get_dfgbrv_dataframe()
         #print(frame)
         #my_table.plot_dfgbrv_dist()
         
-        # Validate tables.
+        # TODO: Validate tables.
         retcode = 0
         #for tab in dojo_tables.values():
         #    errors = tab.dojo_find_errors(md5dict=None, require_hints=False)

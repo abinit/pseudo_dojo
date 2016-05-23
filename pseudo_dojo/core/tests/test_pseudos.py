@@ -25,7 +25,7 @@ class DojoTableTest(PseudoDojoTest):
 
     #def test_from_djson(self):
     #    """Initializing DojoTable from djson file."""
-    #    djson_path = os.path.join(dojotable_absdir("ONCVPSP-PBE-DEV"), "accuracy.djson")
+    #    djson_path = os.path.join(dojotable_absdir("ONCVPSP-PBE-DEV"), "test_accuracy.djson")
     #    table = DojoTable.from_djson_file(djson_path)
 
     #    # The table must have a dojo_info dict

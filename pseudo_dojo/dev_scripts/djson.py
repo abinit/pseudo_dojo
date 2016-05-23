@@ -6,12 +6,8 @@ import sys
 import argparse
 import json
 
-from pprint import pprint
+from monty.termcolor import cprint 
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
-
-__author__ = "Matteo Giantomassi"
-__version__ = "0.1"
-__maintainer__ = "Matteo Giantomassi"
 
 
 def djson_new(options):
@@ -25,11 +21,19 @@ def djson_new(options):
 
 def djson_validate(options):
     """Validate djson file."""
-    table = Official.DojoTable.from_djson_file(options.djson_path)
-    print(table)
-    errors = table.validate()
+    table = OfficialDojoTable.from_djson_file(options.djson_path)
+    #print(table)
+
+    md5dict = {p.basename: p.md5 for p in table}
+    errors = table.dojo_find_errors(md5dict, require_hints=False)
+
     if errors:
-        pprint(errors)
+        cprint("dojo_find_errors returned %s errors" % len(errors), "red")
+        if not options.verbose:
+            print("Use --verbose to show errors")
+        else:
+            for i, e in enumerate(errors): 
+                print("[%s]" % i, e)
 
     return len(errors)
 
@@ -60,11 +64,11 @@ Usage example:
     subparsers = parser.add_subparsers(dest='command', help='sub-command help')
 
     # Subparser for new command.
-    p_new = subparsers.add_parser('new', help='Generate new djson file.')
+    p_new = subparsers.add_parser('new', help=djson_new.__doc__)
     p_new.add_argument("top", nargs="?", default=".", help="Directory with pseudos")
 
     # Subparser for validate command.
-    p_validate = subparsers.add_parser('validate', help='Validate the djson file.')
+    p_validate = subparsers.add_parser('validate', help=djson_validate.__doc__)
     p_validate.add_argument("djson_path", help="dsjon file")
 
     # Parse command line.
