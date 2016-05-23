@@ -28,7 +28,7 @@ def build_flow(pseudo, options):
     print(pseudo)
 
     if options.soc and not pseudo.supports_soc:
-        raise TypeError("SOC is on but pseudo does not support spin-orbit couplit")
+        raise TypeError("SOC is on but pseudo does not support spin-orbit coupling")
 
     if not options.soc and pseudo.supports_soc and pseudo.path.endswith("psp8"):
         cprint("[STRANGE]: Your psp8 pseudo supports SOC but options.soc is off", "magenta")

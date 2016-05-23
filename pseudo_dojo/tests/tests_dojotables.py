@@ -19,6 +19,7 @@ class DojoApiTest(PseudoDojoTest):
         print("All dojo tables", dojo_tables)
         print("Table names", dojo_tables.keys())
         print("available XC functionals", dojo_tables.available_xcs)
+        assert "PBE" in dojo_tables.available_xcs
 
         # Can select tables by XC and or PP type.
         print("all_nctables:", dojo_tables.all_nctables())
@@ -46,6 +47,7 @@ class DojoApiTest(PseudoDojoTest):
         if retcode:
             raise RuntimeError("dojo_find_errors returned errors. Check djson files.")
 
+        # md5 values should be unique.
         retcode  = 0
         md5_pseudo = {} 
         for table in dojo_tables.values():
@@ -94,11 +96,11 @@ class DojoApiTest(PseudoDojoTest):
         assert retcode
 
         # Programmatic interface to extract pseudos.
-        assert (p.isnc and p.symbol == "Si" and p.xc == "PBE" for p in
-                dojo_tables.select_nc_pseudos("Si", xc="PBE"))
+        assert (all(p.isnc and p.symbol == "Si" and p.xc == "PBE" for p in
+                dojo_tables.select_nc_pseudos("Si", xc="PBE")))
 
-        assert (p.ispaw and p.symbol == "Al" and p.xc == "PW" for p in
-                dojo_tables.select_paw_pseudos("Al", xc="PW"))
+        assert (all(p.ispaw and p.symbol == "Al" and p.xc == "PW" for p in
+                dojo_tables.select_paw_pseudos("Al", xc="PW")))
 
         # Plots
         #dojo_tables.plot_numpseudos()

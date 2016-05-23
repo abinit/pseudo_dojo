@@ -305,7 +305,7 @@ class DojoTable(PseudoTable):
         from pseudo_dojo.core.dojoreport import DojoDataFrame
         return DojoDataFrame(rows, index=names), errors
 
-    def get_dfgbrv_dataframe(self):
+    def get_dfgbrv_dataframe(self, raise_if_none_dojoreport=False):
         """
         Build and return a pandas :class:`DataFrame` in the form.
 
@@ -314,6 +314,10 @@ class DojoTable(PseudoTable):
             ...
 
         where `gbrv_bcc` and `gbrv_fcc` are the relative errors (in percentage) wrt the AE calculations.
+
+	Args:
+	    raise_if_none_dojoreport: If True, a ValueError is raised if one of the pseudo does not
+                have the dojo_report else a warning is emitted.
         """
         _TRIALS2KEY = {
             "deltafactor": "dfact_meV",
@@ -324,8 +328,15 @@ class DojoTable(PseudoTable):
         rows = []
         for p in self:
             # Extract the dojo_report
-            report = p.dojo_report
+	    if not p.has_dojo_report:
+		msg = "%s does not have the dojo_report" % p.filepath
+		if not raise_if_none_dojoreport:
+		    logger.warning(msg)
+                    continue
+		else:
+		    raise ValueError(msg)
 
+            report = p.dojo_report
             row = dict(basename=p.basename, symbol=p.symbol, md5=p.md5)
 
             for trial, key in _TRIALS2KEY.items():
