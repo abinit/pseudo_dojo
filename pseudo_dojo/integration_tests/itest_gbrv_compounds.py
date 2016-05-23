@@ -2,7 +2,7 @@
 from __future__ import print_function, division, unicode_literals, absolute_import
 
 import pytest
-import abipy.data as abidata
+import pseudo_dojo.data as pdj_data
 import abipy.abilab as abilab
 
 from pseudo_dojo.dojo.gbrv_compounds import *
@@ -22,7 +22,7 @@ def itest_gbrvcompounds_gga_pawxml_flow(fwp, tvars):
     }
 
     formula, struct_type, accuracy = "LiF", "rocksalt", "normal"
-    pseudos = abidata.pseudos("3li.pspnc", "9f.pspnc")
+    pseudos = pdj_data.pseudos("3li.pspnc", "9f.pspnc")
 
     work = gbrv_factory.relax_and_eos_work(accuracy, pseudos, formula, struct_type, 
                                            ecut=20, pawecutdg=None, **extra_abivars)

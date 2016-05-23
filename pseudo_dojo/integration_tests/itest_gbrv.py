@@ -2,14 +2,14 @@
 from __future__ import print_function, division, unicode_literals, absolute_import
 
 import pytest
-import abipy.data as abidata
+import pseudo_dojo.data as pdj_data
 import abipy.abilab as abilab
 
 from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory
 
 def itest_gbrv_gga_pawxml_flow(fwp, tvars):
     """Testing the GBRV flow with GGA and PAW-XML (relaxation + EOS)"""
-    pseudo = abidata.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
+    pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
     assert pseudo is not None
     factory = GbrvFactory(pseudo.xc)
 
@@ -40,7 +40,7 @@ def itest_gbrv_gga_pawxml_flow(fwp, tvars):
 def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
     """Testing the GBRV flow with GGA and ONCVPSP+SO (relaxation + EOS)"""
     #return
-    pseudo = abilab.Pseudo.from_file("./Pb-d-3_r.psp8")
+    pseudo = pdj_data.pseudo("Pb-d-3_r.psp8")
     assert pseudo is not None
     assert pseudo.supports_soc
 

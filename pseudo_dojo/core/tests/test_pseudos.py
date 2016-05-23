@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from __future__ import division, print_function, unicode_literals
 
 from pprint import pprint
@@ -31,8 +30,3 @@ class DojoTableTest(PseudoDojoTest):
     #    # The table must have a dojo_info dict
     #    print(table.dojo_info)
     #    assert table.dojo_info
-
-
-if __name__ == '__main__':
-    import unittest
-    unittest.main()

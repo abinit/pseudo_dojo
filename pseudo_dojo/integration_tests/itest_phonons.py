@@ -2,16 +2,16 @@
 from __future__ import print_function, division, unicode_literals, absolute_import
 
 import pytest
-import abipy.data as abidata
 import abipy.abilab as abilab
+import pseudo_dojo.data as pdj_data
 
-from abipy.core.testing import has_abinit
 from pseudo_dojo.dojo.works import DFPTPhononFactory
+
 
 def itest_phonons_without_asr(fwp, tvars):
     """Testing the calculation of phonons without Asr."""
-    #pseudo = abidata.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
-    pseudo = abidata.pseudo("Si.oncvpsp").as_tmpfile()
+    #pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
+    pseudo = pdj_data.pseudo("Si.psp8").as_tmpfile()
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
 

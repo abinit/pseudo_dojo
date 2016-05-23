@@ -3,28 +3,12 @@ from __future__ import unicode_literals, division, print_function
 import os.path
 import collections
 import numpy as np
-import unittest2 as unittest
+import pseudo_dojo.data as pdj_data
 
-from pymatgen.util.testing import PymatgenTest
-from pymatgen.io.abinit.pseudos import *
-
-try:
-    import pseudo_dojo
-except ImportError:
-    pseudo_dojo = False
-
-_test_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..",
-                        'test_files', "abinit")
-
-def ref_file(filename):
-    return os.path.join(_test_dir, filename)
+from pseudo_dojo.core.testing import PseudoDojoTest
 
 
-def ref_files(*filenames):
-    return list(map(ref_file, filenames))
-
-
-class PseudoTestCase(PymatgenTest):
+class PseudoTestCase(PseudoDojoTest):
 
     def test_oncvpsp_dojo_report(self):
         """Testing pseudopotentials with dojo report"""
@@ -35,7 +19,7 @@ class PseudoTestCase(PymatgenTest):
             Fig = None
             plot = False
 
-        h_wdr = Pseudo.from_file(ref_file("H-wdr.oncvpsp"))
+        h_wdr = pdj_data.pseudo("H-wdr.oncvpsp")
 
         # Test DOJO REPORT and md5
         assert h_wdr.symbol == "H"
@@ -99,7 +83,7 @@ class PseudoTestCase(PymatgenTest):
         # Test plotting methods.
         xc = h_wdr.xc
         assert xc == "PBE"
-        if plot and pseudo_dojo:
+        if plot:
             self.assertIsInstance(report.plot_deltafactor_convergence(xc=xc, show=False), Fig)
             self.assertIsInstance(report.plot_deltafactor_eos(show=False), Fig)
             self.assertIsInstance(report.plot_etotal_vs_ecut(show=False), Fig)
@@ -133,8 +117,3 @@ class PseudoTestCase(PymatgenTest):
 #
 #        with self.assertRaises(ValueError):
 #            table.pseudos_with_symbols("Si")
-
-
-if __name__ == "__main__":
-    import unittest2 as unittest
-    unittest.main()

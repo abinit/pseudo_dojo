@@ -2,7 +2,7 @@
 from __future__ import print_function, division, unicode_literals, absolute_import
 
 import pytest
-import abipy.data as abidata
+import pseudo_dojo.data as pdj_data
 import abipy.abilab as abilab
 
 from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory
@@ -13,7 +13,7 @@ def itest_deltafactor_gga_pawxml(fwp, tvars):
     Testing the flow used for the computation of the deltafactor with PAW and GGA XC.
     """
     # Path of the pseudopotential to test.
-    pseudo = abidata.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
+    pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
 
@@ -56,7 +56,8 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
     Testing the flow used for the computation of the deltafactor with GGA and NC+SOC.
     """
     # Path of the pseudopotential to test.
-    pseudo =  abilab.Pseudo.from_file("./Pb-d-3_r.psp8")
+    pseudo = pdj_data.from_file("Pb-d-3_r.psp8")
+    assert pseudo.has_dojo_report
     assert pseudo.supports_soc
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
