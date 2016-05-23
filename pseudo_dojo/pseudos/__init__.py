@@ -57,6 +57,7 @@ def write_notebook(pseudopath, with_eos=False, tmpfile=None):
         nbf.new_heading_cell("This is an auto-generated notebook for %s" % os.path.basename(pseudopath)),
         nbf.new_code_cell("""\
 from __future__ import print_function, division, unicode_literals
+
 %matplotlib inline
 import mpld3
 from mpld3 import plugins as plugs
@@ -68,8 +69,8 @@ sns.set(style='ticks', palette='Set2')"""),
 
         nbf.new_code_cell("""\
 # Construct the pseudo object and get the DojoReport
-from pymatgen.io.abinit.pseudos import Pseudo
-pseudo = Pseudo.from_file('%s')
+from pseudo_dojo.core.pseudos import dojopseudo_from_file
+pseudo = dojopseudo_from_file('%s')
 report = pseudo.dojo_report""" % os.path.abspath(pseudopath)),
 
         nbf.new_heading_cell("ONCVPSP Input File:"),

@@ -34,24 +34,45 @@ def dojo_figures(options):
     """
     pseudos = options.pseudos
 
-    data_dojo, errors = pseudos.get_dojo_dataframe()
-    if errors:
-        cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
-        if options.verbose:
-            for i, e in enumerate(errors): print("[%s]" % i, e)
+    if False:
+        """
+        read the data from a data file instead of psp files
+        """
+        rows = []
+        with open('data') as data_file:
+            for line in data_file:
+                line.rstrip('\n')
+                #print(line)
+                data = line.split(',')
+                #print(data)
+                data_dict = {'name': data[0],
+                            'high_dfact_meV': float(data[1]),
+                            'rell_high_dfact_meV': float(data[2]),
+                            'high_dfactprime_meV': float(data[3])}
+                if data[5] != 'nan':
+                    data_dict['high_gbrv_bcc_a0_rel_err'] = float(data[5])
+                    data_dict['high_gbrv_fcc_a0_rel_err'] = float(data[7])
+                rows.append(data_dict)
+    else:
+	# Get data from dojoreport
+	data_dojo, errors = pseudos.get_dojo_dataframe()
+	if errors:
+	    cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
+	    if options.verbose:
+		for i, e in enumerate(errors): print("[%s]" % i, e)
 
-    # add data that is not part of the dojo report
-    data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
-    for index, p in data_dojo.iterrows():
-        outfile = p.filepath.replace('.psp8', '.out')
-        parser = OncvOutputParser(outfile)
-        parser.scan()
-        if not parser.run_completed:
-            raise RuntimeError("[%s] Corrupted outfile")
+	# add data that is not part of the dojo report
+	data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
+	for index, p in data_dojo.iterrows():
+	    outfile = p.filepath.replace('.psp8', '.out')
+	    parser = OncvOutputParser(outfile)
+	    parser.scan()
+	    if not parser.run_completed:
+		raise RuntimeError("[%s] Corrupted outfile")
 
-        data_pseudo.loc[index] = [parser.nv, parser.valence, parser.rc_min, parser.rc_max]
+	    data_pseudo.loc[index] = [parser.nv, parser.valence, parser.rc_min, parser.rc_max]
   
-    data = concat([data_dojo, data_pseudo], axis=1)     
+	data = concat([data_dojo, data_pseudo], axis=1)
 
     """Select entries per element"""
     grouped = data.groupby("symbol")

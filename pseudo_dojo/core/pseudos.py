@@ -13,6 +13,7 @@ from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.util.plotting_utils import add_fig_kwargs 
 from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
+from .dojoreport import DojoReport
 
 import logging
 logger = logging.getLogger(__name__)
@@ -28,11 +29,12 @@ def dojopseudo_from_file(filepath):
 	We cannot subclass Pseudo because it's actually the abstract base class
         and Pseudo.from_file is the factory function that returns the concreate subclass.
     """
+    # Init pseudo from file. Return None if parser error.
     pseudo = Pseudo.from_file(filepath)
-    # Handle parser error.
     if pseudo is None: return pseudo
-    # TODO: Read DojoReport and add it to pseudos
-    #pseudo.report = ??
+
+    # Read DojoReport and add it to pseudos
+    pseudo.dojo_report = DojoReport.from_file(filepath)
     return pseudo
 
 
@@ -300,7 +302,6 @@ class OfficialDojoTable(DojoTable):
         #. All pseudos must have a valid dojo report with hints
         #. The md5 value computed from the pseudo potential file must agree
            with the one found in the djson file.
-
 
     .. attribute:: xc
 
