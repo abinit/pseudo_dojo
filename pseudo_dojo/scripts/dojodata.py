@@ -208,7 +208,7 @@ def dojo_figures(options):
             return -99 #float('NaN')
 
     def low_phon_with(elt):
-        """Acoustic mode low_cut """
+        """Acoustic mode low_cut"""
         try:
             return elt['low_phonon'][0]
         except (KeyError, TypeError):
@@ -216,7 +216,7 @@ def dojo_figures(options):
             return float('NaN')
 
     def high_phon_with(elt):
-        """AC mode [\mu eV] """
+        """AC mode [\mu eV]"""
         try:
             return elt['high_phonon'][0]*1000
         except (KeyError, TypeError):
@@ -224,15 +224,15 @@ def dojo_figures(options):
             return float('NaN')
     
     def high_ecut(elt):
-        """ecut high [Ha] """
+        """ecut high [Ha]"""
         return elt.get('high_ecut_hint', float('NaN'))
 
     def low_ecut(elt):
-        """ecut low [Ha] """
+        """ecut low [Ha]"""
         return elt.get('low_ecut_hint', float('NaN'))
 
     def normal_ecut(elt):
-        """ecut normal [Ha] """
+        """ecut normal [Ha]"""
         return elt.get('normal_ecut_hint', float('NaN'))
 
     els = []
