@@ -16,7 +16,7 @@ from pandas import DataFrame, concat
 from monty.os.path import find_exts
 from monty.termcolor import cprint 
 from pymatgen.util.io_utils import ask_yesno, prompt
-from pseudo_dojo.core.pseudos import DojoPseudo, DojoTable
+from pseudo_dojo.core.pseudos import dojopseudo_form_file, DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 
 
@@ -34,133 +34,58 @@ def dojo_figures(options):
     """
     pseudos = options.pseudos
 
-    if False:
-        """
-        read the data from a data file in in staed of psp files
-        """
-        rows = []
-        with open('data') as data_file:
-            for line in data_file:
-                line.rstrip('\n')
-                #print(line)
-                data = line.split(',')
-                #print(data)
-                data_dict = {'name': data[0],
-                            'high_dfact_meV': float(data[1]),
-                            'rell_high_dfact_meV': float(data[2]),
-                            'high_dfactprime_meV': float(data[3])}
-                if data[5] != 'nan':
-                    data_dict['high_gbrv_bcc_a0_rel_err'] = float(data[5])
-                    data_dict['high_gbrv_fcc_a0_rel_err'] = float(data[7])
-                rows.append(data_dict)
-    else:
-        data_dojo, errors = pseudos.get_dojo_dataframe()
-        if errors:
-            cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
-            if options.verbose:
-                for i, e in enumerate(errors): print("[%s]" % i, e)
+    data_dojo, errors = pseudos.get_dojo_dataframe()
+    if errors:
+        cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
+        if options.verbose:
+            for i, e in enumerate(errors): print("[%s]" % i, e)
 
-        # add data that is not part of the dojo report
-        data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
-        for index, p in data_dojo.iterrows():
-            outfile = p.filepath.replace('.psp8', '.out')
-            parser = OncvOutputParser(outfile)
-            parser.scan()
-            if not parser.run_completed:
-                raise RuntimeError("[%s] Corrupted outfile")
+    # add data that is not part of the dojo report
+    data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
+    for index, p in data_dojo.iterrows():
+        outfile = p.filepath.replace('.psp8', '.out')
+        parser = OncvOutputParser(outfile)
+        parser.scan()
+        if not parser.run_completed:
+            raise RuntimeError("[%s] Corrupted outfile")
 
-            data_pseudo.loc[index] = [parser.nv, parser.valence, parser.rc_min, parser.rc_max]
+        data_pseudo.loc[index] = [parser.nv, parser.valence, parser.rc_min, parser.rc_max]
   
-        data = concat([data_dojo, data_pseudo], axis=1)     
+    data = concat([data_dojo, data_pseudo], axis=1)     
 
-        """Select entries per element"""
-        grouped = data.groupby("symbol")
+    """Select entries per element"""
+    grouped = data.groupby("symbol")
 
-        rows, names = [], []
-        for name, group in grouped:
+    rows, names = [], []
+    for name, group in grouped:
     
-            if False: # options.semicore
-                select = group.sort("nv").iloc[-1]
-            elif False: # options.valence
-                select = group.sort("nv").iloc[0]
-            else:
-                select = group.sort("high_dfact_meV").iloc[0]        
+        if False: # options.semicore
+            select = group.sort("nv").iloc[-1]
+        elif False: # options.valence
+            select = group.sort("nv").iloc[0]
+        else:
+            select = group.sort("high_dfact_meV").iloc[0]
 
-            names.append(name)
+        names.append(name)
 
-            try:
-                l = {k: getattr(select, k) for k in ('name', "symbol", 'Z', 
-                                             'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV', 
-                                             'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err', 
-                                             'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
-                                             'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
-                                             'nv', 'valence', 'rcmin', 'rcmax')} 
-            except AttributeError:
-                l = {k: getattr(select, k) for k in ('name', "symbol", 'Z', 
-                                             'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
-                                             'high_dfactprime_meV', 'high_ecut', 
-                                             'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
-                                             'nv', 'valence', 'rcmin', 'rcmax')}
-       
-            rows.append(l)
+        try:
+            l = {k: getattr(select, k) for k in ('name', "symbol", 'Z',
+                                         'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
+                                         'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err',
+                                         'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
+                                         'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
+                                         'nv', 'valence', 'rcmin', 'rcmax')}
+        except AttributeError:
+            l = {k: getattr(select, k) for k in ('name', "symbol", 'Z',
+                                         'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
+                                         'high_dfactprime_meV', 'high_ecut',
+                                         'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
+                                         'nv', 'valence', 'rcmin', 'rcmax')}
+        rows.append(l)
 
     import matplotlib.pyplot as plt
     import matplotlib.cm as mpl_cm
-    from matplotlib.collections import PatchCollection 
-    from ptplotter.plotter import ElementDataPlotter
-
-    class ElementDataPlotterRangefixer(ElementDataPlotter):
-        """
-        modify plotter to alow setting the clim for the plot
-        """
- 
-        def draw(self, colorbars=True, **kwargs):
-            """Replace super().draw."""
-            self.cbars = []
-            clims = kwargs.get('clims', None)
-            n = len(self.collections)
-            if clims is None:
-                clims = [None]*n
-            elif len(clims) == 1:
-                clims = [clims[0]]*n
-            elif len(clims) == n:
-                pass
-            else:
-                raise RuntimeError('incorrect number of clims provided in draw')
-
-            for coll, cmap, label, clim  in zip(self.collections, self.cmaps, self.cbar_labels, clims):
-                #print(clim)
-                pc = PatchCollection(coll, cmap=cmap)
-                pc.set_clim(vmin=clim[0],vmax=clim[1])
-                #print(pc.get_clim())
-                pc.set_array(np.array([p.value for p in coll]))
-                self._ax.add_collection(pc)
-
-                if colorbars:
-                    options = {'orientation':'horizontal',
-                               'pad':0.05, 'aspect':60,}
-
-                    options.update(kwargs.get('colorbar-options', {}))
-                    cbar = plt.colorbar(pc, **options)
-                    cbar.set_label(label)
-                    self.cbars.append(cbar)
-            fontdict = kwargs.get('font', {'color':'white'})
-
-            for s in self.squares:
-                if not s.label: continue
-                x = s.x + s.dx/2
-                y = s.y + s.dy/2
-                self._ax.text(x, y, s.label, ha='center',
-                                             va='center',
-                                             fontdict=fontdict)
-
-            qs_labels = [k.split('[')[0] for k in self.labels]
-
-            if self.guide_square:
-                self.guide_square.set_labels(qs_labels)
-                pc = PatchCollection(self.guide_square.patches, match_original=True)
-                self._ax.add_collection(pc)
-            self._ax.autoscale_view()
+    from pseudo_dojo.util.ptable_plotter import ElementDataPlotterRangefixer
 
     cmap = mpl_cm.cool
     color = 'black'
@@ -274,16 +199,12 @@ def dojo_figures(options):
     except ValueError:
         max_rel_err = 0.20
 
-    #if options.verbose:
-        #print("els", els)
-        #return
-
     # plot the GBRV/DF results periodic table
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
     cm1 = mpl_cm.jet
     cm2 = mpl_cm.jet
     cm1.set_under('w', 1.0)
-    epd.ptable(functions=[bcc,fcc,df], font={'color':color}, cmaps=[cm1,cm1,cm2],
+    epd.ptable(functions=[bcc,fcc,df], font={'color': color}, cmaps=[cm1, cm1, cm2],
                #clims=[[-max_rel_err, max_rel_err],[-max_rel_err, max_rel_err], [-20,20]])
                clims=[[-0.6,0.6],[-0.6, 0.6], [-4,4]])
     plt.show()
@@ -445,7 +366,6 @@ def dojo_trials(options):
 def dojo_table(options):
     """Build and show a pandas table."""
     pseudos = options.pseudos
-
     data, errors = pseudos.get_dojo_dataframe()
 
     if errors:
@@ -455,6 +375,17 @@ def dojo_table(options):
 
     #data.tabulate()
     #print(data.columns)
+    #frame = data[["high_dfact_meV", "high_dfactprime_meV", "high_gbrv_bcc_a0_rel_err", "high_gbrv_fcc_a0_rel_err"]]
+    #data["SOC"] = ["_r" in s for s in data["filepath"]]
+    #data = data[["SOC", "high_dfact_meV", "high_gbrv_bcc_a0_rel_err", "high_gbrv_fcc_a0_rel_err", "Z"]]
+    #print(tabulate(data, headers="keys"))
+    #import matplotlib.pyplot as plt
+    #import seaborn as sns
+    #g = sns.FacetGrid(data, hue="SOC")
+    #g.map(plt.scatter, "Z", "high_dfact_meV"); g.add_legend(); plt.show()
+    #g.map(plt.scatter, "Z", "high_gbrv_bcc_a0_rel_err"); g.add_legend(); plt.show()
+    #g.map(plt.scatter, "Z", "high_gbrv_fcc_a0_rel_err"); g.add_legend(); plt.show()
+    #return
 
     if False:
         """Select best entries"""
@@ -490,6 +421,7 @@ def dojo_table(options):
         cprint("ERRORS:", "red")
         pprint(errors)
 
+    #accuracies = ["normal", "high"]
     accuracies = ["low", "normal", "high"]
     keys = ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1", "ecut_deltafactor", "ecut_hint"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
@@ -917,7 +849,7 @@ Usage example:
         pseudos = []
         for p in paths:
             try:
-                pseudo = DojoPseudo.from_file(p)
+                pseudo = dojopseudo_from_file(p)
                 if pseudo is None: 
                     cprint("[%s] Pseudo.from_file returned None. Something wrong in file!" % p, "red")
                     continue
@@ -943,6 +875,9 @@ Usage example:
 
     # Build DojoTable from the paths specified by the user.
     options.pseudos = get_pseudos(options)
+    if not options.pseudos:
+	cprint("Empty pseudopotential list. Returning", "magenta")
+	return 1
 
     if options.seaborn:
         import seaborn as sns

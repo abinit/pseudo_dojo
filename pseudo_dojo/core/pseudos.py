@@ -9,7 +9,7 @@ import numpy as np
 from monty.collections import AttrDict
 from monty.functools import lazy_property
 from monty.string import list_strings
-from pymatgen.core.periodic_table import PeriodicTable
+from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.util.plotting_utils import add_fig_kwargs 
 from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
@@ -18,8 +18,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DojoPseudo(Pseudo):
-    pass
+def dojopseudo_from_file(filepath):
+    """
+    Factory function used to construct a :class:`Pseudo` object from file.
+    A DojoPseudo has a DojoReport section and this function adds the report
+    to the object.
+
+    .. note::
+	We cannot subclass Pseudo because it's actually the abstract base class
+        and Pseudo.from_file is the factory function that returns the concreate subclass.
+    """
+    pseudo = Pseudo.from_file(filepath)
+    # Handle parser error.
+    if pseudo is None: return pseudo
+    # TODO: Read DojoReport and add it to pseudos
+    #pseudo.report = ??
+    return pseudo
 
 
 class DojoInfo(AttrDict):
@@ -69,8 +83,15 @@ class DojoInfo(AttrDict):
 
 class DojoTable(PseudoTable):
     """
-    A pseudopotential table provided by the pseudo_dojo.
-    We subclass `PseudoTable` so that we can easily add extra properties or methods.
+    This a base class that is not supposed to be exposed in the public API.
+    End-users will mainly use `OfficialDojoTable` istances.
+
+    A DojoTable is a subclass of `PseudoTable` so that we can easily add extra properties or methods.
+    needed by the pseudodojo. No restriction is enforced on the content of the table e.g. DojoTable
+    can contain multiple pseudos for a given element, pseudos with mixed XC etc.
+    All the methods implemented here must take this possibilty into account.
+    Methods and properties that assume a well defined set of pseudos fulfilling the pseudo_dojo
+    constraints should be implemented in OfficialDojoTable (see below).
     """
     @classmethod
     def from_dojodir(cls, top, exclude_basenames=None):
@@ -97,7 +118,7 @@ class DojoTable(PseudoTable):
         meta = imp.load_source(module_name, os.path.join(top, "__init__.py") )
 
         # Gather all pseudos starting from the current working directory
-        all_symbols = set(element.symbol for element in PeriodicTable().all_elements)
+        all_symbols = set(e.symbol for e in Element)
         dirs = [os.path.join(top, d) for d in os.listdir(top) if d in all_symbols]
 
         exclude = set(list_strings(exclude_basenames)) if exclude_basenames is not None else set()
@@ -108,72 +129,6 @@ class DojoTable(PseudoTable):
                          if f.endswith(meta.pseudo_ext) and f not in exclude)
 
         return cls(paths).sort_by_z()
-
-    @classmethod
-    def from_djson_file(cls, djson_path):
-        """
-        Initialize the pseudopotential table from one of **official** djson files
-        located in one of the subdirectories inside pseudo_dojo.pseudos.
-        The table contains **one** pseudo per element and can be used for production.
-	Client code usually access these tables via the OfficialTables() interface.
-
-        djson_path contains the following dictionary in JSON format:
-
-        {
-        "dojo_info": {
-              "pp_type": "NC",
-              "xc_name": "PBE",
-              "authors": ["J. Doe",],
-              "generation_date": "2015-07-20",
-              "description": "String",
-              "tags": ["accuracy", "tag2"],
-              "reference": "paper",
-              "dojo_dir": "ONCVPSP-PBE",
-        },
-        "pseudos_metadata": {
-            "Si": {
-                "basename": "Si-dloc.psp8",
-                "Z_val": 4.0,
-                "l_max": 2,
-                "md5": "ececcf5b26f34676694b630d6bc809ff"
-            },
-            "O": {
-                "basename": "O-dmax.psp8",
-                "Z_val": 6.0,
-                "l_max": 2,
-                "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
-            }
-        }
-        }
-        """
-        with open(djson_path, "rt") as fh:
-            d = json.load(fh)
-
-        dojo_info = DojoInfo(**d["dojo_info"])
-	# Validate dojo_info.
-	try:
-	    dojo_info.validate_json_schema()
-	except Exception as exc:
-	    print("Validation error in %s" % djson_path)
-	    raise exc
-
-        meta = d["pseudos_metadata"]
-
-        top = os.path.dirname(djson_path)
-        paths, md5dict = [], {}
-        for esymb, m in meta.items():
-            paths.append(os.path.join(top, esymb, m["basename"]))
-            md5dict[m["basename"]] = m["md5"]
-
-        new = cls(paths).sort_by_z()
-        new.set_dojo_info(dojo_info)
-
-        # TODO: To be activated
-        #errors = new.dojo_find_errors(md5dict)
-        #if errors:
-        #    raise ValueError("\n".join(errors))
-
-        return new
 
     def to_djson(self):
         """
@@ -203,29 +158,6 @@ class DojoTable(PseudoTable):
                 meta[p.symbol] = djson_entry(p)
 
         return d
-
-    #@lazy_property
-    #def xc(self):
-    #    """The `XcFunc` object describing the XC functional used to generate the table."""
-    #    xc = self[0].xc
-    #    if any(p.xc != xc for p in self):
-    #        logger.critical("Found pseudos generated with different xc functionals. Setting table.xc to None")
-    #        xc = None
-    #    return xc
-
-    @property
-    def dojo_info(self):
-        try:
-            return self._dojo_info
-        except AttributeError:
-            return {}
-
-    #@dojo_info.setter
-    def set_dojo_info(self, dojo_info):
-        self._dojo_info = dojo_info
-
-    #def show_dojo_info(self):
-    #    pprint(self.dojo_info)
 
     # TODO: Move to require_hints == True
     def dojo_find_errors(self, md5dict, require_hints=False):
@@ -331,7 +263,6 @@ class DojoTable(PseudoTable):
         import seaborn as sns
         for ax, col in zip(ax_list.ravel(), ["deltafactor", "gbrv_fcc", "df_prime", "gbrv_bcc"]):
             values = frame[col].dropna()
-            #print(type(values))
             sns.distplot(values, ax=ax, rug=True, hist=True, kde=False, label=col, bins=kwargs.pop("bins", 50))
 
             # Add text with Mean or (MARE/RMSRE)
@@ -345,3 +276,105 @@ class DojoTable(PseudoTable):
             ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
 
         return fig
+
+
+class OfficialDojoTable(DojoTable):
+    """
+    An official pseudopotential table provided by the pseudo_dojo.
+    The table contains **one** pseudo per element and can be used for production.
+    Client code usually access these tables via the OfficialTables() interface.
+    Note the followig constraints enforced in OfficialDojoTable:
+
+	#. One pseudo per element.
+        #. Each pseudo has been generated with the same XC and with the same
+           treatment of relativitistic corrections.
+        #. All pseudos must have a valid dojo report with hints
+        #. The md5 value computed from the pseudo potential file must agree
+           with the one found in the djson file.
+    """
+    @classmethod
+    def from_djson_file(cls, djson_path):
+        """
+	Initialize the pseudopotential table from one of **official** djson files
+	located in one of the subdirectories inside pseudo_dojo.pseudos.
+
+        djson_path contains the following dictionary in JSON format:
+
+        {
+        "dojo_info": {
+              "pp_type": "NC",
+              "xc_name": "PBE",
+              "authors": ["J. Doe",],
+              "generation_date": "2015-07-20",
+              "description": "String",
+              "tags": ["accuracy", "tag2"],
+              "reference": "paper",
+              "dojo_dir": "ONCVPSP-PBE",
+        },
+        "pseudos_metadata": {
+            "Si": {
+                "basename": "Si-dloc.psp8",
+                "Z_val": 4.0,
+                "l_max": 2,
+                "md5": "ececcf5b26f34676694b630d6bc809ff"
+            },
+            "O": {
+                "basename": "O-dmax.psp8",
+                "Z_val": 6.0,
+                "l_max": 2,
+                "md5": "f7d0f3573362d89c81c41fc6b7b3e6ab"
+            }
+        }
+        }
+        """
+        with open(djson_path, "rt") as fh:
+            d = json.load(fh)
+
+        dojo_info = DojoInfo(**d["dojo_info"])
+	# Validate dojo_info.
+	try:
+	    dojo_info.validate_json_schema()
+	except Exception as exc:
+	    print("Validation error in %s" % djson_path)
+	    raise exc
+
+        meta = d["pseudos_metadata"]
+
+        top = os.path.dirname(djson_path)
+        paths, md5dict = [], {}
+        for esymb, m in meta.items():
+            paths.append(os.path.join(top, esymb, m["basename"]))
+            md5dict[m["basename"]] = m["md5"]
+
+        new = cls(paths).sort_by_z()
+        new.set_dojo_info(dojo_info)
+
+        # TODO: To be activated
+        #errors = new.dojo_find_errors(md5dict)
+        #if errors:
+        #    raise ValueError("\n".join(errors))
+
+        return new
+
+    #@lazy_property
+    #def xc(self):
+    #    """The `XcFunc` object describing the XC functional used to generate the table."""
+    #    xc = self[0].xc
+    #    if any(p.xc != xc for p in self):
+    #        logger.critical("Found pseudos generated with different xc functionals. Setting table.xc to None")
+    #        xc = None
+    #    return xc
+
+    @property
+    def dojo_info(self):
+        try:
+            return self._dojo_info
+        except AttributeError:
+            return {}
+
+    #@dojo_info.setter
+    def set_dojo_info(self, dojo_info):
+        self._dojo_info = dojo_info
+
+    #def show_dojo_info(self):
+    #    pprint(self.dojo_info)

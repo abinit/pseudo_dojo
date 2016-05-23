@@ -7,7 +7,7 @@ from monty.dev import deprecated
 from monty.functools import lazy_property
 from monty.design_patterns import singleton
 from pymatgen.core.periodic_table import Element
-from pseudo_dojo.core.pseudos import DojoTable
+from pseudo_dojo.core.pseudos import OfficialDojoTable
 from pseudo_dojo.pseudos import dojotable_absdir
 
 
@@ -86,7 +86,7 @@ class OfficialTables(Mapping):
         if not isinstance(v, TableMetadata):
             return v
 
-        new_table = DojoTable.from_djson_file(v.djson_path)
+        new_table = OfficialDojoTable.from_djson_file(v.djson_path)
         new_table.dojo_name = key
         self._tables[key] = new_table
 
