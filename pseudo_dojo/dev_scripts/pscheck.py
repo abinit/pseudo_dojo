@@ -9,19 +9,20 @@ __author__ = "Matteo Giantomassi"
 __version__ = "0.1"
 __maintainer__ = "Matteo Giantomassi"
 
+
 def check(options):
     """Check pseudopotential"""
     return 0
 
-#def regenerate(options):
+#def regmd5(options):
 #    return 0
 
 def main():
     def str_examples():
         return """\n
         Example usage:\n
-            pscheck.py check       => check the pseudopotential.
-            pscheck.py regenerate  => Generate new md5 hash values.
+            pscheck.py check     => check the pseudopotential.
+            pscheck.py regmd5    => Generate new md5 hash values.
         """
 
     def show_examples_and_exit(err_msg=None, error_code=0):
@@ -41,10 +42,10 @@ def main():
     subparsers = parser.add_subparsers(dest='command', help='sub-command help')
 
     # Subparser for check command.
-    p_check = subparsers.add_parser('check', help='check pseudos.')
+    p_check = subparsers.add_parser('check', help=check.__doc__)
 
     # Subparser for regenerate command.
-    #p_reg = subparsers.add_parser('regenerate', help='Regenerate new checksums.')
+    #p_reg = subparsers.add_parser('regmd5', help=regmd5.__doc__')
 
     # Parse command line.
     try:

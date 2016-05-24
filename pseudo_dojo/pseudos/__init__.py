@@ -5,14 +5,14 @@ from __future__ import print_function, division, unicode_literals
 
 import os
 
-here = os.path.dirname(__file__)
-
 DOJOTABLE_BASEDIRS = [
     "ONCVPSP-PBE-DEV",
     "ONCVPSP-PBE-PDv0.2",
     "ONCVPSP-PBE-PDv0.3",
     "ONCVPSP-PW-DEV"
 ]
+
+here = os.path.dirname(__file__)
 
 
 def dojotable_absdir(basedir):
