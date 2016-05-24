@@ -3,7 +3,7 @@ Hf    ONCVPSP  r_core=  2.45  1.96  2.15
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  2.96000000  0.00000000    rchrg fchrg qchrg
 2     2     2     0     0    nproj
-0                 extension_switch
+1                 extension_switch
 0                         4.6095221410390D+00  1.0673297895891D+00
 1  0.0000000000000D+00 -1.3853085345517D-12  1.2358621070963D-12
 2  1.0000000000000D-02  2.9046770747475D-02  1.0889408934253D-03
