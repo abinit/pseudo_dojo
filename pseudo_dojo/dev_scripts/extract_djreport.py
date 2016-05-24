@@ -47,7 +47,6 @@ def main():
     print(paths)
 
     for path in paths:
-        #pseudo = Pseudo.from_file(path)
         pseudo = dojopseudo_from_file(path)
 	if pseudo is None:
             print("Parser error in %s", path)

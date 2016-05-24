@@ -100,16 +100,7 @@ class DojoReport(dict):
     def from_file(cls, filepath):
         """Read the DojoReport from file."""
         with open(filepath, "rt") as fh:
-            lines = fh.readlines()
-            try:
-                start = lines.index("<DOJO_REPORT>\n")
-            except ValueError:
-                return {}
-
-            stop = lines.index("</DOJO_REPORT>\n")
-
-            d = json.loads("".join(lines[start+1:stop]))
-            return cls(**d)
+            return cls(**json.load(fh))
 
     @classmethod
     def from_hints(cls, ppgen_ecut, symbol):

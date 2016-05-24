@@ -59,15 +59,18 @@ class DojoReportTest(PseudoDojoTest):
         assert h_wdr.symbol == "H"
 
         #h_wdr.check_and_fix_dojo_md5()
-        ref_md5 = "0911255f47943a292c3905909f499a84"
-        assert h_wdr.compute_md5() == ref_md5
-        assert "md5" in h_wdr.dojo_report and h_wdr.md5 == ref_md5
+        #ref_md5 = "0911255f47943a292c3905909f499a84"
+        #assert h_wdr.compute_md5() == ref_md5
+        #assert "md5" in h_wdr.dojo_report and h_wdr.md5 == ref_md5
 
         print(repr(h_wdr))
         print(h_wdr.as_dict())
 
         # Test DojoReport
-        report = h_wdr.read_dojo_report()
+        #report = h_wdr.read_dojo_report()
+        #report = h_wdr.read_dojo_report()
+        assert h_wdr.has_dojo_report
+        report = h_wdr.dojo_report
         print(report)
         assert report.symbol == "H" 
         assert report.element.symbol == "H"

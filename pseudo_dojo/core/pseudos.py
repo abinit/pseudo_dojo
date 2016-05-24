@@ -35,7 +35,12 @@ def dojopseudo_from_file(filepath):
     if pseudo is None: return pseudo
 
     # Read DojoReport and add it to pseudos
-    pseudo.dojo_report = DojoReport.from_file(filepath)
+    root, ext = os.path.splitext(filepath)
+    djrepo = root + ".djrepo"
+    if not os.path.exists(djrepo):
+        raise RuntimeError("Cannot find djrepo file associated to pseudodojo file at %" % djrepo)
+
+    pseudo.dojo_report = DojoReport.from_file(djrepo)
     return pseudo
 
 
