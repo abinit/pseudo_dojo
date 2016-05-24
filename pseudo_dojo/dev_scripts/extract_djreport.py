@@ -7,12 +7,13 @@ import os
 import argparse
 import json
 
-from pymatgen.io.abinit.pseudos import Pseudo
+#from pymatgen.io.abinit.pseudos import Pseudo
+from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from monty.os.path import find_exts
 
 """
 def remove_dojo_report(self):
-    """Remove the `DOJO_REPORT` section from the pseudopotential file."""
+    Remove the `DOJO_REPORT` section from the pseudopotential file.
     # Read lines from file and insert jstring between the tags.
     with open(self.path, "r") as fh:
         lines = fh.readlines()
@@ -42,9 +43,15 @@ def main():
         print("Usage: extract_djreport TOPDIR")
 
     # Find all .psp8 files starting from top.
-    paths = find_exts(top, [".psp8"], exclude_dirs="_*")
+    paths = find_exts(top, ["psp8"], exclude_dirs="_*")
+    print(paths)
+
     for path in paths:
-        pseudo = Pseudo.from_file(path)
+        #pseudo = Pseudo.from_file(path)
+        pseudo = dojopseudo_from_file(path)
+	if pseudo is None:
+            print("Parser error in %s", path)
+	    continue
         if not pseudo.has_dojo_report:
             print("No DOJOREPORT in %s. Ignoring file" % pseudo.filepath)
 	    continue

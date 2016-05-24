@@ -1,0 +1,41 @@
+{
+"ebands": {
+"17.0": {
+"GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Hf/Hf-p-2.psp8_DOJO/EbandsAt17/t0/outdata/out_GSR.nc", 
+"workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Hf/Hf-p-2.psp8_DOJO/EbandsAt17"
+}
+}, 
+"ecuts": [
+10.0, 
+12.0, 
+14.0, 
+16.0, 
+18.0, 
+20.0, 
+22.0, 
+24.0, 
+26.0, 
+28.0, 
+30.0, 
+38.0, 
+40.0
+], 
+"md5": "2cd37ed6455b72688c8144728c9059df", 
+"ppgen_hints": {
+"high": {
+"ecut": 20.0, 
+"pawecutdg": 20.0
+}, 
+"low": {
+"ecut": 15.0, 
+"pawecutdg": 15.0
+}, 
+"normal": {
+"ecut": 17.0, 
+"pawecutdg": 17.0
+}
+}, 
+"pseudo_type": "norm-conserving", 
+"symbol": "Hf", 
+"version": "1.0"
+}

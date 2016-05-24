@@ -1,0 +1,34 @@
+{
+"ecuts": [
+122.0, 
+124.0, 
+126.0, 
+128.0, 
+130.0, 
+132.0, 
+134.0, 
+136.0, 
+138.0, 
+140.0, 
+142.0, 
+150.0, 
+152.0
+], 
+"ppgen_hints": {
+"high": {
+"ecut": 132.0, 
+"pawecutdg": 132.0
+}, 
+"low": {
+"ecut": 123.0, 
+"pawecutdg": 123.0
+}, 
+"normal": {
+"ecut": 128.0, 
+"pawecutdg": 128.0
+}
+}, 
+"pseudo_type": "norm-conserving", 
+"symbol": "Pt", 
+"version": "1.0"
+}
