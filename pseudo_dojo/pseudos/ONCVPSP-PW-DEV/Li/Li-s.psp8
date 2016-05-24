@@ -3,7 +3,7 @@ Li    ONCVPSP  r_core=  1.41  1.11
 8   -1013   1     4   400     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 3.99000000  0.00000000  0.00000000    rchrg fchrg qchrg
 2     2     0     0     0    nproj
-0                 extension_switch
+1                 extension_switch
 0                        -5.0742545120797D+00 -1.7651536166936D+00
 1  0.0000000000000D+00  3.4697233974867D-10 -6.9811365022154D-10
 2  1.0000000000000D-02  9.5661482191107D-02 -3.2372269805241D-02
