@@ -19,7 +19,7 @@ class PseudoTestCase(PseudoDojoTest):
             Fig = None
             plot = False
 
-        h_wdr = pdj_data.pseudo("H-wdr.oncvpsp")
+        h_wdr = pdj_data.pseudo("H-wdr.psp8")
 
         # Test DOJO REPORT and md5
         assert h_wdr.symbol == "H"
@@ -35,9 +35,10 @@ class PseudoTestCase(PseudoDojoTest):
         # Test DojoReport
         report = h_wdr.read_dojo_report()
         print(report)
-        assert report.symbol == "H" and report.element.symbol == "H"
-        assert not report.has_hints
-        assert report["pseudo_type"] == "norm-conserving" and report["version"] == "1.0"
+        assert report.symbol == "H" 
+        assert report.element.symbol == "H"
+        assert report["pseudo_type"] == "norm-conserving" 
+        assert report["version"] == "1.0"
         assert not report.has_hints
 
         # Basic consistency tests.
@@ -45,7 +46,8 @@ class PseudoTestCase(PseudoDojoTest):
         #assert not missings
         assert "ebands" in missings
         assert "phwoa" in missings
-        with self.assertRaises(report.Error): report.has_trial("foo")
+        with self.assertRaises(report.Error): 
+            report.has_trial("foo")
 
         for trial in report.trials:
             assert report.has_trial(trial)

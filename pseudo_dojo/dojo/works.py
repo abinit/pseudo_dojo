@@ -36,7 +36,17 @@ class DojoWork(Work):
         """String identifying the DOJO trial. Used to write results in the DOJO_REPORT."""
 
     def write_dojo_report(self, report, overwrite_data=False):
-        """Write/update the DOJO_REPORT section of the pseudopotential."""
+        """
+        Write/update the DOJO_REPORT section of the pseudopotential.
+        Important paramenters such as the name of the dojo_trial and the energy cutoff 
+        are provided by the sub-class. 
+        Client code is responsible for preparing the dictionary with the data.
+
+        Args:
+            report: Dictionary with results.
+            overwrite_data: If False, the routine raises an exception if this entry is 
+                already filled.
+        """
         # Read old_report from pseudo.
         old_report = self.pseudo.read_dojo_report()
 
@@ -52,7 +62,7 @@ class DojoWork(Work):
         if dojo_ecut in old_report[dojo_trial] and not overwrite_data:
             raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
 
-        # Update old report card with the new one and write new report
+        # Update old report by adding the new entry and write new report
         old_report[dojo_trial][dojo_ecut] = report
         try:
             self.pseudo.write_dojo_report(old_report)
@@ -310,8 +320,9 @@ class EbandsFactory(object):
     Error = EbandsFactoryError
 
     def __init__(self, xc):
+        """xc is the exchange-correlation functional e.g. PBE, PW."""
         # Get a reference to the deltafactor database. Used to get a structure
-        self._dfdb = df_database(xc=xc)
+        self._dfdb = df_database(xc)
 
     def get_cif_path(self, symbol):
         """Returns the path to the CIF file associated to the given symbol."""
@@ -465,9 +476,10 @@ class DeltaFactory(object):
     """Factory class producing work objects for the computation of the delta factor."""
     Error = DeltaFactoryError
 
-    def __init__(self, xc='PBE'):
+    def __init__(self, xc):
+        """xc is the exchange-correlation functional e.g. PBE, PW."""
         # Get a reference to the deltafactor database
-        self._dfdb = df_database(xc=xc)
+        self._dfdb = df_database(xc)
 
     def get_cif_path(self, symbol):
         """Returns the path to the CIF file associated to the given symbol."""
@@ -659,7 +671,7 @@ class DeltaFactorWork(DojoWork):
             eos_fit = EOS.DeltaFactor().fit(self.volumes/num_sites, etotals/num_sites)
 
             # Get reference results (Wien2K).
-            wien2k = df_database().get_entry(self.pseudo.symbol)
+            wien2k = df_database(self.pseudo.xc).get_entry(self.pseudo.symbol)
 
             # Compute deltafactor estimator.
             dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
@@ -688,13 +700,6 @@ class DeltaFactorWork(DojoWork):
             d = {k: results[k] for k in 
                   ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes",
                    "num_sites", "dfactprime_meV")}
-
-            # Write data for the computation of the delta factor
-            #with open(self.outdir.path_in("deltadata.txt"), "wt") as fh:
-            #    fh.write("# Deltafactor = %s meV\n" % dfact)
-            #    fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
-            #    for v, e in zip(self.volumes, etotals):
-            #        fh.write("%s %s\n" % (v/num_sites, e/num_sites))
 
         except EOS.Error as exc:
             results.push_exceptions(exc)
@@ -991,9 +996,10 @@ class DFPTPhononFactory(object):
     Error = DFPTError
 
     def __init__(self, xc, manager=None, workdir=None):
+        """xc is the exchange-correlation functional e.g. PBE, PW."""
         # reference to the deltafactor database
         # use the elemental solid in the gs configuration
-        self._dfdb = df_database(xc=xc)
+        self._dfdb = df_database(xc)
         self.manager = manager
         self.workdir = workdir
 

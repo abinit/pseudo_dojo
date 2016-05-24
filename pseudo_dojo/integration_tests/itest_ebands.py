@@ -36,6 +36,10 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
+    #assert pseudo.has_dojo_report
+    #assert pseudo.dojo_report.has_trial("deltafactor")
+    #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
+
 
 def itest_ebands_gga_ncsoc_flow(fwp, tvars):
     """Testing the ebands flow for NC+SOC pseudos."""
@@ -66,3 +70,7 @@ def itest_ebands_gga_ncsoc_flow(fwp, tvars):
     flow.show_status()
     assert all(work.finalized for work in flow)
     assert flow.all_ok
+
+    #assert pseudo.has_dojo_report
+    #assert pseudo.dojo_report.has_trial("deltafactor")
+    #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)

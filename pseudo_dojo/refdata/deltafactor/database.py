@@ -1,10 +1,10 @@
 """
 This module provides a databased for accessing the deltafactor results,
 and tools to compute the deltafactor of a pseudopotential.
-Client code should use the official API df_database() to access the database.
+Client code should use the official API df_database(xc) to access the database.
 
 Example::
-    db = df_database(xc="PBE")
+    db = df_database("PBE")
     wien2k = db.get_entry("Si")
     print(wien2k.v0, wien2k.b0, wien2k.b1)
 """
@@ -139,7 +139,7 @@ class DeltaFactorDatabase(object):
     This object is not meant to instantiated explicitly.
     Client code should get the database via the public API:
 
-        wien2k_db = df_database(xc="PBE")
+        wien2k_db = df_database("PBE")
     """
     # Reference code.
     _REF_CODE = "WIEN2k"
@@ -258,7 +258,7 @@ class DeltaFactorDatabase(object):
         return fig
 
 
-def check_cif_wien2k_consistency():
+def check_cif_wien2k_consistency(xc):
     """
     This function compares the v0 of the structures read from the CIF files with
     with those computed from the text files containing the deltafactor results.
@@ -269,7 +269,7 @@ def check_cif_wien2k_consistency():
 
     rows, index = [], []
     
-    db = df_database()
+    db = df_database(xc)
     for symbol in db.symbols:
         if symbol == "S": continue
         wien2k = db.get_entry(symbol)
@@ -311,9 +311,10 @@ def check_cif_wien2k_consistency():
 __DELTAF_DATABASE_XC = None
 
 
-def df_database(xc="PBE"):
+def df_database(xc):
     """
     Returns the deltafactor database with the reference results associated to this XC functional
+    xc is the exchange-correlation functional e.g. PBE, PW
     """
     global __DELTAF_DATABASE_XC
     if __DELTAF_DATABASE_XC is None:
@@ -329,7 +330,7 @@ def df_database(xc="PBE"):
 
 def df_wien2k(symbol, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False, xc=None):
     """Compute the deltafactor wrt to WIEN2k"""
-    wien2k = df_database(xc=xc).get_entry(symbol)
+    wien2k = df_database(xc).get_entry(symbol)
     b0 = wien2k.b0
     if b0_GPa: b0 = wien2k.b0_GPa
     #print(v0f, b0f, b1f, wien2k.v0, b0, wien2k.b1)

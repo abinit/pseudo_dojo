@@ -36,6 +36,10 @@ def itest_gbrv_gga_pawxml_flow(fwp, tvars):
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
+    #assert pseudo.has_dojo_report
+    #assert pseudo.dojo_report.has_trial("deltafactor")
+    #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
+
 
 def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
     """Testing the GBRV flow with GGA and ONCVPSP+SO (relaxation + EOS)"""
@@ -68,3 +72,7 @@ def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
     flow.show_status()
     assert all(work.finalized for work in flow)
     assert flow.all_ok
+
+    #assert pseudo.has_dojo_report
+    #assert pseudo.dojo_report.has_trial("deltafactor")
+    #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)

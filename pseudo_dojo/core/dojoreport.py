@@ -17,12 +17,54 @@ from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 logger = logging.getLogger(__name__)
 
 
+class DojoReportContext(object):
+    """
+    Context manager to update the values in the DojoReport
+
+    Example::
+
+        with DojoReportContext(pseudo) as report:
+            dojo_ecut = '%.1f' % ecut
+            report[dojo_trial][dojo_ecut] = new_entry
+
+    In pseudo code, this is equivalent to
+
+        read_dojo_report_from_pseudo
+        update_report
+        write__new_report_with_file_locking
+        update_report_inpseudo
+    """
+    def __init__(self, pseudo):
+        self.pseudo = pseudo
+
+    def __enter__(self):
+        self.report = self.pseudo.read_dojo_report()
+        return self.report
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        # Return immediately if exception was raised inside the with block.
+        if any(a is None for a in (exc_type, exc_value, traceback)):
+            return False
+
+        try:
+            # Write new dojo_report
+            self.pseudo.write_dojo_report(report=self.report)
+            # Update the report in the pseudo.
+            self.pseudo.report = self.report
+            return True
+        except Exception as exc:
+            logger.critical(exc)
+            return False
+
+
 class DojoReportError(Exception):
     """Exception raised by DoJoReport."""
 
 
 class DojoReport(dict):
-    """Dict-like object with the dojo report."""
+    """ 
+    Dict-like object with the validation results.
+    """
 
     _TRIALS2KEY = {
         "deltafactor": "dfact_meV",
@@ -47,11 +89,9 @@ class DojoReport(dict):
     )
 
     # Tolerances on the deltafactor prime (in eV) used for the hints.
-
+    ATOLS = (0.5, 0.1, 0.02)
     #for noble gasses:
     #ATOLS = (1.0, 0.2, 0.04)
-
-    ATOLS = (0.5, 0.1, 0.02)
 
     Error = DojoReportError
 
@@ -66,8 +106,6 @@ class DojoReport(dict):
                 return {}
 
             stop = lines.index("</DOJO_REPORT>\n")
-            #print("start, stop" ,start, stop)
-            #print("".join(lines[start+1:stop]))
 
             d = json.loads("".join(lines[start+1:stop]))
             return cls(**d)
@@ -99,11 +137,8 @@ class DojoReport(dict):
         except ValueError:
             raise self.Error('Error while initializing the dojo report')
 
-    #def __str__(self):
-    #    import six
-    #    stream = six.moves.StringIO()
-    #    pprint.pprint(self, stream=stream, indent=2, width=80)
-    #    return stream.getvalue()
+    def __str__(self):
+        return(json.dumps(self, indent=-1))
 
     @property
     def symbol(self):
@@ -174,6 +209,7 @@ class DojoReport(dict):
             prev_ecuts.insert(i, e)
 
     def add_hints(self, hints):
+        """Add hints on cutoff energy."""
         hints_dict = {
            "low": {'ecut': hints[0]},
            "normal" : {'ecut': hints[1]},
@@ -221,7 +257,7 @@ class DojoReport(dict):
 
     def find_missing_entries(self):
         """
-        check the DojoReport.
+        Check the DojoReport.
         This function tests if each trial contains an ecut entry.
         Return a dictionary {trial_name: [list_of_missing_ecuts]}
         mapping the name of the Dojo trials to the list of ecut values that are missing
@@ -248,6 +284,66 @@ class DojoReport(dict):
             assert len(computed_ecuts) == len(self.ecuts)
 
         return d
+
+    def get_ecut_dfactprime(self):
+        """Return numpy arrays wit ecut list and the corresponding dfactprime values."""
+        data = self["deltafactor"]
+        ecuts, values= data.keys(), []
+        values = np.array([data[e]["dfactprime_meV"] for e in ecuts])
+        return np.array(ecuts), values
+
+    def compute_hints(self):
+        ecuts, dfacts = self.get_ecut_dfactprime()
+        abs_diffs = np.abs((dfacts - dfacts[-1]))
+        #print(list(zip(ecuts, dfacts)))
+        #print(abs_diffs)
+
+        hints = 3 * [None]
+        for ecut, adiff in zip(ecuts, abs_diffs):
+            for i in range(3):
+                if adiff <= self.ATOLS[i] and hints[i] is None:
+                    hints[i] = ecut
+                if adiff > self.ATOLS[i]:
+                    hints[i] = None
+        return hints
+
+    def check(self, check_trials=None):
+        """
+        Check the dojo report for inconsistencies.
+        Return a string with the errors found in the DOJO_REPORT.
+
+        Args:
+            check_trials: string or list of strings selecting the trials to be tested.
+                If None, all trials are analyzed.
+        """
+        check_trials = self.ALL_TRIALS if check_trials is None else list_strings(check_trials)
+        errors = []
+        app = errors.append
+
+        for k in ("version", "ppgen_hints", "md5"):
+            if k not in self: app("%s is missing" % k)
+
+        # Check if we have computed each trial for the full set of ecuts in global_ecuts
+        global_ecuts = self.ecuts
+
+        missing = defaultdict(list)
+        for trial in check_trials:
+            for ecut in global_ecuts:
+                if not self.has_trial(trial, ecut=ecut):
+                    missing[trial].append(ecut)
+
+        if missing:
+            app("%s: the following ecut values are missing:" % self.symbol)
+            for trial, ecuts in missing.items():
+                app("    %s: %s" % (trial, ecuts))
+
+        for trial in check_trials:
+            if not self.has_trial(trial): continue
+            for ecut in self[trial]:
+                if ecut not in global_ecuts:
+                    app("%s: ecut %s is not in the global list" % (trial, ecut))
+
+        return "\n".join(errors)
 
     #def print_table(self, stream=sys.stdout):
     #    from monty.pprint import pprint_table
@@ -352,65 +448,6 @@ class DojoReport(dict):
             eos_fit.plot(ax=ax, text=False, label=label, color=cmap(i/num_ecuts, alpha=1), show=False)
 
         return fig
-
-    def get_ecut_dfactprime(self):
-        data = self["deltafactor"]
-        ecuts, values= data.keys(), []
-        values = np.array([data[e]["dfactprime_meV"] for e in ecuts])
-        return np.array(ecuts), values
-
-    def compute_hints(self):
-        ecuts, dfacts = self.get_ecut_dfactprime()
-        abs_diffs = np.abs((dfacts - dfacts[-1]))
-        #print(list(zip(ecuts, dfacts)))
-        #print(abs_diffs)
-
-        hints = 3 * [None]
-        for ecut, adiff in zip(ecuts, abs_diffs):
-            for i in range(3):
-                if adiff <= self.ATOLS[i] and hints[i] is None:
-                    hints[i] = ecut
-                if adiff > self.ATOLS[i]:
-                    hints[i] = None
-        return hints
-
-    def check(self, check_trials=None):
-        """
-        Check the dojo report for inconsistencies.
-        Return a string with the errors found in the DOJO_REPORT.
-
-        Args:
-            check_trials: string or list of strings selecting the trials to be tested.
-                If None, all trials are analyzed.
-        """
-        check_trials = self.ALL_TRIALS if check_trials is None else list_strings(check_trials)
-        errors = []
-        app = errors.append
-
-        for k in ("version", "ppgen_hints", "md5"):
-            if k not in self: app("%s is missing" % k)
-
-        # Check if we have computed each trial for the full set of ecuts in global_ecuts
-        global_ecuts = self.ecuts
-
-        missing = defaultdict(list)
-        for trial in check_trials:
-            for ecut in global_ecuts:
-                if not self.has_trial(trial, ecut=ecut):
-                    missing[trial].append(ecut)
-
-        if missing:
-            app("%s: the following ecut values are missing:" % self.symbol)
-            for trial, ecuts in missing.items():
-                app("    %s: %s" % (trial, ecuts))
-
-        for trial in check_trials:
-            if not self.has_trial(trial): continue
-            for ecut in self[trial]:
-                if ecut not in global_ecuts:
-                    app("%s: ecut %s is not in the global list" % (trial, ecut))
-
-        return "\n".join(errors)
 
     @add_fig_kwargs
     def plot_deltafactor_convergence(self, xc, code="WIEN2k", what=None, ax_list=None, **kwargs):
@@ -720,7 +757,6 @@ class DojoDataFrame(DataFrame):
     def plot_hist(self, what="dfact_meV", bins=400, **kwargs):
         import matplotlib.pyplot as plt
         fig, ax_list = plt.subplots(nrows=len(self.ALL_ACCURACIES), ncols=1, sharex=True, sharey=False, squeeze=True)
-        #ax_list, fig, plt = get_axarray_fig_plt(ax_list, nrows=len(self.ALL_ACCURACIES), ncols=1, sharex=True, sharey=False, squeeze=True)
 
         for acc, ax in zip(self.ALL_ACCURACIES, ax_list):
             col = acc + "_" + what
@@ -737,7 +773,6 @@ class DojoDataFrame(DataFrame):
         accuracies = self.ALL_ACCURACIES if accuracies == "all" else list_strings(accuracies)
 
         fig, ax_list = plt.subplots(nrows=len(trials), ncols=1, sharex=True, sharey=False, squeeze=True)
-        #ax_list, fig, plt = get_axarray_fig_plt(ax_list, nrows=len(trials), ncols=1, sharex=True, sharey=False, squeeze=True)
 
         # See also http://matplotlib.org/examples/pylab_examples/barchart_demo.html
         for i, (trial, ax) in enumerate(zip(trials, ax_list)):
@@ -782,43 +817,3 @@ class DojoDataFrame(DataFrame):
             plt.setp(ax.xaxis.get_majorticklabels(), rotation=25)
 
         return fig
-
-
-class DojoReportContext(object):
-    """
-    Context manager to update the values in the DojoReport
-
-    Example::
-
-        with DojoReportContext(pseudo) as report:
-            dojo_ecut = '%.1f' % ecut
-            report[dojo_trial][dojo_ecut] = new_entry
-
-    In pseudo code, this is equivalent to
-
-        read_dojo_report_from_pseudo
-        update_report
-        write__new_report_with_file_locking
-        update_report_inpseudo
-    """
-    def __init__(self, pseudo):
-        self.pseudo = pseudo
-
-    def __enter__(self):
-        self.report = self.pseudo.read_dojo_report()
-        return self.report
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        # Return immediately if exception was raised inside the with block.
-        if any(a is None for a in (exc_type, exc_value, traceback)):
-            return False
-
-        try:
-            # Write new dojo_report
-            self.pseudo.write_dojo_report(report=self.report)
-            # Update the report in the pseudo.
-            self.pseudo.report = self.report
-            return True
-        except Exception as exc:
-            logger.critical(exc)
-            return False

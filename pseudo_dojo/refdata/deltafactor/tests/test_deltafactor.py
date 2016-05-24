@@ -2,6 +2,7 @@ from __future__ import print_function, division
 
 import unittest2 as unittest
 
+from pymatgen.core.xcfunc import XcFunc
 from pseudo_dojo.core import PseudoDojoTest
 from pseudo_dojo.refdata.deltafactor.database import df_database, df_compute, read_tables_from_file
 
@@ -13,10 +14,10 @@ except ImportError:
 class DeltaFactorDatabaseTest(PseudoDojoTest):
 
     def setUp(self):
-        self.pbe_db = df_database()
-        self.pbe_db.xc == "PBE"
+        self.pbe_db = df_database(XcFunc.from_name("PBE"))
+        assert self.pbe_db.xc == "PBE"
         # Cached?
-        self.assertTrue(df_database() is self.pbe_db)
+        assert df_database(XcFunc.from_abinit_ixc(11)) is self.pbe_db
         assert "WIEN2k" in self.pbe_db.codes
         assert "VASP" in self.pbe_db.codes
 

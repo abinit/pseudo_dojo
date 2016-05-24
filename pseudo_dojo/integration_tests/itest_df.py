@@ -43,12 +43,16 @@ def itest_deltafactor_gga_pawxml(fwp, tvars):
     assert flow.all_ok
     assert all(work.finalized for work in flow)
     results = flow[0].get_results()
+
     #20.453 ang^3 88.545 GPa 4.31 20.8658081501 336.680999051 GPa -35.681897152
     #delta Equation of State: deltafactor_polyfit
     #Minimum volume = 20.87 Ang^3
     #modulus = 2.10 eV/Ang^3 = 336.68 GPa, b1 = -35.68
     #Deltafactor = 15.681 meV
-    #assert 0
+
+    #assert pseudo.has_dojo_report
+    #assert pseudo.dojo_report.has_trial("deltafactor")
+    #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
 
 
 def itest_deltafactor_gga_ncsoc(fwp, tvars):
@@ -88,9 +92,7 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
     assert flow.all_ok
     assert all(work.finalized for work in flow)
     results = flow[0].get_results()
-    #20.453 ang^3 88.545 GPa 4.31 20.8658081501 336.680999051 GPa -35.681897152
-    #delta Equation of State: deltafactor_polyfit
-    #Minimum volume = 20.87 Ang^3
-    #modulus = 2.10 eV/Ang^3 = 336.68 GPa, b1 = -35.68
-    #Deltafactor = 15.681 meV
-    #assert 0
+
+    #assert pseudo.has_dojo_report
+    #assert pseudo.dojo_report.has_trial("deltafactor")
+    #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
