@@ -12,6 +12,7 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     """Testing the ebands flow for PAW-XML"""
     pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
     assert pseudo is not None
+    #assert pseudo.has_dojoreport
     spin_mode = "unpolarized"
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
@@ -43,6 +44,7 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
 
 def itest_ebands_gga_ncsoc_flow(fwp, tvars):
     """Testing the ebands flow for NC+SOC pseudos."""
+    return
     pseudo =  pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile()
     assert pseudo is not None
     assert pseudo.supports_soc

@@ -5,11 +5,13 @@ from __future__ import division, print_function, unicode_literals
 import abc
 import sys
 import os
+import json
 import numpy as np
-from abipy import abilab
+
 
 from monty.collections import AttrDict
 from monty.pprint import pprint_table
+from monty.io import FileLock
 from pymatgen.core.units import Ha_to_eV
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.analysis.eos import EOS
@@ -17,6 +19,8 @@ from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
 from pymatgen.io.abinit.works import Work, build_oneshot_phononwork, OneShotPhononWork
 from abipy.core.structure import Structure
+from abipy import abilab
+from pseudo_dojo.core.dojoreport import DojoReport
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
@@ -35,7 +39,7 @@ class DojoWork(Work):
     def dojo_trial(self):
         """String identifying the DOJO trial. Used to write results in the DOJO_REPORT."""
 
-    def write_dojo_report(self, report, overwrite_data=False):
+    def add_entry_to_dojoreport(self, entry, overwrite_data=False):
         """
         Write/update the DOJO_REPORT section of the pseudopotential.
         Important paramenters such as the name of the dojo_trial and the energy cutoff 
@@ -43,31 +47,38 @@ class DojoWork(Work):
         Client code is responsible for preparing the dictionary with the data.
 
         Args:
-            report: Dictionary with results.
+            entry: Dictionary with results.
             overwrite_data: If False, the routine raises an exception if this entry is 
                 already filled.
         """
-        # Read old_report from pseudo.
-        old_report = self.pseudo.read_dojo_report()
 
-        dojo_trial = self.dojo_trial
-        if dojo_trial not in old_report:
-            # Create new entry
-            old_report[dojo_trial] = {}
-        
-        # Convert float to string with 1 decimal digit.
-        dojo_ecut = "%.1f" % self.ecut
+        root, ext = os.path.splitext(self.pseudo.filepath)
+        djrepo = root + ".djrepo"
 
-        # Check that we are not going to overwrite data.
-        if dojo_ecut in old_report[dojo_trial] and not overwrite_data:
-            raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
+        # Update file content with Filelock.
+        with FileLock(djrepo):
+            # Read report from file.
+            file_report = DojoReport.from_file(djrepo)
 
-        # Update old report by adding the new entry and write new report
-        old_report[dojo_trial][dojo_ecut] = report
-        try:
-            self.pseudo.write_dojo_report(old_report)
-        except (OSError, IOError, TypeError):
-            print("Something wrong in write_dojo_report")
+            # Create new entry if not already there
+            dojo_trial = self.dojo_trial
+            if dojo_trial not in file_report: file_report[dojo_trial] = {}
+
+            # Convert float to string with 1 decimal digit.
+            dojo_ecut = "%.1f" % self.ecut
+
+            # Check that we are not going to overwrite data.
+            if dojo_ecut in file_report[dojo_trial] and not overwrite_data:
+                raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
+
+            # Update file_report by adding the new entry and write new file
+            file_report[dojo_trial][dojo_ecut] = entry
+
+            # Write new dojo report and update the pseudo attribute
+            with open(djrepo, "w") as fh:
+                json.dump(file_report, fh, indent=-1, sort_keys=True)
+
+            self._pseudo.dojo_report = file_report
 
 
 def check_conv(values, tol, min_numpts=1, mode="abs", vinf=None):
@@ -150,164 +161,6 @@ def compute_hints(ecuts, etotals, atols_mev, min_numpts=1, stream=sys.stdout):
         low={"ecut": ecut_low, "aug_ratio": aug_ratio_low},
         normal={"ecut": ecut_normal, "aug_ratio": aug_ratio_normal},
         high={"ecut": ecut_high, "aug_ratio": aug_ratio_high})
-
-
-class PseudoConvergence(DojoWork):
-
-    def __init__(self, pseudo, ecut_slice, nlaunch, atols_mev,
-                 toldfe=1.e-8, spin_mode="polarized", acell=(8, 9, 10), 
-                 smearing="fermi_dirac:0.1 eV", max_niter=300, workdir=None, manager=None):
-        """
-        Args:
-            pseudo: string or :class:`Pseudo` instance
-            ecut_slice: List of cutoff energies or slice object (mainly used for infinite iterations).
-            nlaunch:
-            atols_mev: List of absolute tolerances in meV (3 entries corresponding to accuracy ["low", "normal", "high"]
-            spin_mode: Defined how the electronic spin will be treated.
-            acell: Lengths of the periodic box in Bohr.
-            smearing: :class:`Smearing` instance or string in the form "mode:tsmear". Default: FemiDirac with T=0.1 eV
-            max_niter:
-            workdir: Working directory.
-            manager: :class:`TaskManager` object.
-        """
-        super(PseudoConvergence, self).__init__(workdir=workdir, manager=manager)
-
-        self._pseudo = Pseudo.as_pseudo(pseudo)
-        self.nlaunch = nlaunch; assert nlaunch > 0
-        self.atols_mev = atols_mev
-        self.toldfe = toldfe
-        self.spin_mode = SpinMode.as_spinmode(spin_mode)
-        self.acell = acell
-        self.smearing = Smearing.as_smearing(smearing)
-        self.max_niter = max_niter; assert max_niter > 0
-        self.ecut_slice = ecut_slice; assert isinstance(ecut_slice, slice)
-
-        self.ecuts = []
-
-        if self.pseudo.ispaw:
-            raise NotImplementedError("PAW convergence tests are not supported yet")
-
-        for i in range(self.nlaunch):
-            ecut = ecut_slice.start + i * ecut_slice.step
-            #if self.ecut_slice.stop is not None and ecut > self.ecut_slice.stop: continue
-            self.add_task_with_ecut(ecut)
-
-    @property
-    def pseudo(self):
-        return self._pseudo
-                            
-    @property
-    def dojo_trial(self):
-        return "hints"
-
-    def add_task_with_ecut(self, ecut):
-        """Register a new task with cutoff energy ecut."""
-        # One atom in a box of lenghts acell.
-        inp = abilab.AbinitInput(structure=Structure.boxed_atom(self.pseudo, acell=self.acell), 
-                                 pseudos=self.pseudo)
-
-        # Gamma-only sampling.
-        inp.add_abiobjects(self.spin_mode, self.smearing, KSampling.gamma_only())
-
-        inp.set_vars(
-            ecut=ecut,
-            toldfe=self.toldfe,
-            prtwf=-1,
-        )
-
-        self.ecuts.append(ecut)
-        self.register_scf_task(inp)
-
-    def make_report(self):
-        """
-        "hints": {
-            "high": {"aug_ratio": 1, "ecut": 45},
-            "low": {...},
-            "normal": {...}
-        """
-        results = self.work.get_results()
-        d = {key: results[key] for key in ["low", "normal", "high"]}
-
-        d.update(dict(
-            ecuts=results["ecuts"],
-            etotals=results["etotals"]))
-        
-        if results.exceptions:
-            d["_exceptions"] = str(results.exceptions)
-
-        return {self.dojo_key: d}
-
-    def on_all_ok(self):
-        """
-        This method is called when self reaches S_OK.
-        It checks if Etotal(ecut) is converged withing atols_mev
-        If the condition is not fulfilled, the callback creates
-        nlaunch new tasks with larger values of ecut and we keep on running.
-        """
-        etotals = self.read_etotals()
-        data = compute_hints(self.ecuts, etotals, self.atols_mev)
-
-        if data.exit:
-            logger.info("Converged")
-            d = {key: data[key] for key in ["low", "normal", "high"]}
-                                                                         
-            d.update(dict(
-                ecuts=data["ecuts"],
-                etotals=data["etotals"]))
-
-            #if results.exceptions:
-            #    d["_exceptions"] = str(results.exceptions)
-
-            # Read old report from pseudo and add hints
-            report = self.pseudo.read_dojo_report()
-            report["hints"] = d
-
-            # Write new report
-            self.pseudo.write_dojo_report(report)
-
-        else:
-            logger.info("Building new tasks")
-
-            estart = self.ecuts[-1] 
-            for i in range(self.nlaunch):
-                ecut = estart + (i+1) * self.ecut_slice.step
-                #if self.ecut_slice.stop is not None and ecut > self.ecut_slice.stop: continue
-                self.add_task_with_ecut(ecut)
-
-            if len(self.ecuts) > self.max_niter:
-                raise self.Error("Cannot create more that %d tasks, aborting now" % self.max_niter)
-
-            self._finalized = False
-            self.flow.allocate()
-            self.flow.build_and_pickle_dump()
-
-        return super(PseudoConvergence, self).on_all_ok()
-
-
-class PPConvergenceFactory(object):
-    """
-    Factory object that constructs works for analyzing the converge of pseudopotentials.
-    """
-    def work_for_pseudo(self, pseudo, ecut_slice, nlaunch,
-                        toldfe=1.e-8, atols_mev=(10, 1, 0.1), spin_mode="polarized",
-                        acell=(8, 9, 10), smearing="fermi_dirac:0.1 eV", workdir=None, manager=None):
-        """
-        Return a `Work` object given the pseudopotential pseudo.
-
-        Args:
-            pseudo: filepath or :class:`Pseudo` object.
-            ecut_slice: cutoff energies in Ha units (accepts lists or slice objects)
-            toldfe: Tolerance on the total energy (Ha).
-            atols_mev: Tolerances in meV for accuracy in ["low", "normal", "high"]
-            spin_mode: Spin polarization.
-            acell: Length of the real space lattice (Bohr units)
-            smearing: Smearing technique.
-            workdir: Working directory.
-            manager: :class:`TaskManager` object.
-        """
-        return PseudoConvergence(pseudo, ecut_slice, nlaunch, atols_mev,
-                                 toldfe=toldfe, spin_mode=spin_mode,
-                                 acell=acell, smearing=smearing, workdir=workdir, manager=manager)
 
 
 class EbandsFactoryError(Exception):
@@ -463,9 +316,9 @@ class EbandsFactorWork(DojoWork):
 
     def on_all_ok(self):
         """Callback executed when all tasks in self have reached S_OK."""
-        report = self.get_results()
-        self.write_dojo_report(report)
-        return report
+        entry = self.get_results()
+        self.add_entry_to_dojoreport(entry)
+        return entry
 
 
 class DeltaFactoryError(Exception):
@@ -707,7 +560,7 @@ class DeltaFactorWork(DojoWork):
         if results.exceptions:
             d["_exceptions"] = str(results.exceptions)
 
-        self.write_dojo_report(d)
+        self.add_entry_to_dojoreport(d)
 
         return results
 
@@ -959,7 +812,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         if results.exceptions:
             d["_exceptions"] = str(results.exceptions)
 
-        self.write_dojo_report(d)
+        self.add_entry_to_dojoreport(d)
 
         return results
 
@@ -1112,7 +965,7 @@ class DFPTPhononFactory(object):
             structure = structure_or_cif
 
         nat = len(structure)
-        report = pseudo.read_dojo_report()
+        report = pseudo.dojo_report
         ecut_str = '%.1f' % kwargs['ecut']
         #print(ecut_str)
         #print(report['deltafactor'][float(ecut_str)].keys())
@@ -1166,6 +1019,6 @@ class PhononDojoWork(OneShotPhononWork, DojoWork):
 
     def on_all_ok(self):
         d = self.get_results()
-        report = d['phonons'][0].freqs.tolist()
-        self.write_dojo_report(report)
+        entry = d['phonons'][0].freqs.tolist()
+        self.add_entry_to_dojoreport(entry)
         return d

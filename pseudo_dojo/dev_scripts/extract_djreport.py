@@ -7,15 +7,17 @@ import os
 import argparse
 import json
 
-#from pymatgen.io.abinit.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from monty.os.path import find_exts
 
-"""
-def remove_dojo_report(self):
+
+def remove_dojo_report(path):
+    """
     Remove the `DOJO_REPORT` section from the pseudopotential file.
+    Write new file.
+    """
     # Read lines from file and insert jstring between the tags.
-    with open(self.path, "r") as fh:
+    with open(path, "r") as fh:
         lines = fh.readlines()
         try:
             start = lines.index("<DOJO_REPORT>\n")
@@ -25,16 +27,14 @@ def remove_dojo_report(self):
         if start == -1: return
 
         stop = lines.index("</DOJO_REPORT>\n")
-        if stop == -1: return
+        #if stop == -1: return
 
-        #del lines[start:stop]
-        del lines[start:]
+        del lines[start:stop+1]
 
     # Write new file.
-    with FileLock(self.path):
-        with open(self.path, "w") as fh:
-            fh.writelines(lines)
-"""
+    with open(self.path, "w") as fh:
+	fh.writelines(lines)
+
 
 def main():
     try:
@@ -64,7 +64,7 @@ def main():
         with open(report_file, "wt") as fh:
             json.dump(report, fh, indent=-1, sort_keys=True)
             #json.dump(report, fh, indent=4, sort_keys=True)
-        pseudo.remove_dojo_report()
+        remove_dojo_report(pseudo.filepath)
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ from __future__ import unicode_literals, division, print_function
 import sys
 import json
 import logging
+import copy
 import numpy as np
 
 from collections import OrderedDict, defaultdict, Iterable
@@ -16,46 +17,6 @@ from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 
 logger = logging.getLogger(__name__)
-
-
-class DojoReportContext(object):
-    """
-    Context manager to update the values in the DojoReport
-
-    Example::
-
-        with DojoReportContext(pseudo) as report:
-            dojo_ecut = '%.1f' % ecut
-            report[dojo_trial][dojo_ecut] = new_entry
-
-    In pseudo code, this is equivalent to
-
-        read_dojo_report_from_pseudo
-        update_report
-        write__new_report_with_file_locking
-        update_report_inpseudo
-    """
-    def __init__(self, pseudo):
-        self.pseudo = pseudo
-
-    def __enter__(self):
-        self.report = self.pseudo.read_dojo_report()
-        return self.report
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        # Return immediately if exception was raised inside the with block.
-        if any(a is None for a in (exc_type, exc_value, traceback)):
-            return False
-
-        try:
-            # Write new dojo_report
-            self.pseudo.write_dojo_report(report=self.report)
-            # Update the report in the pseudo.
-            self.pseudo.report = self.report
-            return True
-        except Exception as exc:
-            logger.critical(exc)
-            return False
 
 
 class DojoReportError(Exception):
@@ -94,6 +55,8 @@ class DojoReport(dict):
     #for noble gasses:
     #ATOLS = (1.0, 0.2, 0.04)
 
+    LAST_VERSION = "1.0"
+
     Error = DojoReportError
 
     @classmethod
@@ -101,6 +64,15 @@ class DojoReport(dict):
         """Read the DojoReport from file."""
         with open(filepath, "rt") as fh:
             return cls(**json.load(fh))
+
+    @classmethod
+    def new_from_pseudo(cls, pseudo):
+        """Build a DojoReport from Pseudo."""
+        new = cls()
+        new["symbol"] = pseudo.symbol
+        new["md5"]  = pseudo.compute_md5()
+        new["version"] = cls.LAST_VERSION
+        return new
 
     @classmethod
     def from_hints(cls, ppgen_ecut, symbol):
@@ -135,8 +107,15 @@ class DojoReport(dict):
         except ValueError:
             raise self.Error('Error while initializing the dojo report')
 
+        if "version" not in self:
+            self["version"] = self.LAST_VERSION
+
     def __str__(self):
         return(json.dumps(self, indent=-1))
+
+    def deepcopy(self):
+        """Deepcopy of the object."""
+        return copy.deepcopy(self)
 
     @property
     def symbol(self):
