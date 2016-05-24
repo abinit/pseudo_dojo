@@ -83,6 +83,7 @@ def read_data_from_filepath(filepath, xc):
 
 
 def read_tables_from_file(filepath):
+    """Read deltafactor data from filepath. Returns pandas dataframe."""
     import pandas as pd
     columns = ["v0", "b0_GPa", "b1", "deltaf"]
     title = None
@@ -133,15 +134,19 @@ class DeltaFactorDatabaseError(Exception):
 
 class DeltaFactorDatabase(object):
     """
-    This object stores the deltafactor results and 
-    provides methods to access the data.
+    This object stores the deltafactor results for a given code and XC. 
+    It provides methods to access the data and plot the results.
+    This object is not meant to instantiated explicitly.
+    Client code should get the database via the public API:
+
+        wien2k_db = df_database(xc="PBE")
     """
     # Reference code.
     _REF_CODE = "WIEN2k"
 
     # mapping xc_name --> file_list
     _FILES4XC = {
-        "PBE": ["WIEN2k-PBE.txt", "VASP-PBE.txt", "VASP-relaxed-PBE.txt"],
+        "PBE": ["WIEN2k-PBE.txt", "VASP-PBE.txt"],
         "PW": ["WIEN2k-PW.txt"],
     }
 
@@ -158,6 +163,7 @@ class DeltaFactorDatabase(object):
             file_path = os.path.join(self.dirpath, bname)
             if os.path.isfile(file_path) and file_path.endswith(".txt"):
                 code, ext = os.path.splitext(bname)
+                code = code.split("-")[0]
                 self._data[code] = read_data_from_filepath(file_path, self.xc)
 
         self._cif_paths = {}
@@ -182,6 +188,11 @@ class DeltaFactorDatabase(object):
         """Chemical symbols available in the database."""
         return self._cif_paths.keys()
 
+    @lazy_property
+    def codes(self):
+        """List of code names e.g. WIEN2k, VASP"""
+        return list(sorted(self._data.keys()))
+
     def get_entry(self, symbol, code=None):
         """
         Return a :class:`DeltaFactorEntry` for the given chemical symbol.
@@ -190,9 +201,11 @@ class DeltaFactorDatabase(object):
             symbol: Chemical symbol
             code: String identifying the code used to compute the entry. 
                 Default is self._REF_CODE (Wien2K)
+
+        raise:
+            self.Error if symbol is not in the database.
         """
         if code is None: code = self._REF_CODE
-        code = code + "-" + str(self.xc)
         try:
             return self._data[code][symbol]
         except KeyError:
@@ -200,11 +213,10 @@ class DeltaFactorDatabase(object):
 
     @add_fig_kwargs
     def plot_error_of_code(self, codename_or_data, values=("v0", "b0", "b1"), ref_code=None, **kwargs):
+        """Plot the error of one code vs ref_code."""
         import matplotlib.pyplot as plt
 
         if ref_code is None: ref_code = self._REF_CODE 
-        ref_code = ref_code + "-" + str(self.xc)
-
         ref_data = self._data[ref_code]
 
         data = codename_or_data

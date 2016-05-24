@@ -343,7 +343,7 @@ def dojo_notebook(options):
     """
     Generate an ipython notebook for each pseudopotential and open it in the browser.
     """
-    from pseudo_dojo.pseudos import make_open_notebook
+    from pseudo_dojo.util.notebook import make_open_notebook
     retcode = 0
     for p in options.pseudos:
         retcode += make_open_notebook(p.filepath)

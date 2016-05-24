@@ -1,8 +1,14 @@
 from __future__ import print_function, division
 
-from pseudo_dojo.core import PseudoDojoTest
-from pseudo_dojo.refdata.deltafactor import df_database, df_compute
+import unittest2 as unittest
 
+from pseudo_dojo.core import PseudoDojoTest
+from pseudo_dojo.refdata.deltafactor.database import df_database, df_compute, read_tables_from_file
+
+try:
+    import matplotlib
+except ImportError:
+    matplotlib = None
 
 class DeltaFactorDatabaseTest(PseudoDojoTest):
 
@@ -11,24 +17,29 @@ class DeltaFactorDatabaseTest(PseudoDojoTest):
         self.pbe_db.xc == "PBE"
         # Cached?
         self.assertTrue(df_database() is self.pbe_db)
+        assert "WIEN2k" in self.pbe_db.codes
+        assert "VASP" in self.pbe_db.codes
 
         self.pw_db = df_database("PW")
         assert self.pw_db.xc == "PW"
         assert self.pw_db is not self.pbe_db
+        assert "WIEN2k" in self.pw_db.codes
 
     def test_get_entry(self):
         """Get deltafactor entry."""
         # PBE
         assert "Si" in self.pbe_db.symbols
-        # FIXME
-        #assert self.pbe_db.has_symbol("Si")
-        #assert not self.pbe_db.has_symbol("Foo")
+        assert self.pbe_db.has_symbol("Si")
+        assert not self.pbe_db.has_symbol("Foo")
 
         e = self.pbe_db.get_entry("Si")
         assert e.xc == self.pbe_db.xc == "PBE"
         self.assert_almost_equal([e.v0, e.b0_GPa, e.b1], [20.4530, 88.545, 4.31])
         e = self.pbe_db.get_entry("Si", code="VASP")
         self.assert_almost_equal([e.v0, e.b0_GPa, e.b1], [20.446, 88.790, 4.296])
+
+        with self.assertRaises(self.pbe_db.Error):
+            self.pbe_db.get_entry("Dy")
 
         # LDA-PW
         e = self.pw_db.get_entry("Si")
@@ -55,6 +66,12 @@ class DeltaFactorDatabaseTest(PseudoDojoTest):
             same_df = df_compute(wien2k.v0, wien2k.b0, wien2k.b1, vasp.v0, vasp.b0, vasp.b1, b0_GPa=False)
             self.assert_almost_equal(df, same_df, decimal=2)
 
-    #def test_plot(self):
-    #    """Test plot_error_of_code."""
-    #    self.pbe_db.plot_error_of_code("VASP", show=False)
+    @unittest.skipIf(matplotlib is None, "Requires matplotlib")
+    def test_plot(self):
+        """Test plot_error_of_code."""
+        self.pbe_db.plot_error_of_code("VASP", show=False)
+
+    #def test_read_tables_from_file(filepath):
+    #    for xc, files in DeltaFactorDatabase._FILES4XC.items():
+    #        for f in files:
+    #            frame = read_tables_from_

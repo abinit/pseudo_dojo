@@ -12,7 +12,6 @@ from tabulate import tabulate
 from monty.string import list_strings, is_string
 from pymatgen.analysis.eos import EOS
 from pymatgen.core.periodic_table import Element
-#from pymatgen.core.xcfunc import XcFunc
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 
 logger = logging.getLogger(__name__)
@@ -783,3 +782,43 @@ class DojoDataFrame(DataFrame):
             plt.setp(ax.xaxis.get_majorticklabels(), rotation=25)
 
         return fig
+
+
+class DojoReportContext(object):
+    """
+    Context manager to update the values in the DojoReport
+
+    Example::
+
+        with DojoReportContext(pseudo) as report:
+            dojo_ecut = '%.1f' % ecut
+            report[dojo_trial][dojo_ecut] = new_entry
+
+    In pseudo code, this is equivalent to
+
+        read_dojo_report_from_pseudo
+        update_report
+        write__new_report_with_file_locking
+        update_report_inpseudo
+    """
+    def __init__(self, pseudo):
+        self.pseudo = pseudo
+
+    def __enter__(self):
+        self.report = self.pseudo.read_dojo_report()
+        return self.report
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        # Return immediately if exception was raised inside the with block.
+        if any(a is None for a in (exc_type, exc_value, traceback)):
+            return False
+
+        try:
+            # Write new dojo_report
+            self.pseudo.write_dojo_report(report=self.report)
+            # Update the report in the pseudo.
+            self.pseudo.report = self.report
+            return True
+        except Exception as exc:
+            logger.critical(exc)
+            return False

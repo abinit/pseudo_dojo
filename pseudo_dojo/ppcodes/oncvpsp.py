@@ -258,7 +258,8 @@ class PseudoGenDataPlotter(object):
             else:
                 legends.append("$s-order derivative PS l=%s" % str(l))
                                                                                              
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \phi(r)$" % order, title="Derivative of the ion Pseudopotentials", 
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \phi(r)$" % order, 
+                    title="Derivative of the ion Pseudopotentials", 
                     lines=lines, legends=legends)
         return fig
 

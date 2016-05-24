@@ -6,6 +6,7 @@ import os
 from pseudo_dojo.core import PseudoDojoTest
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 
+
 def filepath(basename):
     return os.path.join(os.path.dirname(__file__), basename)
 

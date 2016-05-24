@@ -20,6 +20,10 @@ __all__ = [
 
 dirpath = os.path.dirname(__file__)
 
+def pseudopath(filename):
+    """Returns the absolute pathname of a pseudo."""
+    return os.path.join(dirpath, filename)
+
 
 def pseudo(filename):
     """Returns a `Pseudo` object."""
