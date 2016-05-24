@@ -7,9 +7,10 @@ import json
 import logging
 import numpy as np
 
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict, defaultdict, Iterable
 from tabulate import tabulate
 from monty.string import list_strings, is_string
+from monty.bisect import find_le
 from pymatgen.analysis.eos import EOS
 from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
@@ -112,13 +113,20 @@ class DojoReport(dict):
 
     @classmethod
     def from_hints(cls, ppgen_ecut, symbol):
-        """Initialize the DojoReport from an initial value of ecut in Hartree."""
+        """
+        Initialize an empty DojoReport from the initial guesses for  
+        the cutoff energy in Hartree
+
+        Args:
+            ppgen_ecut: tuple(3) cutoff energies for the 3 accuracy levels.
+            symbol: Chemical symbol.
+        """
         dense_right = np.arange(ppgen_ecut, ppgen_ecut + 6*2, step=2)
         dense_left = np.arange(max(ppgen_ecut-6, 2), ppgen_ecut, step=2)
         coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 35, step=5)
 
-        ecut_list = list(dense_left) + list(dense_right) + list(coarse_high)
-        return cls(ecut_list=ecut_list, symbol=symbol) #, **{k: {}: for k in self.ALL_TRIALS})
+        ecuts = list(dense_left) + list(dense_right) + list(coarse_high)
+        return cls(ecuts=ecuts, symbol=symbol) 
 
     def __init__(self, *args, **kwargs):
         super(DojoReport, self).__init__(*args, **kwargs)
@@ -130,9 +138,8 @@ class DojoReport(dict):
                     d = self[trial]
                 except KeyError:
                     continue
-                ecuts_keys = sorted([(float(k), k) for k in d], key=lambda t:t[0])
-                od = OrderedDict([(t[0], d[t[1]]) for t in ecuts_keys])
-                self[trial] = od
+                ecuts_keys = sorted([(float(k), k) for k in d], key=lambda t: t[0])
+                self[trial] = OrderedDict([(t[0], d[t[1]]) for t in ecuts_keys])
 
         except ValueError:
             raise self.Error('Error while initializing the dojo report')
@@ -149,11 +156,6 @@ class DojoReport(dict):
     def element(self):
         """Element object."""
         return Element(self.symbol)
-
-    @property
-    def has_hints(self):
-        """True if hints on cutoff energy are present."""
-        return "hints" in self
 
     @property
     def ecuts(self):
@@ -194,7 +196,7 @@ class DojoReport(dict):
             if prev_ecuts[i] >= prev_ecuts[i+1]:
                 raise self.Error("Ecut list is not ordered:\n %s" % prev_ecuts)
 
-        from monty.bisect import find_le
+        if not isinstance(new_ecuts, Iterable): new_ecuts = [new_ecuts]
         for e in new_ecuts:
             # Find rightmost value less than or equal to x.
             if e < prev_ecuts[0]:
@@ -208,12 +210,17 @@ class DojoReport(dict):
 
             prev_ecuts.insert(i, e)
 
+    @property
+    def has_hints(self):
+        """True if hints on cutoff energy are present."""
+        return "hints" in self
+
     def add_hints(self, hints):
         """Add hints on cutoff energy."""
         hints_dict = {
            "low": {'ecut': hints[0]},
-           "normal" : {'ecut': hints[1]},
-           "high" : {'ecut': hints[2]}
+           "normal": {'ecut': hints[1]},
+           "high": {'ecut': hints[2]}
                      }
         self["hints"] = hints_dict
 
@@ -235,25 +242,28 @@ class DojoReport(dict):
             # Assume float
             return "%.1f" % ecut
 
-    def add_entry(self, dojo_trial, ecut, d, overwrite=False):
+    def add_entry(self, dojo_trial, ecut, entry, overwrite=False):
         """
         Add an entry computed with the given ecut to the sub-dictionary associated to dojo_trial.
 
         Args:
-            dojo_trial:
-            ecut:
-            d:
-            overwrite:
+            dojo_trial: String defining the dojo trial.
+            ecut: Cutoff energy in Hartree
+            entry: Dictionary with data.
+            overwrite: By default, this method raises ValueError if this entry is already filled.
         """
         if dojo_trial not in self.ALL_TRIALS:
             raise ValueError("%s is not a registered trial")
-        section = self.get(dojo_trial, {})
+
+        if dojo_trial not in self: self[dojo_trial] = {}
+        section = self[dojo_trial]
 
         key = self._ecut2key(ecut)
         if key in section and not overwrite:
             raise self.Error("Cannot overwrite key %s in dojo_trial %s" % (key, dojo_trial))
 
-        section[key] = d
+        # Add entry to section.
+        section[key] = entry
 
     def find_missing_entries(self):
         """

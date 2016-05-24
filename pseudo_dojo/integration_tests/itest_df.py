@@ -60,7 +60,7 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
     Testing the flow used for the computation of the deltafactor with GGA and NC+SOC.
     """
     # Path of the pseudopotential to test.
-    pseudo = pdj_data.pseudo("Pb-d-3_r.psp8")
+    pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile()
     assert pseudo.has_dojo_report
     assert pseudo.supports_soc
 

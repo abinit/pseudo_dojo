@@ -5,10 +5,44 @@ import collections
 import numpy as np
 import pseudo_dojo.data as pdj_data
 
+from copy import copy
 from pseudo_dojo.core.testing import PseudoDojoTest
+from pseudo_dojo.core.dojoreport import DojoReport
 
 
-class PseudoTestCase(PseudoDojoTest):
+class DojoReportTest(PseudoDojoTest):
+
+    def test_dojo_report_base_api(self):
+        """Testing dojo report low-level API."""
+        report = DojoReport.from_hints(10, "Si")
+        print(report)
+        assert report.symbol == "Si"
+        assert report.element.symbol == "Si"
+        assert report.ecuts
+        assert not report.trials
+        for trial in report.ALL_TRIALS:
+            assert not report.has_trial(trial)
+        assert report.check()
+
+        #prev_ecuts = copy(report.ecuts)
+        #report.add_ecuts(10000)
+        #assert np.all(report.ecuts == prev_ecuts + [10000])
+
+        report.add_hints([10, 20, 30])
+        assert report.has_hints
+        #assert report.hints.low.ecut == 10
+        #assert report.hints.high.ecut == 30
+        #assert not report.md5 
+
+        # Test add_entry
+        with self.assertRaises(ValueError):
+            report.add_entry("foobar", ecut=10, entry={})
+
+        assert not report.has_trial("deltafactor", ecut=10)
+        report.add_entry("deltafactor", ecut=10, entry={})
+        print(report)
+        #assert report.has_trial("deltafactor", ecut=10)
+        #assert not report.check(check_trials=["deltafactors"])
 
     def test_oncvpsp_dojo_report(self):
         """Testing pseudopotentials with dojo report"""
@@ -43,7 +77,6 @@ class PseudoTestCase(PseudoDojoTest):
 
         # Basic consistency tests.
         missings = report.find_missing_entries()
-        #assert not missings
         assert "ebands" in missings
         assert "phwoa" in missings
         with self.assertRaises(report.Error): 
