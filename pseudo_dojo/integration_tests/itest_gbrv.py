@@ -42,7 +42,7 @@ def itest_gbrv_gga_pawxml_flow(fwp, tvars):
 
 def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
     """Testing the GBRV flow with GGA and ONCVPSP+SO (relaxation + EOS)"""
-    return
+    #return
     pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile()
     assert pseudo is not None
     assert pseudo.supports_soc

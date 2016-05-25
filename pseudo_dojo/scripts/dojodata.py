@@ -17,6 +17,7 @@ from monty.os.path import find_exts
 from monty.termcolor import cprint 
 from pymatgen.util.io_utils import ask_yesno, prompt
 from pseudo_dojo.core.pseudos import dojopseudo_from_file, DojoTable
+from pseudo_dojo.core.dojoreport import DojoReport
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 
 
@@ -96,7 +97,8 @@ def dojo_figures(options):
                                          'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
                                          'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
                                          'nv', 'valence', 'rcmin', 'rcmax')}
-        except AttributeError:
+        except AttributeError as exc:
+            cprint("[%s] Exception %s" (name, exc), "magenta")
             l = {k: getattr(select, k) for k in ('name', "symbol", 'Z',
                                          'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
                                          'high_dfactprime_meV', 'high_ecut',
@@ -818,15 +820,7 @@ Usage example:
 
     # Subparser for check command.
     def parse_trials(s):
-        # TODO: Should use **unique** convention.
-        if s == "all": return [
-            "deltafactor",
-            "gbrv_bcc",
-            "gbrv_fcc",
-            "phonon",
-            "phwoa",
-            "ebands",
-         ]
+        if s == "all": return DojoReport.ALL_TRIALS
         return s.split(",")
 
     p_check = subparsers.add_parser('check', parents=[pseudos_selector_parser], help=dojo_check.__doc__)

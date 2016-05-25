@@ -50,7 +50,6 @@ class DojoWork(Work):
             overwrite_data: If False, the routine raises an exception if this entry is 
                 already filled.
         """
-
         root, ext = os.path.splitext(self.pseudo.filepath)
         djrepo = root + ".djrepo"
 
@@ -78,14 +77,14 @@ class DojoWork(Work):
             self._pseudo.dojo_report = file_report
 
 
-class EbandsFactoryError(Exception):
-    """Base Error class."""
+class FactoryError(Exception):
+    """Base Error class raised by Factory objects."""
 
 
 class EbandsFactory(object):
     """Factroy class producing work objects for the calculation of ebands for testing for ghosts."""
 
-    Error = EbandsFactoryError
+    Error = FactoryError
 
     def __init__(self, xc):
         """xc is the exchange-correlation functional e.g. PBE, PW."""
@@ -210,21 +209,19 @@ class EbandsFactorWork(DojoWork):
     def get_results(self):
         #results = super(EbandsFactorWork, self).get_results()
 
-        #store the path of the GSR nc file in the dojoreport
+        # store the path of the GSR nc file in the dojoreport
 
-        #during the validation the bandstrure is plotted and the validator is asked to give the energy up to which
-        #no sign of ghosts is visilbe
+        # during the validation the bandstrure is plotted and the validator is asked to give the energy up to which
+        # no sign of ghosts is visible
 
-        #during plot the band structuur is plotted as long as a filename is present and the file can be found if the 
-        #if the energy is present the energy is given
+        # during plot the band structuur is plotted as long as a filename is present and the file can be found if the 
+        # if the energy is present the energy is given
  
         #TODO fix magic
         path = str(self.workdir)
         outfile = os.path.join(str(self[0].outdir), "out_GSR.nc")
         results = {'workdir': path, 'GSR-nc': outfile}
-        
-        print(results)
-
+        #print(results)
         return results
 
     def on_all_ok(self):
@@ -234,13 +231,9 @@ class EbandsFactorWork(DojoWork):
         return entry
 
 
-class DeltaFactoryError(Exception):
-    """Base Error class."""
-
-
 class DeltaFactory(object):
     """Factory class producing work objects for the computation of the delta factor."""
-    Error = DeltaFactoryError
+    Error = FactoryError
 
     def __init__(self, xc):
         """xc is the exchange-correlation functional e.g. PBE, PW."""
@@ -482,7 +475,9 @@ class DeltaFactorWork(DojoWork):
 
 class GbrvFactory(object):
     """Factory class producing :class:`Work` objects for GBRV calculations."""
+
     def __init__(self, xc):
+        """xc: exchange-correlation functional e.g. PBE or PW."""
         self.xc = XcFunc.asxc(xc)
         if self.xc != "PBE":
             raise ValueError("Gbrv database supports only PBE pseudos")
@@ -490,8 +485,8 @@ class GbrvFactory(object):
 
     def make_ref_structure(self, symbol, struct_type, ref):
         """
-        Return the structure used in the GBRV tests given the chemical symbol, the structure type
-        and the reference code.
+        Return the structure used in the GBRV tests given the chemical symbol, 
+        the structure type and the reference code.
         """
         # Get the entry in the database
         entry = self._db.get_entry(symbol, struct_type)
@@ -745,10 +740,6 @@ class GbrvRelaxAndEosWork(DojoWork):
         return super(GbrvRelaxAndEosWork, self).on_all_ok()
 
 
-class DFPTError(Exception):
-    """Base Error class."""
-
-
 class DFPTPhononFactory(object):
     """
     Factory class producing `Workflow` objects for DFPT Phonon calculations.
@@ -756,12 +747,12 @@ class DFPTPhononFactory(object):
     they can be made zero by imposing the accoustic sum rule.
     """
 
-    Error = DFPTError
+    Error = FactoryError
 
     def __init__(self, xc, manager=None, workdir=None):
         """xc is the exchange-correlation functional e.g. PBE, PW."""
-        # reference to the deltafactor database
-        # use the elemental solid in the gs configuration
+        # Get reference to the deltafactor database
+        # Use the elemental solid in the gs configuration
         self._dfdb = df_database(xc)
         self.manager = manager
         self.workdir = workdir
@@ -835,7 +826,7 @@ class DFPTPhononFactory(object):
                                 rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
 
             # rfasr = 1 is not correct
-            # response calculations can not be restarted > nstep = 200, a problem to solve here is that abinit continues
+            # response calculations cannot be restarted > nstep = 200, a problem to solve here is that abinit continues
             # happily even is NaN are produced ... TODO fix abinit
 
         # Split input into gs_inp and ph_inputs
@@ -843,7 +834,7 @@ class DFPTPhononFactory(object):
 
     def work_for_pseudo(self, pseudo, **kwargs):
         """
-        Create a :class:`Flow` for phonon calculations:
+        Create a :class:`Work` for phonon calculations:
 
             1) One workflow for the GS run.
 
@@ -906,6 +897,7 @@ class DFPTPhononFactory(object):
         #print(scf_input.keys())
         work.ecut = scf_input['ecut']
         work._pseudo = pseudo
+
         return work
 
 

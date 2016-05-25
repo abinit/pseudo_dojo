@@ -73,7 +73,7 @@ class DojoReport(dict):
 
     # Tolerances on the deltafactor prime (in eV) used for the hints.
     ATOLS = (0.5, 0.1, 0.02)
-    #for noble gasses:
+    # For noble gasses:
     #ATOLS = (1.0, 0.2, 0.04)
 
     # Version of the DojoReport.
@@ -88,12 +88,27 @@ class DojoReport(dict):
             return cls(**json.load(fh))
 
     @classmethod
-    def empty_from_pseudo(cls, pseudo):
-        """Build a DojoReport from Pseudo."""
+    def empty_from_pseudo(cls, pseudo, ppgen_ecut):
+        """
+        Initialize an empty DojoReport from the pseudo and an initial guess for
+        the cutoff energy in Hartree
+
+        Args:
+            pseudo: Pseudo object.
+            ppgen_ecut: Initial cutoff energy provided e.g. by the generator
+        """
+        # Build initial list of cutoff energies for tests.
+        dense_right = np.arange(ppgen_ecut, ppgen_ecut + 6*2, step=2)
+        dense_left = np.arange(max(ppgen_ecut-6, 2), ppgen_ecut, step=2)
+        coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 35, step=5)
+
         new = cls()
-        new["symbol"] = pseudo.symbol
-        new["md5"]  = pseudo.compute_md5()
-        new["version"] = cls.LAST_VERSION
+        new.update(
+            version=cls.LAST_VERSION,
+            symbol=pseudo.symbol,
+            md5=pseudo.compute_md5(),
+            ecuts=list(dense_left) + list(dense_right) + list(coarse_high),
+        )
 
         return new
 
@@ -143,7 +158,7 @@ class DojoReport(dict):
 
     def json_write(self, filepath):
         """Write data to file."""
-        with open(djrepo, "w") as fh:
+        with open(filepath, "w") as fh:
             json.dump(self, fh, indent=-1, sort_keys=True)
 
     @property
@@ -211,11 +226,11 @@ class DojoReport(dict):
 
     @property
     def has_hints(self):
-        """True if hints on cutoff energy are present."""
+        """True if hints on the cutoff energy are present."""
         return "hints" in self
 
     def add_hints(self, hints):
-        """Add hints on cutoff energy."""
+        """Add hints on the cutoff energy."""
         hints_dict = {
            "low": {'ecut': hints[0]},
            "normal": {'ecut': hints[1]},
@@ -670,17 +685,10 @@ from pandas import DataFrame
 class DojoDataFrame(DataFrame):
     """Extends pandas DataFrame adding helper functions."""
 
-    ALL_ACCURACIES = ("low", "normal", "high")
-
-    ALL_TRIALS = (
-        "ecut",
-        "deltafactor",
-        "gbrv_bcc",
-        "gbrv_fcc",
-        "phonon",
-        "phwoa",
-        "ebands"
-    )
+    # The frame has its own list so that one can easily change the
+    # entries that should be analyzed by modifying this attributes.
+    ALL_ACCURACIES = DojoReport.ALL_ACCURACIES
+    ALL_TRIALS = DojoReport.ALL_TRIALS
 
     _TRIALS2KEY = {
         "ecut": "ecut",
