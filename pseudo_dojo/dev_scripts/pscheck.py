@@ -5,10 +5,6 @@ from __future__ import division, print_function, unicode_literals
 import sys
 import argparse
 
-__author__ = "Matteo Giantomassi"
-__version__ = "0.1"
-__maintainer__ = "Matteo Giantomassi"
-
 
 def check(options):
     """Check pseudopotential"""

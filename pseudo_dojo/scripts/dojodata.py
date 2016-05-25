@@ -610,6 +610,23 @@ def dojo_check(options):
 
     return retcode
 
+def _fix_djrepo(pp_filepath):
+    """
+    Regenerate the md5 value in the DojoReport file.
+    Use NC 
+    """
+    from pseudo_dojo.core.pseudos import 
+    pseudo = dojopseudo_from_file(pp_filepath):
+    if pseudo is None:
+        print("Error while parsing %s" % pp_filepath)
+        return
+    # Change md5
+    pseudo.dojo_report["md5"] = pseudo.compute_md5()
+    if pseudo.dojo_report["pseudo_type"] == "norm-conserving":
+        pseudo.dojo_report["pseudo_type"] = "NC"
+
+    pseudo.dojo_report.json_write(pseudo.djrepo_path)
+
 
 def dojo_make_hints(options):
     """Add hints for energy cutoffs"""
@@ -909,6 +926,9 @@ Usage example:
         #sns.despine()
         #plt.tight_layout()
         #sns.despine(offset=10, trim=True)
+
+    for pseudo in options.pseudos:
+        _fix_djrepo(pseudo.filepath):
 
     # Dispatch
     return globals()["dojo_" + options.command](options)

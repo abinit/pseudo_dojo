@@ -169,7 +169,7 @@ class DojoTable(PseudoTable):
 
         def djson_entry(p):
             jdict = p.as_dict()
-            entry = {k: jdict[k] for k in ["basename", "Z_val", "l_max", "md5"]}
+            entry = OrderedDict([(k, jdict[k]) for k in ("basename", "Z_val", "l_max", "md5")])
 
             df, dfprime = None, None
             if p.has_dojo_report:
