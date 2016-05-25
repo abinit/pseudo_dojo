@@ -927,8 +927,8 @@ Usage example:
         #plt.tight_layout()
         #sns.despine(offset=10, trim=True)
 
-    for pseudo in options.pseudos:
-        _fix_djrepo(pseudo.filepath)
+    #for pseudo in options.pseudos:
+    #    _fix_djrepo(pseudo.filepath)
 
     # Dispatch
     return globals()["dojo_" + options.command](options)
