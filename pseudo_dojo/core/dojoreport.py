@@ -26,19 +26,28 @@ class DojoReportError(Exception):
 class DojoReport(dict):
     """ 
     Dict-like object with the validation results.
-    """
-
-    _TRIALS2KEY = {
-        "deltafactor": "dfact_meV",
-        "gbrv_bcc": "a0_rel_err",
-        "gbrv_fcc": "a0_rel_err",
-        "phwoa": "all",
-        "phonon": "all",
-        "ebands": "all"
+    
+    {
+    "version": "1.0"
+    "symbol": "H", 
+    "pseudo_type": "norm-conserving", 
+    "md5": "13198abb7506a840b7d46ef46b54d789", 
+    "ppgen_hints": {
+        "low": {"ecut": 30.0,  "pawecutdg": 30.0}, 
+        "normal": {"ecut": 34.0, "pawecutdg": 34.0},
+        "high": {"ecut": 39.0, "pawecutdg": 39.0}
+    },
+    "hints": {
+        "low": {"ecut": 30.0,  "pawecutdg": 30.0}, 
+        "normal": {"ecut": 34.0, "pawecutdg": 34.0}
+        "high": {"ecut": 39.0, "pawecutdg": 39.0}, 
+    },
+    "ecuts": [29.0, 31.0, 33.0],
+    "deltafactor": {}
+    "gbrv_bcc": {},
+    "gbrv_fcc": {},
     }
-
-    ALL_ACCURACIES = ("low", "normal", "high")
-
+    """
     # List of dojo_trials
     # Remember to update the list if you add a new test to the DOJO_REPORT
     ALL_TRIALS = (
@@ -47,14 +56,27 @@ class DojoReport(dict):
         "gbrv_fcc",
         "phonon",
         "phwoa",
-        "ebands"
+        "ebands",
     )
+
+    _TRIALS2KEY = {
+        "deltafactor": "dfact_meV",
+        "gbrv_bcc": "a0_rel_err",
+        "gbrv_fcc": "a0_rel_err",
+        "phwoa": "all",
+        "phonon": "all",
+        "ebands": "all",
+    }
+
+    # We use three different level of accuracy.
+    ALL_ACCURACIES = ("low", "normal", "high")
 
     # Tolerances on the deltafactor prime (in eV) used for the hints.
     ATOLS = (0.5, 0.1, 0.02)
     #for noble gasses:
     #ATOLS = (1.0, 0.2, 0.04)
 
+    # Version of the DojoReport.
     LAST_VERSION = "1.0"
 
     Error = DojoReportError
@@ -66,12 +88,13 @@ class DojoReport(dict):
             return cls(**json.load(fh))
 
     @classmethod
-    def new_from_pseudo(cls, pseudo):
+    def empty_from_pseudo(cls, pseudo):
         """Build a DojoReport from Pseudo."""
         new = cls()
         new["symbol"] = pseudo.symbol
         new["md5"]  = pseudo.compute_md5()
         new["version"] = cls.LAST_VERSION
+
         return new
 
     @classmethod
@@ -111,11 +134,17 @@ class DojoReport(dict):
             self["version"] = self.LAST_VERSION
 
     def __str__(self):
+        """String representation."""
         return(json.dumps(self, indent=-1))
 
     def deepcopy(self):
         """Deepcopy of the object."""
         return copy.deepcopy(self)
+
+    def json_write(self, filepath):
+        """Write data to file."""
+        with open(djrepo, "w") as fh:
+            json.dump(self, fh, indent=-1, sort_keys=True)
 
     @property
     def symbol(self):
@@ -254,7 +283,7 @@ class DojoReport(dict):
                 d[trial] = self.ecuts
 
             else:
-                computed_ecuts = self[trial].keys()
+                computed_ecuts = data.keys()
                 for e in self.ecuts:
                     if e not in computed_ecuts:
                         if trial not in d: d[trial] = []
@@ -408,13 +437,11 @@ class DojoReport(dict):
             `matplotlib` figure.
         """
         ax, fig, plt = get_ax_fig_plt(ax)
+        cmap = kwargs.pop("cmap", plt.get_cmap("jet"))
 
         trial = "deltafactor"
         ecuts = self[trial].keys()
         num_ecuts = len(ecuts)
-
-        cmap = kwargs.pop("cmap", None)
-        if cmap is None: cmap = plt.get_cmap("jet")
 
         for i, ecut in enumerate(ecuts):
             d = self[trial][ecut]
@@ -449,13 +476,12 @@ class DojoReport(dict):
             what = list_strings(what)
             if what[0].startswith("-"):
                 # Exclude keys
-                #print([type(w) for w in what])
                 what = [w[1:] for w in what]
                 keys = [k for k in all if k not in what]
             else:
                 keys = what
 
-        # get reference entry
+        # Get reference entry
         from pseudo_dojo.refdata.deltafactor import df_database
         reference = df_database(xc=xc).get_entry(symbol=self.symbol, code=code)
 
@@ -519,15 +545,13 @@ class DojoReport(dict):
             `matplotlib` figure or None if the GBRV test is not present
         """
         ax, fig, plt = get_ax_fig_plt(ax)
+        cmap = kwargs.pop("cmap", plt.get_cmap("jet"))
 
         trial = "gbrv_" + struct_type
         # Handle missing entries: noble gases, Hg ...
         if trial not in self: return None
         ecuts = self[trial].keys()
         num_ecuts = len(ecuts)
-
-        cmap = kwargs.pop("cmap", None)
-        if cmap is None: cmap = plt.get_cmap("jet")
 
         for i, ecut in enumerate(ecuts):
             d = self[trial][ecut]
@@ -729,8 +753,7 @@ class DojoDataFrame(DataFrame):
         for index, entry in self.iterrows():
             element = Element.from_Z(entry.Z)
             # e.g element.is_alkaline
-            if getattr(element, "is_" + family):
-                data.append(entry)
+            if getattr(element, "is_" + family): data.append(entry)
         return self.__class__(data=data)
 
     @add_fig_kwargs

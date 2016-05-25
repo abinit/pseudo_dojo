@@ -32,14 +32,12 @@ def itest_deltafactor_gga_pawxml(fwp, tvars):
 
     # Register the workflow.
     flow.register_work(work)
-    flow.allocate()
     flow.build_and_pickle_dump()
 
     for task in flow[0]:
         task.start_and_wait()
 
-    flow.check_status()
-    flow.show_status()
+    flow.check_status(show=True)
     assert flow.all_ok
     assert all(work.finalized for work in flow)
     results = flow[0].get_results()
@@ -82,14 +80,12 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
 
     # Register the workflow.
     flow.register_work(work)
-    flow.allocate()
     flow.build_and_pickle_dump()
 
     for task in flow[0]:
         task.start_and_wait()
 
-    flow.check_status()
-    flow.show_status()
+    flow.check_status(show=True)
     assert flow.all_ok
     assert all(work.finalized for work in flow)
     results = flow[0].get_results()

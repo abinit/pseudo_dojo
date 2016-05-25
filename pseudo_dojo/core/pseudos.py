@@ -4,6 +4,7 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import json
+import logging
 import numpy as np
 
 from monty.collections import AttrDict
@@ -15,7 +16,7 @@ from pymatgen.util.plotting_utils import add_fig_kwargs
 from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
 from .dojoreport import DojoReport
 
-import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -142,7 +143,7 @@ class DojoTable(PseudoTable):
         """
         Tool used by the PseudoDojo maintainers to build a dictionary
         with **partial** information on the table. This dictionary can be used as 
-        template for the creation of a new djson file.
+        an initial template for the creation of a new djson file.
         """
         # Add template for dojo_info section
         d = {"dojo_info": DojoInfo.get_template_dict()}
@@ -545,6 +546,3 @@ class OfficialDojoTable(DojoTable):
     #@dojo_info.setter
     def set_dojo_info(self, dojo_info):
         self._dojo_info = dojo_info
-
-    #def show_dojo_info(self):
-    #    pprint(self.dojo_info)

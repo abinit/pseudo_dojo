@@ -25,15 +25,13 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
                                           spin_mode=spin_mode, bands_factor=2, smearing="fermi_dirac:0.0005",
                                           mem_test=0)
     flow.register_work(work)
-    flow.allocate()
     flow.build_and_pickle_dump()
 
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
     assert not fwp.scheduler.exceptions
 
-    flow.check_status()
-    flow.show_status()
+    flow.check_status(show=True)
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
@@ -61,15 +59,13 @@ def itest_ebands_gga_ncsoc_flow(fwp, tvars):
                                           spin_mode=spin_mode, bands_factor=2, smearing="fermi_dirac:0.0005",
                                           mem_test=0)
     flow.register_work(work)
-    flow.allocate()
     flow.build_and_pickle_dump()
 
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
     assert not fwp.scheduler.exceptions
 
-    flow.check_status()
-    flow.show_status()
+    flow.check_status(show=True)
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 

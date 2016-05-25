@@ -27,16 +27,13 @@ def itest_phonons_without_asr(fwp, tvars):
     return
     print(work)
     flow.register_work(work)
-
-    flow.allocate()
     flow.build_and_pickle_dump()
 
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
     assert not fwp.scheduler.exceptions
 
-    flow.check_status()
-    flow.show_status()
+    flow.check_status(show=True)
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 

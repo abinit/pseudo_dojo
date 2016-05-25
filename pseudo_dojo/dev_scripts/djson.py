@@ -6,6 +6,7 @@ import sys
 import argparse
 import json
 
+from monty.functools import prof_main
 from monty.termcolor import cprint 
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 
@@ -38,6 +39,7 @@ def djson_validate(options):
     return len(errors)
 
 
+@prof_main
 def main():
     def str_examples():
         return """\
@@ -69,7 +71,7 @@ Usage example:
 
     # Subparser for validate command.
     p_validate = subparsers.add_parser('validate', help=djson_validate.__doc__)
-    p_validate.add_argument("djson_path", help="dsjon file")
+    p_validate.add_argument("djson_path", help="djson file")
 
     # Parse command line.
     try:
@@ -80,18 +82,5 @@ Usage example:
     # Dispatch
     return globals()["djson_" + options.command](options)
 
-
 if __name__ == "__main__":
-    try:
-        do_prof = sys.argv[1] == "prof"
-        if do_prof: sys.argv.pop(1)
-    except Exception:
-        do_prof = False
-
-    if do_prof:
-        import pstats, cProfile
-        cProfile.runctx("main()", globals(), locals(), "Profile.prof")
-        s = pstats.Stats("Profile.prof")
-        s.strip_dirs().sort_stats("time").print_stats()
-    else:
-        sys.exit(main())
+    sys.exit(main())

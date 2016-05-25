@@ -612,9 +612,14 @@ def dojo_check(options):
 def dojo_make_hints(options):
     """Add hints for energy cutoffs"""
     for pseudo in options.pseudos:
-        try:
-            report = pseudo.dojo_report
 
+        if not pseudo.has_dojo_report:
+            cprint("[%s] No DojoReport. Ignoring pseudo" % p.basename, "red")
+            continue
+
+        report = pseudo.dojo_report
+
+        try:
             hints = report.compute_hints()
             print("hints for %s computed from deltafactor prime: %s" % (pseudo.basename, hints))
             report.plot_deltafactor_convergence(xc=pseudo.xc)
@@ -623,7 +628,7 @@ def dojo_make_hints(options):
             if ans:
                 report.add_hints(hints)
                 print(report.has_hints)
-                pseudo.write_dojo_report(report)
+                report.json_write(pseudo.djrepo_path)
             else:
                 print("The dojoreport contains ecuts :\n%s" % report.ecuts)
                 new_ecuts = prompt("Enter new ecuts to compute (comma-separated values or empty string to abort)")
@@ -633,12 +638,11 @@ def dojo_make_hints(options):
                 new_ecuts = np.array([float(k) for k in new_ecuts.strip().split(",")])
                 print("new_ecuts", new_ecuts)
                 report.add_ecuts(new_ecuts)
-                pseudo.write_dojo_report(report)
+                report.json_write(pseudo.djrepo_path)
 
         except Exception as exc:
             cprint("[%s]: python exception: %s" % (pseudo.basename, type(exc)), "red")
-            if options.verbose:
-                print(straceback())
+            if options.verbose: print(straceback())
 
     return 0
 
@@ -651,19 +655,16 @@ def dojo_validate(options):
     for p in pseudos:
         try:
             # test if report is present
-            try:
-                report = p.dojo_report
-            except Exception as exc:
-                cprint("[%s] Invalid dojo_report" % p.basename, "red")
-                if options.verbose:
-                    print("Python exception: ", exc)
+            if not p.has_dojo_report:
+                cprint("[%s] No DojoReport. Ignoring pseudo" % p.basename, "red")
                 continue
+            report = p.dojo_report
 
             # test if already validated
             if 'validation' in report:
                 cprint('this pseudo was validated by %s on %s.' % (
                        report['validation']['validated_by'], report['validation']['validated_on']), "red")
-		if not ask_yesno('Would you like to validate again? [Y]'):
+		if not ask_yesno('Would you like to validate it again? [Y/n]'):
 		    continue
 
             # test for ghosts
@@ -678,7 +679,7 @@ def dojo_validate(options):
                         ans = float(prompt('Please enter the energy (eV) up until there is no sign of ghosts:\n'))
                         if ans > 0:
                             report["ebands"][ecut]["ghost_free_upto_eV"] = ans
-                            p.write_dojo_report(report)
+                            report.json_write(p.djrepo_path)
             else:
                 cprint('no ebands trial present, pseudo cannot be validated', "red")
                 continue
@@ -722,14 +723,13 @@ def dojo_validate(options):
            
         except Exception as exc:
             cprint("[%s] python exception" % p.basename, "red")
-            if options.verbose:
-                print(straceback())
+            if options.verbose: print(straceback())
         
         # ask the final question
         if ask_yesno('Will you validate this pseudo? [n]'):
             name = prompt("Please enter your name for later reference: ")
-            report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime()) }
-            p.write_dojo_report(report)
+            report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime())}
+            report.json_write(p.djrepo_path)
 
     return 0
 

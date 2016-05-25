@@ -6,8 +6,8 @@ import abc
 import sys
 import os
 import json
+import logging
 import numpy as np
-
 
 from monty.collections import AttrDict
 from monty.pprint import pprint_table
@@ -15,7 +15,6 @@ from monty.io import FileLock
 from pymatgen.core.units import Ha_to_eV
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.analysis.eos import EOS
-from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
 from pymatgen.io.abinit.works import Work, build_oneshot_phononwork, OneShotPhononWork
 from abipy.core.structure import Structure
@@ -24,7 +23,7 @@ from pseudo_dojo.core.dojoreport import DojoReport
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
-import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -75,92 +74,8 @@ class DojoWork(Work):
             file_report[dojo_trial][dojo_ecut] = entry
 
             # Write new dojo report and update the pseudo attribute
-            with open(djrepo, "w") as fh:
-                json.dump(file_report, fh, indent=-1, sort_keys=True)
-
+            file_report.json_write(djrepo)
             self._pseudo.dojo_report = file_report
-
-
-def check_conv(values, tol, min_numpts=1, mode="abs", vinf=None):
-    """
-    Given a list of values and a tolerance tol, returns the leftmost index for which
-
-        abs(value[i] - vinf) < tol if mode == "abs"
-    or
-        abs(value[i] - vinf) / vinf < tol if mode == "rel"
-
-    returns -1 if convergence is not achieved. By default, vinf = values[-1]
-
-    Args:
-        tol: Tolerance
-        min_numpts: Minimum number of points that must be converged.
-        mode: "abs" for absolute convergence, "rel" for relative convergence.
-        vinf: Used to specify an alternative value instead of values[-1].
-    """
-    vinf = values[-1] if vinf is None else vinf
-
-    if mode == "abs":
-        vdiff = [abs(v - vinf) for v in values]
-    elif mode == "rel":
-        vdiff = [abs(v - vinf) / vinf for v in values]
-    else:
-        raise ValueError("Wrong mode %s" % mode)
-
-    numpts, i = len(vdiff), -2
-    if numpts > min_numpts and vdiff[-2] < tol:
-        for i in range(numpts-1, -1, -1):
-            if vdiff[i] > tol:
-                break
-        if (numpts - i - 1) < min_numpts: i = -2
-
-    return i + 1
-
-
-def compute_hints(ecuts, etotals, atols_mev, min_numpts=1, stream=sys.stdout):
-    de_low, de_normal, de_high = [a / (1000 * Ha_to_eV) for a in atols_mev]
-
-    etotal_inf = etotals[-1]
-
-    ihigh = check_conv(etotals, de_high, min_numpts=min_numpts)
-    inormal = check_conv(etotals, de_normal)
-    ilow = check_conv(etotals, de_low)
-
-    accidx = {"H": ihigh, "N": inormal, "L": ilow}
-
-    table = []; app = table.append
-
-    app(["iter", "ecut", "etotal", "et-e_inf [meV]", "accuracy",])
-    for idx, (ec, et) in enumerate(zip(ecuts, etotals)):
-        line = "%d %.1f %.7f %.3f" % (idx, ec, et, (et-etotal_inf) * Ha_to_eV * 1.e+3)
-        row = line.split() + ["".join(c for c, v in accidx.items() if v == idx)]
-        app(row)
-
-    if stream is not None:
-        pprint_table(table, out=stream)
-
-    ecut_high, ecut_normal, ecut_low = 3 * (None,)
-    exit = (ihigh != -1)
-
-    if exit:
-        ecut_low = ecuts[ilow]
-        ecut_normal = ecuts[inormal]
-        ecut_high = ecuts[ihigh]
-
-    aug_ratios = [1, ]
-    aug_ratio_low, aug_ratio_normal, aug_ratio_high = 3 * (1,)
-
-    #if not monotonic(etotals, mode="<", atol=1.0e-5):
-    #    logger.warning("E(ecut) is not decreasing")
-    #    wf_results.push_exceptions("E(ecut) is not decreasing:\n" + str(etotals))
-
-    return AttrDict(
-        exit=ihigh != -1,
-        etotals=list(etotals),
-        ecuts=list(ecuts),
-        aug_ratios=aug_ratios,
-        low={"ecut": ecut_low, "aug_ratio": aug_ratio_low},
-        normal={"ecut": ecut_normal, "aug_ratio": aug_ratio_normal},
-        high={"ecut": ecut_high, "aug_ratio": aug_ratio_high})
 
 
 class EbandsFactoryError(Exception):
@@ -201,7 +116,6 @@ class EbandsFactory(object):
             manager: :class:`TaskManager` object.
             kwargs: Extra variables passed to Abinit.
         """
-        pseudo = Pseudo.as_pseudo(pseudo)
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
@@ -248,8 +162,7 @@ class EbandsFactorWork(DojoWork):
             manager: :class:`TaskManager` responsible for the submission of the tasks.
         """
         super(EbandsFactorWork, self).__init__(workdir=workdir, manager=manager)
-
-        self._pseudo = Pseudo.as_pseudo(pseudo)
+        self._pseudo = pseudo
 
         spin_mode = SpinMode.as_spinmode(spin_mode)
         smearing = Smearing.as_smearing(smearing)
@@ -363,7 +276,6 @@ class DeltaFactory(object):
 
             0.001 Rydberg is the value used with WIEN2K
         """
-        pseudo = Pseudo.as_pseudo(pseudo)
         symbol = pseudo.symbol
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
@@ -440,8 +352,7 @@ class DeltaFactorWork(DojoWork):
             manager: :class:`TaskManager` responsible for the submission of the tasks.
         """
         super(DeltaFactorWork, self).__init__(workdir=workdir, manager=manager)
-
-        self._pseudo = Pseudo.as_pseudo(pseudo)
+        self._pseudo = pseudo
 
         spin_mode = SpinMode.as_spinmode(spin_mode)
         smearing = Smearing.as_smearing(smearing)
@@ -618,7 +529,6 @@ class GbrvFactory(object):
                   (only for magnetic moments for which spin-unpolarized structures are used)
                 - All calculations are done on an 8x8x8 k-point density and with 0.002 Ry Fermi-Dirac smearing
         """
-        pseudo = Pseudo.as_pseudo(pseudo)
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
@@ -679,7 +589,7 @@ class GbrvRelaxAndEosWork(DojoWork):
 
         # nband must be large enough to accomodate fractional occupancies.
         fband = kwargs.pop("fband", None)
-        self._pseudo = Pseudo.as_pseudo(pseudo)
+        self._pseudo = pseudo
         nband = gbrv_nband(self.pseudo)
 
         # Set extra_abivars.
@@ -950,7 +860,6 @@ class DFPTPhononFactory(object):
 
         kwargs.pop('accuracy')
 
-        pseudo = Pseudo.as_pseudo(pseudo)
         if pseudo.xc != self._dfdb.xc:
             raise ValueError(
                 "Pseudo xc differs from the XC used to instantiate the factory\n"

@@ -25,15 +25,13 @@ def itest_gbrv_gga_pawxml_flow(fwp, tvars):
         work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg, paral_kgb=tvars.paral_kgb)
         flow.register_work(work)
 
-    flow.allocate()
     flow.build_and_pickle_dump()
 
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
     assert not fwp.scheduler.exceptions
 
-    flow.check_status()
-    flow.show_status()
+    flow.check_status(show=True)
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
@@ -62,15 +60,13 @@ def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
                                           include_soc=True, paral_kgb=tvars.paral_kgb)
         flow.register_work(work)
  
-    flow.allocate()
     flow.build_and_pickle_dump()
  
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
     assert not fwp.scheduler.exceptions
  
-    flow.check_status()
-    flow.show_status()
+    flow.check_status(show=True)
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
