@@ -384,7 +384,7 @@
 "ecut": 24.0
 }
 }, 
-"md5": "fbb63317436c31f41ee4dc05c7801455", 
+"md5": "f9c0676e18823bcdd1d5a72ff23de06e", 
 "phonon": {
 "20.0": [
 0.0, 
@@ -466,7 +466,7 @@
 "pawecutdg": 29.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Po", 
 "version": "1.0"
 }

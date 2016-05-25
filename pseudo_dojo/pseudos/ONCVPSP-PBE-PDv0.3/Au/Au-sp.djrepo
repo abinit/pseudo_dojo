@@ -1062,7 +1062,7 @@
 "ecut": 32.0
 }
 }, 
-"md5": "c7548c2e924b1c7a0b0b71bc4f8ef2d7", 
+"md5": "47e920806e9c8c9706e7d0ab725d56d3", 
 "phonon": {
 "26.0": [
 0.0, 
@@ -1261,7 +1261,7 @@
 "pawecutdg": 34.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Au", 
 "version": "1.0"
 }

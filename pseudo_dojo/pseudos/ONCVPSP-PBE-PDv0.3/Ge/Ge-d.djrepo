@@ -1062,7 +1062,7 @@
 "ecut": 33.0
 }
 }, 
-"md5": "424a9c0c962a935970fe432e5323e98a", 
+"md5": "c05c2edabc191c4dd015e078b6973160", 
 "phonon": {
 "27.0": [
 0.0, 
@@ -1183,7 +1183,7 @@
 "pawecutdg": 35.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ge", 
 "version": "1.0"
 }

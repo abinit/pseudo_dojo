@@ -1090,7 +1090,7 @@
 "ecut": 26.0
 }
 }, 
-"md5": "237e4375946f6d98915c1fbfba136674", 
+"md5": "0817eaa075f7d8e115886e995037329a", 
 "phonon": {
 "10.0": [
 0.0, 
@@ -1289,7 +1289,7 @@
 "pawecutdg": 18.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Al", 
 "version": "1.0"
 }

@@ -1062,7 +1062,7 @@
 "ecut": 12.0
 }
 }, 
-"md5": "f6359343d560a26d0682e2471f7dc2c5", 
+"md5": "51619d7d7fed6d4f66a84a7bd0477310", 
 "phonon": {
 "2.0": [
 0.0, 
@@ -1339,7 +1339,7 @@
 "pawecutdg": 11.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Sb", 
 "version": "1.0"
 }

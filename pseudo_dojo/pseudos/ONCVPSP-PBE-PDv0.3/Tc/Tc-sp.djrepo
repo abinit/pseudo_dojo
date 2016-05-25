@@ -1336,7 +1336,7 @@
 "ecut": 34.0
 }
 }, 
-"md5": "d39ebd6679b5e52f4cd3719dd9378a1d", 
+"md5": "70ec7cac1525c4715767da813f084bfc", 
 "phonon": {
 "28.0": [
 0.0, 
@@ -1481,7 +1481,7 @@
 "pawecutdg": 41.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Tc", 
 "version": "1.0"
 }

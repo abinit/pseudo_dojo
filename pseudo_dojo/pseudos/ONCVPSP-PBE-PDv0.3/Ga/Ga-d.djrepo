@@ -1090,7 +1090,7 @@
 "ecut": 48.0
 }
 }, 
-"md5": "ce3febd7acef295326b71320ebc41a0e", 
+"md5": "c7fb90ea2fcef94e7129e6f2e0c81a63", 
 "phonon": {
 "28.0": [
 -0.06226223135314671, 
@@ -1289,7 +1289,7 @@
 "pawecutdg": 36.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ga", 
 "version": "1.0"
 }

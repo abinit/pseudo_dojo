@@ -1062,7 +1062,7 @@
 "ecut": 39.0
 }
 }, 
-"md5": "0f0e5aa797b72d521f9caee88f5b98aa", 
+"md5": "a4fed932bacf1c0fc46ff7d5e7761be8", 
 "phonon": {
 "29.0": [
 -0.0003482804068210103, 
@@ -1183,7 +1183,7 @@
 "pawecutdg": 37.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Cd", 
 "version": "1.0"
 }

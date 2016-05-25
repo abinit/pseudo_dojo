@@ -735,7 +735,7 @@
 "pawecutdg": 48.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Cu", 
 "version": "1.0"
 }

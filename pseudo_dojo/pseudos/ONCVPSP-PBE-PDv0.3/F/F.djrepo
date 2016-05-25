@@ -1226,7 +1226,7 @@
 "ecut": 53.0
 }
 }, 
-"md5": "c2e001117654eb23f37de9cca155599d", 
+"md5": "9510fd8340487f92d775215853b4713e", 
 "phonon": {
 "25.0": [
 -5.512759698474174, 
@@ -1555,7 +1555,7 @@
 "pawecutdg": 32.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "F", 
 "version": "1.0"
 }

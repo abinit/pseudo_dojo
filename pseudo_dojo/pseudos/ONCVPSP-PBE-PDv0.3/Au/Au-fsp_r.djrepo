@@ -14,6 +14,7 @@
 178.0, 
 180.0
 ], 
+"md5": "0b47bc8a18208fa95f585f122a20b081", 
 "ppgen_hints": {
 "high": {
 "ecut": 160.0, 
@@ -28,7 +29,7 @@
 "pawecutdg": 154.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Au", 
 "version": "1.0"
 }

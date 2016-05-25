@@ -1088,7 +1088,7 @@
 "pawecutdg": 41.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Tc", 
 "version": "1.0"
 }

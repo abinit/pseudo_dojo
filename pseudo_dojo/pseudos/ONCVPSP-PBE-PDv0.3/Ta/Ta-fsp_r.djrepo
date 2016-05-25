@@ -735,7 +735,7 @@
 "pawecutdg": 61.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ta", 
 "version": "1.0"
 }

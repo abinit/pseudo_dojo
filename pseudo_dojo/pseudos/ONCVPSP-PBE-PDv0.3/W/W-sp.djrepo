@@ -1254,7 +1254,7 @@
 "ecut": 34.0
 }
 }, 
-"md5": "d530d459b0828ae74d455d8fb29fde3e", 
+"md5": "4cc1b26e1ce25866bfc1e5f8d2e2693f", 
 "phonon": {
 "26.0": [
 0.0, 
@@ -1375,7 +1375,7 @@
 "pawecutdg": 34.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "W", 
 "version": "1.0"
 }

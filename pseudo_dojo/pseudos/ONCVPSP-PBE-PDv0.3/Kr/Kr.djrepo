@@ -412,7 +412,7 @@
 "ecut": 26.0
 }
 }, 
-"md5": "780b1f7fc07dc513fed5fec0ed16cef8", 
+"md5": "9dd6ef5d25521e111011fb99521ff3ef", 
 "phonon": {
 "14.0": [
 0.0, 
@@ -583,7 +583,7 @@
 "pawecutdg": 22.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Kr", 
 "version": "1.0"
 }

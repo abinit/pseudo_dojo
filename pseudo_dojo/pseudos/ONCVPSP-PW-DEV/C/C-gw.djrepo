@@ -378,7 +378,7 @@
 "ecut": 37.0
 }
 }, 
-"md5": "b8dfeedd50f573320ca7b31734664c0b", 
+"md5": "f231b9dd47d41e7903fce999bbd52ed1", 
 "ppgen_hints": {
 "high": {
 "ecut": 43.0, 
@@ -393,7 +393,7 @@
 "pawecutdg": 40.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "C", 
 "version": "1.0"
 }

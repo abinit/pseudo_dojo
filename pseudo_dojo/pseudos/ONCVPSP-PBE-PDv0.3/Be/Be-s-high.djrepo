@@ -1090,7 +1090,7 @@
 "ecut": 47.0
 }
 }, 
-"md5": "3a4600dbcfc71f55f4f4074c5e0e27bc", 
+"md5": "379f5745858ddb87d7efcf383d7c4474", 
 "phonon": {
 "43.0": [
 0.0, 
@@ -1211,7 +1211,7 @@
 "pawecutdg": 50.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Be", 
 "version": "1.0"
 }

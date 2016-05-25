@@ -369,7 +369,7 @@
 60.0, 
 62.0
 ], 
-"md5": "7076fb71b0eec260809419f78b4e6146", 
+"md5": "1bf13ec16a68ebe96e26b359fc1bcfe9", 
 "ppgen_hints": {
 "high": {
 "ecut": 42.0, 
@@ -384,7 +384,7 @@
 "pawecutdg": 38.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ru", 
 "version": "1.0"
 }

@@ -1090,7 +1090,7 @@
 "ecut": 38.0
 }
 }, 
-"md5": "afc1f746e9f9fae0d37458274cc5a442", 
+"md5": "19ec5bfdd984cfa6a8a74d32cae05245", 
 "phonon": {
 "32.0": [
 0.0, 
@@ -1211,7 +1211,7 @@
 "pawecutdg": 38.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ru", 
 "version": "1.0"
 }

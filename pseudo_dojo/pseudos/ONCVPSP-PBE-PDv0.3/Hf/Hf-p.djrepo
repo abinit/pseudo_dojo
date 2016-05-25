@@ -20,7 +20,7 @@
 38.0, 
 40.0
 ], 
-"md5": "2cd37ed6455b72688c8144728c9059df", 
+"md5": "28812a37c605a35257e37b9a88107750", 
 "ppgen_hints": {
 "high": {
 "ecut": 20.0, 
@@ -35,7 +35,7 @@
 "pawecutdg": 17.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Hf", 
 "version": "1.0"
 }

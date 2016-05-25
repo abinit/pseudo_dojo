@@ -1090,7 +1090,7 @@
 "ecut": 42.0
 }
 }, 
-"md5": "fbed1a323250808bd8ec401a5f0dc1e8", 
+"md5": "046561558398a45e2bd4487617a724a5", 
 "phonon": {
 "30.0": [
 0.0, 
@@ -1250,7 +1250,7 @@
 "pawecutdg": 38.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Na", 
 "version": "1.0"
 }

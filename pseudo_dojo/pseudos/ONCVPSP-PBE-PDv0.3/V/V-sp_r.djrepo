@@ -1034,7 +1034,7 @@
 "pawecutdg": 38.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "V", 
 "version": "1.0"
 }

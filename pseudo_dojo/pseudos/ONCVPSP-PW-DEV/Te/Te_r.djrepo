@@ -14,6 +14,7 @@
 31.0, 
 33.0
 ], 
+"md5": "80272185c8027982881696c6ed16b69b", 
 "ppgen_hints": {
 "high": {
 "ecut": 13.0, 
@@ -28,7 +29,7 @@
 "pawecutdg": 11.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Te", 
 "version": "1.0"
 }

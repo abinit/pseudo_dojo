@@ -1090,7 +1090,7 @@
 "ecut": 65.0
 }
 }, 
-"md5": "edf733d96ec0c23768a1e9b58f4ecb76", 
+"md5": "3afd46ce9f9fb71386f3ea42749389b3", 
 "phonon": {
 "37.0": [
 0.0, 
@@ -1289,7 +1289,7 @@
 "pawecutdg": 44.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ni", 
 "version": "1.0"
 }

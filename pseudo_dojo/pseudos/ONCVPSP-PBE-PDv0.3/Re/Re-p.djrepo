@@ -1090,7 +1090,7 @@
 "ecut": 20.0
 }
 }, 
-"md5": "475dcc61406cdfd8ac83f6a702c50219", 
+"md5": "d01a90e1518d8380585cac7bab140b16", 
 "phonon": {
 "10.0": [
 0.0, 
@@ -1211,7 +1211,7 @@
 "pawecutdg": 18.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Re", 
 "version": "1.0"
 }

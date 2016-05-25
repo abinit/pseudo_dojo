@@ -14,6 +14,7 @@
 59.0, 
 61.0
 ], 
+"md5": "3e18df0d72d67271ff25131dc46bee4a", 
 "ppgen_hints": {
 "high": {
 "ecut": 41.0, 
@@ -28,7 +29,7 @@
 "pawecutdg": 38.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Nb", 
 "version": "1.0"
 }

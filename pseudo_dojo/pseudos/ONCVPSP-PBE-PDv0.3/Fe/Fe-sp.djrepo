@@ -1090,7 +1090,7 @@
 "ecut": 55.0
 }
 }, 
-"md5": "20ee6b7499f4ece20ec9affc0e51ad41", 
+"md5": "7998e89a7926d574ff6b5053f50edeeb", 
 "phonon": {
 "35.0": [
 0.0, 
@@ -1211,7 +1211,7 @@
 "pawecutdg": 42.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Fe", 
 "version": "1.0"
 }

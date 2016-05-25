@@ -1061,7 +1061,7 @@
 "pawecutdg": 45.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Rh", 
 "version": "1.0"
 }

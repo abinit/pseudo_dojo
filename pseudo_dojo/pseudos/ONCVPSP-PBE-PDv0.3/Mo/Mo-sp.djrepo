@@ -1029,7 +1029,7 @@
 "ecut": 34.0
 }
 }, 
-"md5": "80f04cf9b79ff283831d47c367c831d1", 
+"md5": "82a6a28913fc9b287ef1f97ae1baddcc", 
 "phonon": {
 "28.0": [
 -4.687155427608229, 
@@ -1142,7 +1142,7 @@
 "pawecutdg": 35.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Mo", 
 "version": "1.0"
 }

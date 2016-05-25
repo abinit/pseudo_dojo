@@ -1061,7 +1061,7 @@
 "pawecutdg": 14.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "As", 
 "version": "1.0"
 }

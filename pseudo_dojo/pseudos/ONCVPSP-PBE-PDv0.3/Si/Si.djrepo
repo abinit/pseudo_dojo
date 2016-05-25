@@ -1211,7 +1211,7 @@
 "pawecutdg": 12.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Si", 
 "version": "1.0"
 }

@@ -20,7 +20,7 @@
 82.0, 
 84.0
 ], 
-"md5": "a539ad5ad787315597225b6446f27a08", 
+"md5": "6fe6487d2de5850356d0bf1f2663a7e8", 
 "ppgen_hints": {
 "high": {
 "ecut": 64.0, 
@@ -35,7 +35,7 @@
 "pawecutdg": 61.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ta", 
 "version": "1.0"
 }

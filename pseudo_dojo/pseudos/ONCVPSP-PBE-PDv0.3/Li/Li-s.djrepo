@@ -1091,7 +1091,7 @@
 "ecut": 43.0
 }
 }, 
-"md5": "fd75778f0b2da5e3edef1019d445cb28", 
+"md5": "779ecfd3158dda1f93449db71d98262f", 
 "phonon": {
 "25.0": [
 0.0, 
@@ -1251,7 +1251,7 @@
 "pawecutdg": 33.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Li", 
 "validation": {
 "validated_by": "Michiel van Setten", 

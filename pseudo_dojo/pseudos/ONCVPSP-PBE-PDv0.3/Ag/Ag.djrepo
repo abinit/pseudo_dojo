@@ -1090,7 +1090,7 @@
 "ecut": 39.0
 }
 }, 
-"md5": "bdd0ec6ffd4470e6a14cedaf584e63d8", 
+"md5": "0db7a9607275052a70d724df20d19987", 
 "phonon": {
 "29.0": [
 0.0, 
@@ -1289,7 +1289,7 @@
 "pawecutdg": 37.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ag", 
 "version": "1.0"
 }

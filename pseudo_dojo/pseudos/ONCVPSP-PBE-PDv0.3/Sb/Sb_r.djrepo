@@ -899,7 +899,7 @@
 "pawecutdg": 11.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Sb", 
 "version": "1.0"
 }

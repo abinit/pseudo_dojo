@@ -384,7 +384,7 @@
 "ecut": 47.0
 }
 }, 
-"md5": "615b65cac3950992f0b2c67c1e19615f", 
+"md5": "6140c9837789c3f0acec5dd428650124", 
 "phonon": {
 "29.0": [
 0.0, 
@@ -505,7 +505,7 @@
 "pawecutdg": 37.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "He", 
 "validation": {
 "validated_by": "Michiel van Setten", 

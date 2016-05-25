@@ -378,7 +378,7 @@
 "ecut": 36.0
 }
 }, 
-"md5": "6d192e4d8e46f790f7bda02e9f83ac1c", 
+"md5": "1ada7c86ac8be9e78c6fdd857fe0b572", 
 "ppgen_hints": {
 "high": {
 "ecut": 40.0, 
@@ -393,7 +393,7 @@
 "pawecutdg": 38.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ti", 
 "version": "1.0"
 }

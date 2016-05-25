@@ -1090,7 +1090,7 @@
 "ecut": 44.0
 }
 }, 
-"md5": "8dae16b7db0e1ed033f592802f7e8935", 
+"md5": "8ab52a1336fcc6632c5da1d14a187422", 
 "phonon": {
 "34.0": [
 0.0, 
@@ -1289,7 +1289,7 @@
 "pawecutdg": 42.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Cu", 
 "version": "1.0"
 }

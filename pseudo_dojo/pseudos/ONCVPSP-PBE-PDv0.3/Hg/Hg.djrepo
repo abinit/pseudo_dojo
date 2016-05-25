@@ -384,7 +384,7 @@
 "ecut": 25.0
 }
 }, 
-"md5": "66661f5fe478b140497e2c3f5450c914", 
+"md5": "980bd4fcfd8923732008ca27f36a4b90", 
 "phonon": {
 "15.0": [
 0.0, 
@@ -505,7 +505,7 @@
 "pawecutdg": 24.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Hg", 
 "version": "1.0"
 }

@@ -615,8 +615,8 @@ def _fix_djrepo(pp_filepath):
     Regenerate the md5 value in the DojoReport file.
     Use NC 
     """
-    from pseudo_dojo.core.pseudos import 
-    pseudo = dojopseudo_from_file(pp_filepath):
+    from pseudo_dojo.core.pseudos import dojopseudo_from_file
+    pseudo = dojopseudo_from_file(pp_filepath)
     if pseudo is None:
         print("Error while parsing %s" % pp_filepath)
         return
@@ -928,7 +928,7 @@ Usage example:
         #sns.despine(offset=10, trim=True)
 
     for pseudo in options.pseudos:
-        _fix_djrepo(pseudo.filepath):
+        _fix_djrepo(pseudo.filepath)
 
     # Dispatch
     return globals()["dojo_" + options.command](options)

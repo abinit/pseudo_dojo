@@ -367,7 +367,7 @@
 50.0, 
 52.0
 ], 
-"md5": "d9cd67a5956814acc3db84d3cfdb9993", 
+"md5": "6ec0d558e894571061c3eb3d51d312b3", 
 "ppgen_hints": {
 "high": {
 "ecut": 32.0, 
@@ -382,7 +382,7 @@
 "pawecutdg": 30.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ca", 
 "version": "1.0"
 }

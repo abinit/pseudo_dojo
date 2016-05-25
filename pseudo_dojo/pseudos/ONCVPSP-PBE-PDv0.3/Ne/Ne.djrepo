@@ -378,7 +378,7 @@
 "ecut": 44.0
 }
 }, 
-"md5": "6755720985786e1336e8fc0b28b2bf1f", 
+"md5": "1f72277ac634cede109a3ef3c820a957", 
 "phonon": {
 "24.0": [
 0.0, 
@@ -577,7 +577,7 @@
 "pawecutdg": 32.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ne", 
 "version": "1.0"
 }

@@ -1090,7 +1090,7 @@
 "ecut": 27.0
 }
 }, 
-"md5": "8dcd9d8fa1395f0b1d79adaf30989707", 
+"md5": "f23c73a13b2cd4175f83ff8fb063d6a7", 
 "phonon": {
 "19.0": [
 0.0, 
@@ -1211,7 +1211,7 @@
 "pawecutdg": 27.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Tl", 
 "version": "1.0"
 }

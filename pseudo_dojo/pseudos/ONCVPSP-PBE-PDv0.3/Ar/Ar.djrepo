@@ -356,7 +356,7 @@
 "ecut": 33.0
 }
 }, 
-"md5": "951c2d218a8cb87f80b81b3d91a51aa5", 
+"md5": "4bbf5779edc03ec450c4d191a19f27e4", 
 "phonon": {
 "19.0": [
 0.0, 
@@ -541,7 +541,7 @@
 "pawecutdg": 27.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ar", 
 "version": "1.0"
 }

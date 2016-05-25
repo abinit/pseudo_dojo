@@ -384,7 +384,7 @@
 "ecut": 14.0
 }
 }, 
-"md5": "52e7ca4eb0239fc1b73f531c7a18dee4", 
+"md5": "e58d3ebef2cdaba239f25ea3b1f55956", 
 "ppgen_hints": {
 "high": {
 "ecut": 20.0, 
@@ -399,7 +399,7 @@
 "pawecutdg": 11.0
 }
 }, 
-"pseudo_type": "norm-conserving", 
+"pseudo_type": "NC", 
 "symbol": "Ga", 
 "version": "1.0"
 }
