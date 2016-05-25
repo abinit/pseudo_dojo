@@ -720,6 +720,7 @@ def dojo_validate(options):
                 print('ECUTS for accuracy %s:' % acc)
                 print(tabulate(data[columns], headers=headers, tablefmt=tablefmt, floatfmt=floatfmt))
 
+            # TODO
             # test hash
             # plot the model core charge
            

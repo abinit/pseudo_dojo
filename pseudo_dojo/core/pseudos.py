@@ -310,7 +310,7 @@ class DojoTable(PseudoTable):
         Return: `matplotlib` figure.
         """
         frame = self.get_dfgbrv_dataframe()
-        return frame.plot_dfgbrv_dict(**kwargs)
+        return frame.plot_dfgbrv_dist(**kwargs)
 
 
 class OfficialDojoTable(DojoTable):
