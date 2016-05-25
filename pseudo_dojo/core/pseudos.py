@@ -14,7 +14,7 @@ from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.util.plotting_utils import add_fig_kwargs 
 from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
-from .dojoreport import DojoReport
+from pseudo_dojo.core.dojoreport import DojoReport
 
 
 logger = logging.getLogger(__name__)
@@ -233,83 +233,8 @@ class DojoTable(PseudoTable):
             where frame is the pandas :class:`DataFrame` and errors is a list of errors
             encountered while trying to read the `DOJO_REPORT` from the pseudopotential file.
         """
-        accuracies = ["low", "normal", "high"]
-
-        trial2keys = {
-            "deltafactor": ["dfact_meV", "dfactprime_meV"] + ["v0", "b0_GPa", "b1"],
-            "gbrv_bcc": ["a0_rel_err"],
-            "gbrv_fcc": ["a0_rel_err"],
-            "phonon": "all",
-            #"phwoa": "all"
-        }
-
-        rows, names, errors = [], [], []
-
-        for p in self:
-            report = p.dojo_report
-            if "version" not in report:
-                print("ignoring old report in ", p.basename)
-                continue
-
-            d = {"symbol": p.symbol, "Z": p.Z, "filepath": p.filepath}
-            names.append(p.basename)
-
-            ecut_acc = {}
-
-            # read hints
-            for acc in accuracies:
-                try:
-                    d.update({acc + "_ecut_hint": report['hints'][acc]['ecut']})
-                    ecut_acc[acc] = report['hints'][acc]['ecut']
-                except KeyError:
-                    # using -1 for non existing values facilitates plotting
-                    d.update({acc + "_ecut_hint": -1.0 })
-                    ecut_acc[acc] = -1
-
-            for acc in accuracies:
-                d[acc + "_ecut"] = ecut_acc[acc]
-
-            try:
-                for trial, keys in trial2keys.items():
-                    data = report.get(trial, None)
-
-                    if data is None: continue
-
-                    # if the current trial has an entry for this ecut change nothing, else we take the
-                    # smallest, the middle and the highest ecut available for this trials
-                    # precausion, normally either there are hints or not. in the second case they are all set to -1
-                    ecut_acc_trial = dict(
-                        low=sorted(data.keys())[0],
-                        normal=sorted(data.keys())[int(len(data.keys())/2)],
-                        high=sorted(data.keys())[-1],
-                    )
-
-                    for acc in accuracies:
-                        d[acc + "_ecut"] = ecut_acc[acc]
-
-                    for acc in accuracies:
-                        ecut = ecut_acc[acc] if ecut_acc[acc] in data.keys() else ecut_acc_trial[acc]
-                        #store the actuall ecut for this trial
-                        d.update({acc + "_ecut_" + trial: ecut})
-                        if keys is 'all':
-                            ecuts = data
-                            d.update({acc + "_" + trial: data[ecut]})
-                        else:
-                            if trial.startswith("gbrv"):
-                                d.update({acc + "_" + trial + "_" + k: float(data[ecut][k]) for k in keys})
-                            else:
-                                d.update({acc + "_" + k: float(data[ecut][k]) for k in keys})
-
-            except Exception as exc:
-                logger.warning("%s raised %s" % (p.basename, exc))
-                errors.append((p.basename, str(exc)))
-
-            rows.append(d)
-
-        # Build sub-class of pandas.DataFrame
-        # FIXME: 
         from pseudo_dojo.core.dojoreport import DojoDataFrame
-        return DojoDataFrame(rows, index=names), errors
+        return DojoDataFrame.from_pseudos(self)
 
     def get_dfgbrv_dataframe(self, raise_if_none_dojoreport=False):
         """
@@ -325,44 +250,8 @@ class DojoTable(PseudoTable):
 	    raise_if_none_dojoreport: If True, a ValueError is raised if one of the pseudo does not
                 have the dojo_report else a warning is emitted.
         """
-        _TRIALS2KEY = {
-            "deltafactor": "dfact_meV",
-            "gbrv_bcc": "a0_rel_err",
-            "gbrv_fcc": "a0_rel_err",
-        }
-
-        rows = []
-        for p in self:
-            # Extract the dojo_report
-	    if not p.has_dojo_report:
-		msg = "%s does not have the dojo_report" % p.filepath
-		if not raise_if_none_dojoreport:
-		    logger.warning(msg)
-                    continue
-		else:
-		    raise ValueError(msg)
-
-            report = p.dojo_report
-            row = dict(basename=p.basename, symbol=p.symbol, md5=p.md5)
-
-            for trial, key in _TRIALS2KEY.items():
-                # Get results as function of ecut
-                try:
-                    data = report[trial]
-                except KeyError:
-                    print("%s does not have %s" % (p.basename, trial))
-                    continue
-
-                # Extract the value with highest ecut.
-                high_ecut = list(data.keys())[-1]
-                row.update({trial: data[high_ecut][key]})
-                if trial == "deltafactor":
-                    row.update(dict(df_prime=data[high_ecut]["dfactprime_meV"]))
-
-            rows.append(row)
-
-        from pandas import DataFrame
-        return DataFrame(rows)
+        from pseudo_dojo.core.dojoreport import DfGbrvDataFrame
+        return DfGbrvDataFrame.from_pseudos(self, raise_if_none_dojoreport=raise_if_none_dojoreport)
 
     def dojo_compare(self, what="all", **kwargs):
         """Compare ecut convergence and Deltafactor, GBRV results"""
@@ -420,28 +309,8 @@ class DojoTable(PseudoTable):
 
         Return: `matplotlib` figure.
         """
-        import matplotlib.pyplot as plt
-        fig, ax_list = plt.subplots(nrows=2, ncols=2, squeeze=True)
-        ax_list = ax_list.ravel()
-
         frame = self.get_dfgbrv_dataframe()
-
-        import seaborn as sns
-        for ax, col in zip(ax_list.ravel(), ["deltafactor", "gbrv_fcc", "df_prime", "gbrv_bcc"]):
-            values = frame[col].dropna()
-            sns.distplot(values, ax=ax, rug=True, hist=True, kde=False, label=col, bins=kwargs.pop("bins", 50))
-
-            # Add text with Mean or (MARE/RMSRE)
-            text = []; app = text.append
-            if col in ("deltafactor", "df_prime"):
-                app("Mean = %.2f" % values.mean())
-            else:
-                app("MARE = %.2f" % values.abs().mean())
-                app("RMSRE = %.2f" % np.sqrt((values**2).mean()))
-
-            ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
-
-        return fig
+        return frame.plot_dfgbrv_dict(**kwargs)
 
 
 class OfficialDojoTable(DojoTable):

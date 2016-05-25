@@ -34,6 +34,7 @@ class DojoApiTest(PseudoDojoTest):
         assert all(p.isnc for p in oncv_pbe_table)
         assert all(p.xc == oncv_pbe_table.xc for p in oncv_pbe_table)
 
+        frame = oncv_pbe_table.get_dojo_dataframe()
         frame = oncv_pbe_table.get_dfgbrv_dataframe()
         #print(frame)
         #my_table.plot_dfgbrv_dist()

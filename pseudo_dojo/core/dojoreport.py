@@ -827,11 +827,16 @@ class DojoReport(dict):
             fig = ebands.plot_with_edos(ebands.get_edos(width=0.05, step=0.02))
             return fig
 
+######################
+## Pandas DataFrame ##
+######################
 
 from pandas import DataFrame
 
 class DojoDataFrame(DataFrame):
-    """Extends pandas DataFrame adding helper functions."""
+    """
+    Extends pandas DataFrame adding helper functions.
+    """
 
     # The frame has its own list so that one can easily change the
     # entries that should be analyzed by modifying this attributes.
@@ -867,6 +872,98 @@ class DojoDataFrame(DataFrame):
     for v in ACC2PLTOPTS.values():
         v.update(linewidth=2, linestyle='dashed', marker='o', markersize=8)
 
+    @classmethod
+    def from_pseudos(cls, pseudos):
+        """
+        Buid a pandas :class:`DataFrame` with the most important parameters extracted from the
+        `DOJO_REPORT` section of each pseudo in the table.
+
+        Returns:
+            frame, errors
+
+            where frame is the pandas :class:`DataFrame` and errors is a list of errors
+            encountered while trying to read the `DOJO_REPORT` from the pseudopotential file.
+        """
+        accuracies = ["low", "normal", "high"]
+
+        trial2keys = {
+            "deltafactor": ["dfact_meV", "dfactprime_meV"] + ["v0", "b0_GPa", "b1"],
+            "gbrv_bcc": ["a0_rel_err"],
+            "gbrv_fcc": ["a0_rel_err"],
+            "phonon": "all",
+            #"phwoa": "all"
+        }
+
+        rows, names, errors = [], [], []
+
+        for p in pseudos:
+            if not p.has_dojo_report:
+                print("Cannot find dojo_report in ", p.basename)
+                continue
+            
+            report = p.dojo_report
+            if "version" not in report:
+                print("ignoring old report in ", p.basename)
+                continue
+
+            d = {"symbol": p.symbol, "Z": p.Z, "filepath": p.filepath}
+            names.append(p.basename)
+
+            ecut_acc = {}
+
+            # read hints
+            for acc in accuracies:
+                try:
+                    d.update({acc + "_ecut_hint": report['hints'][acc]['ecut']})
+                    ecut_acc[acc] = report['hints'][acc]['ecut']
+                except KeyError:
+                    # using -1 for non existing values facilitates plotting
+                    d.update({acc + "_ecut_hint": -1.0 })
+                    ecut_acc[acc] = -1
+
+            for acc in accuracies:
+                d[acc + "_ecut"] = ecut_acc[acc]
+
+            try:
+                for trial, keys in trial2keys.items():
+                    data = report.get(trial, None)
+
+                    if data is None: continue
+
+                    # if the current trial has an entry for this ecut change nothing, else we take the
+                    # smallest, the middle and the highest ecut available for this trials
+                    # precausion, normally either there are hints or not. in the second case they are all set to -1
+                    ecut_acc_trial = dict(
+                        low=sorted(data.keys())[0],
+                        normal=sorted(data.keys())[int(len(data.keys())/2)],
+                        high=sorted(data.keys())[-1],
+                    )
+
+                    for acc in accuracies:
+                        d[acc + "_ecut"] = ecut_acc[acc]
+
+                    for acc in accuracies:
+                        ecut = ecut_acc[acc] if ecut_acc[acc] in data.keys() else ecut_acc_trial[acc]
+                        #store the actuall ecut for this trial
+                        d.update({acc + "_ecut_" + trial: ecut})
+                        if keys is 'all':
+                            ecuts = data
+                            d.update({acc + "_" + trial: data[ecut]})
+                        else:
+                            if trial.startswith("gbrv"):
+                                d.update({acc + "_" + trial + "_" + k: float(data[ecut][k]) for k in keys})
+                            else:
+                                d.update({acc + "_" + k: float(data[ecut][k]) for k in keys})
+
+            except Exception as exc:
+                logger.warning("%s raised %s" % (p.basename, exc))
+                errors.append((p.basename, str(exc)))
+
+            rows.append(d)
+
+        # Build sub-class of pandas.DataFrame
+        return cls(rows, index=names), errors
+
     def tabulate(self, columns=None, stream=sys.stdout):
         if columns is None:
             accuracies = self.ALL_ACCURACIES
@@ -891,6 +988,7 @@ class DojoDataFrame(DataFrame):
         columns += [acc + "_ecut" for acc in accuracies]
         columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
         columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
+
         return self.__class__(data=self[columns])
 
     def select_rows(self, rows):
@@ -974,5 +1072,93 @@ class DojoDataFrame(DataFrame):
             #    ax.yaxis.set_ticks(np.arange(start, end, stepsize))
 
             plt.setp(ax.xaxis.get_majorticklabels(), rotation=25)
+
+        return fig
+
+
+class DfGbrvDataFrame(DataFrame):
+    """
+    Extends pandas DataFrame adding helper functions.
+    """
+    @classmethod
+    def from_pseudos(cls, pseudos, raise_if_none_dojoreport=False):
+        """
+        Build and return a pandas :class:`DataFrame` in the form.
+
+            basename     deltafactor  df_prime  gbrv_bcc  gbrv_fcc  symbol   md5
+            H-high.psp8  0.074830     1.258340  0.028904  0.024726  H        5863396c90149cbe12af496141bde0d0
+            ...
+
+        where `gbrv_bcc` and `gbrv_fcc` are the relative errors (in percentage) wrt the AE calculations.
+
+	Args:
+	    raise_if_none_dojoreport: If True, a ValueError is raised if one of the pseudo does not
+                have the dojo_report else a warning is emitted.
+        """
+
+        _TRIALS2KEY = {
+            "deltafactor": "dfact_meV",
+            "gbrv_bcc": "a0_rel_err",
+            "gbrv_fcc": "a0_rel_err",
+        }
+
+        rows = []
+        for p in pseudos:
+            # Extract the dojo_report
+	    if not p.has_dojo_report:
+		msg = "%s does not have the dojo_report" % p.filepath
+		if not raise_if_none_dojoreport:
+		    logger.warning(msg)
+                    continue
+		else:
+		    raise ValueError(msg)
+
+            report = p.dojo_report
+            row = dict(basename=p.basename, symbol=p.symbol, md5=p.md5)
+
+            for trial, key in _TRIALS2KEY.items():
+                # Get results as function of ecut
+                try:
+                    data = report[trial]
+                except KeyError:
+                    print("%s does not have %s" % (p.basename, trial))
+                    continue
+
+                # Extract the value with highest ecut.
+                high_ecut = list(data.keys())[-1]
+                row.update({trial: data[high_ecut][key]})
+                if trial == "deltafactor":
+                    row.update(dict(df_prime=data[high_ecut]["dfactprime_meV"]))
+
+            rows.append(row)
+
+        return cls(rows)
+
+    @add_fig_kwargs
+    def plot_dfgbrv_dist(self, **kwargs):
+        """
+        Plot four distribution plots for the deltafactor, deltafactor prime and the
+        relative errors for the GBRV fcc, bcc structures.
+
+        Return: `matplotlib` figure.
+        """
+        import matplotlib.pyplot as plt
+        fig, ax_list = plt.subplots(nrows=2, ncols=2, squeeze=True)
+        ax_list = ax_list.ravel()
+
+        import seaborn as sns
+        for ax, col in zip(ax_list.ravel(), ["deltafactor", "gbrv_fcc", "df_prime", "gbrv_bcc"]):
+            values = self[col].dropna()
+            sns.distplot(values, ax=ax, rug=True, hist=True, kde=False, label=col, bins=kwargs.pop("bins", 50))
+
+            # Add text with Mean or (MARE/RMSRE)
+            text = []; app = text.append
+            if col in ("deltafactor", "df_prime"):
+                app("Mean = %.2f" % values.mean())
+            else:
+                app("MARE = %.2f" % values.abs().mean())
+                app("RMSRE = %.2f" % np.sqrt((values**2).mean()))
+
+            ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
 
         return fig
