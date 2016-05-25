@@ -16,7 +16,130 @@ from pymatgen.analysis.eos import EOS
 from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 
+
 logger = logging.getLogger(__name__)
+
+
+class DojoEcutResults(object): 
+    """
+    "ecut": "32.0" 
+    "pawecutdg": "64.0",
+    "b0": 0.06400805819081799, 
+    "b0_GPa": 10.255221080448488, 
+    "b1": 2.6449207740813594, 
+    "dfact_meV": 0.2774768889565598, 
+    "dfactprime_meV": 4.701668998922405, 
+    "etotals": []
+    "num_sites": 4, 
+    "v0": 17.264380250637252, 
+    "volumes": [],
+
+    ecuts = dfres.get_ecuts()
+    pawecutdgs = dfres.get_pawecutdgs()
+    b0_values = dfres.get_values("b0")
+    dfres.insert(data_dict)
+    data = dfres.get_data_for_ecut(ecut)
+    dfres.plot_ecut_convergence()
+    """
+    def __init__(self, dict_list=None, metadata=None):
+        self.dict_list = [] if dict_list is None else dict_list
+        self.metadata = {} if metadata is None else metadata
+
+    @staticmethod
+    def class_from_name(name):
+        for cls in DojoEcutResults.__subclasses__():
+            if cls.name == name: return cls
+        raise ValueError("Cannot find class associated to name: %s" % name)
+
+    @staticmethod
+    def all_names_and_classes():
+        return [(cls.name, cls) for cls in DojoEcutResults.__subclasses__()]
+
+    def insert(self, data):
+        """
+        Insert new data so that the list is still ordered with increasing ecut
+        If an ecut is already stored, we replace the old entry.
+        """
+        # Handle first insertion
+        if not self.dict_list:
+            self.dict_list.append(data)
+            return
+
+        prev_ecuts = self.get_ecuts()
+        new_ecut = float(data["ecut"])
+
+        # Find rightmost value less than or equal to x.
+        already_in = False
+        if new_ecut < prev_ecuts[0]:
+            i = 0
+        elif new_ecut > prev_ecuts[-1]:
+            i = len(prev_ecuts)
+        else:
+            i = find_le(prev_ecuts, new_ecut)
+            # Handle possible dupe.
+            already_in = prev_ecuts[i] == new_ecut
+            if already_in: 
+                self.dict_list.pop(i)
+            else:
+                i += 1
+
+        self.dict_list.insert(i, data)
+
+    def get_data_for_ecut(self, ecut):
+        """Return the results for the given ecut"""
+        for data in self:
+            if abs(float(data["ecut"]) - float(ecut)) < 0.001: return data
+        raise ValueError("Cannot find ecut = %s" % ecut)
+
+    @staticmethod
+    def from_dict(d):
+        cls = DojoEcutResults.class_from_name(d["name"])
+        return cls(dict_list=d["dict_list"], metadata=d["metadata"])
+
+    #@pmg_serialize
+    def as_dict(self):
+        return dict(name=self.name, dict_list=self.dict_list, metadata=self.metadata)
+
+    def __len__(self):
+        return self.dict_list.__len__()
+
+    def __iter__(self):
+        return self.dict_list.__iter__()
+
+    def __str__(self):
+        return str(self.as_dict())
+
+    def get_ecuts(self):
+        return [d.get("ecut") for d in self.dict_list]
+
+    def get_pawecutdgs(self):
+        return [d.get("pawecutdg") for d in self.dict_list if "pawecutdg" in d]
+
+    def get_values(self, vname):
+        return [d.get(vname) for d in self.dict_list]
+
+    #def get_dataframe(self):
+
+
+class DeltaFactorResults(DojoEcutResults):
+    name = "deltafactor"
+
+
+class GbrvFccResults(DojoEcutResults):
+    name = "gbrv_fcc"
+
+
+class GbrvBccResults(DojoEcutResults):
+    name = "gbrv_bcc"
+
+
+class PhononResults(DojoEcutResults):
+    name = "phonon"
+
+
+class EbandsResults(DojoEcutResults):
+    name = "ebands"
+
 
 
 class DojoReportError(Exception):
@@ -110,6 +233,31 @@ class DojoReport(dict):
             ecuts=list(dense_left) + list(dense_right) + list(coarse_high),
         )
 
+        return new
+
+    def to_dict(self):
+        d = {k: v for k, v in self.items()}
+        for name in DojoEcutResults.all_names():
+            if name not in d: continue
+            d[name] = d[name].to_dict()
+        return d
+
+    def from_dict(cls, d):
+        # Preventive copy becayse we are gonna change the input dict.
+        d = copy.deepcopy(d)
+
+        new = cls()
+
+        # Create instances of DojoEcutResults and add them to new.
+        results = []
+        for name, res_cls in DojoEcutResults.all_names_and_classes():
+            if name not in d: continue
+            res = res_cls.from_dict(d.pop(name))
+            results.append(res)
+            new[name] = res
+
+        # Inglobate the rest
+        new.update(d)
         return new
 
     @classmethod
