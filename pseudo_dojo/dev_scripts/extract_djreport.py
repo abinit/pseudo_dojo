@@ -7,33 +7,35 @@ import os
 import argparse
 import json
 
-from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from monty.os.path import find_exts
+from pymatgen.io.abinit.pseudos import Pseudo
+from pseudo_dojo.core.pseudos import dojopseudo_from_file
 
 
 def remove_dojo_report(path):
     """
     Remove the `DOJO_REPORT` section from the pseudopotential file.
-    Write new file.
+    Write new file. Return dict with old_report, None if error.
     """
     # Read lines from file and insert jstring between the tags.
-    with open(path, "r") as fh:
+    with open(path, "rt") as fh:
         lines = fh.readlines()
         try:
             start = lines.index("<DOJO_REPORT>\n")
         except ValueError:
             start = -1
 
-        if start == -1: return
-
+        if start == -1: return None
         stop = lines.index("</DOJO_REPORT>\n")
-        #if stop == -1: return
 
+	report = json.loads("\n".join(lines[start+1:stop]))
         del lines[start:stop+1]
 
     # Write new file.
-    with open(self.path, "w") as fh:
+    with open(path, "w") as fh:
 	fh.writelines(lines)
+
+    return report
 
 
 def main():
@@ -44,27 +46,31 @@ def main():
 
     # Find all .psp8 files starting from top.
     paths = find_exts(top, ["psp8"], exclude_dirs="_*")
-    print(paths)
+    #print(paths)
 
     for path in paths:
-        pseudo = dojopseudo_from_file(path)
+
+        try:
+            pseudo = Pseudo.from_file(path)
+        except Exception as exc:
+            print(path, exc)
+            raise
+
 	if pseudo is None:
             print("Parser error in %s", path)
 	    continue
-        if not pseudo.has_dojo_report:
-            print("No DOJOREPORT in %s. Ignoring file" % pseudo.filepath)
-	    continue
+
         report_file = path.replace(".psp8", ".djrepo")
         if os.path.exists(report_file):
             print("New DOJO file already exists. Ignoring", pseudo.filepath)
 	    continue
-        print("Moving DOJOREPORT to %s", report_file)
-        report = pseudo.read_dojo_report()
 
+        print("Moving DOJOREPORT to %s", report_file)
+
+        report = remove_dojo_report(pseudo.filepath)
         with open(report_file, "wt") as fh:
             json.dump(report, fh, indent=-1, sort_keys=True)
             #json.dump(report, fh, indent=4, sort_keys=True)
-        remove_dojo_report(pseudo.filepath)
 
 
 if __name__ == "__main__":

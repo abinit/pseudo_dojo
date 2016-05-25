@@ -40,8 +40,8 @@ def dojopseudo_from_file(filepath):
     djrepo = root + ".djrepo"
     if not os.path.exists(djrepo):
         raise RuntimeError("Cannot find djrepo file at %s" % djrepo)
-
     pseudo.dojo_report = DojoReport.from_file(djrepo)
+
     return pseudo
 
 
