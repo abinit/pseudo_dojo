@@ -11,12 +11,12 @@ from monty.termcolor import cprint
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 
 
-def djson_new(options):
-    """Create new djson file. Print document to stdout."""
+def djson_new(options, stream=sys.stdout):
+    """Create a new djson file. Print document to stdout."""
     # Build full table
     table = DojoTable.from_dojodir(options.top)
-    djson = table.to_djson()
-    print(json.dumps(djson, indent=-1))
+    djson = table.to_djson(options.verbose, ignore_dup=False)
+    print(json.dumps(djson, indent=-1), file=stream)
     return 0
 
 
@@ -60,7 +60,8 @@ Usage example:
 
     # Parent parser for common options.
     copts_parser = argparse.ArgumentParser(add_help=False)
-
+    copts_parser.add_argument('--loglevel', default="ERROR", type=str,
+                               help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
     copts_parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
                                help='verbose, can be supplied multiple times to increase verbosity')
 
@@ -80,6 +81,14 @@ Usage example:
         options = parser.parse_args()
     except Exception as exc: 
         show_examples_and_exit(error_code=1)
+
+    # loglevel is bound to the string value obtained from the command line argument. 
+    # Convert to upper case to allow the user to specify --loglevel=DEBUG or --loglevel=debug
+    import logging
+    numeric_level = getattr(logging, options.loglevel.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError('Invalid log level: %s' % options.loglevel)
+    logging.basicConfig(level=numeric_level)
 
     # Dispatch
     return globals()["djson_" + options.command](options)

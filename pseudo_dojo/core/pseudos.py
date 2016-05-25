@@ -7,6 +7,7 @@ import json
 import logging
 import numpy as np
 
+from collections import OrderedDict
 from monty.collections import AttrDict
 from monty.functools import lazy_property
 from monty.string import list_strings
@@ -142,29 +143,52 @@ class DojoTable(PseudoTable):
             paths.extend(os.path.join(dr, f) for f in os.listdir(dr)
                          if f.endswith(meta.pseudo_ext) and f not in exclude)
 
-        return cls(paths).sort_by_z()
+        pseudos = []
+        for p in paths:
+            pseudo = dojopseudo_from_file(p)
+            if pseudo is None: 
+                print("Error while parsing:", p)
+                continue
+            pseudos.append(pseudo)
 
-    def to_djson(self):
+        return cls(pseudos).sort_by_z()
+
+    def to_djson(self, verbose=0, ignore_dup=False):
         """
         Tool used by the PseudoDojo maintainers to build a dictionary
         with **partial** information on the table. This dictionary can be used as 
         an initial template for the creation of a new djson file.
+
+        Args:
+            verbose: Verbosity level.
+            ignore_dup: if set to True, duplicated pseudos are ignored, only 
+                    the first pseudo is reported. Use it wisely!
         """
         # Add template for dojo_info section
         d = {"dojo_info": DojoInfo.get_template_dict()}
 
         def djson_entry(p):
             jdict = p.as_dict()
-            return {k: jdict[k] for k in ["basename", "Z_val", "l_max", "md5"]}
+            entry = {k: jdict[k] for k in ["basename", "Z_val", "l_max", "md5"]}
 
-        # Add pseudo_metadata section.
+            df, dfprime = None, None
+            if p.has_dojo_report:
+                df, dfprime = p.dojo_report.get_last_df_dfp()
+            entry["dfact_meV"] = df
+            entry["dfactprime_meV"] = dfprime
+
+            return entry
+
+        # Add pseudo_metadata section (sorted by Z).
         # If there are multiple pseudos per element, we create a list of dicts.
         # Authors of the table, will have to select one.
-        d["pseudos_metadata"] = meta = {}
-        for p in self:
+        d["pseudos_metadata"] = meta = OrderedDict()
+        for p in self.sort_by_z():
+            if verbose: print("Analyzing ",p)
             if p.symbol in meta:
                 # Handle multiple pseudos.
-                #continue # HACK FOR GENERATING djson files for testing purpose.
+                # THIS IS A HACK FOR GENERATING djson files for testing purpose.
+                if ignore_dup: continue 
                 old = meta[p.symbol]
                 if not isinstance(old, list): old = [old]
                 old.append(djson_entry(p))

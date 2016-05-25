@@ -464,6 +464,22 @@ class DojoReport(dict):
         values = np.array([data[e]["dfactprime_meV"] for e in ecuts])
         return np.array(ecuts), values
 
+    def get_last_df_dfp(self):
+        """
+        Return the last value i.e. the best estimate of deltafactor and deltafactor_prime
+        None, None if "deltafactor" is not present.
+        """
+        try:
+            data = self["deltafactor"]
+        except KeyError:
+            return None, None
+
+        ecuts = list(data.keys())
+        dfact_meV = [data[e]["dfact_meV"] for e in ecuts][-1]
+        dfp = [data[e]["dfactprime_meV"] for e in ecuts][-1]
+
+        return dfact_meV, dfp
+
     def compute_hints(self):
         ecuts, dfacts = self.get_ecut_dfactprime()
         abs_diffs = np.abs((dfacts - dfacts[-1]))
