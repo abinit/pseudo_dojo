@@ -58,19 +58,21 @@ Usage example:
     # Build the main parser.
     parser = argparse.ArgumentParser(epilog=str_examples(), formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    #parser.add_argument('-V', '--version', action='version', version="%(prog)s version " + __version__)
-    parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
-                         help='verbose, can be supplied multiple times to increase verbosity')
+    # Parent parser for common options.
+    copts_parser = argparse.ArgumentParser(add_help=False)
+
+    copts_parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
+                               help='verbose, can be supplied multiple times to increase verbosity')
 
     # Create the parsers for the sub-commands
     subparsers = parser.add_subparsers(dest='command', help='sub-command help')
 
     # Subparser for new command.
-    p_new = subparsers.add_parser('new', help=djson_new.__doc__)
+    p_new = subparsers.add_parser('new', parents=[copts_parser], help=djson_new.__doc__)
     p_new.add_argument("top", nargs="?", default=".", help="Directory with pseudos")
 
     # Subparser for validate command.
-    p_validate = subparsers.add_parser('validate', help=djson_validate.__doc__)
+    p_validate = subparsers.add_parser('validate', parents=[copts_parser], help=djson_validate.__doc__)
     p_validate.add_argument("djson_path", help="djson file")
 
     # Parse command line.

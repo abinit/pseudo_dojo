@@ -467,8 +467,7 @@ class DojoReport(dict):
     def compute_hints(self):
         ecuts, dfacts = self.get_ecut_dfactprime()
         abs_diffs = np.abs((dfacts - dfacts[-1]))
-        #print(list(zip(ecuts, dfacts)))
-        #print(abs_diffs)
+        #print(list(zip(ecuts, dfacts)), abs_diffs)
 
         hints = 3 * [None]
         for ecut, adiff in zip(ecuts, abs_diffs):

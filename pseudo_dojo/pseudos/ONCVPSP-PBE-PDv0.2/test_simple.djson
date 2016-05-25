@@ -2,7 +2,7 @@
 "dojo_info": {
 "pp_type": "NC",
 "description": "foo",
-"reference": "bar",
+"references": ["PRLbar", "PRBfoo"],
 "authors": ["hello", "kitty"],
 "xc_name": "PBE",
 "dojo_dir": "ONCVPSP-PBE-PDv0.2"

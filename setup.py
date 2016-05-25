@@ -92,7 +92,7 @@ install_requires = [
     "scipy",
     "tabulate",
     "pandas",
-    "validictory",
+    "jsonschema",
     "atomicfile",
     "periodic_table_plotter",
     "monty",

@@ -49,20 +49,25 @@ class DojoInfo(AttrDict):
     """
     Dictionary with metadata associated to the PseudoDojo table.
     """
-    # See http://validictory.readthedocs.org/en/latest/usage.html#schema-options
+    # See https://github.com/Julian/jsonschema
     JSON_SCHEMA = {
+        "$schema": "http://json-schema.org/schema#",
+
         "type": "object",
         "properties": {
             "pp_type": {"type": "string", "enum": ["NC", "PAW"]},
             "xc_name": {"type": "string", "enum": XcFunc.aliases()},
             "authors": {"type": "array"},
             "description": {"type": "string"},
-            "reference": {"type": "string"},
+            "references": {"type": "array"},
             "dojo_dir": {"type": "string"},
             #"generation_date": {"type": "string", "format": "date"},
             #"tags": {"type": "array", "items": {"type": "string", "enum": ["accuracy", "efficiency"]}},
-            #"relativity": {"type": "string", "enum": ["non-relativistic", "scalar-relativistic", "relativistic"]
+            #"relativity": {"type": "string", "enum": ["non-relativistic", "scalar-relativistic", "relativistic"]}
         },
+        "required": ["pp_type", "xc_name", "authors", "description", "references", "dojo_dir", 
+                    #"generation_date", "tags", "relativity"
+                    ],
     }
 
     def __init__(self, *args, **kwargs):
@@ -71,8 +76,8 @@ class DojoInfo(AttrDict):
 
     def validate_json_schema(self):
         """Validate DojoInfo with validictory."""
-        import validictory
-        validictory.validate(self, self.JSON_SCHEMA)
+        from jsonschema import validate
+        validate(self, self.JSON_SCHEMA)
 
     @classmethod
     def get_template_dict(cls):
