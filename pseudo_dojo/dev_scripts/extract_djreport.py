@@ -57,7 +57,7 @@ def main():
             raise
 
 	if pseudo is None:
-            print("Parser error in %s", path)
+            print("Parser error in %s" % path)
 	    continue
 
         report_file = path.replace(".psp8", ".djrepo")

@@ -4282,40 +4282,4 @@ Cs 55.00    9    3   -1013      psp8
 
 </INPUT>
 
-<DOJO_REPORT>
-{
-    "symbol": "Cs", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
-    "ecuts": [
-        49.0, 
-        51.0, 
-        53.0, 
-        55.0, 
-        57.0, 
-        59.0, 
-        61.0, 
-        63.0, 
-        65.0, 
-        67.0, 
-        69.0, 
-        77.0, 
-        79.0
-    ], 
-    "ppgen_hints": {
-        "high": {
-            "pawecutdg": 59.0, 
-            "ecut": 59.0
-        }, 
-        "low": {
-            "pawecutdg": 49.0, 
-            "ecut": 49.0
-        }, 
-        "normal": {
-            "pawecutdg": 53.0, 
-            "ecut": 53.0
-        }
-    }
-}
-</DOJO_REPORT>
 

@@ -3674,40 +3674,4 @@ Mn 25.00    3    4   -1013      psp8
 
 </INPUT>
 
-<DOJO_REPORT>
-{
-    "symbol": "Mn", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
-    "ecuts": [
-        36.0, 
-        38.0, 
-        40.0, 
-        42.0, 
-        44.0, 
-        46.0, 
-        48.0, 
-        50.0, 
-        52.0, 
-        54.0, 
-        56.0, 
-        64.0, 
-        66.0
-    ], 
-    "ppgen_hints": {
-        "high": {
-            "pawecutdg": 46.0, 
-            "ecut": 46.0
-        }, 
-        "low": {
-            "pawecutdg": 42.0, 
-            "ecut": 42.0
-        }, 
-        "normal": {
-            "pawecutdg": 44.0, 
-            "ecut": 44.0
-        }
-    }
-}
-</DOJO_REPORT>
 

@@ -3670,40 +3670,4 @@ O  8.00    1    2   -1013      psp8
 
 </INPUT>
 
-<DOJO_REPORT>
-{
-    "symbol": "O", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
-    "ecuts": [
-        34.0, 
-        36.0, 
-        38.0, 
-        40.0, 
-        42.0, 
-        44.0, 
-        46.0, 
-        48.0, 
-        50.0, 
-        52.0, 
-        54.0, 
-        62.0, 
-        64.0
-    ], 
-    "ppgen_hints": {
-        "high": {
-            "pawecutdg": 44.0, 
-            "ecut": 44.0
-        }, 
-        "low": {
-            "pawecutdg": 39.0, 
-            "ecut": 39.0
-        }, 
-        "normal": {
-            "pawecutdg": 41.0, 
-            "ecut": 41.0
-        }
-    }
-}
-</DOJO_REPORT>
 

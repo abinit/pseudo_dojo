@@ -4882,40 +4882,4 @@ Te 52.00    8    3   -1013      psp8
 
 </INPUT>
 
-<DOJO_REPORT>
-{
-    "symbol": "Te", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
-    "ecuts": [
-        26.0, 
-        28.0, 
-        30.0, 
-        32.0, 
-        34.0, 
-        36.0, 
-        38.0, 
-        40.0, 
-        42.0, 
-        44.0, 
-        46.0, 
-        54.0, 
-        56.0
-    ], 
-    "ppgen_hints": {
-        "high": {
-            "pawecutdg": 36.0, 
-            "ecut": 36.0
-        }, 
-        "low": {
-            "pawecutdg": 32.0, 
-            "ecut": 32.0
-        }, 
-        "normal": {
-            "pawecutdg": 34.0, 
-            "ecut": 34.0
-        }
-    }
-}
-</DOJO_REPORT>
 

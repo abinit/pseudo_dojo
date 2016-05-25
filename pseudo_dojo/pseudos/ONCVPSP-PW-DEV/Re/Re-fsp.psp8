@@ -4284,40 +4284,4 @@ Re 75.00    9    5   -1013      psp8
 
 </INPUT>
 
-<DOJO_REPORT>
-{
-    "symbol": "Re", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
-    "ecuts": [
-        35.0, 
-        37.0, 
-        39.0, 
-        41.0, 
-        43.0, 
-        45.0, 
-        47.0, 
-        49.0, 
-        51.0, 
-        53.0, 
-        55.0, 
-        63.0, 
-        65.0
-    ], 
-    "ppgen_hints": {
-        "high": {
-            "pawecutdg": 45.0, 
-            "ecut": 45.0
-        }, 
-        "low": {
-            "pawecutdg": 42.0, 
-            "ecut": 42.0
-        }, 
-        "normal": {
-            "pawecutdg": 43.0, 
-            "ecut": 43.0
-        }
-    }
-}
-</DOJO_REPORT>
 

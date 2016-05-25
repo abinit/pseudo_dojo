@@ -3675,40 +3675,4 @@ Ge 32.00    5    3   -1013      psp8
 
 </INPUT>
 
-<DOJO_REPORT>
-{
-    "symbol": "Ge", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
-    "ecuts": [
-        27.0, 
-        29.0, 
-        31.0, 
-        33.0, 
-        35.0, 
-        37.0, 
-        39.0, 
-        41.0, 
-        43.0, 
-        45.0, 
-        47.0, 
-        55.0, 
-        57.0
-    ], 
-    "ppgen_hints": {
-        "high": {
-            "pawecutdg": 37.0, 
-            "ecut": 37.0
-        }, 
-        "low": {
-            "pawecutdg": 34.0, 
-            "ecut": 34.0
-        }, 
-        "normal": {
-            "pawecutdg": 35.0, 
-            "ecut": 35.0
-        }
-    }
-}
-</DOJO_REPORT>
 
