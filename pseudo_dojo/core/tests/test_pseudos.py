@@ -30,3 +30,29 @@ class DojoTableTest(PseudoDojoTest):
     #    # The table must have a dojo_info dict
     #    print(table.dojo_info)
     #    assert table.dojo_info
+
+
+#class PseudoTableTest(PseudoDojoTest):
+#
+#    def test_methods(self):
+#        """Test PseudoTable methods"""
+#        table = PseudoTable(ref_files("14si.pspnc",  "14si.4.hgh", "14-Si.LDA.fhi"))
+#        print(table)
+#        assert len(table) == 3
+#        for pseudo in table:
+#            assert pseudo.isnc
+#        assert table.allnc and not table.allpaw
+#        assert table.zlist == [14]
+#
+#        # Data persistence
+#        self.serialize_with_pickle(table, test_eq=False)
+#
+#        #d = table.as_dict()
+#        #PseudoTable.from_dict(d)
+#        #self.assertMSONable(table)
+#
+#        selected = table.select_symbols("Si")
+#        assert len(selected) == len(table) and selected.__class__ is table.__class__
+#
+#        with self.assertRaises(ValueError):
+#            table.pseudos_with_symbols("Si")

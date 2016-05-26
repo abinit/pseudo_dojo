@@ -3,11 +3,17 @@ from __future__ import unicode_literals, division, print_function
 import os.path
 import collections
 import numpy as np
+import unittest2 as unittest
 import pseudo_dojo.data as pdj_data
 
 from copy import copy
 from pseudo_dojo.core.testing import PseudoDojoTest
 from pseudo_dojo.core.dojoreport import DojoReport
+
+try:
+    from matplotlib.figure import Figure as Fig
+except ImportError:
+    Fig = None
 
 
 class DojoReportTest(PseudoDojoTest):
@@ -15,7 +21,7 @@ class DojoReportTest(PseudoDojoTest):
     def test_dojo_report_base_api(self):
         """Testing dojo report low-level API."""
         report = DojoReport.from_hints(10, "Si")
-        print(report)
+        #print(report)
         assert report.symbol == "Si"
         assert report.element.symbol == "Si"
         assert report.ecuts
@@ -46,22 +52,16 @@ class DojoReportTest(PseudoDojoTest):
 
     def test_oncvpsp_dojo_report(self):
         """Testing pseudopotentials with dojo report"""
-        plot = True
-        try:
-            from matplotlib.figure import Figure as Fig
-        except ImportError:
-            Fig = None
-            plot = False
-
         h_wdr = pdj_data.pseudo("H-wdr.psp8")
 
         # Test DOJO REPORT and md5
         assert h_wdr.symbol == "H"
+        assert h_wdr.xc == "PBE"
 
-        #h_wdr.check_and_fix_dojo_md5()
-        #ref_md5 = "0911255f47943a292c3905909f499a84"
-        #assert h_wdr.compute_md5() == ref_md5
-        #assert "md5" in h_wdr.dojo_report and h_wdr.md5 == ref_md5
+        ref_md5 = "8db4531eb441143fdda8032d237d0769"
+        assert h_wdr.compute_md5() == ref_md5
+        assert h_wdr.md5 == ref_md5
+        assert "md5" in h_wdr.dojo_report and h_wdr.dojo_report["md5"] == ref_md5
 
         print(repr(h_wdr))
         print(h_wdr.as_dict())
@@ -74,7 +74,7 @@ class DojoReportTest(PseudoDojoTest):
         print(report)
         assert report.symbol == "H" 
         assert report.element.symbol == "H"
-        assert report["pseudo_type"] == "norm-conserving" 
+        assert report["pseudo_type"] == "NC" 
         assert report["version"] == "1.0"
         assert not report.has_hints
 
@@ -82,7 +82,7 @@ class DojoReportTest(PseudoDojoTest):
         missings = report.find_missing_entries()
         assert "ebands" in missings
         assert "phwoa" in missings
-        with self.assertRaises(report.Error): 
+        with self.assertRaises(ValueError): 
             report.has_trial("foo")
 
         for trial in report.trials:
@@ -93,10 +93,8 @@ class DojoReportTest(PseudoDojoTest):
         self.assert_almost_equal(report["deltafactor"][32]["etotals"][1], -63.503524424394556)
         self.assert_almost_equal(report["deltafactor"][32]["volumes"][1],  66.80439150995784)
 
-        # FIXME
-        #assert report.has_trial("deltafactor", ecut="32.0")
-        #with self.assertRaises(report.Error): report.has_trial("deltafactor", ecut=-1)
-        #with self.assertRaises(report.Error): report.has_trial("deltafactor", ecut="32.00")
+        assert not report.has_trial("deltafactor", ecut=-1)
+        with self.assertRaises(ValueError): report.has_trial("deafactor", ecut="32.00")
 
         # Test GBRV entries
         self.assert_almost_equal(report["gbrv_bcc"][32]["a0"], 1.8069170394120007)
@@ -119,40 +117,15 @@ class DojoReportTest(PseudoDojoTest):
         #missing = report.find_missing_entries()
         #assert missing and all(v == [30, 33, 53] for v in missing.values())
 
-        # Test plotting methods.
-        xc = h_wdr.xc
-        assert xc == "PBE"
-        if plot:
-            self.assertIsInstance(report.plot_deltafactor_convergence(xc=xc, show=False), Fig)
-            self.assertIsInstance(report.plot_deltafactor_eos(show=False), Fig)
-            self.assertIsInstance(report.plot_etotal_vs_ecut(show=False), Fig)
-            self.assertIsInstance(report.plot_gbrv_convergence(show=False), Fig)
-            self.assertIsInstance(report.plot_gbrv_eos('bcc', show=False), Fig)
-            self.assertIsInstance(report.plot_gbrv_eos('fcc', show=False), Fig)
-            self.assertIsInstance(report.plot_phonon_convergence(show=False), Fig)
-
-
-#class PseudoTableTest(PseudoDojoTest):
-#
-#    def test_methods(self):
-#        """Test PseudoTable methods"""
-#        table = PseudoTable(ref_files("14si.pspnc",  "14si.4.hgh", "14-Si.LDA.fhi"))
-#        print(table)
-#        assert len(table) == 3
-#        for pseudo in table:
-#            assert pseudo.isnc
-#        assert table.allnc and not table.allpaw
-#        assert table.zlist == [14]
-#
-#        # Data persistence
-#        self.serialize_with_pickle(table, test_eq=False)
-#
-#        #d = table.as_dict()
-#        #PseudoTable.from_dict(d)
-#        #self.assertMSONable(table)
-#
-#        selected = table.select_symbols("Si")
-#        assert len(selected) == len(table) and selected.__class__ is table.__class__
-#
-#        with self.assertRaises(ValueError):
-#            table.pseudos_with_symbols("Si")
+    @unittest.skipIf(Fig is None, "This test requires matplotlib")
+    def test_dojoreport_plots(self):
+        """Testing dojoreport plotting methods"""
+        h_wdr = pdj_data.pseudo("H-wdr.psp8")
+        report = h_wdr.dojo_report
+        self.assertIsInstance(report.plot_deltafactor_convergence(xc=h_wdr.xc, show=False), Fig)
+        self.assertIsInstance(report.plot_deltafactor_eos(show=False), Fig)
+        self.assertIsInstance(report.plot_etotal_vs_ecut(show=False), Fig)
+        self.assertIsInstance(report.plot_gbrv_convergence(show=False), Fig)
+        self.assertIsInstance(report.plot_gbrv_eos('bcc', show=False), Fig)
+        self.assertIsInstance(report.plot_gbrv_eos('fcc', show=False), Fig)
+        self.assertIsInstance(report.plot_phonon_convergence(show=False), Fig)

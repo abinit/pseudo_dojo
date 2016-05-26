@@ -164,7 +164,7 @@ class DojoPseudoFilesTest(PseudoDojoTest):
 
     def test_stale_files(self):
         """Seeking for stale files in the stable directories"""
-        # Each item in ext_groups lists the file extesions that are supposed to be grouped together
+        # Each item in ext_groups lists the file extensions that are supposed to be grouped together
         # For psp8 files, for example, we have the the input (.in), the output (.out)
         # the actual pseudopotential file (.psp8) and the djrepo file. 
         # For PAW-XML: (.xml, .djrepo)

@@ -51,7 +51,7 @@ class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 
     @lazy_property
     def dfact_meV(self):
         """Deltafactor in meV"""
-        return df_wien2k(self.symbol, self.v0, self.b0_GPa, self.b1, b0_GPa=True, xc=self.xc)
+        return df_wien2k(self.symbol, self.v0, self.b0_GPa, self.b1, self.xc, b0_GPa=True)
 
     @property
     def dfactprime_meV(self):
@@ -82,7 +82,7 @@ def read_data_from_filepath(filepath, xc):
     return data
 
 
-def read_tables_from_file(filepath):
+def read_tables_from_file(filepath, xc):
     """Read deltafactor data from filepath. Returns pandas dataframe."""
     import pandas as pd
     columns = ["v0", "b0_GPa", "b1", "deltaf"]
@@ -113,7 +113,7 @@ def read_tables_from_file(filepath):
             #b0 = FloatWithUnit(b0_GPa, "GPa").to("eV ang^-3") 
             row = {"v0": float(tokens[1]), "b0_GPa": b0_GPa, "b1": float(tokens[3])}
 
-            df = df_wien2k(symbol, row["v0"], b0_GPa, row["b1"], b0_GPa=True)
+            df = df_wien2k(symbol, row["v0"], b0_GPa, row["b1"], xc, b0_GPa=True)
             row.update({"deltaf": df})
             rows.append(row)
 
@@ -152,8 +152,8 @@ class DeltaFactorDatabase(object):
 
     Error = DeltaFactorDatabaseError
 
-    def __init__(self, xc="PBE"):
-        if xc is None: xc = "PBE"
+    def __init__(self, xc):
+        """"xc specifies the XC functionals used."""
         self.xc = XcFunc.asxc(xc)
         dirpath = os.path.abspath(os.path.dirname(__file__))
         self.dirpath = os.path.join(dirpath, "data")
@@ -186,7 +186,7 @@ class DeltaFactorDatabase(object):
     @property
     def symbols(self):
         """Chemical symbols available in the database."""
-        return self._cif_paths.keys()
+        return list(self._cif_paths.keys())
 
     @lazy_property
     def codes(self):
@@ -328,8 +328,11 @@ def df_database(xc):
     return __DELTAF_DATABASE_XC[xc]
 
 
-def df_wien2k(symbol, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False, xc=None):
-    """Compute the deltafactor wrt to WIEN2k"""
+def df_wien2k(symbol, v0f, b0f, b1f, xc, b0_GPa=False, v=3, useasymm=False):
+    """
+    Compute the deltafactor wrt to WIEN2k
+    xc specifies the XC functional to be used.
+    """
     wien2k = df_database(xc).get_entry(symbol)
     b0 = wien2k.b0
     if b0_GPa: b0 = wien2k.b0_GPa
@@ -469,5 +472,5 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
 
 if __name__ == "__main__":
     import sys
-    #read_tables_from_file(sys.argv[1])
+    #read_tables_from_file(sys.argv[1], xc)
     check_cif_wien2k_consistency()

@@ -350,7 +350,7 @@ class DojoReport(dict):
         If ecut is None, we test if dojo_trial is present.
         """
         if dojo_trial not in self.ALL_TRIALS:
-            raise self.Error("dojo_trial `%s` is not a registered DOJO TRIAL" % dojo_trial)
+            raise ValueError("dojo_trial `%s` is not a registered DOJO TRIAL" % dojo_trial)
 
         if dojo_trial not in self: return False
         if ecut is None: return dojo_trial in self
