@@ -61,11 +61,12 @@ def build_flow(pseudo, options):
         cprint('New pseudo without report from the generator, the convergence study is started from 16H', "yellow")
         raise NotImplementedError()
         # TODO
-        #report = DojoRepor.from_pseudo(pseudo)
+        #report = DojoReport.from_pseudo(pseudo)
         report["ppgen_hints"] = {}
         report["ppgen_hints"]["high"] = {} 
         report["ppgen_hints"]["high"]["ecut"] = 16.0
         report["ecuts"] = [16.0, 20.0, 24.0]
+        report.json_write(pseudo.djrepo_path)
         #pseudo.write_dojo_report(report)
         ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
         ecut_list = copy.copy(report["ecuts"])
