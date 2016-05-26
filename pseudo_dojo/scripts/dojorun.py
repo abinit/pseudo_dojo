@@ -13,6 +13,7 @@ import abipy.abilab as abilab
 from monty.termcolor import cprint 
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
+from pseudo_dojo.core.pseudos import dojopseudo_from_file 
 from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory, EbandsFactory
 
 
@@ -21,17 +22,17 @@ logger = logging.getLogger(__name__)
 
 def build_flow(pseudo, options):
     """Build the flow, returns None if no calculation must be performed.""" 
-    pseudo = Pseudo.as_pseudo(pseudo)
-    if pseudo is None:
-        raise TypeError("Cannot generated Pseudo object from input data. Check your file")
-
     print(pseudo)
+    if not pseudo.has_dojo_report:
+        raise ValueError("Cannot find dojo_report")
 
     if options.soc and not pseudo.supports_soc:
         raise TypeError("SOC is on but pseudo does not support spin-orbit coupling")
 
     if not options.soc and pseudo.supports_soc and pseudo.path.endswith("psp8"):
         cprint("[STRANGE]: Your psp8 pseudo supports SOC but options.soc is off", "magenta")
+
+    report = pseudo.dojo_report
 
     workdir = pseudo.basename + "_DOJO"
     if os.path.exists(workdir): 
@@ -48,7 +49,6 @@ def build_flow(pseudo, options):
     }
     #flow.walknset_vars(extra_abivars)
 
-    report = pseudo.read_dojo_report()
     #print(report)
     #hints = report["hints"]
 
@@ -59,11 +59,14 @@ def build_flow(pseudo, options):
 
     except KeyError:
         cprint('New pseudo without report from the generator, the convergence study is started from 16H', "yellow")
+        raise NotImplementedError()
+        # TODO
+        #report = DojoRepor.from_pseudo(pseudo)
         report["ppgen_hints"] = {}
         report["ppgen_hints"]["high"] = {} 
         report["ppgen_hints"]["high"]["ecut"] = 16.0
         report["ecuts"] = [16.0, 20.0, 24.0]
-        pseudo.write_dojo_report(report)
+        #pseudo.write_dojo_report(report)
         ppgen_ecut = int(report["ppgen_hints"]["high"]["ecut"])
         ecut_list = copy.copy(report["ecuts"])
 
@@ -254,7 +257,13 @@ Usage Example:
 
     options.manager = abilab.TaskManager.as_manager(options.manager)
 
-    flow = build_flow(options.path, options)
+    pseudo = dojopseudo_from_file(options.path)
+    if pseudo is None:
+        cprint("Error while parsing: %s" % options.path)
+        cprint("Check your file. Returning 1")
+        return 1
+
+    flow = build_flow(pseudo, options)
     if flow is None:
         cprint("DOJO_REPORT is already computed for pseudo %s." % options.path, "magenta")
         return 1
