@@ -4284,40 +4284,4 @@ Hf 71.00    9    5   -1013      psp8
 
 </INPUT>
 
-<DOJO_REPORT>
-{
-    "symbol": "Hf", 
-    "pseudo_type": "norm-conserving", 
-    "version": "1.0", 
-    "ecuts": [
-        48.0, 
-        50.0, 
-        52.0, 
-        54.0, 
-        56.0, 
-        58.0, 
-        60.0, 
-        62.0, 
-        64.0, 
-        66.0, 
-        68.0, 
-        76.0, 
-        78.0
-    ], 
-    "ppgen_hints": {
-        "high": {
-            "pawecutdg": 58.0, 
-            "ecut": 58.0
-        }, 
-        "low": {
-            "pawecutdg": 54.0, 
-            "ecut": 54.0
-        }, 
-        "normal": {
-            "pawecutdg": 56.0, 
-            "ecut": 56.0
-        }
-    }
-}
-</DOJO_REPORT>
 

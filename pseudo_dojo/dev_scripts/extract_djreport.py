@@ -62,12 +62,18 @@ def main():
 
         report_file = path.replace(".psp8", ".djrepo")
         if os.path.exists(report_file):
-            print("New DOJO file already exists. Ignoring", pseudo.filepath)
+            #print("New DOJO file already exists. Ignoring", pseudo.filepath)
 	    continue
 
-        print("Moving DOJOREPORT to %s", report_file)
+        print("Moving DOJOREPORT to", report_file)
 
         report = remove_dojo_report(pseudo.filepath)
+
+	# Change md5 and pseudo_type
+	report["md5"] = pseudo.compute_md5()
+	if report["pseudo_type"] == "norm-conserving":
+	    report["pseudo_type"] = "NC"
+
         with open(report_file, "wt") as fh:
             json.dump(report, fh, indent=-1, sort_keys=True)
             #json.dump(report, fh, indent=4, sort_keys=True)

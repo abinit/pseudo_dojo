@@ -1,0 +1,35 @@
+{
+"ecuts": [
+34.0, 
+36.0, 
+38.0, 
+40.0, 
+42.0, 
+44.0, 
+46.0, 
+48.0, 
+50.0, 
+52.0, 
+54.0, 
+62.0, 
+64.0
+], 
+"md5": "1b7738f38aa1ce32ca99b742bf386aef", 
+"ppgen_hints": {
+"high": {
+"ecut": 44.0, 
+"pawecutdg": 44.0
+}, 
+"low": {
+"ecut": 39.0, 
+"pawecutdg": 39.0
+}, 
+"normal": {
+"ecut": 42.0, 
+"pawecutdg": 42.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Cu", 
+"version": "1.0"
+}

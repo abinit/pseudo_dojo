@@ -1,0 +1,35 @@
+{
+"ecuts": [
+48.0, 
+50.0, 
+52.0, 
+54.0, 
+56.0, 
+58.0, 
+60.0, 
+62.0, 
+64.0, 
+66.0, 
+68.0, 
+76.0, 
+78.0
+], 
+"md5": "137d92c6711aeb767f38be384a21dac5", 
+"ppgen_hints": {
+"high": {
+"ecut": 58.0, 
+"pawecutdg": 58.0
+}, 
+"low": {
+"ecut": 54.0, 
+"pawecutdg": 54.0
+}, 
+"normal": {
+"ecut": 56.0, 
+"pawecutdg": 56.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Hf", 
+"version": "1.0"
+}
