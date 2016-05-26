@@ -10,7 +10,7 @@ class DojoTableTest(PseudoDojoTest):
 
     def test_from_dojodir(self):
         """Initializing DojoTable from directory."""
-        table = DojoTable.from_dojodir(dojotable_absdir("ONCVPSP-PBE-DEV"))
+        table = DojoTable.from_dojodir(dojotable_absdir("ONCVPSP-PBE-PDv0.3"))
 
         # Produce template file for djson file.
         table.to_djson()

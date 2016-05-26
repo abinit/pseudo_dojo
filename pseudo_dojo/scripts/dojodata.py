@@ -19,6 +19,7 @@ from pymatgen.util.io_utils import ask_yesno, prompt
 from pseudo_dojo.core.pseudos import dojopseudo_from_file, DojoTable
 from pseudo_dojo.core.dojoreport import DojoReport
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
+from pseudo_dojo.pseudos import check_pseudo
 
 
 def straceback():
@@ -574,58 +575,9 @@ def dojo_check(options):
     """Check validity of pseudodojo report."""
     retcode = 0
     for p in options.pseudos:
-        try:
-            report = p.dojo_report
-        except Exception as exc:
-            cprint("[%s] Invalid dojo_report" % p.basename, "red")
-            if options.verbose:
-                print("Python Exception:\n%s", exc)
-            retcode += 1
-            continue
-
-        #print(report)
-        # Comment this to fix the md5 checksum in the pseudos
-        #p.check_and_fix_dojo_md5()
-
-        #if "ppgen_hints" not in report: # and "deltafactor" not in report:
-        #    print(p.basename, "old version without ppgen_hints")
-        #    continue
-
-        try:
-            error = report.check(check_trials=options.check_trials)
-            if error:
-                retcode += 1
-                if options.verbose:
-		    cprint("[%s] Validation error" % p.basename, "red")
-                    print(error)
-                    print("")
-		else:
-		    cprint("[%s] Validation error. Use -v for more info" % p.basename, "red")
-
-        except Exception as exc:
-            retcode += 1
-            cprint("[%s] Python exception:" % p.basename, "red")
-            if options.verbose:
-                print(str(exc))
+        retcode += check_pseudo(p, verbose=options.verbose)
 
     return retcode
-
-def _fix_djrepo(pp_filepath):
-    """
-    Regenerate the md5 value in the DojoReport file.
-    Use NC 
-    """
-    from pseudo_dojo.core.pseudos import dojopseudo_from_file
-    pseudo = dojopseudo_from_file(pp_filepath)
-    if pseudo is None:
-        print("Error while parsing %s" % pp_filepath)
-        return
-    # Change md5
-    pseudo.dojo_report["md5"] = pseudo.compute_md5()
-    if pseudo.dojo_report["pseudo_type"] == "norm-conserving":
-        pseudo.dojo_report["pseudo_type"] = "NC"
-
-    pseudo.dojo_report.json_write(pseudo.djrepo_path)
 
 
 def dojo_make_hints(options):
@@ -927,6 +879,7 @@ Usage example:
         #plt.tight_layout()
         #sns.despine(offset=10, trim=True)
 
+    #from pseudo_dojo.pseudos import _fix_djrepo
     #for pseudo in options.pseudos:
     #    _fix_djrepo(pseudo.filepath)
 
