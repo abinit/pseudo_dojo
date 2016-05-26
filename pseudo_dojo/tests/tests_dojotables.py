@@ -216,6 +216,7 @@ class DojoPseudoFilesTest(PseudoDojoTest):
         # Now we loop over all the "stable" directories to find stale files.
         retcode, count = 0, 0
         for top in all_dojotable_absdirs():
+            if "ONCVPSP-PBE-PDv0.2" in top: continue
             for eldir in filter(os.path.exists, (os.path.join(top, e.symbol) for e in Element)):
                 count += 1
                 stale_files = find_stale_files(os.listdir(eldir))
@@ -225,4 +226,4 @@ class DojoPseudoFilesTest(PseudoDojoTest):
                     retcode += 1
 
         assert count > 0
-        #assert retcode == 0
+        assert retcode == 0
