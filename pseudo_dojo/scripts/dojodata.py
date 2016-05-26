@@ -880,10 +880,12 @@ Usage example:
         #sns.despine(offset=10, trim=True)
 
     # This is to regenerate the md5 files in the djrepo files.
+    """
     from pseudo_dojo.pseudos import _fix_djrepo
     for pseudo in options.pseudos:
         _fix_djrepo(pseudo.filepath)
     return 0
+    """
 
     # Dispatch
     return globals()["dojo_" + options.command](options)
