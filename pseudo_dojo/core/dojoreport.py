@@ -337,16 +337,14 @@ class DojoReport(dict):
         if dojo_trial not in self.ALL_TRIALS:
             raise self.Error("dojo_trial `%s` is not a registered DOJO TRIAL" % dojo_trial)
 
-        if ecut is None:
-            return dojo_trial in self
-        else:
-            #key = self._ecut2key(ecut)
-            key = ecut
-            try:
-                self[dojo_trial][key]
-                return True
-            except KeyError:
-                return False
+        if dojo_trial not in self: return False
+        if ecut is None: return dojo_trial in self
+
+        # input ecut could be either float or string
+        if ecut in self[dojo_trial]: return True
+        ecut_str = self._ecut2key(ecut)
+        if ecut_str in self[dojo_trial]: return True
+        return False
 
     def add_ecuts(self, new_ecuts):
         """Add a list of new ecut values."""

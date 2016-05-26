@@ -14,6 +14,8 @@ def itest_deltafactor_gga_pawxml(fwp, tvars):
     """
     # Path of the pseudopotential to test.
     pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
+    assert pseudo is not None
+    assert pseudo.has_dojo_report
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
 
@@ -25,6 +27,7 @@ def itest_deltafactor_gga_pawxml(fwp, tvars):
     ecut = 2
     pawecutdg = ecut * 2 if pseudo.ispaw else None
 
+    assert not pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
     work = DeltaFactory(pseudo.xc).work_for_pseudo(pseudo, 
                                           kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, 
                                           include_soc=False,
@@ -47,9 +50,6 @@ def itest_deltafactor_gga_pawxml(fwp, tvars):
     #Minimum volume = 20.87 Ang^3
     #modulus = 2.10 eV/Ang^3 = 336.68 GPa, b1 = -35.68
     #Deltafactor = 15.681 meV
-
-    #assert pseudo.has_dojo_report
-    #assert pseudo.dojo_report.has_trial("deltafactor")
     #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
 
 
@@ -70,8 +70,10 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
     # and a file deltafactor.txt with the final results in the
     # outdir directory DELTAFACTOR/work_0/outdir.
     kppa = 40  # this value is for testing purpose (6570 is the correct one)
-    ecut = 12
+    ecut = 8
     pawecutdg = ecut * 2 if pseudo.ispaw else None
+
+    assert not pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
 
     work = DeltaFactory(pseudo.xc).work_for_pseudo(pseudo, 
                                           kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, 
@@ -90,6 +92,4 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
     assert all(work.finalized for work in flow)
     results = flow[0].get_results()
 
-    #assert pseudo.has_dojo_report
-    #assert pseudo.dojo_report.has_trial("deltafactor")
     #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)

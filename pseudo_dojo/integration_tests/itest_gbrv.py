@@ -12,14 +12,15 @@ def itest_gbrv_gga_pawxml_flow(fwp, tvars):
     """Testing the GBRV flow with GGA and PAW-XML (relaxation + EOS)"""
     pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
     assert pseudo is not None
+    assert pseudo.has_dojo_report
     factory = GbrvFactory(pseudo.xc)
 
     ecut = 4
     pawecutdg = 2 * ecut if pseudo.ispaw else None
-
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
 
     struct_types = ["fcc",] # "bcc"]
+    assert not pseudo.dojo_report.has_trial("gbrv_fcc", ecut=ecut)
 
     for struct_type in struct_types:
         work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg, paral_kgb=tvars.paral_kgb)
@@ -35,9 +36,8 @@ def itest_gbrv_gga_pawxml_flow(fwp, tvars):
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
-    #assert pseudo.has_dojo_report
-    #assert pseudo.dojo_report.has_trial("deltafactor")
-    #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
+    print(pseudo.dojo_report)
+    assert pseudo.dojo_report.has_trial("gbrv_fcc", ecut=ecut)
 
 
 def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
@@ -48,12 +48,14 @@ def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
     assert pseudo.supports_soc
 
     factory = GbrvFactory(pseudo.xc)
-    ecut = 4
+    ecut = 6
     pawecutdg = 2 * ecut if pseudo.ispaw else None
  
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
  
     struct_types = ["fcc",] # "bcc"]
+    assert pseudo.dojo_report.has_trial("gbrv_fcc", ecut=4)
+    assert not pseudo.dojo_report.has_trial("gbrv_fcc", ecut=ecut)
  
     for struct_type in struct_types:
         work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg, 
@@ -70,6 +72,5 @@ def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
-    #assert pseudo.has_dojo_report
-    #assert pseudo.dojo_report.has_trial("deltafactor")
-    #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
+    print(pseudo.dojo_report)
+    assert pseudo.dojo_report.has_trial("gbrv_fcc", ecut=ecut)
