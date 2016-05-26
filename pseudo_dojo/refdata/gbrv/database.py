@@ -4,7 +4,7 @@ Client code should use the official API gbrv_database() to access the database.
 
 Example::
 
-    db = gbrv_database()
+    db = gbrv_database("GGA")
     fcc_si = db.get_fcc_entry("Si")
     print(fcc_si.ae, fcc_si.gbrv_uspp)
 """

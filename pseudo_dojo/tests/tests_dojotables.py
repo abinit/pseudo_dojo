@@ -102,7 +102,6 @@ class DojoApiTest(PseudoDojoTest):
                     count += 1
                     if pp_type == "NC": assert pseudo.isnc and not pseudo.ispaw
                     if pp_type == "PAW": assert not pseudo.isnc and pseudo.ispaw
-                    assert pseudo.xc == xc
                     assert pseudo.xc == xc == tab.xc
         assert count > 0
 
@@ -169,10 +168,10 @@ class DojoPseudoFilesTest(PseudoDojoTest):
         # the actual pseudopotential file (.psp8) and the djrepo file. 
         # For PAW-XML: (.xml, .djrepo)
         # Tuples are sorted in order to speed up the search so that we don't have to test every possible permutation.
-        ext_groups = [
+        ext_groups = set([
             tuple(sorted((".psp8", ".djrepo", ".out", ".in"))),
             tuple(sorted((".xml", ".djrepo"))),
-        ]
+        ])
 
         def find_stale_files(bnames):
             """
@@ -194,17 +193,11 @@ class DojoPseudoFilesTest(PseudoDojoTest):
                 ext2basenames[tuple(sorted(v))].append(k)
 
             #print("before ppp ext2basenames", ext2basenames)
-            for extpl in ext_groups:
-                try:
-                    ext2basenames.pop(extpl)
-                except KeyError:
-                    pass
-            #print("after pop", ext2basenames)
-
             out_list = []
-            for v in ext2basenames.values(): 
+            for k, v in ext2basenames.items(): 
+                if k in ext_groups: continue
                 out_list.extend(v)
-
+            
             # Here we allow for exceptions. For example, FR pseudos might have been generated
             # with the same input file as the scalar relativistic version.
             # upf files are also ignored.

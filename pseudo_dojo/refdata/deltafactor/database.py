@@ -148,6 +148,7 @@ class DeltaFactorDatabase(object):
     _FILES4XC = {
         "PBE": ["WIEN2k-PBE.txt", "VASP-PBE.txt"],
         "PW": ["WIEN2k-PW.txt"],
+        "PW_MOD": ["WIEN2k-PW.txt"],
     }
 
     Error = DeltaFactorDatabaseError
