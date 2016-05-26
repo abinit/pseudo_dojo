@@ -59,7 +59,7 @@ def build_flow(pseudo, options):
 
     except KeyError:
         cprint('New pseudo without report from the generator, the convergence study is started from 16H', "yellow")
-        raise NotImplementedError()
+        #raise NotImplementedError()
         # TODO
         #report = DojoReport.from_pseudo(pseudo)
         report["ppgen_hints"] = {}
