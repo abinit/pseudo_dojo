@@ -12,6 +12,9 @@ def itest_phonons_without_asr(fwp, tvars):
     """Testing the calculation of phonons without Asr."""
     #pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
     pseudo = pdj_data.pseudo("Si.psp8").as_tmpfile()
+    assert pseudo is not None
+    assert pseudo.has_dojo_report
+    assert not pseudo.dojo_report.exceptions
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
 
@@ -37,6 +40,5 @@ def itest_phonons_without_asr(fwp, tvars):
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
-    #assert pseudo.has_dojo_report
-    #assert pseudo.dojo_report.has_trial("deltafactor")
     #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
+    assert not pseudo.dojo_report.exceptions

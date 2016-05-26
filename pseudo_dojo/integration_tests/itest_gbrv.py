@@ -13,6 +13,8 @@ def itest_gbrv_gga_pawxml_flow(fwp, tvars):
     pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
     assert pseudo is not None
     assert pseudo.has_dojo_report
+    assert not pseudo.dojo_report.exceptions
+
     factory = GbrvFactory(pseudo.xc)
 
     ecut = 4
@@ -38,6 +40,7 @@ def itest_gbrv_gga_pawxml_flow(fwp, tvars):
 
     print(pseudo.dojo_report)
     assert pseudo.dojo_report.has_trial("gbrv_fcc", ecut=ecut)
+    assert not pseudo.dojo_report.exceptions
 
 
 def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
@@ -46,6 +49,7 @@ def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
     pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile()
     assert pseudo is not None
     assert pseudo.supports_soc
+    assert not pseudo.dojo_report.exceptions
 
     factory = GbrvFactory(pseudo.xc)
     ecut = 6
@@ -74,3 +78,4 @@ def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
 
     print(pseudo.dojo_report)
     assert pseudo.dojo_report.has_trial("gbrv_fcc", ecut=ecut)
+    assert not pseudo.dojo_report.exceptions

@@ -16,6 +16,7 @@ def itest_deltafactor_gga_pawxml(fwp, tvars):
     pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
     assert pseudo is not None
     assert pseudo.has_dojo_report
+    assert not pseudo.dojo_report.exceptions
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
 
@@ -50,7 +51,8 @@ def itest_deltafactor_gga_pawxml(fwp, tvars):
     #Minimum volume = 20.87 Ang^3
     #modulus = 2.10 eV/Ang^3 = 336.68 GPa, b1 = -35.68
     #Deltafactor = 15.681 meV
-    #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
+    assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
+    assert not pseudo.dojo_report.exceptions
 
 
 def itest_deltafactor_gga_ncsoc(fwp, tvars):
@@ -62,6 +64,7 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
     pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile()
     assert pseudo.has_dojo_report
     assert pseudo.supports_soc
+    assert not pseudo.dojo_report.exceptions
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
 
@@ -73,6 +76,7 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
     ecut = 8
     pawecutdg = ecut * 2 if pseudo.ispaw else None
 
+    assert pseudo.dojo_report.has_trial("deltafactor", ecut=12)
     assert not pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
 
     work = DeltaFactory(pseudo.xc).work_for_pseudo(pseudo, 
@@ -92,4 +96,5 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
     assert all(work.finalized for work in flow)
     results = flow[0].get_results()
 
-    #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
+    assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
+    assert not pseudo.dojo_report.exceptions

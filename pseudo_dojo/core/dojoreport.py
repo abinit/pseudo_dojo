@@ -296,6 +296,21 @@ class DojoReport(dict):
         if "version" not in self:
             self["version"] = self.LAST_VERSION
 
+    @property
+    def exceptions(self):
+        """List of exceptions."""
+        return self.get("_exceptions", [])
+
+    def push_exception(self, string):
+        """Register an exception."""
+        if "_exceptions" not in self:
+            self["_exceptions"] = []
+        self["_exceptions"].append(string)
+
+    def remove_exceptions(self):
+        """Remove the exception entry from the dictionary."""
+        return self["_exceptions"].pop()
+
     def __str__(self):
         """String representation."""
         return(json.dumps(self, indent=-1))

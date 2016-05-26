@@ -696,7 +696,7 @@
             "pawecutdg": 25.0
         }
     }, 
-    "pseudo_type": "norm-conserving", 
+    "pseudo_type": "NC", 
     "symbol": "H", 
     "version": "1.0"
 }
