@@ -147,9 +147,17 @@ class DeltaFactorDatabase(object):
     # mapping xc_name --> file_list
     _FILES4XC = {
         "PBE": ["WIEN2k-PBE.txt", "VASP-PBE.txt"],
-        "PW": ["WIEN2k-PW.txt"],
-        "PW_MOD": ["WIEN2k-PW.txt"],
+        "PW": ["WIEN2k-PW.txt",],
     }
+
+    _CIFDIR4XC = {
+        "PBE": "CIFS-PBE",
+        "PW": "CIFS-PW",
+    }
+
+    for xclda in ["PW_MOD",]:
+        _FILES4XC[xclda] = _FILES4XC["PW"]
+        _CIFDIR4XC[xclda] = _CIFDIR4XC["PW"]
 
     Error = DeltaFactorDatabaseError
 
@@ -169,7 +177,8 @@ class DeltaFactorDatabase(object):
 
         self._cif_paths = {}
         
-        loc = "CIFs" + "-" + str(self.xc)
+        #loc = "CIFs" + "-" + str(self.xc)
+        loc = self._CIFDIR4XC[self.xc]
         cif_dirpath = os.path.join(self.dirpath, loc)
         for bname in os.listdir(cif_dirpath):
             if bname.endswith(".cif"):

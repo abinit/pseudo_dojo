@@ -26,6 +26,11 @@ class DeltaFactorDatabaseTest(PseudoDojoTest):
         assert self.pw_db is not self.pbe_db
         assert "WIEN2k" in self.pw_db.codes
 
+        # Accept PW_MOD as well.
+        self.pwmod_db = df_database("PW_MOD")
+        assert self.pwmod_db.xc == "PW_MOD"
+        assert self.pwmod_db is not self.pw_db
+
     def test_get_entry(self):
         """Get deltafactor entry."""
         # PBE
@@ -47,6 +52,13 @@ class DeltaFactorDatabaseTest(PseudoDojoTest):
         assert e.xc == self.pw_db.xc == "PW"
         self.assert_almost_equal([e.v0, e.b0_GPa, e.b1], [19.694165, 96.149, 4.295])
         assert self.pw_db.get_cif_path("Si") != self.pbe_db.get_cif_path("Si")
+
+        # PW_MOD has the same results as PW
+        e_pwmod = self.pwmod_db.get_entry("Si")
+        self.assert_equal([e.v0, e.b0_GPa, e.b1], 
+                          [e_pwmod.v0, e_pwmod.b0_GPa, e_pwmod.b1])
+        assert e_pwmod.xc == "PW_MOD"
+        assert e_pwmod.xc != e.xc
 
     def test_compute_deltaf(self):
         """Computation of the delta factor."""
