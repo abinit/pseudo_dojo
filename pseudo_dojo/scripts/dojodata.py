@@ -577,6 +577,11 @@ def dojo_check(options):
     for p in options.pseudos:
         retcode += check_pseudo(p, verbose=options.verbose)
 
+    if retcode != 0:
+        cprint("dojo_check return code: %d [%d/%d]" % (retcode, retcode, len(options.pseudos)), "red")
+    else:
+        cprint("dojo_check [OK]", "green")
+
     return retcode
 
 

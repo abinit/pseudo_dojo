@@ -549,6 +549,16 @@ class DojoReport(dict):
     #    from monty.pprint import pprint_table
     #    pprint_table(self.get_dataframe(), out=stream)
 
+    def convert(self, new_version):
+        """
+        Convert to new_version.
+        Return new DojoReport object.
+        """
+        if self["version"] == new_version: return self
+        assert new_version == "2.0"
+
+        return new
+
     @add_fig_kwargs
     def plot_etotal_vs_ecut(self, ax=None, inv_ecut=False, **kwargs):
         """

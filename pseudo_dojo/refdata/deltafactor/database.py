@@ -150,14 +150,17 @@ class DeltaFactorDatabase(object):
         "PW": ["WIEN2k-PW.txt",],
     }
 
+    # mapping xc_name --> location of CIF files.
     _CIFDIR4XC = {
-        "PBE": "CIFS-PBE",
-        "PW": "CIFS-PW",
+        "PBE": "CIFs-PBE",
+        "PW": "CIFs-PW",
     }
 
+    # Supports other LDA flavors
     for xclda in ["PW_MOD",]:
         _FILES4XC[xclda] = _FILES4XC["PW"]
         _CIFDIR4XC[xclda] = _CIFDIR4XC["PW"]
+    del xclda
 
     Error = DeltaFactorDatabaseError
 

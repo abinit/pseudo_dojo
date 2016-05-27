@@ -41,8 +41,18 @@ def djrepo_check(options):
 #    return 0
 
 
-#def djrepo_convert(options):
-#    new_version = "2.0"
+def djrepo_convert(options):
+    raise NotImplementedError()
+    # Version 1.0 to 2.0
+    new_version = "2.0"
+    for path in options.paths
+        report = DojoReport.from_file(path)
+        old_version = report["version"]
+        if  old_version = new_version: continue
+        report = report.to_version(new_version)
+        report.json_write(path)
+    
+    return 0
 
 
 @prof_main
@@ -91,7 +101,7 @@ Example usage:
         show_examples_and_exit(error_code=1)
 
     # Get paths
-    def get_paths(options):
+    def get_djrepo_paths(options):
         """
         Find and retur list of djson paths from options
         Accepts filepaths or directory.
@@ -111,7 +121,7 @@ Example usage:
 
         return paths
 
-    options.paths = get_paths(options)
+    options.paths = get_direpo_paths(options)
     if not options.paths:
         cprint("Empty djrepo list. Returning", "magenta")
         return 1

@@ -47,11 +47,12 @@ def main():
         psp8_path = root + ".psp8"
         djson_path = root + ".djson"
 
-        # Extract psp8 files from out and write it to file.
+        # Extract psp8 files from the oncvpsp output and write it to file.
         s = onc_parser.get_pseudo_str(options.devel=True)
         with open(psp8_path, "wt") as fh:
             fh.write(s)
 
+        # Write djson file.
         #report = DojoReport.new_from_file()
         #report.json_write(djson_path)
 
@@ -66,7 +67,7 @@ def main():
     if options.json:
         # Generate json files with oncvpsp results.
         import json
-        print(json.dumps(onc_parser.to_dict, indent=4))
+        print(json.dumps(onc_parser.to_dict, indent=-1))
         return 0
 
     # Build the plotter
