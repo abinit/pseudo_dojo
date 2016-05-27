@@ -6,6 +6,8 @@ import sys
 import collections
 import argparse
 
+from monty.termcolor import cprint 
+from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter
 
 
@@ -35,18 +37,37 @@ def main():
 
     onc_parser = OncvOutputParser(options.filename)
     onc_parser.scan()
+    if not oncv_parser.completed:
+        cprint("oncvpsp output is not complete. Exiting", "red")
+        return 1
+
+    if options.psp8:
+        # Generate psp8 and djson files.
+        root, _ = os.path.splitext(options.filename)
+        psp8_path = root + ".psp8"
+        djson_path = root + ".djson"
+
+        # Extract psp8 files from out and write it to file.
+        s = onc_parser.get_pseudo_str(options.devel=True)
+        with open(psp8_path, "wt") as fh:
+            fh.write(s)
+
+        #report = DojoReport.new_from_file()
+        #report.json_write(djson_path)
+
+        # Try to read pseudo from the files just generated.
+        pseudo = dojopseudo_from_file(psp8_path)
+        if pseudo is None:
+            cprint(("Cannot parse psp8 files: %s" % psp8_path, "red")
+            return 1
+
+        return 0      
 
     if options.json:
+        # Generate json files with oncvpsp results.
         import json
         print(json.dumps(onc_parser.to_dict, indent=4))
         return 0
-
-    if options.psp8:
-        if options.devel:
-            print(onc_parser.get_pseudo_str(devel=True))
-        else:
-            print(onc_parser.get_pseudo_str())
-        return 0      
 
     # Build the plotter
     plotter = onc_parser.make_plotter()

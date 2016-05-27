@@ -11,6 +11,7 @@ from collections import OrderedDict
 from monty.collections import AttrDict
 from monty.functools import lazy_property
 from monty.string import list_strings
+from monty.fnmatch import WildCard
 from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.util.plotting_utils import add_fig_kwargs 
@@ -109,7 +110,7 @@ class DojoTable(PseudoTable):
     constraints should be implemented in OfficialDojoTable (see below).
     """
     @classmethod
-    def from_dojodir(cls, top, exclude_basenames=None):
+    def from_dojodir(cls, top, exclude_wildcard=None, exclude_basenames=None):
         """
         Initialize the table from one of the top level directories located
         in the pseudo_dojo.pseudos directory.
@@ -118,6 +119,10 @@ class DojoTable(PseudoTable):
             top: top level directory
             exclude_basenames: Optional string or list of strings with the
                 pseudo basenames to be excluded.
+            exclude_wildcard: String of tokens separated by "|". Each token represents a pattern.
+                to be exluded 
+                Example:
+                  wildcard="*_r.psp8|*.xml" selects only those files that do not end with _r.psp8 or .xml
 
         .. warning::
 
@@ -142,6 +147,10 @@ class DojoTable(PseudoTable):
         for dr in dirs:
             paths.extend(os.path.join(dr, f) for f in os.listdir(dr)
                          if f.endswith(meta.pseudo_ext) and f not in exclude)
+
+        if exclude_wildcard is not None: 
+            wild = WildCard(exclude_wildcard)
+            paths = [p for p in paths if not wild.match(os.path.basename(p))]
 
         pseudos = []
         for p in paths:

@@ -14,7 +14,7 @@ from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 def djson_new(options, stream=sys.stdout):
     """Create a new djson file. Print document to stdout."""
     # Build full table
-    table = DojoTable.from_dojodir(options.top)
+    table = DojoTable.from_dojodir(options.top, exclude_wildcard=options.exclude)
     djson = table.to_djson(options.verbose, ignore_dup=False)
     print(json.dumps(djson, indent=-1), file=stream)
     return 0
@@ -70,7 +70,12 @@ Usage example:
 
     # Subparser for new command.
     p_new = subparsers.add_parser('new', parents=[copts_parser], help=djson_new.__doc__)
+    p_new.add_argument("--exclude", default=None, type=str, 
+                       help=("Exclude files mathing these pattern. Example"
+                             "exclude=\"*_r.psp8|*.xml\" selects only those files that do not end with _r.psp8 or .xml"
+                      ))
     p_new.add_argument("top", nargs="?", default=".", help="Directory with pseudos")
+
 
     # Subparser for validate command.
     p_validate = subparsers.add_parser('validate', parents=[copts_parser], help=djson_validate.__doc__)

@@ -109,21 +109,3 @@ def check_pseudo(pseudo, verbose=0):
 #        path = os.path.join(os.path.dirname(djrepo), d["basename"])
 #
 #    return check_pseudo_path(path, verbose=verbose)
-
-
-def _fix_djrepo(pp_filepath):
-    """
-    This is a maintentance tool:
-        #. Regenerate the md5 value in the DojoReport file.
-        #. Replace norm-conserving with NC. 
-    """
-    pseudo = dojopseudo_from_file(pp_filepath)
-    if pseudo is None:
-        print("Error while parsing %s" % pp_filepath)
-        return
-    # Change md5
-    pseudo.dojo_report["md5"] = pseudo.compute_md5()
-    if pseudo.dojo_report["pseudo_type"] == "norm-conserving":
-        pseudo.dojo_report["pseudo_type"] = "NC"
-
-    pseudo.dojo_report.json_write(pseudo.djrepo_path)

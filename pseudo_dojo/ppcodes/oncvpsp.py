@@ -958,14 +958,14 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         d = {
             "version": "1.0",
-            "pseudo_type": "norm-conserving",
+            "pseudo_type": "NC",
             "ppgen_hints": self.hints, 
             "ecuts": list(dense_right) + [dense_right[-1] + 8, dense_right[-1] + 10,],
             "symbol": self.atsym,
         }
 
         if devel:
-            # devellopment run: few, relatively high ecut calculations
+            # development run: few, relatively high ecut calculations
             d["ecuts"] = [estart, estart + 2]
 
         ps_data += "\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
