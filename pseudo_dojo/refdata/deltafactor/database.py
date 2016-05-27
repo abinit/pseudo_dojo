@@ -151,8 +151,8 @@ class DeltaFactorDatabase(object):
     }
 
     _CIFDIR4XC = {
-        "PBE": "CIFS-PBE",
-        "PW": "CIFS-PW",
+        "PBE": "CIFs-PBE",
+        "PW": "CIFs-PW",
     }
 
     for xclda in ["PW_MOD",]:
