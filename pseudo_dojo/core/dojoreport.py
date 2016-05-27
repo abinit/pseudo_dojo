@@ -153,7 +153,7 @@ class DojoReport(dict):
     {
     "version": "1.0"
     "symbol": "H", 
-    "pseudo_type": "norm-conserving", 
+    "pseudo_type": "NC", 
     "md5": "13198abb7506a840b7d46ef46b54d789", 
     "ppgen_hints": {
         "low": {"ecut": 30.0,  "pawecutdg": 30.0}, 
@@ -162,13 +162,15 @@ class DojoReport(dict):
     },
     "hints": {
         "low": {"ecut": 30.0,  "pawecutdg": 30.0}, 
-        "normal": {"ecut": 34.0, "pawecutdg": 34.0}
+        "normal": {"ecut": 34.0, "pawecutdg": 34.0},
         "high": {"ecut": 39.0, "pawecutdg": 39.0}, 
     },
     "ecuts": [29.0, 31.0, 33.0],
     "deltafactor": {}
     "gbrv_bcc": {},
     "gbrv_fcc": {},
+    "ebands": []
+    "phonons": []
     }
     """
     # List of dojo_trials

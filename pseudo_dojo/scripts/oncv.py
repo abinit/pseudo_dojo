@@ -52,15 +52,15 @@ def main():
         with open(psp8_path, "wt") as fh:
             fh.write(s)
 
-        # Write djson file.
-        #report = DojoReport.new_from_file()
-        #report.json_write(djson_path)
-
         # Try to read pseudo from the files just generated.
         pseudo = dojopseudo_from_file(psp8_path)
         if pseudo is None:
             cprint(("Cannot parse psp8 files: %s" % psp8_path, "red")
             return 1
+
+        # Write djson file.
+        #report = DojoReport.new_pseudo(pseudo)
+        #report.json_write(djson_path)
 
         return 0      
 

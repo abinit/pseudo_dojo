@@ -63,16 +63,19 @@ def check_pseudo(pseudo, verbose=0):
         retcode += 1
         return retcode
 
-    #if "ppgen_hints" not in report: # and "deltafactor" not in report:
-    #    print(pseudo.basename, "old version without ppgen_hints")
-    #    continue
+    if "ppgen_hints" not in report: 
+        cprint("[%s] old version without ppgen_hints" % os.path.relpath(pseudo.filepath), "red")
+        retcode += 1
+
+    if report["version"] != "1.0":
+        cprint("[%s] wrong version: %s" % (os.path.relpath(pseudo.filepath), report["version"]), "red")
+        retcode += 1
 
     if report["md5"] != pseudo.compute_md5():
         cprint("Incosistent md5 in [%s]" % os.path.relpath(pseudo.filepath), "red")
         retcode += 1 
 
     # This part is commented because we are gonna refactor the DojoReport
-    """
     try:
         error = report.check(check_trials=["deltafactor"])
         #error = report.check(check_trials=["deltafactor", "gbrv_bcc", "gbrv_fcc"])
@@ -86,9 +89,8 @@ def check_pseudo(pseudo, verbose=0):
         retcode += 1
         cprint("Python exception in [%s]" % os.path.relpath(pseudo.filepath), "red")
         if verbose: print(str(exc))
-    """
 
-    if retcode:
+    if retcode != 0:
         cprint("[%s] is not valid" % os.path.relpath(pseudo.filepath), "red")
         if not verbose: cprint("Use --verbose for more info", "yellow")
 

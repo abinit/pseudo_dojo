@@ -575,7 +575,12 @@ def dojo_check(options):
     """Check validity of pseudodojo report."""
     retcode = 0
     for p in options.pseudos:
-        retcode += check_pseudo(p, verbose=options.verbose)
+        rc = check_pseudo(p, verbose=options.verbose)
+        #if rc != 0: 
+        #    os.system("mvim %s" % p.filepath)
+        #    ans = prompt("Do you want to continue? [Y/n]")
+        #    if ans.lower() in ["n", "no"]: break
+        retcode += rc
 
     if retcode != 0:
         cprint("dojo_check return code: %d [%d/%d]" % (retcode, retcode, len(options.pseudos)), "red")
