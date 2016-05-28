@@ -19,7 +19,7 @@ from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, Relaxat
 from pymatgen.io.abinit.works import Work, build_oneshot_phononwork, OneShotPhononWork
 from abipy.core.structure import Structure
 from abipy import abilab
-from pseudo_dojo.core.dojoreport import DojoReport
+from pseudo_dojo.core.dojoreport import DojoReport, compute_dfact_entry
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
@@ -415,6 +415,9 @@ class DeltaFactorWork(DojoWork):
         num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")
 
+        d = compute_dfact_entry(self.pseudo, num_sites, self.volumes, etotals, verbose=1)
+
+        """
         results.update(dict(
             etotals=list(etotals),
             volumes=list(self.volumes),
@@ -450,8 +453,6 @@ class DeltaFactorWork(DojoWork):
             print("[%s]" % self.pseudo.symbol, "eos_fit:", eos_fit)
             print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
 
-            #entry = compute_dfact_entry(pseudo, num_sites, volumes, etotals, verbose=1)
-
             results.update(res)
 
             d = {k: results[k] for k in
@@ -463,6 +464,7 @@ class DeltaFactorWork(DojoWork):
 
         if results.exceptions:
             d["_exceptions"] = str(results.exceptions)
+        """
 
         self.add_entry_to_dojoreport(d)
 
