@@ -1,4 +1,4 @@
-Hf    ONCVPSP  r_core=  1.56  1.60  1.40  1.87
+Lu    ONCVPSP  r_core=  1.56  1.60  1.40  1.87
 71.0000     25.0000      160524    zatom,zion,pspd
 8   -1013   3     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  4.00000000  0.00000000    rchrg fchrg qchrg
@@ -4225,7 +4225,7 @@ functional part 2 Perdew & Wang (modified)
 
 # ATOM AND REFERENCE CONFIGURATION
 # atsym  z   nc   nv     iexc    psfile
-Hf 71.00    9    5   -1013      psp8
+Lu 71.00    9    5   -1013      psp8
 #
 #   n    l    f        energy (Ha)
 1    0    2.00    -2.3222440D+03

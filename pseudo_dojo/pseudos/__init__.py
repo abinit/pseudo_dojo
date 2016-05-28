@@ -80,6 +80,7 @@ def check_pseudo(pseudo, verbose=0):
         retcode += 1
 
     # This part is commented because we are gonna refactor the DojoReport
+    """
     try:
         error = report.check(check_trials=["deltafactor"])
         #error = report.check(check_trials=["deltafactor", "gbrv_bcc", "gbrv_fcc"])
@@ -93,6 +94,7 @@ def check_pseudo(pseudo, verbose=0):
         retcode += 1
         cprint("Python exception in [%s]" % os.path.relpath(pseudo.filepath), "red")
         if verbose: print(str(exc))
+    """
 
     if retcode != 0:
         cprint("[%s] is not valid" % os.path.relpath(pseudo.filepath), "red")
