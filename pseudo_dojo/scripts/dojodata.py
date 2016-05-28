@@ -14,6 +14,7 @@ from pprint import pprint
 from tabulate import tabulate
 from pandas import DataFrame, concat
 from monty.os.path import find_exts
+from monty import termcolor
 from monty.termcolor import cprint
 from pymatgen.util.io_utils import ask_yesno, prompt
 from pseudo_dojo.core.pseudos import dojopseudo_from_file, DojoTable
@@ -745,25 +746,26 @@ Usage example:
         return s.split(",")
 
     # Parent parser for commands that need to know on which subset of pseudos we have to operate.
-    pseudos_selector_parser = argparse.ArgumentParser(add_help=False)
-    pseudos_selector_parser.add_argument('pseudos', nargs="+", help="Pseudopotential file or directory containing pseudos")
-    pseudos_selector_parser.add_argument('-s', "--symbols", type=parse_symbols,
+    copts_parser = argparse.ArgumentParser(add_help=False)
+    copts_parser.add_argument('pseudos', nargs="+", help="Pseudopotential file or directory containing pseudos")
+    copts_parser.add_argument('-s', "--symbols", type=parse_symbols,
         help=("List of chemical symbols to include or exclude."
               "Example --symbols=He,Li to include He and Li, --symbols=-He to exclude He"))
-    pseudos_selector_parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
+    copts_parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
                          help='Verbose, can be supplied multiple times to increase verbosity')
 
+    copts_parser.add_argument('--loglevel', default="ERROR", type=str,
+                        help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
+    copts_parser.add_argument('--no-colors', default=False, help='Disable ASCII colors')
+    copts_parser.add_argument('--seaborn', action="store_true", help="Use seaborn settings")
+
     # Options for pseudo selection.
-    group = pseudos_selector_parser.add_mutually_exclusive_group()
+    group = copts_parser.add_mutually_exclusive_group()
     group.add_argument("-r", '--rows', default="", type=parse_rows, help="Select these rows of the periodic table.")
     group.add_argument("-f", '--family', type=str, default="", help="Select this family of the periodic table.")
 
     # Build the main parser.
     parser = argparse.ArgumentParser(epilog=str_examples(), formatter_class=argparse.RawDescriptionHelpFormatter)
-
-    parser.add_argument('--loglevel', default="ERROR", type=str,
-                        help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
-    parser.add_argument('--seaborn', action="store_true", help="Use seaborn settings")
 
     # Create the parsers for the sub-commands
     subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
@@ -774,28 +776,28 @@ Usage example:
     plot_options_parser.add_argument("-e", "--eos", action="store_true", help="Plot EOS curve")
 
     # Subparser for plot command.
-    p_plot = subparsers.add_parser('plot', parents=[pseudos_selector_parser, plot_options_parser],
+    p_plot = subparsers.add_parser('plot', parents=[copts_parser, plot_options_parser],
                                    help=dojo_plot.__doc__)
 
     # Subparser for notebook command.
-    p_notebook = subparsers.add_parser('notebook', parents=[pseudos_selector_parser],
+    p_notebook = subparsers.add_parser('notebook', parents=[copts_parser],
                                        help=dojo_notebook.__doc__)
 
     # Subparser for compare.
-    p_compare = subparsers.add_parser('compare', parents=[pseudos_selector_parser, plot_options_parser],
+    p_compare = subparsers.add_parser('compare', parents=[copts_parser, plot_options_parser],
                                       help=dojo_compare.__doc__)
 
     # Subparser for figures
-    p_figures = subparsers.add_parser('figures', parents=[pseudos_selector_parser], help=dojo_figures.__doc__)
+    p_figures = subparsers.add_parser('figures', parents=[copts_parser], help=dojo_figures.__doc__)
 
     # Subparser for table command.
-    p_table = subparsers.add_parser('table', parents=[pseudos_selector_parser], help=dojo_table.__doc__)
+    p_table = subparsers.add_parser('table', parents=[copts_parser], help=dojo_table.__doc__)
 
     # Subparser for dist command.
-    p_dist = subparsers.add_parser('dist', parents=[pseudos_selector_parser], help=dojo_dist.__doc__)
+    p_dist = subparsers.add_parser('dist', parents=[copts_parser], help=dojo_dist.__doc__)
 
     # Subparser for trials command.
-    p_trials = subparsers.add_parser('trials', parents=[pseudos_selector_parser], help=dojo_trials.__doc__)
+    p_trials = subparsers.add_parser('trials', parents=[copts_parser], help=dojo_trials.__doc__)
     p_trials.add_argument("--savefig", type=str, default="", help="Save plot to savefig file")
 
     # Subparser for check command.
@@ -804,14 +806,14 @@ Usage example:
         #if s == "all": return DojoReport.ALL_TRIALS
         return s.split(",")
 
-    p_check = subparsers.add_parser('check', parents=[pseudos_selector_parser], help=dojo_check.__doc__)
+    p_check = subparsers.add_parser('check', parents=[copts_parser], help=dojo_check.__doc__)
     p_check.add_argument("--check-trials", type=parse_trials, default=None, help="List of trials to check")
 
     # Subparser for validate command.
-    p_validate = subparsers.add_parser('validate', parents=[pseudos_selector_parser], help=dojo_validate.__doc__)
+    p_validate = subparsers.add_parser('validate', parents=[copts_parser], help=dojo_validate.__doc__)
 
     # Subparser for make_hints command.
-    p_make_hints = subparsers.add_parser('make_hints', parents=[pseudos_selector_parser],
+    p_make_hints = subparsers.add_parser('make_hints', parents=[copts_parser],
                                          help=dojo_make_hints.__doc__)
 
     # Parse command line.
@@ -827,6 +829,10 @@ Usage example:
     if not isinstance(numeric_level, int):
         raise ValueError('Invalid log level: %s' % options.loglevel)
     logging.basicConfig(level=numeric_level)
+
+    if options.no_colors:
+        # Disable colors
+        termcolor.enable(False)
 
     def get_pseudos(options):
         """

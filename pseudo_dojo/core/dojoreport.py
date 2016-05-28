@@ -461,7 +461,7 @@ class DojoReport(dict):
                 d[trial] = self.ecuts
 
             else:
-                computed_ecuts = data.keys()
+                computed_ecuts = list(data.keys())
                 for e in self.ecuts:
                     if e not in computed_ecuts:
                         if trial not in d: d[trial] = []
@@ -530,6 +530,9 @@ class DojoReport(dict):
 
         missing = defaultdict(list)
         for trial in check_trials:
+            # Gbrv results do not contain noble gases so ignore the error
+            if "gbrv" in trial and self.element.is_noble_gas: continue
+
             for ecut in global_ecuts:
                 if not self.has_trial(trial, ecut=ecut):
                     missing[trial].append(ecut)
