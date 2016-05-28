@@ -67,9 +67,9 @@ def djrepo_recalc(options):
         data = pseudo.dojo_report["deltafactor"]
 
         # Recompute delfactor for the different ecut.
-        for ecut, entry in data.keys():
+        for ecut, entry in data.items():
             new_entry = compute_dfact_entry(pseudo, entry["num_sites"], entry["volumes"], entry["etotals"], verbose=0)
-            print(new_entry)
+            print("ecut: ", ecut, "(new - old) df:", new_entry["dfact_meV"] - entry["dfact_meV"])
             #data[ecut] = new_entry
 
         # Write new djson file.
