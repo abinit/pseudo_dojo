@@ -20,18 +20,18 @@ from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 logger = logging.getLogger(__name__)
 
 
-class DojoEcutResults(object): 
+class DojoEcutResults(object):
     """
-    "ecut": "32.0" 
+    "ecut": "32.0"
     "pawecutdg": "64.0",
-    "b0": 0.06400805819081799, 
-    "b0_GPa": 10.255221080448488, 
-    "b1": 2.6449207740813594, 
-    "dfact_meV": 0.2774768889565598, 
-    "dfactprime_meV": 4.701668998922405, 
+    "b0": 0.06400805819081799,
+    "b0_GPa": 10.255221080448488,
+    "b1": 2.6449207740813594,
+    "dfact_meV": 0.2774768889565598,
+    "dfactprime_meV": 4.701668998922405,
     "etotals": []
-    "num_sites": 4, 
-    "v0": 17.264380250637252, 
+    "num_sites": 4,
+    "v0": 17.264380250637252,
     "volumes": [],
 
     ecuts = dfres.get_ecuts()
@@ -78,7 +78,7 @@ class DojoEcutResults(object):
             i = find_le(prev_ecuts, new_ecut)
             # Handle possible dupe.
             already_in = prev_ecuts[i] == new_ecut
-            if already_in: 
+            if already_in:
                 self.dict_list.pop(i)
             else:
                 i += 1
@@ -141,29 +141,28 @@ class EbandsResults(DojoEcutResults):
     name = "ebands"
 
 
-
 class DojoReportError(Exception):
     """Exception raised by DoJoReport."""
 
 
 class DojoReport(dict):
-    """ 
+    """
     Dict-like object with the validation results.
-    
+
     {
     "version": "1.0"
-    "symbol": "H", 
-    "pseudo_type": "NC", 
-    "md5": "13198abb7506a840b7d46ef46b54d789", 
+    "symbol": "H",
+    "pseudo_type": "NC",
+    "md5": "13198abb7506a840b7d46ef46b54d789",
     "ppgen_hints": {
-        "low": {"ecut": 30.0,  "pawecutdg": 30.0}, 
+        "low": {"ecut": 30.0,  "pawecutdg": 30.0},
         "normal": {"ecut": 34.0, "pawecutdg": 34.0},
         "high": {"ecut": 39.0, "pawecutdg": 39.0}
     },
     "hints": {
-        "low": {"ecut": 30.0,  "pawecutdg": 30.0}, 
+        "low": {"ecut": 30.0,  "pawecutdg": 30.0},
         "normal": {"ecut": 34.0, "pawecutdg": 34.0},
-        "high": {"ecut": 39.0, "pawecutdg": 39.0}, 
+        "high": {"ecut": 39.0, "pawecutdg": 39.0},
     },
     "ecuts": [29.0, 31.0, 33.0],
     "deltafactor": {}
@@ -265,7 +264,7 @@ class DojoReport(dict):
     @classmethod
     def from_hints(cls, ppgen_ecut, symbol):
         """
-        Initialize an empty DojoReport from the initial guesses for  
+        Initialize an empty DojoReport from the initial guesses for
         the cutoff energy in Hartree
 
         Args:
@@ -277,7 +276,7 @@ class DojoReport(dict):
         coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 35, step=5)
 
         ecuts = list(dense_left) + list(dense_right) + list(coarse_high)
-        return cls(ecuts=ecuts, symbol=symbol) 
+        return cls(ecuts=ecuts, symbol=symbol)
 
     def __init__(self, *args, **kwargs):
         super(DojoReport, self).__init__(*args, **kwargs)
@@ -643,7 +642,7 @@ class DojoReport(dict):
         cmap = kwargs.pop("cmap", plt.get_cmap("jet"))
 
         trial = "deltafactor"
-        ecuts = self[trial].keys()
+        ecuts = list(self[trial].keys())
         num_ecuts = len(ecuts)
 
         for i, ecut in enumerate(ecuts):
@@ -687,6 +686,7 @@ class DojoReport(dict):
         # Get reference entry
         from pseudo_dojo.refdata.deltafactor import df_database
         reference = df_database(xc=xc).get_entry(symbol=self.symbol, code=code)
+        print("Reference data:", reference)
 
         d = self["deltafactor"]
         ecuts = list(d.keys())
@@ -940,7 +940,7 @@ class DojoDataFrame(DataFrame):
             if not p.has_dojo_report:
                 print("Cannot find dojo_report in ", p.basename)
                 continue
-            
+
             report = p.dojo_report
             if "version" not in report:
                 print("ignoring old report in ", p.basename)

@@ -14,7 +14,7 @@ from monty.string import list_strings
 from monty.fnmatch import WildCard
 from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
-from pymatgen.util.plotting_utils import add_fig_kwargs 
+from pymatgen.util.plotting_utils import add_fig_kwargs
 from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
 from pseudo_dojo.core.dojoreport import DojoReport
 
@@ -28,14 +28,30 @@ def dojopseudo_from_file(filepath):
     A DojoPseudo has a DojoReport section and this function adds the report
     to the object.
 
+    Args:
+        filepath: Path of the pseudopotential file or djrepo file.
+
     .. note::
 
         We cannot subclass Pseudo because it's actually the abstract base class
         and Pseudo.from_file is the factory function that returns the concreate subclass.
     """
+    filepath = os.path.abspath(filepath)
+
+    dojo_report = None
+    if filepath.endswith(".djrepo"):
+        dojo_report = DojoReport.from_file(filepath)
+        pp_basename = dojo_report["basename"]
+        filepath = os.path.join(os.path.dirname(filepath), pp_basename)
+
     # Init pseudo from file. Return None if parser error.
     pseudo = Pseudo.from_file(filepath)
     if pseudo is None: return pseudo
+
+    if dojo_report is not None:
+        # We've already read the report.
+        pseudo.dojo_report = dojo_report
+        return pseudo
 
     # Read DojoReport and add it to pseudos
     root, ext = os.path.splitext(filepath)
@@ -67,7 +83,7 @@ class DojoInfo(AttrDict):
             #"tags": {"type": "array", "items": {"type": "string", "enum": ["accuracy", "efficiency"]}},
             #"relativity": {"type": "string", "enum": ["non-relativistic", "scalar-relativistic", "relativistic"]}
         },
-        "required": ["pp_type", "xc_name", "authors", "description", "references", "dojo_dir", 
+        "required": ["pp_type", "xc_name", "authors", "description", "references", "dojo_dir",
                     #"generation_date", "tags", "relativity"
                     ],
     }
@@ -120,7 +136,7 @@ class DojoTable(PseudoTable):
             exclude_basenames: Optional string or list of strings with the
                 pseudo basenames to be excluded.
             exclude_wildcard: String of tokens separated by "|". Each token represents a pattern.
-                to be exluded 
+                to be exluded
                 Example:
                   wildcard="*_r.psp8|*.xml" selects only those files that do not end with _r.psp8 or .xml
 
@@ -148,14 +164,14 @@ class DojoTable(PseudoTable):
             paths.extend(os.path.join(dr, f) for f in os.listdir(dr)
                          if f.endswith(meta.pseudo_ext) and f not in exclude)
 
-        if exclude_wildcard is not None: 
+        if exclude_wildcard is not None:
             wild = WildCard(exclude_wildcard)
             paths = [p for p in paths if not wild.match(os.path.basename(p))]
 
         pseudos = []
         for p in paths:
             pseudo = dojopseudo_from_file(p)
-            if pseudo is None: 
+            if pseudo is None:
                 print("Error while parsing:", p)
                 continue
             pseudos.append(pseudo)
@@ -165,12 +181,12 @@ class DojoTable(PseudoTable):
     def to_djson(self, verbose=0, ignore_dup=False):
         """
         Tool used by the PseudoDojo maintainers to build a dictionary
-        with **partial** information on the table. This dictionary can be used as 
+        with **partial** information on the table. This dictionary can be used as
         an initial template for the creation of a new djson file.
 
         Args:
             verbose: Verbosity level.
-            ignore_dup: if set to True, duplicated pseudos are ignored, only 
+            ignore_dup: if set to True, duplicated pseudos are ignored, only
                     the first pseudo is reported. Use it wisely!
         """
         # Add template for dojo_info section
@@ -197,7 +213,7 @@ class DojoTable(PseudoTable):
             if p.symbol in meta:
                 # Handle multiple pseudos.
                 # THIS IS A HACK FOR GENERATING djson files for testing purpose.
-                if ignore_dup: continue 
+                if ignore_dup: continue
                 old = meta[p.symbol]
                 if not isinstance(old, list): old = [old]
                 old.append(djson_entry(p))
@@ -442,7 +458,7 @@ class OfficialDojoTable(DojoTable):
     def xc(self):
         """The `XcFunc` object describing the XC functional used to generate the table."""
         return self._dojo_info.xc
- 
+
     @property
     def dojo_info(self):
         try:

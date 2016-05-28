@@ -15,7 +15,8 @@ from pseudo_dojo.core.pseudos import dojopseudo_from_file
 
 def _fix_djrepo(pp_filepath):
     """
-    This is a maintentance tool:
+    This is a maintentance tool to:
+
         #. Regenerate the md5 value in the DojoReport file.
         #. Replace norm-conserving with NC. 
     """
@@ -55,6 +56,19 @@ def djrepo_convert(options):
     return 0
 
 
+def djrepo_recalc(options):
+    """
+    Recompute the deltafactor from the data stored in the dojoreport.
+    This function is used when the deltafactor reference results have been changed.
+    """
+    for path in options.paths
+        pseudo = dojopseudo_from_file(path)
+        report = pseudo.dojo_report
+        # TODO: Code from works.py
+
+    return 0
+
+
 @prof_main
 def main():
     def str_examples():
@@ -89,10 +103,13 @@ Example usage:
     p_check = subparsers.add_parser('check', parents=[copts_parser], help=djrepo_check.__doc__)
 
     # Subparser for regenerate command.
-    #p_reg = subparsers.add_parser('md5reg', parents=[copts_parser], help=md5reg.__doc__)
+    #p_md5reg = subparsers.add_parser('md5reg', parents=[copts_parser], help=djrepo_md5reg.__doc__)
 
     # Subparser for convert command.
-    #p_reg = subparsers.add_parser('convert', parents=[copts_parser], help=md5reg.__doc__)
+    #p_convert = subparsers.add_parser('convert', parents=[copts_parser], help=djrepo_convert.__doc__)
+
+    # Subparser for convert command.
+    #p_recalc = subparsers.add_parser('recalc', parents=[copts_parser], help=djrepo_recalc.__doc__)
 
     # Parse command line.
     try:

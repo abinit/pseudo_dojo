@@ -3,7 +3,7 @@ Functions providing access to file data. Mainly used to build the public APIs an
 """
 from __future__ import print_function, division, unicode_literals
 
-from monty.termcolor import cprint 
+from monty.termcolor import cprint
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 
 import os
@@ -23,8 +23,8 @@ def dojotable_absdir(basedir):
     """
     if basedir not in DOJOTABLE_BASEDIRS:
         raise RuntimeError(
-           "%s is not registered in DOJOTABLE_BASEDIRS\n" 
-           "Change pseudo_dojo/pseudos/__init__.py" % basedir) 
+           "%s is not registered in DOJOTABLE_BASEDIRS\n"
+           "Change pseudo_dojo/pseudos/__init__.py" % basedir)
 
     return os.path.join(here, basedir)
 
@@ -42,7 +42,7 @@ def check_pseudo_path(path, verbose=0):
     Return 0 if success.
     """
     pseudo = dojopseudo_from_file(path)
-    if pseudo is None: 
+    if pseudo is None:
         cprint("[%s] Pseudo.from_file returned None. Something wrong in file!" % path, "red")
         return 1
 
@@ -63,7 +63,7 @@ def check_pseudo(pseudo, verbose=0):
         retcode += 1
         return retcode
 
-    if "ppgen_hints" not in report: 
+    if "ppgen_hints" not in report:
         cprint("[%s] old version without ppgen_hints" % os.path.relpath(pseudo.filepath), "red")
         retcode += 1
 
@@ -73,7 +73,11 @@ def check_pseudo(pseudo, verbose=0):
 
     if report["md5"] != pseudo.compute_md5():
         cprint("Incosistent md5 in [%s]" % os.path.relpath(pseudo.filepath), "red")
-        retcode += 1 
+        retcode += 1
+
+    if report["symbol"] != pseudo.symbol:
+        cprint("Inconsistent symbol in [%s]" % os.path.relpath(pseudo.filepath), "red")
+        retcode += 1
 
     # This part is commented because we are gonna refactor the DojoReport
     try:
@@ -99,7 +103,7 @@ def check_pseudo(pseudo, verbose=0):
 
 #def check_djrepo(djrepo, verbose=0):
 #    """
-#    Check a pseudopotential given the filepath of the djrepo file. 
+#    Check a pseudopotential given the filepath of the djrepo file.
 #    Warnings are printed to stdout.
 #    Return 0 if success.
 #    """

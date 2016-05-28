@@ -14,7 +14,7 @@ from pprint import pprint
 from tabulate import tabulate
 from pandas import DataFrame, concat
 from monty.os.path import find_exts
-from monty.termcolor import cprint 
+from monty.termcolor import cprint
 from pymatgen.util.io_utils import ask_yesno, prompt
 from pseudo_dojo.core.pseudos import dojopseudo_from_file, DojoTable
 from pseudo_dojo.core.dojoreport import DojoReport
@@ -73,7 +73,7 @@ def dojo_figures(options):
 		raise RuntimeError("[%s] Corrupted outfile")
 
 	    data_pseudo.loc[index] = [parser.nv, parser.valence, parser.rc_min, parser.rc_max]
-  
+
 	data = concat([data_dojo, data_pseudo], axis=1)
 
     """Select entries per element"""
@@ -81,7 +81,7 @@ def dojo_figures(options):
 
     rows, names = [], []
     for name, group in grouped:
-    
+
         if False: # options.semicore
             select = group.sort("nv").iloc[-1]
         elif False: # options.valence
@@ -114,7 +114,7 @@ def dojo_figures(options):
     cmap = mpl_cm.cool
     color = 'black'
     cmap.set_under('w', 1.)
- 
+
     # functions for plotting
     def rcmin(elt):
         """R_c min [Bohr]"""
@@ -151,7 +151,7 @@ def dojo_figures(options):
         try:
             v_fcc = elt['high_gbrv_fcc_a0_rel_err'] if str(elt['high_gbrv_fcc_a0_rel_err']) != 'nan' else -99
             #print(v_fcc)
-            return v_fcc 
+            return v_fcc
         except KeyError:
             #print('fcc func fail: ', elt)
             return -99 #float('NaN')
@@ -171,7 +171,7 @@ def dojo_figures(options):
         except (KeyError, TypeError):
             #print('high_phon with func fail: ', elt)
             return float('NaN')
-    
+
     def high_ecut(elt):
         """ecut high [Ha]"""
         return elt.get('high_ecut_hint', float('NaN'))
@@ -217,7 +217,7 @@ def dojo_figures(options):
         except (KeyError, TypeError) as exc:
             cprint('[%s] failed reading high_phonon' % symbol, "magenta")
             if options.verbose: print(exc)
-      
+
     try:
         max_rel_err = 0.05 * int((max(rel_ers) / 0.05) + 1)
     except ValueError:
@@ -310,7 +310,7 @@ def dojo_plot(options):
 
         # Deltafactor
         if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
-            if options.eos: 
+            if options.eos:
                 # Plot EOS curve
                 report.plot_deltafactor_eos(title=pseudo.basename)
 
@@ -358,7 +358,7 @@ def dojo_notebook(options):
 def dojo_compare(options):
     """Compare DOJO results for multiple pseudos."""
     pseudos = options.pseudos
-    for z in pseudos.zlist: 
+    for z in pseudos.zlist:
         pseudos_z = pseudos[z]
         if len(pseudos_z) > 1:
             pseudos_z.dojo_compare(what=options.what_plot)
@@ -379,7 +379,7 @@ def dojo_trials(options):
     if errors:
         cprint("ERRORS:", "red")
         pprint(errors)
-    
+
     #import matplotlib.pyplot as plt
     #data.plot_trials(savefig=options.savefig)
     #data.plot_hist(savefig=options.savefig)
@@ -431,8 +431,8 @@ def dojo_table(options):
             names.append(name)
             #print(best.keys())
             #print(best.name)
-            l = {k: getattr(best, k) for k in ("name", "Z", 'high_b0_GPa', 'high_b1', 'high_v0', 
-                                               'high_dfact_meV', 'high_ecut_deltafactor')} 
+            l = {k: getattr(best, k) for k in ("name", "Z", 'high_b0_GPa', 'high_b1', 'high_v0',
+                                               'high_dfact_meV', 'high_ecut_deltafactor')}
             rows.append(l)
 
         import pandas
@@ -473,7 +473,7 @@ def dojo_table(options):
     except Exception as exc:
         cprint("Python exception: %s" % type(exc), "red")
         if options.verbose: print(exc)
- 
+
     try:
         for acc in ['low', 'normal', 'high']:
             data[acc + "_abs_fcc"] = abs(data[acc + "_gbrv_fcc_a0_rel_err"])
@@ -513,11 +513,11 @@ def dojo_table(options):
     floatfmt = ".3f"
 
     accuracies = ['low', 'high']
-    columns = [acc + "_dfact_meV" for acc in accuracies] 
-    columns += [acc + "_ecut_deltafactor" for acc in accuracies] 
+    columns = [acc + "_dfact_meV" for acc in accuracies]
+    columns += [acc + "_ecut_deltafactor" for acc in accuracies]
 
     print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
-    if len(data) > 5: 
+    if len(data) > 5:
         print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
     accuracies = ['low', 'high']
@@ -537,7 +537,7 @@ def dojo_table(options):
         if len(data) > 5:
             print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
     except KeyError as exc:
-        cprint('No GBRV data', "red")    
+        cprint('No GBRV data', "red")
         if options.verbose: print("Python exception:\n", str(exc))
 
     accuracies = ['low', 'normal', 'high']
@@ -548,12 +548,12 @@ def dojo_table(options):
 
     #print(data.to_string(columns=columns))
 
-    if len(data) > 5: 
+    if len(data) > 5:
         bad = data[data["high_dfact_meV"] > data["high_dfact_meV"].mean() + data["high_dfact_meV"].std()]
         good = data[data["high_dfact_meV"] < data["high_dfact_meV"].mean()]
         print("\nPSEUDOS with high_dfact > mean plus one std (%.3f + %.3f):\n" % (
               data["high_dfact_meV"].mean(), data["high_dfact_meV"].std())) # ".center(80, "*"))
-        print(tabulate(bad[["high_dfact_meV", "high_ecut_deltafactor"]], headers="keys", 
+        print(tabulate(bad[["high_dfact_meV", "high_ecut_deltafactor"]], headers="keys",
              tablefmt=tablefmt, floatfmt=floatfmt))
 
     #gbrv_fcc_bad = data[data["high_gbrv_fcc_a0_rerr"] > (data["high_gbrv_fcc_a0_rerr"].abs()).mean()]
@@ -576,7 +576,7 @@ def dojo_check(options):
     retcode = 0
     for p in options.pseudos:
         rc = check_pseudo(p, verbose=options.verbose)
-        #if rc != 0: 
+        #if rc != 0:
         #    os.system("mvim %s" % p.filepath)
         #    ans = prompt("Do you want to continue? [Y/n]")
         #    if ans.lower() in ["n", "no"]: break
@@ -604,7 +604,7 @@ def dojo_make_hints(options):
             hints = report.compute_hints()
             print("hints for %s computed from deltafactor prime: %s" % (pseudo.basename, hints))
             report.plot_deltafactor_convergence(xc=pseudo.xc)
- 
+
             ans = ask_yesno("Do you accept the hints? [Y]")
             if ans:
                 report.add_hints(hints)
@@ -615,7 +615,7 @@ def dojo_make_hints(options):
                 new_ecuts = prompt("Enter new ecuts to compute (comma-separated values or empty string to abort)")
                 if not new_ecuts:
                     print("Exit requested by user")
-                    return 
+                    return
                 new_ecuts = np.array([float(k) for k in new_ecuts.strip().split(",")])
                 print("new_ecuts", new_ecuts)
                 report.add_ecuts(new_ecuts)
@@ -692,7 +692,7 @@ def dojo_validate(options):
                 columns = ["symbol"]
                 headers = ["symbol"]
                 for k in keys:
-                    entry = acc + "_ecut_" + k 
+                    entry = acc + "_ecut_" + k
                     if entry in data:
                         columns.append(entry)
                         headers.append(k)
@@ -702,11 +702,11 @@ def dojo_validate(options):
             # TODO
             # test hash
             # plot the model core charge
-           
+
         except Exception as exc:
             cprint("[%s] python exception" % p.basename, "red")
             if options.verbose: print(straceback())
-        
+
         # ask the final question
         if ask_yesno('Will you validate this pseudo? [n]'):
             name = prompt("Please enter your name for later reference: ")
@@ -747,7 +747,7 @@ Usage example:
     # Parent parser for commands that need to know on which subset of pseudos we have to operate.
     pseudos_selector_parser = argparse.ArgumentParser(add_help=False)
     pseudos_selector_parser.add_argument('pseudos', nargs="+", help="Pseudopotential file or directory containing pseudos")
-    pseudos_selector_parser.add_argument('-s', "--symbols", type=parse_symbols, 
+    pseudos_selector_parser.add_argument('-s', "--symbols", type=parse_symbols,
         help=("List of chemical symbols to include or exclude."
               "Example --symbols=He,Li to include He and Li, --symbols=-He to exclude He"))
     pseudos_selector_parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
@@ -769,7 +769,7 @@ Usage example:
     subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
 
     plot_options_parser = argparse.ArgumentParser(add_help=False)
-    plot_options_parser.add_argument("-w", "--what-plot", type=str, default="all", 
+    plot_options_parser.add_argument("-w", "--what-plot", type=str, default="all",
                                       help="Quantity to plot e.g df for deltafactor, gbrv for GBRV tests")
     plot_options_parser.add_argument("-e", "--eos", action="store_true", help="Plot EOS curve")
 
@@ -816,10 +816,10 @@ Usage example:
     # Parse command line.
     try:
         options = parser.parse_args()
-    except Exception as exc: 
+    except Exception as exc:
         show_examples_and_exit(error_code=1)
 
-    # loglevel is bound to the string value obtained from the command line argument. 
+    # loglevel is bound to the string value obtained from the command line argument.
     # Convert to upper case to allow the user to specify --loglevel=DEBUG or --loglevel=debug
     import logging
     numeric_level = getattr(logging, options.loglevel.upper(), None)
@@ -841,7 +841,7 @@ Usage example:
             if os.path.isdir(paths[0]):
                 top = os.path.abspath(paths[0])
                 paths = find_exts(top, exts, exclude_dirs="_*")
-            # Handle glob syntax e.g. "./*.psp8" 
+            # Handle glob syntax e.g. "./*.psp8"
             elif "*" in paths[0]:
                 paths = glob.glob(paths[0])
 
@@ -851,7 +851,7 @@ Usage example:
         for p in paths:
             try:
                 pseudo = dojopseudo_from_file(p)
-                if pseudo is None: 
+                if pseudo is None:
                     cprint("[%s] Pseudo.from_file returned None. Something wrong in file!" % p, "red")
                     continue
                 pseudos.append(pseudo)
@@ -897,7 +897,7 @@ if __name__ == "__main__":
     try:
         do_prof = sys.argv[1] == "prof"
         if do_prof: sys.argv.pop(1)
-    except Exception: 
+    except Exception:
         do_prof = False
 
     if do_prof:

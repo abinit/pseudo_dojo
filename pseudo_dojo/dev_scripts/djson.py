@@ -23,7 +23,7 @@ def djson_new(options, stream=sys.stdout):
 def djson_validate(options):
     """Validate djson file."""
     table = OfficialDojoTable.from_djson_file(options.djson_path)
-    #print(table)
+    if options.verbose > 1: print(table)
 
     md5dict = {p.basename: p.md5 for p in table}
     errors = table.dojo_find_errors(md5dict, require_hints=False)
@@ -76,7 +76,6 @@ Usage example:
                       ))
     p_new.add_argument("top", nargs="?", default=".", help="Directory with pseudos")
 
-
     # Subparser for validate command.
     p_validate = subparsers.add_parser('validate', parents=[copts_parser], help=djson_validate.__doc__)
     p_validate.add_argument("djson_path", help="djson file")
@@ -97,6 +96,7 @@ Usage example:
 
     # Dispatch
     return globals()["djson_" + options.command](options)
+
 
 if __name__ == "__main__":
     sys.exit(main())

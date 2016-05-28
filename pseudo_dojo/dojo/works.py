@@ -41,13 +41,13 @@ class DojoWork(Work):
     def add_entry_to_dojoreport(self, entry, overwrite_data=False):
         """
         Write/update the DOJO_REPORT section of the pseudopotential.
-        Important paramenters such as the name of the dojo_trial and the energy cutoff 
-        are provided by the sub-class. 
+        Important paramenters such as the name of the dojo_trial and the energy cutoff
+        are provided by the sub-class.
         Client code is responsible for preparing the dictionary with the data.
 
         Args:
             entry: Dictionary with results.
-            overwrite_data: If False, the routine raises an exception if this entry is 
+            overwrite_data: If False, the routine raises an exception if this entry is
                 already filled.
         """
         root, ext = os.path.splitext(self.pseudo.filepath)
@@ -149,7 +149,7 @@ class EbandsFactorWork(DojoWork):
         """
         Build a :class:`Work` for the computation of a bandstructure to check for ghosts.
 
-        Args:   
+        Args:
             structure: :class:`Structure` object
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             kppa: Number of k-points per atom.
@@ -210,13 +210,11 @@ class EbandsFactorWork(DojoWork):
         #results = super(EbandsFactorWork, self).get_results()
 
         # store the path of the GSR nc file in the dojoreport
-
         # during the validation the bandstrure is plotted and the validator is asked to give the energy up to which
         # no sign of ghosts is visible
-
-        # during plot the band structuur is plotted as long as a filename is present and the file can be found if the 
+        # during plot the band structuur is plotted as long as a filename is present and the file can be found if the
         # if the energy is present the energy is given
- 
+
         #TODO fix magic
         path = str(self.workdir)
         outfile = os.path.join(str(self[0].outdir), "out_GSR.nc")
@@ -253,7 +251,7 @@ class DeltaFactory(object):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
-        Args:   
+        Args:
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             kppa: kpoint per atom
             ecut: Cutoff energy in Hartree
@@ -272,7 +270,7 @@ class DeltaFactory(object):
         symbol = pseudo.symbol
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
-    
+
         if pseudo.xc != self._dfdb.xc:
             raise ValueError(
                 "Pseudo xc differs from the XC used to instantiate the factory\n"
@@ -313,7 +311,7 @@ class DeltaFactory(object):
         if include_soc: spin_mode = "spinor"
 
         # Magnetic elements:
-        # Start from previous SCF run to avoid getting trapped in local minima 
+        # Start from previous SCF run to avoid getting trapped in local minima
         connect = symbol in ("Fe", "Co", "Ni", "Cr", "Mn", "O", "Zn", "Cu")
 
         return DeltaFactorWork(
@@ -333,7 +331,7 @@ class DeltaFactorWork(DojoWork):
         """
         Build a :class:`Work` for the computation of the deltafactor.
 
-        Args:   
+        Args:
             structure: :class:`Structure` object
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             kppa: Number of k-points per atom.
@@ -450,11 +448,11 @@ class DeltaFactorWork(DojoWork):
 
             for k, v in res.items():
                 v = v if not isinstance(v, complex) else float('NaN')
-                res[k] = v          
-  
+                res[k] = v
+
             results.update(res)
 
-            d = {k: results[k] for k in 
+            d = {k: results[k] for k in
                   ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes",
                    "num_sites", "dfactprime_meV")}
 
@@ -485,13 +483,13 @@ class GbrvFactory(object):
 
     def make_ref_structure(self, symbol, struct_type, ref):
         """
-        Return the structure used in the GBRV tests given the chemical symbol, 
+        Return the structure used in the GBRV tests given the chemical symbol,
         the structure type and the reference code.
         """
         # Get the entry in the database
         entry = self._db.get_entry(symbol, struct_type)
 
-        if entry is None: 
+        if entry is None:
             logger.critical("Cannot find entry for %s, returning None!" % symbol)
             return None
 
@@ -501,8 +499,8 @@ class GbrvFactory(object):
         if structure is None:
             logger.warning("No AE structure for %s\n Will use gbrv_uspp data." % symbol)
             structure = entry.build_structure(ref="gbrv_uspp")
-        
-        if structure is None: 
+
+        if structure is None:
             logger.critical("Cannot initialize structure for %s, returning None!" % symbol)
 
         return structure
@@ -520,7 +518,7 @@ class GbrvFactory(object):
 
             GBRV tests are done with the following parameteres:
 
-                - No spin polarization for structural relaxation 
+                - No spin polarization for structural relaxation
                   (only for magnetic moments for which spin-unpolarized structures are used)
                 - All calculations are done on an 8x8x8 k-point density and with 0.002 Ry Fermi-Dirac smearing
         """
@@ -540,7 +538,7 @@ class GbrvFactory(object):
                 raise ValueError("Pseudo %s does not support SOC calculation." % pseudo)
 
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
- 
+
         return GbrvRelaxAndEosWork(structure, struct_type, pseudo,
                                    ecut=ecut, pawecutdg=pawecutdg, spin_mode=spin_mode, **kwargs)
 
@@ -566,9 +564,9 @@ class GbrvRelaxAndEosWork(DojoWork):
         """
         Build a :class:`Work` for the computation of the relaxed lattice parameter.
 
-        Args:   
-            structure: :class:`Structure` object 
-            structure_type: fcc, bcc 
+        Args:
+            structure: :class:`Structure` object
+            structure_type: fcc, bcc
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             ecut: Cutoff energy in Hartree
             ngkpt: MP divisions.
@@ -597,7 +595,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             #ecutsm=0.5,
             #paral_kgb=paral_kgb
         )
-                                       
+
         self.extra_abivars.update(**kwargs)
         self.ecut = ecut
         self.smearing = Smearing.as_smearing(smearing)
@@ -643,7 +641,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             new_structure = Structure(new_lattice, relaxed_structure.species, relaxed_structure.frac_coords)
 
             # Add ecutsm
-            extra = self.extra_abivars.copy() 
+            extra = self.extra_abivars.copy()
             extra["ecutsm"] = 0.5
 
             scf_input = abilab.AbinitInput(new_structure, self.pseudo)
@@ -822,7 +820,7 @@ class DFPTPhononFactory(object):
             # Response-function calculation for phonons.
             # rfatpol=[1, natom],  # Set of atoms to displace.
             # rfdir=[1, 1, 1],     # Along this set of reduced coordinate axis
-            multi[i+1].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=rfasr, 
+            multi[i+1].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=rfasr,
                                 rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
 
             # rfasr = 1 is not correct
@@ -881,11 +879,11 @@ class DFPTPhononFactory(object):
                 return None
 
         structure.scale_lattice(v0)
-        
+
         if 'rfasr' in kwargs:
             trial_name = 'phwoa'
         else:
-            trial_name = 'phonon'    
+            trial_name = 'phonon'
 
         all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
