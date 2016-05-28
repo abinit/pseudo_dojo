@@ -68,7 +68,7 @@ def djrepo_recalc(options):
 
         # Recompute delfactor for the different ecut.
         for ecut, entry in data.items():
-            new_entry = compute_dfact_entry(pseudo, entry["num_sites"], entry["volumes"], entry["etotals"], verbose=0)
+            new_entry, eos_fit = compute_dfact_entry(pseudo, entry["num_sites"], entry["volumes"], entry["etotals"])
             print("ecut: ", ecut, "(new - old) df:", new_entry["dfact_meV"] - entry["dfact_meV"])
             data[ecut] = new_entry
 

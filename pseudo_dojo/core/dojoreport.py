@@ -1204,7 +1204,7 @@ class DfGbrvDataFrame(DataFrame):
         return fig
 
 
-def compute_dfact_entry(pseudo, num_sites, volumes, etotals, verbose=0):
+def compute_dfact_entry(pseudo, num_sites, volumes, etotals):
     """
     This function computes the deltafactor and returns the dictionary to be inserted
     in the dojoreport file.
@@ -1214,27 +1214,29 @@ def compute_dfact_entry(pseudo, num_sites, volumes, etotals, verbose=0):
         num_sites: Number of sites in unit cell
         volumes: List with unit cell volumes in Ang**3
         etotals: List of total energies in eV.
-        verbose: Verbosity level.
 
     Return:
-        Dictionary with results to be inserted in the djrepo file.
+        (outd, eos_fit)
+        where outd is the Dictionary with results to be inserted in the djrepo file.
+        eos_fit is the object storing the results of the EOS fit.
     """
     nan = float('NaN')
 
     outd = dict(
         etotals=list(etotals),
         volumes=list(volumes),
-        num_sites=num_sites
+        num_sites=num_sites,
         dfact_meV=nan,
         dfactprime_meV=nan,
         v0=nan,
         b0=nan,
         b0_GPa=nan,
         b1=nan,
-    ))
+    )
 
     volumes = np.asarray(volumes)
     etotals = np.asarray(etotals)
+    eos_fit = None
 
     try:
         # Use same fit as the one employed for the deltafactor.
@@ -1262,14 +1264,10 @@ def compute_dfact_entry(pseudo, num_sites, volumes, etotals, verbose=0):
             v = v if not isinstance(v, complex) else nan
             dfres[k] = v
 
-        if verbose:
-           print("[%s]" % pseudo.symbol, "eos_fit:", eos_fit)
-           print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
-
         outd.update(dfres)
 
     except EOS.Error as exc:
-        outd["_exceptions"] = str(results.exceptions)
+        outd["_exceptions"] = str(exc)
 
-    return outd
+    return outd, eos_fit
 

@@ -409,70 +409,23 @@ class DeltaFactorWork(DojoWork):
     def dojo_trial(self):
         return "deltafactor"
 
-    def get_results(self):
-        results = super(DeltaFactorWork, self).get_results()
-
+    def on_all_ok(self):
+        """
+        This method is called once the `Work` is completed i.e. when all the tasks
+        have reached status S_OK. Here we gather the results of the different tasks,
+        the deltafactor is computed and the results are stored in the JSON file.
+        """
         num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")
 
-        d = compute_dfact_entry(self.pseudo, num_sites, self.volumes, etotals, verbose=1)
+        d, eos_fit = compute_dfact_entry(self.pseudo, num_sites, self.volumes, etotals)
 
-        """
-        results.update(dict(
-            etotals=list(etotals),
-            volumes=list(self.volumes),
-            num_sites=num_sites))
-
-        d = {}
-        try:
-            # Use same fit as the one employed for the deltafactor.
-            eos_fit = EOS.DeltaFactor().fit(self.volumes/num_sites, etotals/num_sites)
-
-            # Get reference results (Wien2K).
-            wien2k = df_database(self.pseudo.xc).get_entry(self.pseudo.symbol)
-
-            # Compute deltafactor estimator.
-            dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
-                               eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
-
-            dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa)
-
-            res = {
-                "dfact_meV": dfact,
-                "dfactprime_meV": dfactprime_meV
-                "v0": eos_fit.v0,
-                "b0": eos_fit.b0,
-                "b0_GPa": eos_fit.b0_GPa,
-                "b1": eos_fit.b1,
-            }
-
-            for k, v in res.items():
-                v = v if not isinstance(v, complex) else float('NaN')
-                res[k] = v
-
-            print("[%s]" % self.pseudo.symbol, "eos_fit:", eos_fit)
-            print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
-
-            results.update(res)
-
-            d = {k: results[k] for k in
-                  ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes",
-                   "num_sites", "dfactprime_meV")}
-
-        except EOS.Error as exc:
-            results.push_exceptions(exc)
-
-        if results.exceptions:
-            d["_exceptions"] = str(results.exceptions)
-        """
+        print("[%s]" % self.pseudo.symbol, "eos_fit:", eos_fit)
+        print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, d["dfact_meV"], d["dfactprime_meV"]))
 
         self.add_entry_to_dojoreport(d)
 
-        return results
-
-    def on_all_ok(self):
-        """Callback executed when all tasks in self have reached S_OK."""
-        return self.get_results()
+        return dict(returncode=0, message="Delta factor computed")
 
 
 class GbrvFactory(object):

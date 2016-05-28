@@ -6,7 +6,7 @@ import sys
 import collections
 import argparse
 
-from monty.termcolor import cprint 
+from monty.termcolor import cprint
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter
 
@@ -21,13 +21,13 @@ def main():
                               str(["slide", "wp, dp, lc"] + PseudoGenDataPlotter.all_keys) + "\n"
                               "wp --> wavefunctions and projectors\n" +
                               "dp --> densities and potentials\n" +
-                              "lc --> atan(logder) and convergence wrt ecut\n" + 
+                              "lc --> atan(logder) and convergence wrt ecut\n" +
                               "df --> density form factor"))
 
-    parser.add_argument("-j", "--json", action="store_true", default=False, 
+    parser.add_argument("-j", "--json", action="store_true", default=False,
                         help="Produce a string with the results in a JSON dictionary and exit")
 
-    parser.add_argument("-8", "--psp8", action="store_true", default=False, 
+    parser.add_argument("-8", "--psp8", action="store_true", default=False,
                         help="produce a .psp8 file with initial dojo report and exit")
 
     parser.add_argument("-d", "--devel", action="store_true", default=False,
@@ -39,7 +39,7 @@ def main():
     onc_parser.scan()
     if not oncv_parser.completed:
         cprint("oncvpsp output is not complete. Exiting", "red")
-        return 1
+        sys.exit(1)
 
     if options.psp8:
         # Generate psp8 and djson files.
@@ -55,14 +55,13 @@ def main():
         # Try to read pseudo from the files just generated.
         pseudo = dojopseudo_from_file(psp8_path)
         if pseudo is None:
-            cprint(("Cannot parse psp8 files: %s" % psp8_path, "red")
-            return 1
+            cprint("Cannot parse psp8 files: %s" % psp8_path, "red")
+            sys.exit(1)
 
         # Write djson file.
         #report = DojoReport.new_pseudo(pseudo)
         #report.json_write(djson_path)
-
-        return 0      
+        return 0
 
     if options.json:
         # Generate json files with oncvpsp results.
