@@ -8,9 +8,10 @@ import argparse
 import glob
 
 from monty.functools import prof_main
-from monty.termcolor import cprint 
+from monty.termcolor import cprint
 from monty.os.path import find_exts
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
+from pseudo_dojo.core.dojoreport import compute_dfact_entry
 
 
 def _fix_djrepo(pp_filepath):
@@ -18,7 +19,7 @@ def _fix_djrepo(pp_filepath):
     This is a maintentance tool to:
 
         #. Regenerate the md5 value in the DojoReport file.
-        #. Replace norm-conserving with NC. 
+        #. Replace norm-conserving with NC.
     """
     pseudo = dojopseudo_from_file(pp_filepath)
     if pseudo is None:
@@ -46,13 +47,13 @@ def djrepo_convert(options):
     raise NotImplementedError()
     # Version 1.0 to 2.0
     new_version = "2.0"
-    for path in options.paths
+    for path in options.paths:
         report = DojoReport.from_file(path)
         old_version = report["version"]
-        if  old_version = new_version: continue
+        if  old_version == new_version: continue
         report = report.to_version(new_version)
         report.json_write(path)
-    
+
     return 0
 
 
@@ -61,10 +62,18 @@ def djrepo_recalc(options):
     Recompute the deltafactor from the data stored in the dojoreport.
     This function is used when the deltafactor reference results have been changed.
     """
-    for path in options.paths
+    for path in options.paths:
         pseudo = dojopseudo_from_file(path)
-        report = pseudo.dojo_report
-        # TODO: Code from works.py
+        data = pseudo.dojo_report["deltafactor"]
+
+        # Recompute delfactor for the different ecut.
+        for ecut, entry in data.keys():
+            new_entry = compute_dfact_entry(pseudo, entry["num_sites"], entry["volumes"], entry["etotals"], verbose=0)
+            print(new_entry)
+            #data[ecut] = new_entry
+
+        # Write new djson file.
+        #pseudo.dojo_report.json_write(pseudo.djson_path)
 
     return 0
 
@@ -109,12 +118,12 @@ Example usage:
     #p_convert = subparsers.add_parser('convert', parents=[copts_parser], help=djrepo_convert.__doc__)
 
     # Subparser for convert command.
-    #p_recalc = subparsers.add_parser('recalc', parents=[copts_parser], help=djrepo_recalc.__doc__)
+    p_recalc = subparsers.add_parser('recalc', parents=[copts_parser], help=djrepo_recalc.__doc__)
 
     # Parse command line.
     try:
         options = parser.parse_args()
-    except Exception as exc: 
+    except Exception as exc:
         show_examples_and_exit(error_code=1)
 
     # Get paths
@@ -130,7 +139,7 @@ Example usage:
             if os.path.isdir(paths[0]):
                 top = os.path.abspath(paths[0])
                 paths = find_exts(top, ["djrepo"], exclude_dirs="_*")
-            # Handle glob syntax e.g. "./*.psp8" 
+            # Handle glob syntax e.g. "./*.psp8"
             elif "*" in paths[0]:
                 paths = [f for f in glob.glob(paths[0]) if f.endswith(".djrepo")]
         else:
@@ -138,7 +147,7 @@ Example usage:
 
         return paths
 
-    options.paths = get_direpo_paths(options)
+    options.paths = get_djrepo_paths(options)
     if not options.paths:
         cprint("Empty djrepo list. Returning", "magenta")
         return 1
@@ -149,12 +158,9 @@ Example usage:
             for i, p in enumerate(options.paths): print("[%d] %s" % (i, p))
 
     # This is to regenerate the md5 files in the djrepo files.
-    """
-    from pseudo_dojo.pseudos import _fix_djrepo
-    for pseudo in options.pseudos:
-        _fix_djrepo(pseudo.filepath)
-    return 0
-    """
+    #for path in options.paths:
+    #    _fix_djrepo(path)
+    #return 0
 
     # Dispatch
     return globals()["djrepo_" + options.command](options)

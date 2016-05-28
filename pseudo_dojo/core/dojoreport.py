@@ -15,6 +15,7 @@ from monty.bisect import find_le
 from pymatgen.analysis.eos import EOS
 from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
+from pseudo_dojo.refdata.deltafactor import df_database
 
 
 logger = logging.getLogger(__name__)
@@ -684,7 +685,6 @@ class DojoReport(dict):
                 keys = what
 
         # Get reference entry
-        from pseudo_dojo.refdata.deltafactor import df_database
         reference = df_database(xc=xc).get_entry(symbol=self.symbol, code=code)
         print("Reference data:", reference)
 
@@ -1202,3 +1202,51 @@ class DfGbrvDataFrame(DataFrame):
             ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
 
         return fig
+
+
+
+def compute_dfact_entry(pseudo, num_sites, volumes, etotals, verbose=0)
+    """
+    """
+
+    # Use same fit as the one employed for the deltafactor.
+    eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
+
+    # Get reference results (Wien2K).
+    wien2k = df_database(pseudo.xc).get_entry(pseudo.symbol)
+
+    # Compute deltafactor estimator.
+    dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
+                       eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
+
+    dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa)
+
+    res = {
+        "dfact_meV": dfact,
+        "dfactprime_meV": dfactprime_meV
+        "v0": eos_fit.v0,
+        "b0": eos_fit.b0,
+        "b0_GPa": eos_fit.b0_GPa,
+        "b1": eos_fit.b1,
+    }
+
+    for k, v in res.items():
+        v = v if not isinstance(v, complex) else float('NaN')
+        res[k] = v
+
+    if verbose:
+       print("[%s]" % pseudo.symbol, "eos_fit:", eos_fit)
+       print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
+
+    res.update(dict(
+        etotals=list(etotals),
+        volumes=list(volumes),
+        num_sites=num_sites
+    ))
+
+    return res
+
+     #results.update(res)
+     #d = {k: results[k] for k in
+     #      ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes",
+     #       "num_sites", "dfactprime_meV")}

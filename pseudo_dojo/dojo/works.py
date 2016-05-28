@@ -434,21 +434,23 @@ class DeltaFactorWork(DojoWork):
 
             dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa)
 
-            print("delta", eos_fit)
-            print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
-
             res = {
                 "dfact_meV": dfact,
+                "dfactprime_meV": dfactprime_meV
                 "v0": eos_fit.v0,
                 "b0": eos_fit.b0,
                 "b0_GPa": eos_fit.b0_GPa,
                 "b1": eos_fit.b1,
-                "dfactprime_meV": dfactprime_meV
             }
 
             for k, v in res.items():
                 v = v if not isinstance(v, complex) else float('NaN')
                 res[k] = v
+
+            print("[%s]" % self.pseudo.symbol, "eos_fit:", eos_fit)
+            print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
+
+            #entry = compute_dfact_entry(pseudo, num_sites, volumes, etotals, verbose=1)
 
             results.update(res)
 
@@ -865,8 +867,6 @@ class DFPTPhononFactory(object):
         nat = len(structure)
         report = pseudo.dojo_report
         ecut_str = '%.1f' % kwargs['ecut']
-        #print(ecut_str)
-        #print(report['deltafactor'][float(ecut_str)].keys())
 
         try:
             v0 = nat * report['deltafactor'][ecut_str]['v0']
