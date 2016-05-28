@@ -60,7 +60,7 @@ class PseudoGenerator(object):
     """
     This object receives a string with the input file and generates a pseudopotential.
     It calls the pp generator in a subprocess to produce the results in a temporary directory.
-    It also provides an interface to validate/analyze/plot the results 
+    It also provides an interface to validate/analyze/plot the results
     produced by the pseudopotential code. Concrete classes must:
 
         1) call super().__init__() in their constructor.
@@ -314,6 +314,12 @@ class OncvGenerator(PseudoGenerator):
     """
     OutputParser = OncvOutputParser
 
+    def from_file(cls, path, calc_type, workdir=None):
+        """Build the object from a file containing input parameters."""
+        with open(path, "rt") as fh:
+            input_str = fh.read()
+        return cls(  calc_type, workdir=workdir)
+
     def __init__(self, input_str, calc_type, workdir=None):
         super(OncvGenerator, self).__init__(workdir=workdir)
         self._input_str = input_str
@@ -370,7 +376,7 @@ class OncvGenerator(PseudoGenerator):
 
             # Write Abinit pseudopotential.
             filepath = os.path.join(self.workdir, parser.atsym + ".psp8")
-            #if os.path.exists(filepath): 
+            #if os.path.exists(filepath):
             #    raise RuntimeError("File %s already exists" % filepath)
 
             # Initialize self.pseudo from file.
@@ -429,10 +435,10 @@ class OncvMultiGenerator(object):
         and create new directories with the pseudopotentials in the current workding directory.
 
         Return:
-            List of `Pseudo` objects 
+            List of `Pseudo` objects
 
         Old version with icmod == 1.
-        
+
         # icmod fcfact
         1 0.085
 
@@ -467,7 +473,7 @@ class OncvMultiGenerator(object):
             input_str = "".join(new_input)
             #print(input_str)
             ppgen = OncvGenerator(input_str, calc_type=self.calc_type)
-            
+
             name = base_name + "_fcfact%3.2f_rcfact%3.2f" % (fcfact, rcfact)
             ppgen.name = name
             ppgen.stdin_basename = name + ".in"

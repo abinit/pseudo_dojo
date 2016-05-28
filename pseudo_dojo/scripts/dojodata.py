@@ -17,7 +17,7 @@ from monty.os.path import find_exts
 from monty.termcolor import cprint
 from pymatgen.util.io_utils import ask_yesno, prompt
 from pseudo_dojo.core.pseudos import dojopseudo_from_file, DojoTable
-from pseudo_dojo.core.dojoreport import DojoReport
+#from pseudo_dojo.core.dojoreport import DojoReport
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pseudo_dojo.pseudos import check_pseudo
 
@@ -575,7 +575,7 @@ def dojo_check(options):
     """Check validity of pseudodojo report."""
     retcode = 0
     for p in options.pseudos:
-        rc = check_pseudo(p, verbose=options.verbose)
+        rc = check_pseudo(p, check_trials=options.check_trials, verbose=options.verbose)
         #if rc != 0:
         #    os.system("mvim %s" % p.filepath)
         #    ans = prompt("Do you want to continue? [Y/n]")
@@ -800,11 +800,12 @@ Usage example:
 
     # Subparser for check command.
     def parse_trials(s):
-        if s == "all": return DojoReport.ALL_TRIALS
+        if s is None: return s
+        #if s == "all": return DojoReport.ALL_TRIALS
         return s.split(",")
 
     p_check = subparsers.add_parser('check', parents=[pseudos_selector_parser], help=dojo_check.__doc__)
-    p_check.add_argument("--check-trials", type=parse_trials, default="all", help="List of trials to check")
+    p_check.add_argument("--check-trials", type=parse_trials, default=None, help="List of trials to check")
 
     # Subparser for validate command.
     p_validate = subparsers.add_parser('validate', parents=[pseudos_selector_parser], help=dojo_validate.__doc__)

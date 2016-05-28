@@ -104,7 +104,7 @@ class EbandsFactory(object):
         Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
-            pseudo: filepath or :class:`Pseudo` object.
+            pseudo: :class:`Pseudo` object.
             kppa: Number of k-points per atom.
             ecut: Cutoff energy in Hartree
             pawecutdg: Cutoff energy of the fine grid (PAW only)
@@ -206,9 +206,8 @@ class EbandsFactorWork(DojoWork):
     def dojo_trial(self):
         return "ebands"
 
-    def get_results(self):
-        #results = super(EbandsFactorWork, self).get_results()
-
+    def on_all_ok(self):
+        """Callback executed when all tasks in self have reached S_OK."""
         # store the path of the GSR nc file in the dojoreport
         # during the validation the bandstrure is plotted and the validator is asked to give the energy up to which
         # no sign of ghosts is visible
@@ -218,14 +217,10 @@ class EbandsFactorWork(DojoWork):
         #TODO fix magic
         path = str(self.workdir)
         outfile = os.path.join(str(self[0].outdir), "out_GSR.nc")
-        results = {'workdir': path, 'GSR-nc': outfile}
-        #print(results)
-        return results
+        entry = {'workdir': path, 'GSR-nc': outfile}
 
-    def on_all_ok(self):
-        """Callback executed when all tasks in self have reached S_OK."""
-        entry = self.get_results()
         self.add_entry_to_dojoreport(entry)
+
         return entry
 
 
@@ -252,7 +247,7 @@ class DeltaFactory(object):
         Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
-            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
+            pseudo: :class:`Pseudo` object.
             kppa: kpoint per atom
             ecut: Cutoff energy in Hartree
             pawecutdg: Cutoff energy of the fine grid (PAW only)
@@ -333,7 +328,7 @@ class DeltaFactorWork(DojoWork):
 
         Args:
             structure: :class:`Structure` object
-            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
+            pseudo: :class:`Pseudo` object.
             kppa: Number of k-points per atom.
             connect: True if the SCF run should be initialized from the previous run.
             spin_mode: Spin polarization mode.
@@ -524,7 +519,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         Args:
             structure: :class:`Structure` object
             structure_type: fcc, bcc
-            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
+            pseudo: :class:`Pseudo` object.
             ecut: Cutoff energy in Hartree
             ngkpt: MP divisions.
             spin_mode: Spin polarization mode.
@@ -704,13 +699,11 @@ class DFPTPhononFactory(object):
 
     Error = FactoryError
 
-    def __init__(self, xc, manager=None, workdir=None):
+    def __init__(self, xc):
         """xc is the exchange-correlation functional e.g. PBE, PW."""
         # Get reference to the deltafactor database
         # Use the elemental solid in the gs configuration
         self._dfdb = df_database(xc)
-        self.manager = manager
-        self.workdir = workdir
 
     def get_cif_path(self, symbol):
         """Returns the path to the CIF file associated to the given symbol."""
@@ -787,7 +780,7 @@ class DFPTPhononFactory(object):
         # Split input into gs_inp and ph_inputs
         return multi.split_datasets()
 
-    def work_for_pseudo(self, pseudo, **kwargs):
+    def work_for_pseudo(self, pseudo, workdir=None, manager=None, **kwargs):
         """
         Create a :class:`Work` for phonon calculations:
 
@@ -796,6 +789,11 @@ class DFPTPhononFactory(object):
             2) nqpt workflows for phonon calculations. Each workflow contains
                nirred tasks where nirred is the number of irreducible phonon perturbations
                for that particular q-point.
+
+        Args:
+            pseudo: filepath or :class:`Pseudo` object.
+            workdir: Working directory.
+            manager: :class:`TaskManager` object.
 
             the kwargs are passed to scf_hp_inputs
         """
@@ -843,9 +841,9 @@ class DFPTPhononFactory(object):
         all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
         scf_input, ph_inputs = all_inps[0], all_inps[1:]
 
-        work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork)
-        #print('after build_oneshot_phonon')
-        #print(work)
+        work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork,
+                                        workdir=workdir, manager=manager)
+        #print('after build_oneshot_phonon', work)
         work.set_dojo_trial(qpt, trial_name)
         #print(scf_input.keys())
         work.ecut = scf_input['ecut']

@@ -49,7 +49,7 @@ def check_pseudo_path(path, verbose=0):
     return check_pseudo(pseudo, verbose=verbose)
 
 
-def check_pseudo(pseudo, verbose=0):
+def check_pseudo(pseudo, check_trials=None, verbose=0):
     """
     Check a pseudopotential object. Warnings are printed to stdout
     Return 0 if success.
@@ -80,11 +80,10 @@ def check_pseudo(pseudo, verbose=0):
         retcode += 1
 
     # This part is commented because we are gonna refactor the DojoReport
-    """
     try:
-        error = report.check(check_trials=["deltafactor"])
+        error = report.check(check_trials=check_trials)
+        #error = report.check(check_trials=["deltafactor"])
         #error = report.check(check_trials=["deltafactor", "gbrv_bcc", "gbrv_fcc"])
-        #error = report.check()
         if error:
             retcode += 1
             cprint("Invalid DojoReport in [%s]" % os.path.relpath(pseudo.filepath), "red")
@@ -94,7 +93,6 @@ def check_pseudo(pseudo, verbose=0):
         retcode += 1
         cprint("Python exception in [%s]" % os.path.relpath(pseudo.filepath), "red")
         if verbose: print(str(exc))
-    """
 
     if retcode != 0:
         cprint("[%s] is not valid" % os.path.relpath(pseudo.filepath), "red")

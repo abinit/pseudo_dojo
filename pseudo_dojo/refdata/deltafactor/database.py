@@ -46,7 +46,7 @@ class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 
     @property
     def b0_GPa(self):
         """b0 in GPa units."""
-        return self.b0.to("GPa") 
+        return self.b0.to("GPa")
 
     @lazy_property
     def dfact_meV(self):
@@ -70,12 +70,12 @@ def read_data_from_filepath(filepath, xc):
     with open(filepath, "r") as fh:
         for line in fh:
             line = line.strip()
-            if line.startswith("#") or not line: 
+            if line.startswith("#") or not line:
                 continue
             tokens = line.split()
-            symbol = tokens[0] 
+            symbol = tokens[0]
             # Conversion GPa --> eV / A**3 and pass xc info to the Entry.
-            tokens[2] = FloatWithUnit(tokens[2], "GPa").to("eV ang^-3") 
+            tokens[2] = FloatWithUnit(tokens[2], "GPa").to("eV ang^-3")
             tokens.append(xc)
             data[symbol] = DeltaFactorEntry(*tokens)
 
@@ -83,7 +83,9 @@ def read_data_from_filepath(filepath, xc):
 
 
 def read_tables_from_file(filepath, xc):
-    """Read deltafactor data from filepath. Returns pandas dataframe."""
+    """
+    Read deltafactor data from filepath. Returns pandas dataframe.
+    """
     import pandas as pd
     columns = ["v0", "b0_GPa", "b1", "deltaf"]
     title = None
@@ -110,7 +112,7 @@ def read_tables_from_file(filepath, xc):
             symbol = tokens[0]
             symbols.append(symbol)
             b0_GPa = float(tokens[2])
-            #b0 = FloatWithUnit(b0_GPa, "GPa").to("eV ang^-3") 
+            #b0 = FloatWithUnit(b0_GPa, "GPa").to("eV ang^-3")
             row = {"v0": float(tokens[1]), "b0_GPa": b0_GPa, "b1": float(tokens[3])}
 
             df = df_wien2k(symbol, row["v0"], b0_GPa, row["b1"], xc, b0_GPa=True)
@@ -134,7 +136,7 @@ class DeltaFactorDatabaseError(Exception):
 
 class DeltaFactorDatabase(object):
     """
-    This object stores the deltafactor results for a given code and XC. 
+    This object stores the deltafactor results for a given code and XC.
     It provides methods to access the data and plot the results.
     This object is not meant to instantiated explicitly.
     Client code should get the database via the public API:
@@ -179,7 +181,7 @@ class DeltaFactorDatabase(object):
                 self._data[code] = read_data_from_filepath(file_path, self.xc)
 
         self._cif_paths = {}
-        
+
         #loc = "CIFs" + "-" + str(self.xc)
         loc = self._CIFDIR4XC[self.xc]
         cif_dirpath = os.path.join(self.dirpath, loc)
@@ -212,7 +214,7 @@ class DeltaFactorDatabase(object):
 
         Args:
             symbol: Chemical symbol
-            code: String identifying the code used to compute the entry. 
+            code: String identifying the code used to compute the entry.
                 Default is self._REF_CODE (Wien2K)
 
         raise:
@@ -229,7 +231,7 @@ class DeltaFactorDatabase(object):
         """Plot the error of one code vs ref_code."""
         import matplotlib.pyplot as plt
 
-        if ref_code is None: ref_code = self._REF_CODE 
+        if ref_code is None: ref_code = self._REF_CODE
         ref_data = self._data[ref_code]
 
         data = codename_or_data
@@ -281,7 +283,7 @@ def check_cif_wien2k_consistency(xc):
     pd.set_option("display.max_rows", None)
 
     rows, index = [], []
-    
+
     db = df_database(xc)
     for symbol in db.symbols:
         if symbol == "S": continue
@@ -292,7 +294,7 @@ def check_cif_wien2k_consistency(xc):
         v0 = structure.volume / len(structure)
         wien2k_v0abs_diff = wien2k.v0 - v0
         wien2k_v0rel_diff = 100 * (wien2k.v0 - v0) / v0
-        #if abs_(v0diff): 
+        #if abs_(v0diff):
         print("Wien2k Symbol: %s, abs: %.2f, rel %.2f" % (symbol, wien2k_v0abs_diff, wien2k_v0rel_diff))
 
         vasp_v0abs_diff = vasp.v0 - v0
@@ -301,9 +303,9 @@ def check_cif_wien2k_consistency(xc):
         #if symbol == "O":
         #    print(v0, wien2k.v0)
         index.append(symbol)
-        rows.append(dict(wien2k_v0abs_diff=wien2k_v0abs_diff, 
+        rows.append(dict(wien2k_v0abs_diff=wien2k_v0abs_diff,
                          wien2k_v0rel_diff=wien2k_v0rel_diff,
-                         vasp_v0abs_diff=vasp_v0abs_diff, 
+                         vasp_v0abs_diff=vasp_v0abs_diff,
                          vasp_v0rel_diff=vasp_v0rel_diff,
                     ))
 
@@ -336,7 +338,7 @@ def df_database(xc):
     # Create xc database and cache it.
     if xc not in __DELTAF_DATABASE_XC:
         db = DeltaFactorDatabase(xc=xc)
-        __DELTAF_DATABASE_XC[db.xc] = db 
+        __DELTAF_DATABASE_XC[db.xc] = db
 
     return __DELTAF_DATABASE_XC[xc]
 
@@ -351,7 +353,7 @@ def df_wien2k(symbol, v0f, b0f, b1f, xc, b0_GPa=False, v=3, useasymm=False):
     if b0_GPa: b0 = wien2k.b0_GPa
     #print(v0f, b0f, b1f, wien2k.v0, b0, wien2k.b1)
 
-    return df_compute(float(wien2k.v0), float(b0), wien2k.b1, float(v0f), b0f, b1f, b0_GPa=b0_GPa, 
+    return df_compute(float(wien2k.v0), float(b0), wien2k.b1, float(v0f), b0f, b1f, b0_GPa=b0_GPa,
                       v=v, useasymm=useasymm)
 
 
