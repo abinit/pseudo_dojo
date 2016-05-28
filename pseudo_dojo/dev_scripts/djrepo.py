@@ -70,10 +70,10 @@ def djrepo_recalc(options):
         for ecut, entry in data.items():
             new_entry = compute_dfact_entry(pseudo, entry["num_sites"], entry["volumes"], entry["etotals"], verbose=0)
             print("ecut: ", ecut, "(new - old) df:", new_entry["dfact_meV"] - entry["dfact_meV"])
-            #data[ecut] = new_entry
+            data[ecut] = new_entry
 
         # Write new djson file.
-        #pseudo.dojo_report.json_write(pseudo.djson_path)
+        pseudo.dojo_report.json_write(pseudo.djrepo_path)
 
     return 0
 
