@@ -116,7 +116,7 @@ class PseudoGenDataPlotter(object):
             lines.extend([ae_line, ps_line])
             legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
 
-        decorate_ax(ax, xlabel="Energy [Ha]", ylabel="ATAN(LogDer)", title="ATAN(Log Derivative)", 
+        decorate_ax(ax, xlabel="Energy [Ha]", ylabel="ATAN(LogDer)", title="ATAN(Log Derivative)",
                     lines=lines, legends=legends)
 
         return fig
@@ -144,7 +144,7 @@ class PseudoGenDataPlotter(object):
             lines.extend([ae_line, ps_line])
             legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$\phi(r)$", title="Wave Functions", 
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$\phi(r)$", title="Wave Functions",
                     lines=lines, legends=legends)
 
         return fig
@@ -167,7 +167,7 @@ class PseudoGenDataPlotter(object):
                             linewidth=self.linewidth, markersize=self.markersize)
             lines.append(line); legends.append("Proj %s" % str(nl))
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$p(r)$", title="Projector Wave Functions", 
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$p(r)$", title="Projector Wave Functions",
                     lines=lines, legends=legends)
         return fig
 
@@ -178,12 +178,12 @@ class PseudoGenDataPlotter(object):
 
         lines, legends = [], []
         for name, rho in self.densities.items():
-            d = rho.values if not timesr2 else rho.values * rho.rmesh ** 2 
+            d = rho.values if not timesr2 else rho.values * rho.rmesh ** 2
             line, = ax.plot(rho.rmesh, d, linewidth=self.linewidth, markersize=self.markersize)
             lines.append(line); legends.append(name)
 
         ylabel = "$n(r)$" if not timesr2 else "$r^2 n(r)$"
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel=ylabel, title="Charge densities", 
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel=ylabel, title="Charge densities",
                     lines=lines, legends=legends)
 
         return fig
@@ -208,10 +208,10 @@ class PseudoGenDataPlotter(object):
             vder = finite_diff(lin_values, h, order=order, acc=4)
             line, = ax.plot(lin_rmesh, vder) #, **self._wf_pltopts(l, "ae"))
             lines.append(line)
-                                                                                             
+
             legends.append("%s-order derivative of %s" % (order, name))
-                                                                                             
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \n(r)$" % order, title="Derivative of the charge densities", 
+
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \n(r)$" % order, title="Derivative of the charge densities",
                     lines=lines, legends=legends)
         return fig
 
@@ -230,7 +230,7 @@ class PseudoGenDataPlotter(object):
             else:
                 legends.append("PS l=%s" % str(l))
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$v_l(r)$", title="Ion Pseudopotentials", 
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$v_l(r)$", title="Ion Pseudopotentials",
                     lines=lines, legends=legends)
         return fig
 
@@ -252,14 +252,14 @@ class PseudoGenDataPlotter(object):
             vder = finite_diff(lin_values, h, order=order, acc=4)
             line, = ax.plot(lin_rmesh, vder, **self._wf_pltopts(l, "ae"))
             lines.append(line)
-                                                                                             
+
             if l == -1:
                 legends.append("%s-order derivative Vloc" % order)
             else:
                 legends.append("$s-order derivative PS l=%s" % str(l))
-                                                                                             
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \phi(r)$" % order, 
-                    title="Derivative of the ion Pseudopotentials", 
+
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \phi(r)$" % order,
+                    title="Derivative of the ion Pseudopotentials",
                     lines=lines, legends=legends)
         return fig
 
@@ -274,7 +274,7 @@ class PseudoGenDataPlotter(object):
             lines.append(line)
             legends.append("Conv l=%s" % str(l))
 
-        decorate_ax(ax, xlabel="Ecut [Ha]", ylabel="$\Delta E$", title="Energy error per electron [Ha]", 
+        decorate_ax(ax, xlabel="Ecut [Ha]", ylabel="$\Delta E$", title="Energy error per electron [Ha]",
                     lines=lines, legends=legends)
 
         ax.set_yscale("log")
@@ -331,7 +331,7 @@ class PseudoGenDataPlotter(object):
 
             intg = rho.r2f_integral()[-1]
             print("r2 f integral: ", intg)
-            print("form_factor(0): ", name, form.values[0]) 
+            print("form_factor(0): ", name, form.values[0])
 
         # Plot vloc(q)
         #for l, pot in self.potentials.items():
@@ -523,7 +523,7 @@ class PseudoGenOutputParser(object):
     @abc.abstractmethod
     def get_input_str(self):
         """Returns a string with the input file."""
-    
+
     @abc.abstractmethod
     def get_pseudo_str(self):
         """Returns a string with the pseudopotential file."""
@@ -640,17 +640,17 @@ class OncvOutputParser(PseudoGenOutputParser):
             2    1    6.00    -3.5117357D+00
             3    0    2.00    -3.9736459D-01
             3    1    2.00    -1.4998149D-01
-        
+
         full rel:
         #   n    l    f              energy (Ha)
-        #   n    l    f        l+1/2             l-1/2		     
-            1    0    2.00    -2.4703720D+03			   
-            2    0    2.00    -4.2419865D+02			   
+        #   n    l    f        l+1/2             l-1/2
+            1    0    2.00    -2.4703720D+03
+            2    0    2.00    -4.2419865D+02
 
         """
         #header = "#   n    l    f        energy (Ha)"
-        if fullr: 
-            header = "#   n    l    f        l+1/2             l-1/2" 
+        if fullr:
+            header = "#   n    l    f        l+1/2             l-1/2"
         else:
             header = "#   n    l    f        energy (Ha)"
 
@@ -660,7 +660,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         for i, line in enumerate(self.lines):
             if line.startswith(header):
-                beg, core = i + 1, [], 
+                beg, core = i + 1, [],
                 for c in range(nc):
                     n, l, f = self.lines[beg+c].split()[:3]
                     if is_integer(f):
@@ -670,7 +670,7 @@ class OncvOutputParser(PseudoGenOutputParser):
                     core.append(n + _l2char[l] + "^%s" %f)
                 self.core = "$" + " ".join(core) + "$"
 
-                beg, valence = i + nc + 1, [] 
+                beg, valence = i + nc + 1, []
                 for v in range(nv):
                     n, l, f = self.lines[beg+v].split()[:3]
                     if is_integer(f):
@@ -770,8 +770,7 @@ class OncvOutputParser(PseudoGenOutputParser):
         beg = 0
         while True:
             g = self._grep("&", beg=beg)
-            if g.data is None:
-                break
+            if g.data is None: break
             beg = g.stop + 1
 
             header = self.lines[g.start-2]
@@ -937,39 +936,20 @@ class OncvOutputParser(PseudoGenOutputParser):
         i = self.find_string("Reference configufation results")
         return "\n".join(self.lines[:i])
 
-    def get_pseudo_str(self, devel=False):
+    def get_pseudo_str(self):
         """String with the pseudopotential data."""
-        # devel is for tuning the pseudo, only two cutoffs
+
 
         # Extract the pseudo in Abinit format.
         try:
             i = self.find_string('Begin PSPCODE8')
-        except:
+        except IndexError:
             i = self.find_string('Begin PSP_UPF')
 
         ps_data = "\n".join(self.lines[i+1:])
 
         # Append the input to ps_data (note XML markers)
         ps_data += "\n\n<INPUT>\n" + self.get_input_str() + "</INPUT>\n"
-
-        # Add the initial DOJO_REPORT with the hints and the initial list of ecut values.
-        estart = self.hints["high"]["ecut"]
-        dense_right = np.linspace(estart - 10, estart + 10, num=11)
-
-        d = {
-            "version": "1.0",
-            "pseudo_type": "NC",
-            "ppgen_hints": self.hints, 
-            "ecuts": list(dense_right) + [dense_right[-1] + 8, dense_right[-1] + 10,],
-            "symbol": self.atsym,
-        }
-
-        if devel:
-            # development run: few, relatively high ecut calculations
-            d["ecuts"] = [estart, estart + 2]
-
-        ps_data += "\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
-
         return ps_data
 
     def make_plotter(self):

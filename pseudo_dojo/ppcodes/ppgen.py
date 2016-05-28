@@ -314,11 +314,12 @@ class OncvGenerator(PseudoGenerator):
     """
     OutputParser = OncvOutputParser
 
+    @classmethod
     def from_file(cls, path, calc_type, workdir=None):
         """Build the object from a file containing input parameters."""
         with open(path, "rt") as fh:
             input_str = fh.read()
-        return cls(  calc_type, workdir=workdir)
+            return cls(input_str, calc_type, workdir=workdir)
 
     def __init__(self, input_str, calc_type, workdir=None):
         super(OncvGenerator, self).__init__(workdir=workdir)

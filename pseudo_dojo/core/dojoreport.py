@@ -213,26 +213,46 @@ class DojoReport(dict):
             return cls(**json.load(fh))
 
     @classmethod
-    def empty_from_pseudo(cls, pseudo, ppgen_ecut):
+    def empty_from_pseudo(cls, pseudo, hints, devel=False):
         """
         Initialize an empty DojoReport from the pseudo and an initial guess for
         the cutoff energy in Hartree
 
         Args:
             pseudo: Pseudo object.
-            ppgen_ecut: Initial cutoff energy provided e.g. by the generator
+            hints: Initial hints on the cutoff energy provided by the pp generator.
+                Dictionary [accuracy][ecut]
         """
         # Build initial list of cutoff energies for tests.
-        dense_right = np.arange(ppgen_ecut, ppgen_ecut + 6*2, step=2)
-        dense_left = np.arange(max(ppgen_ecut-6, 2), ppgen_ecut, step=2)
-        coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 35, step=5)
+        #dense_right = np.arange(ppgen_ecut, ppgen_ecut + 6*2, step=2)
+        #dense_left = np.arange(max(ppgen_ecut-6, 2), ppgen_ecut, step=2)
+        #coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 35, step=5)
 
         new = cls()
+
+        estart = hints["high"]["ecut"]
+        dense_right = np.linspace(estart - 10, estart + 10, num=11)
+        ecuts = list(dense_right) + [dense_right[-1] + 8, dense_right[-1] + 10,],
+
+        # devel is for tuning the pseudo, only two cutoffs
+        # development run: few, relatively high ecut calculations
+        if devel: ecuts = [estart, estart + 2]
+
+        if pseudo.isnc:
+            pseudo_type = "NC"
+        elif pseudo.ispaw:
+            pseudo_type = "PAW"
+        else:
+            raise TypeValue("Neither NC nor PAW pseudo!")
+
         new.update(
             version=cls.LAST_VERSION,
             symbol=pseudo.symbol,
+            pseudo_type=pseudo_type,
+            xc=pseudo.xc.as_dict(),
             md5=pseudo.compute_md5(),
-            ecuts=list(dense_left) + list(dense_right) + list(coarse_high),
+            ppgen_hints=hints,
+            ecuts=ecuts,
         )
 
         return new
@@ -528,10 +548,12 @@ class DojoReport(dict):
         # Check if we have computed each trial for the full set of ecuts in global_ecuts
         global_ecuts = self.ecuts
 
+        # TODO: report should contain XC
         missing = defaultdict(list)
         for trial in check_trials:
-            # Gbrv results do not contain noble gases so ignore the error
-            if "gbrv" in trial and self.element.is_noble_gas: continue
+            # Gbrv results do not contain noble gases, Hg and Po so ignore the error
+            if "gbrv" in trial and (self.element.is_noble_gas or self.symbol in ("Hg", "Po")):
+                continue
 
             for ecut in global_ecuts:
                 if not self.has_trial(trial, ecut=ecut):

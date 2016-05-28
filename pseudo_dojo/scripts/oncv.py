@@ -3,20 +3,26 @@
 from __future__ import division, print_function, unicode_literals
 
 import sys
+import os
 import collections
 import argparse
 import json
+import shutil
 
 from monty.termcolor import cprint
 from monty.os.path import which
+from pymatgen.io.abinit.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
+from pseudo_dojo.core.dojoreport import DojoReport
+from pseudo_dojo.ppcodes.ppgen import OncvGenerator
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter
 
 
 def oncv_plot(options):
-    """Plot data. Requires oncvpsp output file."""
+    """Plot data with matplotlib. Requires oncvpsp output file."""
     out_path = options.filename
 
+    # Parse output file.
     onc_parser = OncvOutputParser(out_path)
     onc_parser.scan()
     if not onc_parser.run_completed:
@@ -26,14 +32,7 @@ def oncv_plot(options):
     # Build the plotter
     plotter = onc_parser.make_plotter()
 
-    # Table of methods
-    callables = collections.OrderedDict([
-        ("wp", plotter.plot_waves_and_projs),
-        ("dp", plotter.plot_dens_and_pots),
-        ("lc", plotter.plot_atanlogder_econv),
-        ("df", plotter.plot_den_formfact),
-    ])
-
+    # Plot data
     plotter.plot_radial_wfs()
     plotter.plot_atanlogder_econv()
     plotter.plot_projectors()
@@ -45,6 +44,14 @@ def oncv_plot(options):
     #plotter.plot_densities(timesr2=True)
     plotter.plot_den_formfact()
     return 0
+
+    # Table of methods
+    callables = collections.OrderedDict([
+        ("wp", plotter.plot_waves_and_projs),
+        ("dp", plotter.plot_dens_and_pots),
+        ("lc", plotter.plot_atanlogder_econv),
+        ("df", plotter.plot_den_formfact),
+    ])
 
     # Call function depending on options.plot_mode
     if options.plot_mode == "slide":
@@ -76,53 +83,68 @@ def oncv_json(options):
 
 
 def oncv_run(options):
-    """Run oncvpsp, generate djrepo file, plot results. Requires input file."""
-
-    calc_type = dict(nor= "non-relativistic",
-                     sr = "scalar-relativistic",
+    """
+    Run oncvpsp, generate djrepo file, plot results. Requires input file.
+    """
+    calc_type = dict(nor="non-relativistic",
+                     sr="scalar-relativistic",
                      fr="fully-relativistic")[options.rel]
 
-    from pseudo_dojo.ppcodes import OncvGenerator
+    # Build names of psp8 and djson files from input and relativistic mode.
     in_path = options.filename
+    root, _ = os.path.splitext(in_path)
+
+    if options.rel == "nor":
+        if not root.endswith("_nor"): root += "_nor"
+    elif options.rel == "fr":
+        if not root.endswith("_r"): root += "_r"
+
+    psp8_path = root + ".psp8"
+    djrepo_path = root + ".djrepo"
+    out_path = root + ".out"
+
     oncv_ppgen = OncvGenerator.from_file(in_path, calc_type, workdir=None)
-    #print(oncv_ppgen)
-    #oncv_ppgen.start()
-    #oncv_ppgen.wait()
+    print(oncv_ppgen)
+    print(oncv_ppgen.input_str)
 
-    #if retcode != 0
-    #   cprint("oncvpsp returned %s. Exiting" % retcode, "red")
-    #   return retcode
+    oncv_ppgen.start()
+    retcode = oncv_ppgen.wait()
 
-    out_path = in_path.replace(".in", ".out")
-    """
+    if oncv_ppgen.status != oncv_ppgen.S_OK:
+       cprint("oncvpsp returned %s. Exiting" % retcode, "red")
+       return 1
+
+    # Tranfer final output file.
+    shutil.copy(oncv_ppgen.stdout_path, out_path)
+
+    # Parse the output file
     onc_parser = OncvOutputParser(out_path)
     onc_parser.scan()
     if not onc_parser.run_completed:
         cprint("oncvpsp output is not complete. Exiting", "red")
         return 1
 
-    if options.psp8:
-        # Generate psp8 and djson files.
-        root, _ = os.path.splitext(out_path)
-        psp8_path = root + ".psp8"
-        djson_path = root + ".djson"
+    # Extract psp8 files from the oncvpsp output and write it to file.
+    s = onc_parser.get_pseudo_str()
+    with open(psp8_path, "wt") as fh:
+        fh.write(s)
 
-        # Extract psp8 files from the oncvpsp output and write it to file.
-        s = onc_parser.get_pseudo_str(devel=True)
-        with open(psp8_path, "wt") as fh:
-            fh.write(s)
+    pseudo = Pseudo.from_file(psp8_path)
+    if pseudo is None:
+        cprint("Cannot parse psp8 file: %s" % psp8_path, "red")
+        return 1
 
-        # Try to read pseudo from the files just generated.
-        pseudo = dojopseudo_from_file(psp8_path)
-        if pseudo is None:
-            cprint("Cannot parse psp8 files: %s" % psp8_path, "red")
-            return 1
+    # Initialize and write djson file.
+    report = DojoReport.empty_from_pseudo(pseudo, onc_parser.hints, devel=False)
+    report.json_write(djrepo_path)
 
-        # Write djson file.
-        #report = DojoReport.new_pseudo(pseudo)
-        #report.json_write(djson_path)
-        return 0
-    """
+    # Try to read pseudo from the files just generated.
+    #pseudo = dojopseudo_from_file(psp8_path)
+    #if pseudo is None:
+    #    cprint("Cannot parse psp8 files: %s" % psp8_path, "red")
+    #    return 1
+
+    return 0
 
 
 def main():
@@ -130,9 +152,9 @@ def main():
     def str_examples():
         return """\
 Usage example:
-    oncv.py run H.in                  ==> Run oncvpsp.
-    oncv.py plot H.out                ==> Plot oncvpsp generation results for pseudo H.psp8
-    oncv.py json H.out                ==> Generate JSON file.
+    oncv.py run H.in         ==> Run oncvpsp.
+    oncv.py plot H.out       ==> Plot oncvpsp generation results for pseudo H.psp8
+    oncv.py json H.out       ==> Generate JSON file.
 """
 
     def show_examples_and_exit(err_msg=None, error_code=1):
@@ -141,7 +163,7 @@ Usage example:
         if err_msg: sys.stderr.write("Fatal Error\n" + err_msg + "\n")
         sys.exit(error_code)
 
-    # Parent parser implementing commong options
+    # Parent parser implementing common options.
     copts_parser = argparse.ArgumentParser(add_help=False)
     copts_parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
                         help='Verbose, can be supplied multiple times to increase verbosity')
@@ -160,6 +182,8 @@ Usage example:
     # Create the parsers for the sub-commands
     p_run = subparsers.add_parser('run', parents=[copts_parser], help=oncv_run.__doc__)
     p_run.add_argument("--rel", default="sr", help="Relativistic treatment: nor, sr, fr")
+    #p_run.add_argument("-d", "--devel", action="store_true", default=False,
+    #                    help="put only two energies in the ecuts list for testing for developing the pseudo")
 
     # Create the parsers for the sub-commands
     p_plot = subparsers.add_parser('plot', parents=[copts_parser], help=oncv_plot.__doc__)
@@ -172,11 +196,6 @@ Usage example:
                               "df --> density form factor"))
 
     p_json = subparsers.add_parser('json', parents=[copts_parser], help=oncv_json.__doc__)
-
-    #parser.add_argument("-8", "--psp8", action="store_true", default=False,
-    #                    help="produce a .psp8 file with initial dojo report and exit")
-    #parser.add_argument("-d", "--devel", action="store_true", default=False,
-    #                    help="put only two energies in the ecuts list for testing for developing the pseudo")
 
     # Parse command line.
     try:
