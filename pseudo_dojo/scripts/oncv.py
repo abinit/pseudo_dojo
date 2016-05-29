@@ -15,7 +15,12 @@ from pymatgen.io.abinit.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from pseudo_dojo.core.dojoreport import DojoReport
 from pseudo_dojo.ppcodes.ppgen import OncvGenerator
-from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter
+from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter, oncv_make_open_notebook
+
+
+def oncv_nbplot(options):
+    """Generate jupyter notebook to plot data. Requires oncvpsp output file."""
+    return oncv_make_open_notebook(options.filename)
 
 
 def oncv_plot(options):
@@ -97,11 +102,18 @@ def oncv_run(options):
     if options.rel == "nor":
         if not root.endswith("_nor"): root += "_nor"
     elif options.rel == "fr":
+        raise NotImplementedError("FR is not coded yet")
         if not root.endswith("_r"): root += "_r"
 
     psp8_path = root + ".psp8"
     djrepo_path = root + ".djrepo"
     out_path = root + ".out"
+    if os.path.exists(psp8_path):
+        cprint("%s already exists and will be overwritten" % os.path.relpath(psp8_path), "yellow")
+    if os.path.exists(djrepo_path):
+        cprint("%s already exists and will be overwritten" % os.path.relpath(djrepo_path), "yellow")
+    if os.path.exists(out_path):
+        cprint("%s already exists and will be overwritten" % os.path.relpath(out_path), "yellow")
 
     oncv_ppgen = OncvGenerator.from_file(in_path, calc_type, workdir=None)
     print(oncv_ppgen)
@@ -138,12 +150,6 @@ def oncv_run(options):
     report = DojoReport.empty_from_pseudo(pseudo, onc_parser.hints, devel=False)
     report.json_write(djrepo_path)
 
-    # Try to read pseudo from the files just generated.
-    #pseudo = dojopseudo_from_file(psp8_path)
-    #if pseudo is None:
-    #    cprint("Cannot parse psp8 files: %s" % psp8_path, "red")
-    #    return 1
-
     return 0
 
 
@@ -154,6 +160,7 @@ def main():
 Usage example:
     oncv.py run H.in         ==> Run oncvpsp.
     oncv.py plot H.out       ==> Plot oncvpsp generation results for pseudo H.psp8
+    oncv.py nbplot H.out     ==> Generate jupyter notebook to plot oncvpsp generation results for pseudo H.psp8
     oncv.py json H.out       ==> Generate JSON file.
 """
 
@@ -181,7 +188,8 @@ Usage example:
 
     # Create the parsers for the sub-commands
     p_run = subparsers.add_parser('run', parents=[copts_parser], help=oncv_run.__doc__)
-    p_run.add_argument("--rel", default="sr", help="Relativistic treatment: nor, sr, fr")
+    p_run.add_argument("--rel", default="sr", help=("Relativistic treatment: nor for non-relativistic, "
+                       "sr for scalar-relativistic, fr for fully-relativistic."))
     #p_run.add_argument("-d", "--devel", action="store_true", default=False,
     #                    help="put only two energies in the ecuts list for testing for developing the pseudo")
 
@@ -194,6 +202,8 @@ Usage example:
                               "dp --> densities and potentials\n" +
                               "lc --> atan(logder) and convergence wrt ecut\n" +
                               "df --> density form factor"))
+
+    p_nbplot = subparsers.add_parser('nbplot', parents=[copts_parser], help=oncv_nbplot.__doc__)
 
     p_json = subparsers.add_parser('json', parents=[copts_parser], help=oncv_json.__doc__)
 

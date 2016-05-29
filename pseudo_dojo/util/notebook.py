@@ -5,6 +5,7 @@ import os
 
 from monty.os.path import which
 
+
 def write_notebook(pseudopath, with_eos=False, tmpfile=None):
     """
     Read a pseudopotential file and write an ipython notebook.

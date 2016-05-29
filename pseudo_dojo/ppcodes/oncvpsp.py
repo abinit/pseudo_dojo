@@ -8,6 +8,7 @@ import json
 import numpy as np
 
 from collections import namedtuple, OrderedDict
+from monty.os.path import which
 from monty.functools import lazy_property
 from monty.collections import AttrDict
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
@@ -343,7 +344,6 @@ class PseudoGenDataPlotter(object):
 
         decorate_ax(ax, xlabel="Ecut [Ha]", ylabel="$n(q)$", title="Form factor, l=0 ", lines=lines, legends=legends)
         return fig
-
 
 class MultiPseudoGenDataPlotter(object):
     """
@@ -1023,3 +1023,118 @@ class OncvOutputParser(PseudoGenOutputParser):
             return self.GrepResults(data=None, start=intag, stop=stop)
         else:
             return self.GrepResults(data=np.array(data), start=intag, stop=stop)
+
+
+def oncv_make_open_notebook(outpath):
+    """
+    Generate an ipython notebook from the oncvpsp outputh and open it in the browser.
+    Return system exit code.
+
+    Raise:
+        RuntimeError if jupyther or ipython are not in $PATH
+    """
+    nbpath = oncv_write_notebook(outpath, nbpath=None)
+
+    if which("jupyter") is not None:
+        return os.system("jupyter notebook %s" % nbpath)
+
+    if which("ipython") is not None:
+        return os.system("ipython notebook %s" % nbpath)
+
+    raise RuntimeError("Cannot find neither jupyther nor ipython. Install them with `pip install`")
+
+
+def oncv_write_notebook(outpath, nbpath=None):
+    """
+    Write an ipython notebook to nbpath
+    If nbpath is None, a temporay file is created.
+    Return path to the notebook.
+    """
+    # See http://nbviewer.ipython.org/gist/fperez/9716279
+    try:
+        # Here we have a deprecation warning but the API of v4 is different!
+        from nbformat import current as nbf
+        #import nbformat.v3 as nbf
+    except ImportError:
+        from IPython.nbformat import current as nbf
+
+    outpath = os.path.abspath(outpath)
+
+    nb = nbf.new_notebook()
+
+    cells = [
+        nbf.new_heading_cell("This is an auto-generated notebook for %s" % os.path.basename(outpath)),
+        nbf.new_code_cell("""\
+from __future__ import print_function, division, unicode_literals
+
+%matplotlib inline
+
+import mpld3
+from mpld3 import plugins as plugs
+plugs.DEFAULT_PLUGINS = [plugs.Reset(), plugs.Zoom(), plugs.BoxZoom(), plugs.MousePosition()]
+mpld3.enable_notebook()
+import seaborn as sns
+#sns.set(style="dark", palette="Set2")
+sns.set(style='ticks', palette='Set2')"""),
+
+        nbf.new_code_cell("""\
+# Parse output file
+from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
+onc_parser = OncvOutputParser('%s')""" % outpath),
+
+        nbf.new_code_cell("""\
+# Parse the file and build the plotter
+onc_parser.scan()
+if not onc_parser.run_completed:
+    raise RuntimeError("Cannot parse output file")
+
+plotter = onc_parser.make_plotter()"""),
+
+        nbf.new_heading_cell("AE and PS radial wavefunctions $\phi(r)$:"),
+        nbf.new_code_cell("fig = plotter.plot_radial_wfs(show=False)"),
+
+        nbf.new_heading_cell("Arctan of the logarithmic derivatives:"),
+        nbf.new_code_cell("fig = plotter.plot_atan_logders(show=False)"),
+
+        nbf.new_heading_cell("Convergence in $G$-space estimated by ONCVPSP:"),
+        nbf.new_code_cell("fig = plotter.plot_ene_vs_ecut(show=False)"),
+
+        nbf.new_heading_cell("Projectors:"),
+        nbf.new_code_cell("fig = plotter.plot_projectors(show=False)"),
+
+        nbf.new_heading_cell("Core-Valence-Model charge densities:"),
+        nbf.new_code_cell("fig = plotter.plot_densities(show=False)"),
+
+        nbf.new_heading_cell("Local potential and $l$-dependent potentials:"),
+        nbf.new_code_cell("fig = plotter.plot_potentials(show=False)"),
+
+        #nbf.new_heading_cell("1-st order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
+        #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=1, show=False)"""),
+        #nbf.new_heading_cell("2-nd order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
+        #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=2, show=False)"""),
+
+#        nbf.new_heading_cell("Model core charge and form factors computed by ABINIT"),
+#        nbf.new_code_cell("""\
+#with pseudo.open_pspsfile() as psps:
+#psps.plot()"""),
+
+    ]
+
+    # Plot data
+    #plotter.plot_der_potentials()
+    #for order in [1,2,3,4]:
+    #    plotter.plot_der_densities(order=order)
+    #plotter.plot_densities(timesr2=True)
+    #plotter.plot_den_formfact()
+
+    # Now that we have the cells, we can make a worksheet with them and add it to the notebook:
+    nb['worksheets'].append(nbf.new_worksheet(cells=cells))
+
+    if nbpath is None:
+        import tempfile
+        _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
+
+    with open(nbpath, 'wt') as f:
+        nbf.write(nb, f, 'ipynb')
+
+    return nbpath

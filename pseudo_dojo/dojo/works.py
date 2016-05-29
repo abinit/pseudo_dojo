@@ -222,6 +222,11 @@ class EbandsFactorWork(DojoWork):
         self.add_entry_to_dojoreport(entry)
 
         return entry
+        #from abipy.abilab import abiopen
+        #with abiopen(path) as gsr:
+        #    ebands = gsr.ebands
+        #    fig = ebands.plot_with_edos(ebands.get_edos(width=0.05, step=0.02))
+        #    return fig
 
 
 class DeltaFactory(object):

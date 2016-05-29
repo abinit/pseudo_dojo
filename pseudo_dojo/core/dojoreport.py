@@ -421,9 +421,42 @@ class DojoReport(dict):
                      }
         self["hints"] = hints_dict
 
-    #def validate(self, hints):
-    #    Add md5 hash value
-    #    self["validated"] = True
+    def ipw_validate(self):
+        """
+        Return an ipython widget with controllers to validate the pseudo.
+        """
+        import ipywidgets as ipw
+
+        low_ecut = ipw.FloatText(description='Low ecut:')
+        normal_ecut = ipw.FloatText(description='Normal ecut:')
+        high_ecut = ipw.FloatText(description='High ecut:')
+        validated_by = ipw.Text(description="Validated by:")
+        ok_button = ipw.Button(description="Validate")
+
+        def on_button_clicked(b):
+            """Callback called to validate the dojo report."""
+            print(low_ecut.value, normal_ecut.value, high_ecut.value)
+            if not low_ecut.value <= normal_ecut.value <= high_ecut.value:
+                raise ValueError("not low_ecut.value <= normal_ecut.value <= high_ecut.value")
+            if not validated_by.value:
+                raise ValueError("validated_by field must be filled")
+            #if "validation" in self and not force_new_validation:
+            #    raise ValueError("DojoReport is already validated. Use force_new_validation")
+
+            #from time import gmtime, strftime
+            #self['validation'] = {
+            #    'validated_by': validated_by.value,
+            #    'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime())
+            #}
+            #self.json_write(p.djrepo_path)
+
+            # TODO: Print convergence of df, gbrv ...
+            #df_last_ecut = sorted((self["deltafactor"].keys())[-1]
+            #df_last = self["delfactor"][df_last_ecut]["dfact_meV"]
+            #dfprime_last = self["delfactor"][df_last_ecut]["dfactprime_meV"]
+
+        ok_button.on_click(on_button_clicked)
+        return ipw.Box(children=[low_ecut, normal_ecut, high_ecut, validated_by, ok_button])
 
     @staticmethod
     def _ecut2key(ecut):
@@ -723,17 +756,12 @@ class DojoReport(dict):
         else:
             fig = plt.gcf()
 
-        #ax_list, fig, plt = get_axarray_fig_plt(ax_list, nrows=len(keys), ncols=1, sharex=True, squeeze=False)
-
         if len(keys) != len(ax_list):
             raise ValueError("len(keys)=%s != len(ax_list)=%s" %  (len(keys), len(ax_list)))
 
         for i, (ax, key) in enumerate(zip(ax_list, keys)):
             values = np.array([float(d[ecut][key]) for ecut in ecuts])
-            #try:
             refval = getattr(reference, key)
-            #except AttributeError:
-            #    refval = 0.0
 
             # Plot difference pseudo - ref.
             ax.plot(ecuts, values - refval, "o-")
@@ -811,8 +839,6 @@ class DojoReport(dict):
         else:
             fig = plt.gcf()
 
-        #ax_list, fig, plt = get_axarray_fig_plt(ax_list, nrows=len(stypes), ncols=1, sharex=True, squeeze=False)
-
         if len(stypes) != len(ax_list):
             raise ValueError("len(stypes)=%s != len(ax_list)=%s" %  (len(stypes), len(ax_list)))
 
@@ -882,8 +908,7 @@ class DojoReport(dict):
 
     @add_fig_kwargs
     def plot_ebands(self, ecut=None, **kwargs):
-        if ecut is None:
-            ecut = self['ebands'].keys()[0]
+        if ecut is None: ecut = self['ebands'].keys()[0]
         path = self['ebands'][self['ebands'].keys()[0]]['GSR-nc']
 
         from abipy.abilab import abiopen
