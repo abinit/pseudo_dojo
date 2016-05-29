@@ -6,7 +6,7 @@ import os
 from monty.os.path import which
 
 
-def write_notebook(pseudopath, with_eos=False, tmpfile=None):
+def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=None):
     """
     Read a pseudopotential file and write an ipython notebook.
     By default, the notebook is created in the same directory
@@ -15,6 +15,8 @@ def write_notebook(pseudopath, with_eos=False, tmpfile=None):
 
     Args:
         pseudopath: Path to the pseudopotential file.
+        with_validation: If True an ipython widget is added at the end of the notebook
+          to validate the pseudopotential.
         with_eos: True if EOS plots are wanted.
 
     Returns:
@@ -132,6 +134,13 @@ fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-df
             nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="bcc", show=False)"""),
         ])
 
+    if with_validation:
+        # Add validation widget.
+        cells.extend([
+            nbf.new_heading_cell("PseudoDojo validation:"),
+            nbf.new_code_cell("report.ipw_validate()"),
+        ])
+
     # Now that we have the cells, we can make a worksheet with them and add it to the notebook:
     nb['worksheets'].append(nbf.new_worksheet(cells=cells))
 
@@ -151,7 +160,7 @@ fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-df
     return nbpath
 
 
-def make_open_notebook(pseudopath, with_eos=True):
+def make_open_notebook(pseudopath, with_validation=False, with_eos=True):
     """
     Generate an ipython notebook from the pseudopotential path and
     open it in the browser. Return system exit code.
@@ -159,8 +168,7 @@ def make_open_notebook(pseudopath, with_eos=True):
     Raise:
         RuntimeError if jupyther or ipython are not in $PATH
     """
-
-    path = write_notebook(pseudopath, with_eos=with_eos, tmpfile=True)
+    path = write_notebook(pseudopath, with_validation=with_validation, with_eos=with_eos, tmpfile=True)
 
     if which("jupyter") is not None:
         return os.system("jupyter notebook %s" % path)

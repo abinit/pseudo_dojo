@@ -350,7 +350,7 @@ def dojo_notebook(options):
     from pseudo_dojo.util.notebook import make_open_notebook
     retcode = 0
     for p in options.pseudos:
-        retcode += make_open_notebook(p.filepath)
+        retcode += make_open_notebook(p.filepath, with_validation=False, with_eos=True)
         if retcode != 0: break
 
     return retcode
@@ -582,6 +582,7 @@ def dojo_check(options):
         #    ans = prompt("Do you want to continue? [Y/n]")
         #    if ans.lower() in ["n", "no"]: break
         retcode += rc
+        if rc != 0: print(80*"=")
 
     if retcode != 0:
         cprint("dojo_check return code: %d [%d/%d]" % (retcode, retcode, len(options.pseudos)), "red")

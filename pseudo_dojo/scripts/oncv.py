@@ -91,6 +91,7 @@ def oncv_run(options):
     """
     Run oncvpsp, generate djrepo file, plot results. Requires input file.
     """
+    # Select calc_type
     calc_type = dict(nor="non-relativistic",
                      sr="scalar-relativistic",
                      fr="fully-relativistic")[options.rel]
@@ -99,6 +100,7 @@ def oncv_run(options):
     in_path = options.filename
     root, _ = os.path.splitext(in_path)
 
+    # Enforce convention on output files.
     if options.rel == "nor":
         if not root.endswith("_nor"): root += "_nor"
     elif options.rel == "fr":
@@ -115,6 +117,7 @@ def oncv_run(options):
     if os.path.exists(out_path):
         cprint("%s already exists and will be overwritten" % os.path.relpath(out_path), "yellow")
 
+    # Build Generator and start generation.
     oncv_ppgen = OncvGenerator.from_file(in_path, calc_type, workdir=None)
     print(oncv_ppgen)
     print(oncv_ppgen.input_str)
@@ -158,9 +161,9 @@ def main():
     def str_examples():
         return """\
 Usage example:
-    oncv.py run H.in         ==> Run oncvpsp.
-    oncv.py plot H.out       ==> Plot oncvpsp generation results for pseudo H.psp8
-    oncv.py nbplot H.out     ==> Generate jupyter notebook to plot oncvpsp generation results for pseudo H.psp8
+    oncv.py run H.in         ==> Run oncvpsp input file (scalar relativistic mode).
+    oncv.py plot H.out       ==> Plot oncvpsp results for pseudo H.psp8.
+    oncv.py nbplot H.out     ==> Generate jupyter notebook to plot oncvpsp results.
     oncv.py json H.out       ==> Generate JSON file.
 """
 
