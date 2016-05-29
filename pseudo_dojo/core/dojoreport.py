@@ -814,14 +814,14 @@ class DojoReport(dict):
         Returns:
             `matplotlib` figure or None if the GBRV test is not present
         """
-        ax, fig, plt = get_ax_fig_plt(ax)
-        cmap = kwargs.pop("cmap", plt.get_cmap("jet"))
-
         trial = "gbrv_" + struct_type
         # Handle missing entries: noble gases, Hg ...
         if trial not in self:
             print("dojo report does not contain trial:", trial)
             return None
+
+        ax, fig, plt = get_ax_fig_plt(ax)
+        cmap = kwargs.pop("cmap", plt.get_cmap("jet"))
 
         ecuts = list(self[trial].keys())
         num_ecuts = len(ecuts)
