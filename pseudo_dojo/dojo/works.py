@@ -207,7 +207,7 @@ class EbandsFactorWork(DojoWork):
         return "ebands"
 
     def on_all_ok(self):
-        """Callback executed when all tasks in self have reached S_OK."""
+        """Callback executed when all tasks in the work have reached S_OK."""
         # store the path of the GSR nc file in the dojoreport
         # during the validation the bandstrure is plotted and the validator is asked to give the energy up to which
         # no sign of ghosts is visible

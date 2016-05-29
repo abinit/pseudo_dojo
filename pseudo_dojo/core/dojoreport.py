@@ -628,8 +628,13 @@ class DojoReport(dict):
             ax: matplotlib Axes, if ax is None a new figure is created.
 
         Returns:
-            `matplotlib` figure.
+            `matplotlib` figure or None if the deltafactor test is not present
         """
+        trial = "deltafactor"
+        if trial not in self:
+            print("dojo report does not contain trial:", trial)
+            return None
+
         # Extract the total energy of the AE relaxed structure (4).
         d = OrderedDict([(ecut, data["etotals"][4]) for ecut, data in self["deltafactor"].items()])
 
@@ -695,12 +700,16 @@ class DojoReport(dict):
         ================  ==============================================================
 
         Returns:
-            `matplotlib` figure.
+            `matplotlib` figure or None if the deltafactor test is not present
         """
+        trial = "deltafactor"
+        if trial not in self:
+            print("dojo report does not contain trial:", trial)
+            return None
+
         ax, fig, plt = get_ax_fig_plt(ax)
         cmap = kwargs.pop("cmap", plt.get_cmap("jet"))
 
-        trial = "deltafactor"
         ecuts = list(self[trial].keys())
         num_ecuts = len(ecuts)
 
@@ -728,8 +737,13 @@ class DojoReport(dict):
             ax_list: List of matplotlib Axes, if ax_list is None a new figure is created
 
         Returns:
-            `matplotlib` figure.
+            `matplotlib` figure or None if the deltafactor test is not present
         """
+        trial = "deltafactor"
+        if trial not in self:
+            print("dojo report does not contain trial:", trial)
+            return None
+
         all = ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1"]
         if what is None:
             keys = all
@@ -805,8 +819,11 @@ class DojoReport(dict):
 
         trial = "gbrv_" + struct_type
         # Handle missing entries: noble gases, Hg ...
-        if trial not in self: return None
-        ecuts = self[trial].keys()
+        if trial not in self:
+            print("dojo report does not contain trial:", trial)
+            return None
+
+        ecuts = list(self[trial].keys())
         num_ecuts = len(ecuts)
 
         for i, ecut in enumerate(ecuts):
@@ -829,10 +846,17 @@ class DojoReport(dict):
             ax_list: List of matplotlib Axes, if ax_list is None a new figure is created
 
         Returns:
-            `matplotlib` figure.
+            `matplotlib` figure. None if the GBRV test is not present.
         """
         import matplotlib.pyplot as plt
         stypes = ("fcc", "bcc")
+
+        for stype in stypes:
+            trial = "gbrv_" + stype
+            if trial not in self:
+                print("dojo report does not contain trial:", trial)
+                return None
+
         if ax_list is None:
             fig, ax_list = plt.subplots(nrows=len(stypes), ncols=1, sharex=True, squeeze=False)
             ax_list = ax_list.ravel()
@@ -867,9 +891,14 @@ class DojoReport(dict):
             ax_list: List of matplotlib Axes, if ax_list is None a new figure is created
 
         Returns:
-            `matplotlib` figure.
+            `matplotlib` figure. None if the GBRV test is not present.
         """
-        d = self["phonon"]
+        trial = "phonon"
+        if trial not in self:
+            print("dojo report does not contain trial:", trial)
+            return None
+
+        d = self[trial]
         ecuts = list(d.keys())
 
         l = [(ecut, float(ecut)) for ecut in ecuts]
@@ -908,6 +937,17 @@ class DojoReport(dict):
 
     @add_fig_kwargs
     def plot_ebands(self, ecut=None, **kwargs):
+        """
+        Plot electronic band structure.
+
+        Returns:
+            `matplotlib` figure. None if the ebands test is not present.
+        """
+        trial = "ebands"
+        if trial not in self:
+            print("dojo report does not contain trial:", trial)
+            return None
+
         if ecut is None: ecut = self['ebands'].keys()[0]
         path = self['ebands'][self['ebands'].keys()[0]]['GSR-nc']
 

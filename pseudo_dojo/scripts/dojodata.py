@@ -293,7 +293,7 @@ def dojo_plot(options):
         if options.verbose:
             print(pseudo)
 	    try:
-		error = report.check()
+		error = report.check(check_trias=None)
 		if error:
 		    cprint("[%s] Validation error" % pseudo.basename, "red")
                     print(error)
@@ -573,7 +573,9 @@ def dojo_dist(options):
 
 
 def dojo_check(options):
-    """Check validity of pseudodojo report."""
+    """
+    Check validity of pseudodojo report. Print errors to stdout
+    """
     retcode = 0
     for p in options.pseudos:
         rc = check_pseudo(p, check_trials=options.check_trials, verbose=options.verbose)
@@ -670,7 +672,7 @@ def dojo_validate(options):
             # test trials
             print('\n= TRIALS TEST ===========================================\n')
             try:
-                error = report.check()
+                error = report.check(check_trials=None)
                 if error:
                     cprint("[%s] Validation problem" % p.basename, "red")
                     if options.verbose:
@@ -783,11 +785,9 @@ Usage example:
     # Subparser for notebook command.
     p_notebook = subparsers.add_parser('notebook', parents=[copts_parser],
                                        help=dojo_notebook.__doc__)
-
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[copts_parser, plot_options_parser],
                                       help=dojo_compare.__doc__)
-
     # Subparser for figures
     p_figures = subparsers.add_parser('figures', parents=[copts_parser], help=dojo_figures.__doc__)
 
@@ -840,7 +840,7 @@ Usage example:
         Find pseudos in paths, return :class:`DojoTable` object sorted by atomic number Z.
         Accepts filepaths or directory.
         """
-        exts = ("psp8",)
+        exts = ("psp8", "xml")
 
         paths = options.pseudos
 
