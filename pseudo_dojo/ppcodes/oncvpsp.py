@@ -174,7 +174,9 @@ class PseudoGenDataPlotter(object):
 
     @add_fig_kwargs
     def plot_densities(self, ax=None, timesr2=False, **kwargs):
-        """Plot ae, ps and model densities on axis ax."""
+        """
+        Plot ae, ps and model densities on axis ax.
+        """
         ax, fig, plt = get_ax_fig_plt(ax)
 
         lines, legends = [], []
@@ -344,6 +346,7 @@ class PseudoGenDataPlotter(object):
 
         decorate_ax(ax, xlabel="Ecut [Ha]", ylabel="$n(q)$", title="Form factor, l=0 ", lines=lines, legends=legends)
         return fig
+
 
 class MultiPseudoGenDataPlotter(object):
     """
@@ -562,7 +565,7 @@ class OncvOutputParser(PseudoGenOutputParser):
     # Object storing the final results.
     Results = PseudoGenResults
 
-    # Class used to instanciate the plotter.
+    # Class used to instantiate the plotter.
     Plotter = PseudoGenDataPlotter
 
     def scan(self, verbose=0):
@@ -937,14 +940,16 @@ class OncvOutputParser(PseudoGenOutputParser):
         return "\n".join(self.lines[:i])
 
     def get_pseudo_str(self):
-        """String with the pseudopotential data."""
-
+        """Return string with the pseudopotential data."""
 
         # Extract the pseudo in Abinit format.
         try:
             i = self.find_string('Begin PSPCODE8')
         except IndexError:
-            i = self.find_string('Begin PSP_UPF')
+            try:
+                i = self.find_string('Begin PSP_UPF')
+            except IndexError:
+                raise ValueError("Cannot find neither PSPCODE8 not PSP_UPF tag in output file")
 
         ps_data = "\n".join(self.lines[i+1:])
 
@@ -1005,7 +1010,7 @@ class OncvOutputParser(PseudoGenOutputParser):
         data, stop, intag = [], None, -1
 
         if beg >= len(self.lines):
-            raise ValueError()
+            raise ValueError("beg > len(lines)")
 
         for i, l in enumerate(self.lines[beg:]):
             l = l.lstrip()

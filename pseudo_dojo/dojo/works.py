@@ -12,7 +12,6 @@ import numpy as np
 from monty.collections import AttrDict
 from monty.pprint import pprint_table
 from monty.io import FileLock
-from pymatgen.core.units import Ha_to_eV
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.analysis.eos import EOS
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
@@ -153,7 +152,7 @@ class EbandsFactorWork(DojoWork):
             structure: :class:`Structure` object
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             kppa: Number of k-points per atom.
-            bands_factor: Number of bands computed is given by bands_factor * int(nval / spin_fact)
+            bands_factor: Number of bands computed is given by bands_factor * int(nval / nsppol)
             spin_mode: Spin polarization mode.
             toldfe: Tolerance on the energy (Ha)
             smearing: Smearing technique.
@@ -169,8 +168,7 @@ class EbandsFactorWork(DojoWork):
         # Compute the number of bands from the pseudo and the spin-polarization.
         # Take 10 times the number of bands to sample the empty space.
         nval = structure.num_valence_electrons(self.pseudo)
-        spin_fact = 2 if spin_mode.nsppol == 2 else 1
-        nband = bands_factor * int(nval / spin_fact)
+        nband = bands_factor * int(nval / spin_mode.nsppol)
 
         # Set extra_abivars
         self.ecut, self.pawecutdg = ecut, pawecutdg
@@ -351,8 +349,7 @@ class DeltaFactorWork(DojoWork):
         # Compute the number of bands from the pseudo and the spin-polarization.
         # Add 6 bands to account for smearing.
         #nval = structure.num_valence_electrons(self.pseudo)
-        #spin_fact = 2 if spin_mode.nsppol == 2 else 1
-        #nband = int(nval / spin_fact) + 6
+        #nband = int(nval / spin_mode.nsppol) + 6
 
         # Set extra_abivars
         self.ecut, self.pawecutdg = ecut, pawecutdg
