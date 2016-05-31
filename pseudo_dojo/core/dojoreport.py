@@ -345,8 +345,8 @@ class DojoReport(dict):
     def json_write(self, filepath):
         """Write data to file."""
         with open(filepath, "wt") as fh:
+            #json.dump(self, fh, sort_keys=True, cls=MontyEncoder)
             json.dump(self, fh, indent=-1, sort_keys=True, cls=MontyEncoder)
-            #json.dump(self, fh, indent=-1, sort_keys=True)
 
     @property
     def symbol(self):

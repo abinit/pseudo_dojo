@@ -165,11 +165,12 @@ class EbandsFactorWork(DojoWork):
 
         # Here we find an initial guess for the number of bands
         # The goal is to reach maxene eV above the fermi level.
-        # Assume ~ 1 eV per band
+        # Assume ~ b4ev fact eV per band
         # Add a buffer of nbdbuf states and enforce an even number of states
         nval = structure.num_valence_electrons(self.pseudo)
         self.maxene = maxene
-        nband = int(nval + int(self.maxene))
+        b4ev = 1.4
+        nband = int(nval + int(1.4 * self.maxene))
         #nband = nval // 2 + 10
         if spin_mode.nsppol == 1: nband // 2
         nbdbuf = max(int(0.2 * nband), 4)
@@ -244,14 +245,14 @@ class EbandsFactorWork(DojoWork):
 
             if nband == nband_sentinel:
                dojo_status = 2
-               task.history.info("Reached maximum number of bands. Setting dojo_statu to 2.")
+               task.history.info("Reached maximum number of bands. Setting dojo_status to 2.")
             else:
                 dojo_status = 1
                 nband += (0.5 * nband)
                 nbdbuf = max(int(0.2 * nband), 4)
                 nband += nbdbuf
                 nband += nband % 2
-                if nband > int(0.85 * min_npw): nband = nband_sentinel
+                if nband > nband_sentinel: nband = nband_sentinel - 2
 
                 # Restart.
                 task.set_vars(nband=int(nband), nbdbuf=int(nbdbuf))
@@ -260,9 +261,8 @@ class EbandsFactorWork(DojoWork):
 
         # Convert to JSON and add results to the dojo report.
         entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, min_npw=int(min_npw),
-                     maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene), dojo_status=dojo_status,
-                     ebands=ebands.as_dict())
-
+                     maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene),
+                     dojo_status=dojo_status, ebands=ebands.as_dict())
 
         self.add_entry_to_dojoreport(entry)
         return entry
