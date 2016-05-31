@@ -11,6 +11,7 @@ import logging
 import abipy.abilab as abilab
 
 from monty.termcolor import cprint
+from monty.functools import prof_main
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
@@ -102,13 +103,12 @@ def build_flow(pseudo, options):
         factory = DeltaFactory(xc=pseudo.xc)
 
         for ecut in ecut_list:
-            str_ecut = '%.1f' % ecut
-            if "deltafactor" in report and str_ecut in report["deltafactor"]:
-                cprint("[deltafactor]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
+            if report.has_trial("deltafactor", ecut=ecut):
+                cprint("[deltafactor]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
                 continue
 
+            # Build and register the work.
             pawecutdg = 2 * ecut if pseudo.ispaw else None
-            # Build and register the workflow.
             work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg,
                                            include_soc=options.soc, **extra_abivars)
             flow.register_work(work, workdir='WDF' + str(ecut))
@@ -120,13 +120,12 @@ def build_flow(pseudo, options):
 
         for struct_type in gbrv_structs:
             dojo_trial = "gbrv_" + struct_type
-
             for ecut in ecut_list:
-                str_ecut = '%.1f' % ecut
-                if dojo_trial in report and str_ecut in report[dojo_trial]:
-                    cprint("[gbrv]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
+                if report.has_trial(dojo_trial, ecut=ecut):
+                    cprint("[gbrv]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
                     continue
 
+                # Build and register the work.
                 pawecutdg = 2 * ecut if pseudo.ispaw else None
                 work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg,
                                                        include_soc=options.soc, ntime=50, **extra_abivars)
@@ -136,13 +135,14 @@ def build_flow(pseudo, options):
     if "phonon" in options.trials:
         assert not options.soc
         phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
+        trial = "phonon"
 
         for ecut in ecut_list:
-            str_ecut = '%.1f' % ecut
-            if "phonon" in report and str_ecut in report["phonon"]:
-                cprint("[phonon]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
+            if report.has_trial(trial, ecut=ecut)
+                cprint("[phonon]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
                 continue
 
+            # Build and register the work.
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             work = phonon_factory.work_for_pseudo(pseudo, kppa=1000, ecut=ecut, pawecutdg=pawecutdg,
                                                   tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
@@ -176,11 +176,11 @@ def build_flow(pseudo, options):
         ebands_factory = EbandsFactory(pseudo.xc)
         ecut = int(report["ppgen_hints"]["high"]["ecut"])
         pawecutdg = None if not pseudo.ispaw else int(report["ppgen_hints"]["high"]["pawecutdg"])
-        str_ecut = '%.1f' % ecut
 
-        if "ghosts" in report and str_ecut in report["ghosts"]:
-            cprint("[ghosts]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
+        if report.has_trial("ghosts", ecut=ecut):
+            cprint("[ghosts]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
         else:
+            # Build and register the work.
             work = ebands_factory.work_for_pseudo(pseudo, kppa=3000, maxene=250,
                                                   ecut=ecut, pawecutdg=pawecutdg,
                                                   mem_test=0)
@@ -195,7 +195,7 @@ def build_flow(pseudo, options):
         # Empty flow since all trials have been already performed.
         return None
 
-
+@prof_main
 def main():
     def str_examples():
         return """\
@@ -273,16 +273,4 @@ Usage Example:
 
 
 if __name__ == "__main__":
-    try:
-        do_prof = sys.argv[1] == "prof"
-        if do_prof: sys.argv.pop(1)
-    except:
-        do_prof = False
-
-    if do_prof:
-        import pstats, cProfile
-        cProfile.runctx("main()", globals(), locals(), "Profile.prof")
-        s = pstats.Stats("Profile.prof")
-        s.strip_dirs().sort_stats("time").print_stats()
-    else:
-        sys.exit(main())
+    sys.exit(main())

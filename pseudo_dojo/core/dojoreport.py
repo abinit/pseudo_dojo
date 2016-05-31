@@ -631,7 +631,7 @@ class DojoReport(dict):
     @add_fig_kwargs
     def plot_etotal_vs_ecut(self, ax=None, inv_ecut=False, with_soc=False, **kwargs):
         """
-        plot the convergence of the total energy as function of the energy cutoff ecut
+        Plot the convergence of the total energy as function of the energy cutoff ecut
 
         Args:
             ax: matplotlib Axes, if ax is None a new figure is created.
@@ -644,6 +644,8 @@ class DojoReport(dict):
         if trial not in self:
             print("dojo report does not contain trial:", trial)
             return None
+
+        label = kwargs.pop("label", None)
 
         # Extract the total energy of the AE relaxed structure (4).
         d = OrderedDict([(ecut, data["etotals"][4]) for ecut, data in self[trial].items()])
@@ -668,7 +670,6 @@ class DojoReport(dict):
         line, = ax.plot(xs, ys, "-o", color="blue") #, linewidth=3.0, markersize=15)
         lines.append(line)
 
-        label = kwargs.pop("label", None)
         if label is not None: ax.legend(lines, [label], loc='best', shadow=True)
 
         high_hint = self["ppgen_hints"]["high"]["ecut"]
@@ -729,10 +730,7 @@ class DojoReport(dict):
 
             # Use same fit as the one employed for the deltafactor.
             eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
-
-            label = "ecut %.1f" % ecut if i % 2 == 0 else ""
-            label = "ecut %.1f" % ecut
-            eos_fit.plot(ax=ax, text=False, label=label, color=cmap(i/num_ecuts, alpha=1), show=False)
+            eos_fit.plot(ax=ax, text=False, label="ecut %.1f" % ecut, color=cmap(i/num_ecuts, alpha=1), show=False)
 
         return fig
 
@@ -755,15 +753,15 @@ class DojoReport(dict):
             print("dojo report does not contain trial:", trial)
             return None
 
-        all = ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1"]
+        all_keys = ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1"]
         if what is None:
-            keys = all
+            keys = all_keys
         else:
             what = list_strings(what)
             if what[0].startswith("-"):
                 # Exclude keys
                 what = [w[1:] for w in what]
-                keys = [k for k in all if k not in what]
+                keys = [k for k in all_keys if k not in what]
             else:
                 keys = what
 
@@ -789,8 +787,7 @@ class DojoReport(dict):
             refval = getattr(reference, key)
 
             # Plot difference pseudo - ref.
-            #print("ecuts", ecuts)
-            #print("values", values)
+            #print("ecuts", ecuts, "values", values)
             ax.plot(ecuts, values - refval, "o-")
 
             ax.grid(True)
@@ -979,10 +976,8 @@ class DojoReport(dict):
             print("dojo report does not contain trial:", trial)
             return None
 
-        if ecut is None: ecut = list(self[''].keys())[0]
-        d = self[trial]["%.1f" % ecut][ebands]
         from abipy.electrons.ebands import ElectronBands
-        ebands = ElectronBands.from_dict(d)
+        ebands = ElectronBands.from_dict(self[trial][ebands])
         edos = ebands.get_edos(width=kwargs.pop("width", 0.05), step=kwargs.pop("step", 0.02))
 
         return ebands.plot_with_edos(edos, **kwargs)
@@ -1061,15 +1056,10 @@ class DojoDataFrame(DataFrame):
                 continue
 
             report = p.dojo_report
-            if "version" not in report:
-                print("ignoring old report in ", p.basename)
-                continue
-
             d = {"symbol": p.symbol, "Z": p.Z, "filepath": p.filepath}
             names.append(p.basename)
 
             ecut_acc = {}
-
             # read hints
             for acc in accuracies:
                 try:
@@ -1086,7 +1076,6 @@ class DojoDataFrame(DataFrame):
             try:
                 for trial, keys in trial2keys.items():
                     data = report.get(trial, None)
-
                     if data is None: continue
 
                     # if the current trial has an entry for this ecut change nothing, else we take the
@@ -1103,7 +1092,7 @@ class DojoDataFrame(DataFrame):
 
                     for acc in accuracies:
                         ecut = ecut_acc[acc] if ecut_acc[acc] in data.keys() else ecut_acc_trial[acc]
-                        #store the actuall ecut for this trial
+                        # store the actual ecut for this trial
                         d.update({acc + "_ecut_" + trial: ecut})
                         if keys is 'all':
                             ecuts = data
@@ -1133,7 +1122,7 @@ class DojoDataFrame(DataFrame):
 
         #return self[columns].to_html()
         tablefmt = "grid"
-        floatfmt=".2f"
+        floatfmt = ".2f"
         stream.write(tabulate(self[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
     def get_accuracy(self, accuracy):
@@ -1156,8 +1145,7 @@ class DojoDataFrame(DataFrame):
         data = []
         for index, entry in self.iterrows():
             element = Element.from_Z(entry.Z)
-            if element.row in rows:
-                data.append(entry)
+            if element.row in rows: data.append(entry)
 
         return self.__class__(data=data)
 
@@ -1167,6 +1155,7 @@ class DojoDataFrame(DataFrame):
             element = Element.from_Z(entry.Z)
             # e.g element.is_alkaline
             if getattr(element, "is_" + family): data.append(entry)
+
         return self.__class__(data=data)
 
     @add_fig_kwargs
@@ -1176,8 +1165,6 @@ class DojoDataFrame(DataFrame):
 
         for acc, ax in zip(self.ALL_ACCURACIES, ax_list):
             col = acc + "_" + what
-            #print(col)
-            #self[col].hist(ax=ax, bins=bins, label=col)
             self[col].plot(ax=ax, kind="bar", label=col)
 
         return fig
@@ -1353,10 +1340,8 @@ def compute_dfact_entry(pseudo, num_sites, volumes, etotals):
         b1=nan,
     )
 
-    volumes = np.asarray(volumes)
-    etotals = np.asarray(etotals)
+    volumes, etotals = np.asarray(volumes), np.asarray(etotals)
     eos_fit = None
-
     try:
         # Use same fit as the one employed for the deltafactor.
         eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
@@ -1389,4 +1374,3 @@ def compute_dfact_entry(pseudo, num_sites, volumes, etotals):
         outd["_exceptions"] = str(exc)
 
     return outd, eos_fit
-

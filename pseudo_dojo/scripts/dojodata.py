@@ -14,6 +14,7 @@ from pprint import pprint
 from tabulate import tabulate
 from pandas import DataFrame, concat
 from monty.os.path import find_exts
+from monty.functools import prof_main
 from monty import termcolor
 from monty.termcolor import cprint
 from pymatgen.util.io_utils import ask_yesno, prompt
@@ -305,7 +306,8 @@ def dojo_plot(options):
 
         # ghosts
         if any(k in options.what_plot for k in ("all", "ghosts")):
-            report.plot_ebands(title=pseudo.basename)
+            for with_soc in socs:
+                report.plot_ebands(with_soc=with_soc, title=pseudo.basename)
 
         # Deltafactor
         if any(k in options.what_plot for k in ("all", "df")):
@@ -725,6 +727,7 @@ def dojo_validate(options):
     return 0
 
 
+@prof_main
 def main():
     def str_examples():
         return """\
@@ -907,16 +910,4 @@ Usage example:
 
 
 if __name__ == "__main__":
-    try:
-        do_prof = sys.argv[1] == "prof"
-        if do_prof: sys.argv.pop(1)
-    except Exception:
-        do_prof = False
-
-    if do_prof:
-        import pstats, cProfile
-        cProfile.runctx("main()", globals(), locals(), "Profile.prof")
-        s = pstats.Stats("Profile.prof")
-        s.strip_dirs().sort_stats("time").print_stats()
-    else:
-        sys.exit(main())
+    sys.exit(main())
