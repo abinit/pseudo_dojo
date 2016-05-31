@@ -181,7 +181,7 @@ def build_flow(pseudo, options):
             cprint("[ghosts]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
         else:
             # Build and register the work.
-            work = ebands_factory.work_for_pseudo(pseudo, kppa=3000, maxene=250,
+            work = ebands_factory.work_for_pseudo(pseudo, kppa=1000, maxene=250,
                                                   ecut=ecut, pawecutdg=pawecutdg,
                                                   mem_test=0)
             if work is not None:

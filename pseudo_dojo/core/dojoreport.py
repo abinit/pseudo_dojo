@@ -219,12 +219,12 @@ class DojoReport(dict):
     def empty_from_pseudo(cls, pseudo, hints, devel=False):
         """
         Initialize an empty DojoReport from the pseudo and an initial guess for
-        the cutoff energy in Hartree
+        the cutoff energies in Hartree
 
         Args:
             pseudo: Pseudo object.
             hints: Initial hints on the cutoff energy provided by the pp generator.
-                Dictionary [accuracy][ecut]
+                Dictionary [accuracy]["ecut"] --> ecut_value
         """
         # Build initial list of cutoff energies for tests.
         #dense_right = np.arange(ppgen_ecut, ppgen_ecut + 6*2, step=2)
@@ -561,19 +561,19 @@ class DojoReport(dict):
 
         return dfact_meV, dfp
 
-    def compute_hints(self):
-        ecuts, dfacts = self.get_ecut_dfactprime()
-        abs_diffs = np.abs((dfacts - dfacts[-1]))
-        #print(list(zip(ecuts, dfacts)), abs_diffs)
+    #def compute_hints(self):
+    #    ecuts, dfacts = self.get_ecut_dfactprime()
+    #    abs_diffs = np.abs((dfacts - dfacts[-1]))
+    #    #print(list(zip(ecuts, dfacts)), abs_diffs)
 
-        hints = 3 * [None]
-        for ecut, adiff in zip(ecuts, abs_diffs):
-            for i in range(3):
-                if adiff <= self.ATOLS[i] and hints[i] is None:
-                    hints[i] = ecut
-                if adiff > self.ATOLS[i]:
-                    hints[i] = None
-        return hints
+    #    hints = 3 * [None]
+    #    for ecut, adiff in zip(ecuts, abs_diffs):
+    #        for i in range(3):
+    #            if adiff <= self.ATOLS[i] and hints[i] is None:
+    #                hints[i] = ecut
+    #            if adiff > self.ATOLS[i]:
+    #                hints[i] = None
+    #    return hints
 
     def check(self, check_trials=None):
         """
@@ -618,15 +618,15 @@ class DojoReport(dict):
 
         return "\n".join(errors)
 
-    def convert(self, new_version):
-        """
-        Convert to new_version.
-        Return new DojoReport object.
-        """
-        if self["version"] == new_version: return self
-        assert new_version == "2.0"
+    #def convert(self, new_version):
+    #    """
+    #    Convert to new_version.
+    #    Return new DojoReport object.
+    #    """
+    #    if self["version"] == new_version: return self
+    #    assert new_version == "2.0"
 
-        return new
+    #    return new
 
     @add_fig_kwargs
     def plot_etotal_vs_ecut(self, ax=None, inv_ecut=False, with_soc=False, **kwargs):
