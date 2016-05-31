@@ -176,14 +176,16 @@ class DojoReport(dict):
     """
     # List of dojo_trials
     # Remember to update the list if you add a new test to the DOJO_REPORT
-    ALL_TRIALS = (
+    ALL_TRIALS = [
         "deltafactor",
         "gbrv_bcc",
         "gbrv_fcc",
         "phonon",
         "phwoa",
         "ghosts",
-    )
+    ]
+
+    ALL_TRIALS += [n + "_soc" for n in ALL_TRIALS]
 
     _TRIALS2KEY = {
         "deltafactor": "dfact_meV",
@@ -319,6 +321,17 @@ class DojoReport(dict):
         if "version" not in self:
             self["version"] = self.LAST_VERSION
 
+    def reorder(self):
+        for trial in self.ALL_TRIALS:
+            # Convert ecut to float and build an OrderedDict (results are indexed by ecut in ascending order)
+            try:
+                d = self[trial]
+                print("Reordering", trial)
+            except KeyError:
+                continue
+            ecuts_keys = sorted([(float(k), k) for k in d], key=lambda t: t[0])
+            self[trial] = OrderedDict([(t[0], d[t[1]]) for t in ecuts_keys])
+
     @property
     def exceptions(self):
         """List of exceptions."""
@@ -345,6 +358,7 @@ class DojoReport(dict):
     def json_write(self, filepath):
         """Write data to file."""
         with open(filepath, "wt") as fh:
+            #json.dump(self, fh, indent=-1, sort_keys=True)
             #json.dump(self, fh, sort_keys=True, cls=MontyEncoder)
             json.dump(self, fh, indent=-1, sort_keys=True, cls=MontyEncoder)
 
@@ -662,7 +676,6 @@ class DojoReport(dict):
         #ax.vlines(high_hint, 0.5, 1.5)
         #ax.scatter([high_hint], [1.0], s=20) #, c='b', marker='o', cmap=None, norm=None)
         #ax.arrow(high_hint, 1, 0, 0.2, head_width=0.05, head_length=0.1, fc='k', ec='k',head_starts_at_zero=False)
-
         #ax.hlines(5, ecut_min, ecut_max, label="5.0")
         #ax.hlines(1, ecut_min, ecut_max, label="1.0")
         #ax.hlines(0.5, ecut_min, ecut_max, label="0.2")

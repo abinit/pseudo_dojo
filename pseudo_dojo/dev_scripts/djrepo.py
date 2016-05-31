@@ -40,23 +40,27 @@ def djrepo_fix(options):
             return 1
 
         # Remove ebands
-        pseudo.dojo_report.pop("ebands", None)
+        #pseudo.dojo_report.pop("ebands", None)
 
         # Rename entries in FR pseudos.
         #oldnew = [("deltafactor", "deltafactor_soc"),
-        #           ("gbrv_fcc", "gbrv_fcc_soc"),
-        #           ("gbrv_bcc", "gbrv_bcc_soc")]
+        #          ("gbrv_fcc", "gbrv_fcc_soc"),
+        #          ("gbrv_bcc", "gbrv_bcc_soc")]
         #for old, new in oldnew:
         #    if old in pseudo.dojo_report:
         #        pseudo.dojo_report[new] = pseudo.dojo_report.pop(old)
 
+        pseudo.dojo_report.reorder()
         pseudo.dojo_report.json_write(pseudo.djrepo_path)
         return 0
 
+    print("Will fix %s djrepo files" % len(options.paths))
     retcode = 0
     for path in options.paths:
         retcode += fix_filepath(path)
-        if retcode: break
+        if retcode:
+            cprint("retcode != 0 in %s" % path, "red")
+            break
 
     return retcode
 
