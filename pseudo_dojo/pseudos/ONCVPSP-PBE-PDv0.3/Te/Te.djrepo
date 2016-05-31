@@ -1,4 +1,5 @@
 {
+"basename": "Te.psp8", 
 "deltafactor": {
 "3.0": {
 "b0": 0.2855377157877871, 
@@ -350,12 +351,6 @@
 109.14578650218294, 
 111.24474393491722
 ]
-}
-}, 
-"ebands": {
-"15.0": {
-"GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Te/Te.psp8_DOJO/EbandsAt15/t0/outdata/out_GSR.nc", 
-"workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Te/Te.psp8_DOJO/EbandsAt15"
 }
 }, 
 "ecuts": [

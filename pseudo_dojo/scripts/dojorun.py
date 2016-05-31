@@ -33,6 +33,8 @@ def build_flow(pseudo, options):
         cprint("[STRANGE]: Your psp8 pseudo supports SOC but options.soc is off", "magenta")
 
     report = pseudo.dojo_report
+    #print(report)
+    #hints = report["hints"]
 
     workdir = pseudo.basename + "_DOJO"
     if os.path.exists(workdir):
@@ -48,9 +50,6 @@ def build_flow(pseudo, options):
             "paral_kgb": options.paral_kgb
     }
     #flow.walknset_vars(extra_abivars)
-
-    #print(report)
-    #hints = report["hints"]
 
     # Build ecut mesh.
     try:
@@ -144,9 +143,8 @@ def build_flow(pseudo, options):
                 cprint("[phonon]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
                 continue
 
-            kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
-            work = phonon_factory.work_for_pseudo(pseudo, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
+            work = phonon_factory.work_for_pseudo(pseudo, kppa=1000, ecut=ecut, pawecutdg=pawecutdg,
                                                   tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
             if work is not None:
                 flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
@@ -164,9 +162,8 @@ def build_flow(pseudo, options):
                 cprint("[phwoa]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
                 continue
 
-            kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
-            work = phonon_factory.work_for_pseudo(pseudo, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
+            work = phonon_factory.work_for_pseudo(pseudo, kppa=1000, ecut=ecut, pawecutdg=pawecutdg,
                                                   tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], rfasr=0)
             if work is not None:
                 flow.register_work(work, workdir='GammaPhononsAt'+str(ecut)+'WOA')
@@ -177,7 +174,6 @@ def build_flow(pseudo, options):
     if "ebands" in options.trials:
         assert not options.soc
         ebands_factory = EbandsFactory(pseudo.xc)
-        #ecut = ecut_hint
         ecut_hint = int(report["ppgen_hints"]["high"]["ecut"])
         pawecutdg = None if not pseudo.ispaw else int(report["ppgen_hints"]["high"]["pawecutdg"])
         str_ecut = '%.1f' % ecut
@@ -187,7 +183,7 @@ def build_flow(pseudo, options):
         else:
             work = ebands_factory.work_for_pseudo(pseudo, kppa=3000, max_ene=250,
                                                   ecut=ecut, pawecutdg=pawecutdg,
-                                                  bands_factor=15, mem_test=0)
+                                                  mem_test=0)
             if work is not None:
                 flow.register_work(work, workdir='EbandsAt' + str(ecut))
             else:

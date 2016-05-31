@@ -1,4 +1,5 @@
 {
+"basename": "Pt-sp.psp8", 
 "deltafactor": {
 "31.0": {
 "b0": 1.5619529153043623, 
@@ -325,10 +326,10 @@
 ]
 }, 
 "61.0": {
-"b0": 1.5495025499200059, 
+"b0": 1.549502549920006, 
 "b0_GPa": 248.25767593518182, 
-"b1": 5.4859923338239778, 
-"dfact_meV": 4.9306046548009972, 
+"b1": 5.485992333823978, 
+"dfact_meV": 4.930604654800997, 
 "dfactprime_meV": 3.83121190464017, 
 "etotals": [
 -14128.942636543825, 
@@ -342,20 +343,14 @@
 "num_sites": 4, 
 "v0": 15.551868563457058, 
 "volumes": [
-59.117045731006563, 
+59.11704573100656, 
 60.374855214644995, 
 61.632664698283435, 
 62.890474181921874, 
-64.148283665560314, 
-65.406093149198753, 
-66.663902632837193
+64.14828366556031, 
+65.40609314919875, 
+66.66390263283719
 ]
-}
-}, 
-"ebands": {
-"38.0": {
-"GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Pt/Pt-sp.psp8_DOJO/EbandsAt38/t0/outdata/out_GSR.nc", 
-"workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Pt/Pt-sp.psp8_DOJO/EbandsAt38"
 }
 }, 
 "ecuts": [

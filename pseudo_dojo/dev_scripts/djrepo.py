@@ -14,25 +14,43 @@ from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from pseudo_dojo.core.dojoreport import compute_dfact_entry
 
 
-def _fix_djrepo(pp_filepath):
+def djrepo_fix(options):
     """
     This is a maintentance tool to:
 
         #. Regenerate the md5 value in the DojoReport file.
         #. Replace norm-conserving with NC.
     """
-    pseudo = dojopseudo_from_file(pp_filepath)
-    if pseudo is None:
-        print("Error while parsing %s" % pp_filepath)
-        return 1
+    def fix_filepath(pp_filepath):
+        pseudo = dojopseudo_from_file(pp_filepath)
+        if pseudo is None:
+            print("Error while parsing %s" % pp_filepath)
+            return 1
 
-    # Change md5
-    pseudo.dojo_report["md5"] = pseudo.compute_md5()
-    if pseudo.dojo_report["pseudo_type"] == "norm-conserving":
-        pseudo.dojo_report["pseudo_type"] = "NC"
+        # Change md5
+        pseudo.dojo_report["md5"] = pseudo.compute_md5()
+        if pseudo.dojo_report["pseudo_type"] == "norm-conserving":
+            pseudo.dojo_report["pseudo_type"] = "NC"
 
-    pseudo.dojo_report.json_write(pseudo.djrepo_path)
-    return 0
+        # Add basename
+        if "basename" not in pseudo.dojo_report:
+            pseudo.dojo_report["basename"] = pseudo.basename
+        if pseudo.dojo_report["basename"] != pseudo.basename:
+            print("Inconsistent basename in %s" % pp_filepath)
+            return 1
+
+        # Remove ebands
+        pseudo.dojo_report.pop("ebands", None)
+
+        pseudo.dojo_report.json_write(pseudo.djrepo_path)
+        return 0
+
+    retcode = 0
+    for path in options.paths:
+        retcode += fix_filepath(path)
+        if retcode: break
+
+    return retcode
 
 
 def djrepo_check(options):
@@ -117,6 +135,9 @@ Example usage:
     # Subparser for convert command.
     #p_convert = subparsers.add_parser('convert', parents=[copts_parser], help=djrepo_convert.__doc__)
 
+    # Subparser for fix command.
+    p_fix = subparsers.add_parser('fix', parents=[copts_parser], help=djrepo_fix.__doc__)
+
     # Subparser for convert command.
     p_recalc = subparsers.add_parser('recalc', parents=[copts_parser], help=djrepo_recalc.__doc__)
 
@@ -157,7 +178,7 @@ Example usage:
         if options.verbose > 1:
             for i, p in enumerate(options.paths): print("[%d] %s" % (i, p))
 
-    # This is to regenerate the md5 files in the djrepo files.
+    # This is to fix the djrepo files.
     #for path in options.paths:
     #    _fix_djrepo(path)
     #return 0
