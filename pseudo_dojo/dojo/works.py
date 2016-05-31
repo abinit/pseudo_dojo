@@ -235,6 +235,7 @@ class EbandsWork(DojoWork):
             ebands = gsr.ebands
             min_npw = np.amin(gsr.reader.read_value("number_of_coefficients"))
             gsr_maxene = np.amax(ebands.eigens[:,:,-1] - ebands.fermie)
+            gsr_nband = gsr.nband
 
         # Increase nband if we haven't reached maxene and restart
         # dojo_status:
@@ -247,6 +248,7 @@ class EbandsWork(DojoWork):
         if gsr_maxene >= self.maxene:
             self.dojo_status = 0
             task.history.info("Convergence reached: gsr_maxene %s >= self.maxene %s" % (gsr_maxene, self.maxene))
+            self._finalized = True
         else:
             task.history.info("Convergence not reached. Will test if one can restart the task.")
             task.history.info("gsr_maxene %s < self.maxene %s" % (gsr_maxene, self.maxene))
@@ -271,7 +273,7 @@ class EbandsWork(DojoWork):
 
         # Convert to JSON and add results to the dojo report.
         entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, min_npw=int(min_npw),
-                     maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene),
+                     maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene), nband=gsr_nband,
                      dojo_status=self.dojo_status, ebands=ebands.as_dict())
 
         # Update file content with Filelock.
@@ -280,6 +282,7 @@ class EbandsWork(DojoWork):
         with FileLock(djrepo):
             # Read report from file.
             file_report = DojoReport.from_file(djrepo)
+            file_report.pop(self.dojo_trial)
             file_report[self.dojo_trial] = entry
             # Write new dojo report and update the pseudo attribute
             file_report.json_write(djrepo)
