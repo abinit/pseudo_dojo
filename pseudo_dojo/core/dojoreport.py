@@ -140,7 +140,7 @@ class PhononResults(DojoEcutResults):
 
 
 class EbandsResults(DojoEcutResults):
-    name = "ebands"
+    name = "ghosts"
 
 
 class DojoReportError(Exception):
@@ -170,7 +170,7 @@ class DojoReport(dict):
     "deltafactor": {}
     "gbrv_bcc": {},
     "gbrv_fcc": {},
-    "ebands": []
+    "ghosts": []
     "phonons": []
     }
     """
@@ -182,7 +182,7 @@ class DojoReport(dict):
         "gbrv_fcc",
         "phonon",
         "phwoa",
-        "ebands",
+        "ghosts",
     )
 
     _TRIALS2KEY = {
@@ -191,7 +191,7 @@ class DojoReport(dict):
         "gbrv_fcc": "a0_rel_err",
         "phwoa": "all",
         "phonon": "all",
-        "ebands": "all",
+        "ghosts": "all",
     }
 
     # We use three different level of accuracy.
@@ -952,13 +952,13 @@ class DojoReport(dict):
         Returns:
             `matplotlib` figure. None if the ebands test is not present.
         """
-        trial = "ebands"
+        trial = ""
         if trial not in self:
             print("dojo report does not contain trial:", trial)
             return None
 
-        if ecut is None: ecut = list(self['ebands'].keys())[0]
-        d = self["ebands"]["%.1f" % ecut]["ebands"]
+        if ecut is None: ecut = list(self[''].keys())[0]
+        d = self[""]["%.1f" % ecut][""]
         from abipy import abilab
         ebands = abilab.ElectronBands.from_dict(d)
         edos = ebands.get_edos(width=kwargs.pop("width", 0.05), step=kwargs.pop("step", 0.02))
@@ -988,7 +988,7 @@ class DojoDataFrame(DataFrame):
         "gbrv_fcc": "gbrv_fcc_a0_rel_err",
         "phonon": "all",
         "phwoa": "all",
-        "ebands": "all"
+        "ghosts": "all"
     }
 
     _TRIALS2YLABEL = {
@@ -998,7 +998,7 @@ class DojoDataFrame(DataFrame):
         "gbrv_fcc": "FCC $\Delta a_0$ (%)",
         "phonon": "Phonons with ASR",
         "phwoa": "Phonons without ASR",
-        "ebands": "Electronic band structure"
+        "ghosts": "Electronic band structure"
     }
 
     ACC2PLTOPTS = dict(

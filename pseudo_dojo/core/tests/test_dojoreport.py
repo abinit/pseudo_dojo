@@ -38,7 +38,7 @@ class DojoReportTest(PseudoDojoTest):
         assert report.has_hints
         #assert report.hints.low.ecut == 10
         #assert report.hints.high.ecut == 30
-        #assert not report.md5 
+        #assert not report.md5
 
         # Test add_entry
         with self.assertRaises(ValueError):
@@ -72,17 +72,17 @@ class DojoReportTest(PseudoDojoTest):
         assert h_wdr.has_dojo_report
         report = h_wdr.dojo_report
         print(report)
-        assert report.symbol == "H" 
+        assert report.symbol == "H"
         assert report.element.symbol == "H"
-        assert report["pseudo_type"] == "NC" 
+        assert report["pseudo_type"] == "NC"
         assert report["version"] == "1.0"
         assert not report.has_hints
 
         # Basic consistency tests.
         missings = report.find_missing_entries()
-        assert "ebands" in missings
+        assert "ghosts" in missings
         assert "phwoa" in missings
-        with self.assertRaises(ValueError): 
+        with self.assertRaises(ValueError):
             report.has_trial("foo")
 
         for trial in report.trials:

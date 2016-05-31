@@ -302,8 +302,8 @@ def dojo_plot(options):
 		cprint("[%s] Python exception in report_check" % pseudo.basename, "red")
 		print(exc)
 
-        # ebands
-        if report.has_trial("ebands") and any(k in options.what_plot for k in ("all", "ebands")):
+        # ghosts
+        if report.has_trial("ghosts") and any(k in options.what_plot for k in ("all", "ghosts")):
             try:
                 report.plot_ebands(title=pseudo.basename)
             except Exception as exc:
@@ -654,19 +654,19 @@ def dojo_validate(options):
 
             # test for ghosts
             print('\n= GHOSTS TEST ===========================================\n')
-            if report.has_trial('ebands'):
-                for ecut in report['ebands']:
-                    if "ghost_free_upto_eV" in report["ebands"][ecut]:
+            if report.has_trial('ghosts'):
+                for ecut in report['ghosts']:
+                    if "ghost_free_upto_eV" in report["ghosts"][ecut]:
                         print('%s: Pseudo is reported to be ghost free up to %s eV' % (
-                          ecut, report["ebands"][ecut]["ghost_free_upto_eV"]))
+                          ecut, report["ghosts"][ecut]["ghost_free_upto_eV"]))
                     else:
                         report.plot_ebands(ecut=ecut)
                         ans = float(prompt('Please enter the energy (eV) up until there is no sign of ghosts:\n'))
                         if ans > 0:
-                            report["ebands"][ecut]["ghost_free_upto_eV"] = ans
+                            report["ghosts"][ecut]["ghost_free_upto_eV"] = ans
                             report.json_write(p.djrepo_path)
             else:
-                cprint('no ebands trial present, pseudo cannot be validated', "red")
+                cprint('no ghosts trial present, pseudo cannot be validated', "red")
                 continue
 
             # test trials

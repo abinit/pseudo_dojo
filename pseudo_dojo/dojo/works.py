@@ -160,13 +160,15 @@ class EbandsFactorWork(DojoWork):
         spin_mode = SpinMode.as_spinmode(spin_mode)
         smearing = Smearing.as_smearing(smearing)
 
-        # Compute the number of bands from the pseudo and the spin-polarization.
-        # Take 10 times the number of bands to sample the empty space.
+        # Here we find an initial guess for the number of bands
+        # The goal is to reach max_ene eV above the fermi level.
+        # Add a buffer of nbdbuf states and enforce an even number of states
         nval = structure.num_valence_electrons(self.pseudo)
         self.max_ene = max_ene
         nband = int((nval + int(self.max_ene)) * spin_mode.nsppol)
         nbdbuf = max(int(0.2 * nband), 4)
         nband += nbdbuf
+        if nband % 2 != 0: nband += 1
 
         # Set extra_abivars
         self.ecut, self.pawecutdg = ecut, pawecutdg
@@ -201,7 +203,7 @@ class EbandsFactorWork(DojoWork):
 
     @property
     def dojo_trial(self):
-        return "ebands"
+        return "ghosts"
 
     def on_all_ok(self):
         """
@@ -220,7 +222,7 @@ class EbandsFactorWork(DojoWork):
 
         if gsr_maxene >= self.max_ene:
             print("Convergence reached: gsr_maxene %s >= self.max_ene %s" % (gsr_maxene, self.max_ene))
-            assert 0
+            #assert 0
             #task.set_vars(nband=)
             #task.restart(l)
 

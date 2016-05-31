@@ -170,16 +170,16 @@ def build_flow(pseudo, options):
             else:
                 cprint('Cannot create GammaPhononsAt %s WOA work, factory returned None' % str(ecut), "red")
 
-    # EBANDS test
-    if "ebands" in options.trials:
+    # GHOSTS test
+    if "ghosts" in options.trials:
         assert not options.soc
         ebands_factory = EbandsFactory(pseudo.xc)
         ecut_hint = int(report["ppgen_hints"]["high"]["ecut"])
         pawecutdg = None if not pseudo.ispaw else int(report["ppgen_hints"]["high"]["pawecutdg"])
         str_ecut = '%.1f' % ecut
 
-        if "ebands" in report and str_ecut in report["ebands"]:
-            cprint("[ebands]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
+        if "ghosts" in report and str_ecut in report["ghosts"]:
+            cprint("[ghosts]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
         else:
             work = ebands_factory.work_for_pseudo(pseudo, kppa=3000, max_ene=250,
                                                   ecut=ecut, pawecutdg=pawecutdg,

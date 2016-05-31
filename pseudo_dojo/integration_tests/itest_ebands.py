@@ -43,8 +43,8 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     assert flow.all_ok
 
     assert not pseudo.dojo_report.exceptions
-    assert pseudo.dojo_report.has_trial("ebands", ecut=ecut)
-    d = pseudo.dojo_report["ebands"]["%.1f" % ecut]["ebands"]
+    assert pseudo.dojo_report.has_trial("ghosts", ecut=ecut)
+    d = pseudo.dojo_report["ghosts"]["%.1f" % ecut]["ebands"]
     ebands = abilab.ElectronBands.from_dict(d)
 
     #fig = pseudo.dojo_report.plot_ebands(ecut=ecut, show=False)
@@ -53,7 +53,6 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
 
 def itest_ebands_gga_ncsoc_flow(fwp, tvars):
     """Testing the ebands flow for NC+SOC pseudos."""
-    return
     pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile()
     assert pseudo is not None
     print(pseudo)
@@ -91,8 +90,8 @@ def itest_ebands_gga_ncsoc_flow(fwp, tvars):
 
     # Reconstruct ElectronBands from JSON.
     assert not pseudo.dojo_report.exceptions
-    assert pseudo.dojo_report.has_trial("ebands", ecut=ecut)
-    d = pseudo.dojo_report["ebands"]["%.1f" % ecut]["ebands"]
+    assert pseudo.dojo_report.has_trial("ghosts", ecut=ecut)
+    d = pseudo.dojo_report["ghosts"]["%.1f" % ecut]["ebands"]
     ebands = abilab.ElectronBands.from_dict(d)
 
     #fig = pseudo.dojo_report.plot_ebands(ecut=ecut, show=False)

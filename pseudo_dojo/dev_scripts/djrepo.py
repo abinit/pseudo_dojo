@@ -40,7 +40,7 @@ def djrepo_fix(options):
             return 1
 
         # Remove ebands
-        pseudo.dojo_report.pop("ebands", None)
+        #pseudo.dojo_report.pop("ebands", None)
 
         pseudo.dojo_report.json_write(pseudo.djrepo_path)
         return 0
