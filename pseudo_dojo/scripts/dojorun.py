@@ -34,8 +34,7 @@ def build_flow(pseudo, options):
         cprint("[STRANGE]: Your psp8 pseudo supports SOC but options.soc is off", "magenta")
 
     report = pseudo.dojo_report
-    #print(report)
-    #hints = report["hints"]
+    if options.verbose > 1: print(report)
 
     workdir = pseudo.basename + "_DOJO"
     if os.path.exists(workdir):
@@ -138,7 +137,7 @@ def build_flow(pseudo, options):
         trial = "phonon"
 
         for ecut in ecut_list:
-            if report.has_trial(trial, ecut=ecut)
+            if report.has_trial(trial, ecut=ecut):
                 cprint("[phonon]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
                 continue
 
@@ -147,9 +146,9 @@ def build_flow(pseudo, options):
             work = phonon_factory.work_for_pseudo(pseudo, kppa=1000, ecut=ecut, pawecutdg=pawecutdg,
                                                   tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
             if work is not None:
-                flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
+                flow.register_work(work, workdir='GammaPhononsAt' + str(ecut))
             else:
-                cprint('cannot create GammaPhononsAt%s work, factory returned None' % str(ecut), "magenta")
+                cprint('Cannot create GammaPhononsAt%s work, factory returned None' % str(ecut), "magenta")
 
     # PHONON WihtOut Asr test
     if "phwoa" in options.trials:
