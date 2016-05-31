@@ -9,8 +9,6 @@ import json
 import logging
 import numpy as np
 
-from monty.collections import AttrDict
-from monty.pprint import pprint_table
 from monty.io import FileLock
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.analysis.eos import EOS
@@ -21,7 +19,6 @@ from abipy import abilab
 from pseudo_dojo.core.dojoreport import DojoReport, compute_dfact_entry
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
-
 
 logger = logging.getLogger(__name__)
 
@@ -97,8 +94,8 @@ class EbandsFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, pseudo, accuracy="normal", kppa=3000, ecut=None, pawecutdg=None, spin_mode="unpolarized",
-                        toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
+    def work_for_pseudo(self, pseudo, kppa=3000, max_ene=250, ecut=None, pawecutdg=None, spin_mode="unpolarized",
+                        tolwfr=1.e-15, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
@@ -108,7 +105,7 @@ class EbandsFactory(object):
             ecut: Cutoff energy in Hartree
             pawecutdg: Cutoff energy of the fine grid (PAW only)
             spin_mode: Spin polarization option
-            toldfe: Tolerance on the total energy (Ha).
+            tolwfr: Tolerance on the residuals.
             smearing: Smearing technique.
             workdir: Working directory.
             manager: :class:`TaskManager` object.
@@ -121,7 +118,6 @@ class EbandsFactory(object):
             raise ValueError(
                 "Pseudo xc differs from the XC used to instantiate the factory\n"
                 "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))
-
         try:
             cif_path = self.get_cif_path(pseudo.symbol)
         except Exception as exc:
@@ -131,20 +127,19 @@ class EbandsFactory(object):
         structure = Structure.from_file(cif_path, primitive=False)
 
         return EbandsFactorWork(
-            structure, pseudo, kppa,
-            spin_mode=spin_mode, toldfe=toldfe, smearing=smearing,
-            accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
+            structure, pseudo, kppa, max_ene,
+            spin_mode=spin_mode, tolwfr=tolwfr, smearing=smearing,
+            ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
 
 
 class EbandsFactorWork(DojoWork):
     """Work for the calculation of the deltafactor."""
 
-    # THIS IS WRONG! toldfe for band structure, lot of bands computed with SCF!
-    def __init__(self, structure, pseudo, kppa,
-                 bands_factor=10, ecut=None, pawecutdg=None, ecutsm=0.5,
-                 spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
-                 accuracy="normal", chksymbreak=0, workdir=None, manager=None, **kwargs):
+    def __init__(self, structure, pseudo, kppa, max_ene,
+                 ecut=None, pawecutdg=None, ecutsm=0.5,
+                 spin_mode="polarized", tolwfr=1.e-15, smearing="fermi_dirac:0.1 eV",
+                 chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of a bandstructure to check for ghosts.
 
@@ -152,9 +147,9 @@ class EbandsFactorWork(DojoWork):
             structure: :class:`Structure` object
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             kppa: Number of k-points per atom.
-            bands_factor: Number of bands computed is given by bands_factor * int(nval / nsppol)
+            max_ene: 250 eV
             spin_mode: Spin polarization mode.
-            toldfe: Tolerance on the energy (Ha)
+            tolwfr: Stopping criterion.
             smearing: Smearing technique.
             workdir: String specifing the working directory.
             manager: :class:`TaskManager` responsible for the submission of the tasks.
@@ -168,7 +163,10 @@ class EbandsFactorWork(DojoWork):
         # Compute the number of bands from the pseudo and the spin-polarization.
         # Take 10 times the number of bands to sample the empty space.
         nval = structure.num_valence_electrons(self.pseudo)
-        nband = bands_factor * int(nval / spin_mode.nsppol)
+        self.max_ene = max_ene
+        nband = int((nval + int(self.max_ene)) * spin_mode.nsppol)
+        nbdbuf = max(int(0.2 * nband), 4)
+        nband += nbdbuf
 
         # Set extra_abivars
         self.ecut, self.pawecutdg = ecut, pawecutdg
@@ -178,8 +176,9 @@ class EbandsFactorWork(DojoWork):
             pawecutdg=pawecutdg,
             ecutsm=ecutsm,
             nband=nband,
-            toldfe=toldfe,
-            prtwf=-1,
+            nbdbuf=nbdbuf,
+            tolwfr=tolwfr,
+            prtwf=1,
             nstep=200,
             chkprim=0,
             mem_test=0
@@ -205,26 +204,31 @@ class EbandsFactorWork(DojoWork):
         return "ebands"
 
     def on_all_ok(self):
-        """Callback executed when all tasks in the work have reached S_OK."""
-        # store the path of the GSR nc file in the dojoreport
-        # during the validation the bandstrure is plotted and the validator is asked to give the energy up to which
-        # no sign of ghosts is visible
-        # during plot the band structuur is plotted as long as a filename is present and the file can be found if the
-        # if the energy is present the energy is given
+        """
+        Callback executed when all tasks in the work have reached S_OK.
 
-        #TODO fix magic
-        path = str(self.workdir)
-        outfile = os.path.join(str(self[0].outdir), "out_GSR.nc")
-        entry = {'workdir': path, 'GSR-nc': outfile}
+        Here we extract the band structure from the GSR file and we save it in the JSON file.
+        During the validation the bandstrure is plotted and the validator is asked to give
+        the energy up to which no sign of ghosts is visible.
+        """
+        # Read ebands from the GSR file. convert to JSON and add results to the dojo report.
+        task = self[0]
+        with task.open_gsr() as gsr:
+            ebands = gsr.ebands
+            min_npw = np.amin(gsr.reader.read_value("number_of_coefficients"))
+            gsr_maxene = np.amax(ebands.eigens[:,:,-1] - ebands.fermie)
+
+        if gsr_maxene >= self.max_ene:
+            print("Convergence reached: gsr_maxene %s >= self.max_ene %s" % (gsr_maxene, self.max_ene))
+            assert 0
+            #task.set_vars(nband=)
+            #task.restart(l)
+
+        entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, max_ene=self.max_ene, gsr_maxene=float(gsr_maxene),
+                     ebands=ebands.as_dict())
 
         self.add_entry_to_dojoreport(entry)
-
         return entry
-        #from abipy.abilab import abiopen
-        #with abiopen(path) as gsr:
-        #    ebands = gsr.ebands
-        #    fig = ebands.plot_with_edos(ebands.get_edos(width=0.05, step=0.02))
-        #    return fig
 
 
 class DeltaFactory(object):
@@ -243,7 +247,7 @@ class DeltaFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, ecut=None, pawecutdg=None,
+    def work_for_pseudo(self, pseudo, kppa=6750, ecut=None, pawecutdg=None,
                         toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", include_soc=False,
                         workdir=None, manager=None, **kwargs):
         """
@@ -315,7 +319,7 @@ class DeltaFactory(object):
         return DeltaFactorWork(
             structure, pseudo, kppa, connect,
             spin_mode=spin_mode, toldfe=toldfe, smearing=smearing,
-            accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
+            ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
 
 
@@ -325,7 +329,7 @@ class DeltaFactorWork(DojoWork):
     def __init__(self, structure, pseudo, kppa, connect,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
                  spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
-                 accuracy="normal", chksymbreak=0, workdir=None, manager=None, **kwargs):
+                 chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the deltafactor.
 
@@ -513,7 +517,7 @@ class GbrvRelaxAndEosWork(DojoWork):
 
     def __init__(self, structure, struct_type, pseudo, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
                  spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
-                 accuracy="normal", ecutsm=0.05, chksymbreak=0,
+                 ecutsm=0.05, chksymbreak=0,
                  workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the relaxed lattice parameter.
@@ -532,7 +536,6 @@ class GbrvRelaxAndEosWork(DojoWork):
         """
         super(GbrvRelaxAndEosWork, self).__init__(workdir=workdir, manager=manager)
         self.struct_type = struct_type
-        self.accuracy = accuracy
 
         # nband must be large enough to accomodate fractional occupancies.
         fband = kwargs.pop("fband", None)
@@ -734,10 +737,6 @@ class DFPTPhononFactory(object):
         # Global variables used both for the GS and the DFPT run.
         kppa = kwargs.pop('kppa')
         ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=0)
-        try:
-            kwargs.pop('accuracy')
-        except KeyError:
-            pass
 
         kwargs.pop('smearing')
         # to be applicable to all systems we treat all as is they were metals
@@ -803,8 +802,6 @@ class DFPTPhononFactory(object):
             qpt = kwargs['qpt']
         except IndexError:
             raise ValueError('A phonon test needs to specify a qpoint.')
-
-        kwargs.pop('accuracy')
 
         if pseudo.xc != self._dfdb.xc:
             raise ValueError(

@@ -12,6 +12,7 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     """Testing the ebands flow for PAW-XML"""
     pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
     assert pseudo is not None
+    print(pseudo)
     assert pseudo.has_dojo_report
     assert not pseudo.dojo_report.exceptions
     spin_mode = "unpolarized"
@@ -19,14 +20,19 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
     ebands_factory = EbandsFactory(xc=pseudo.xc)
 
-    ecut = 8
+    ecut = 6
     pawecutdg = 2 * ecut if pseudo.ispaw else None
-    kppa = 20  # this value is for testing purpose 
-    work = ebands_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, 
-                                          spin_mode=spin_mode, bands_factor=2, smearing="fermi_dirac:0.0005",
-                                          mem_test=0)
+    work = ebands_factory.work_for_pseudo(pseudo, kppa=20, max_ene=5, ecut=ecut, pawecutdg=pawecutdg,
+                                          spin_mode=spin_mode)
     flow.register_work(work)
     flow.build_and_pickle_dump()
+
+    # Validate inputs.
+    isok, errors = flow.abivalidate_inputs()
+    if not isok:
+        print("abivalidate returned errors")
+        for i, e in enumerate(errors): print("[%d] %s" % (i, e))
+        assert 0
 
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
@@ -36,13 +42,18 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
-    assert pseudo.dojo_report.has_trial("ebands")
     assert not pseudo.dojo_report.exceptions
+    assert pseudo.dojo_report.has_trial("ebands", ecut=ecut)
+    d = pseudo.dojo_report["ebands"]["%.1f" % ecut]["ebands"]
+    ebands = abilab.ElectronBands.from_dict(d)
+
+    #fig = pseudo.dojo_report.plot_ebands(ecut=ecut, show=False)
+    #assert fig is not None
 
 
 def itest_ebands_gga_ncsoc_flow(fwp, tvars):
     """Testing the ebands flow for NC+SOC pseudos."""
-    #return
+    return
     pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile()
     assert pseudo is not None
     print(pseudo)
@@ -55,14 +66,20 @@ def itest_ebands_gga_ncsoc_flow(fwp, tvars):
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
     ebands_factory = EbandsFactory(xc=pseudo.xc)
 
-    ecut = 8
+    ecut = 4
     pawecutdg = 2 * ecut if pseudo.ispaw else None
-    kppa = 20  # this value is for testing purpose 
-    work = ebands_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, 
-                                          spin_mode=spin_mode, bands_factor=2, smearing="fermi_dirac:0.0005",
-                                          mem_test=0)
+    kppa = 20  # this value is for testing purpose
+    work = ebands_factory.work_for_pseudo(pseudo, kppa=kppa, max_ene=2, ecut=ecut, pawecutdg=pawecutdg,
+                                          spin_mode=spin_mode)
     flow.register_work(work)
     flow.build_and_pickle_dump()
+
+    # Validate inputs.
+    isok, errors = flow.abivalidate_inputs()
+    if not isok:
+        print("abivalidate returned errors")
+        for i, e in enumerate(errors): print("[%d] %s" % (i, e))
+        assert 0
 
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
@@ -72,5 +89,11 @@ def itest_ebands_gga_ncsoc_flow(fwp, tvars):
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
-    assert pseudo.dojo_report.has_trial("ebands")
+    # Reconstruct ElectronBands from JSON.
     assert not pseudo.dojo_report.exceptions
+    assert pseudo.dojo_report.has_trial("ebands", ecut=ecut)
+    d = pseudo.dojo_report["ebands"]["%.1f" % ecut]["ebands"]
+    ebands = abilab.ElectronBands.from_dict(d)
+
+    #fig = pseudo.dojo_report.plot_ebands(ecut=ecut, show=False)
+    #assert fig is not None

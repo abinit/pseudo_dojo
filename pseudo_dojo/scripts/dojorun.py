@@ -10,10 +10,10 @@ import numpy as np
 import logging
 import abipy.abilab as abilab
 
-from monty.termcolor import cprint 
+from monty.termcolor import cprint
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
-from pseudo_dojo.core.pseudos import dojopseudo_from_file 
+from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory, EbandsFactory
 
 
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def build_flow(pseudo, options):
-    """Build the flow, returns None if no calculation must be performed.""" 
+    """Build the flow, returns None if no calculation must be performed."""
     print(pseudo)
     if not pseudo.has_dojo_report:
         raise ValueError("Cannot find dojo_report")
@@ -35,7 +35,7 @@ def build_flow(pseudo, options):
     report = pseudo.dojo_report
 
     workdir = pseudo.basename + "_DOJO"
-    if os.path.exists(workdir): 
+    if os.path.exists(workdir):
         cprint("Directory %s already exists" % workdir, "red")
         return None
 
@@ -63,7 +63,7 @@ def build_flow(pseudo, options):
         # TODO
         #report = DojoReport.from_pseudo(pseudo)
         report["ppgen_hints"] = {}
-        report["ppgen_hints"]["high"] = {} 
+        report["ppgen_hints"]["high"] = {}
         report["ppgen_hints"]["high"]["ecut"] = 16.0
         report["ecuts"] = [16.0, 20.0, 24.0]
         report.json_write(pseudo.djrepo_path)
@@ -110,7 +110,7 @@ def build_flow(pseudo, options):
 
             pawecutdg = 2 * ecut if pseudo.ispaw else None
             # Build and register the workflow.
-            work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg,  
+            work = factory.work_for_pseudo(pseudo, kppa=6750, ecut=ecut, pawecutdg=pawecutdg,
                                            include_soc=options.soc, **extra_abivars)
             flow.register_work(work, workdir='WDF' + str(ecut))
 
@@ -129,10 +129,8 @@ def build_flow(pseudo, options):
                     continue
 
                 pawecutdg = 2 * ecut if pseudo.ispaw else None
-                # FIXME: we use ntime=5, because structure relaxations go bananas after the third step.
-                ntime = 50
-                work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg, 
-                                                       include_soc=options.soc, ntime=ntime, **extra_abivars)
+                work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=ecut, pawecutdg=pawecutdg,
+                                                       include_soc=options.soc, ntime=50, **extra_abivars)
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
     # PHONON test
@@ -148,7 +146,7 @@ def build_flow(pseudo, options):
 
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
-            work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
+            work = phonon_factory.work_for_pseudo(pseudo, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
                                                   tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
             if work is not None:
                 flow.register_work(work, workdir='GammaPhononsAt'+str(ecut))
@@ -168,7 +166,7 @@ def build_flow(pseudo, options):
 
             kppa = 1000
             pawecutdg = 2 * ecut if pseudo.ispaw else None
-            work = phonon_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
+            work = phonon_factory.work_for_pseudo(pseudo, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
                                                   tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], rfasr=0)
             if work is not None:
                 flow.register_work(work, workdir='GammaPhononsAt'+str(ecut)+'WOA')
@@ -179,16 +177,17 @@ def build_flow(pseudo, options):
     if "ebands" in options.trials:
         assert not options.soc
         ebands_factory = EbandsFactory(pseudo.xc)
-        ecut = ecut_hint    
+        #ecut = ecut_hint
+        ecut_hint = int(report["ppgen_hints"]["high"]["ecut"])
+        pawecutdg = None if not pseudo.ispaw else int(report["ppgen_hints"]["high"]["pawecutdg"])
         str_ecut = '%.1f' % ecut
 
         if "ebands" in report and str_ecut in report["ebands"]:
             cprint("[ebands]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
         else:
-            kppa = 3000
-            pawecutdg = 2 * ecut if pseudo.ispaw else None
-            work = ebands_factory.work_for_pseudo(pseudo, accuracy="high", kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
-                                                  bands_factor=15, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
+            work = ebands_factory.work_for_pseudo(pseudo, kppa=3000, max_ene=250,
+                                                  ecut=ecut, pawecutdg=pawecutdg,
+                                                  bands_factor=15, mem_test=0)
             if work is not None:
                 flow.register_work(work, workdir='EbandsAt' + str(ecut))
             else:
@@ -229,7 +228,7 @@ Usage Example:
         if s == "all": return ["df", "gbrv", "phonon", "phowa"]
         return s.split(",")
 
-    parser.add_argument('--trials', default="all",  type=parse_trials, 
+    parser.add_argument('--trials', default="all",  type=parse_trials,
                         help=("List of tests e.g --trials=df,gbrv,phonon,phwoa\n"
                         "  df:     test delta factor against all electron reference.\n"
                         "  gbrv:   test fcc and bcc lattice parameters against AE reference.\n"
@@ -248,7 +247,7 @@ Usage Example:
     except:
         show_examples_and_exit(1)
 
-    # loglevel is bound to the string value obtained from the command line argument. 
+    # loglevel is bound to the string value obtained from the command line argument.
     # Convert to upper case to allow the user to specify --loglevel=DEBUG or --loglevel=debug
     import logging
     numeric_level = getattr(logging, options.loglevel.upper(), None)
@@ -281,7 +280,7 @@ if __name__ == "__main__":
     try:
         do_prof = sys.argv[1] == "prof"
         if do_prof: sys.argv.pop(1)
-    except: 
+    except:
         do_prof = False
 
     if do_prof:

@@ -30,7 +30,7 @@ class GbrvCompoundsFactory(object):
         # Get the entry in the database
         entry = self._db.get_entry(formula, struct_type)
 
-        if entry is None: 
+        if entry is None:
             logger.critical("Cannot find entry for %s, returning None!" % formula)
             return None
 
@@ -40,13 +40,13 @@ class GbrvCompoundsFactory(object):
         if structure is None:
             logger.warning("No AE structure for %s\n Will use gbrv_uspp data." % formula)
             structure = entry.build_structure(ref="gbrv_uspp")
-        
-        if structure is None: 
+
+        if structure is None:
             logger.critical("Cannot initialize structure for %s, returning None!" % formula)
 
         return structure
 
-    def relax_and_eos_work(self, accuracy, pseudos, formula, struct_type, 
+    def relax_and_eos_work(self, accuracy, pseudos, formula, struct_type,
                            ecut=None, pawecutdg=None, ref="ae", **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
@@ -58,7 +58,7 @@ class GbrvCompoundsFactory(object):
 
             GBRV tests are done with the following parameteres:
 
-                - No spin polarization for structural relaxation 
+                - No spin polarization for structural relaxation
                   (only for magnetic moments for which spin-unpolarized structures are used)
                 - All calculations are done on an 8x8x8 k-point density and with 0.002 Ry Fermi-Dirac smearing
         """
@@ -67,7 +67,7 @@ class GbrvCompoundsFactory(object):
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
         structure = self.make_ref_structure(formula, struct_type=struct_type, ref=ref)
- 
+
         return GbrvCompoundRelaxAndEosWork(structure, formula, struct_type, pseudos, accuracy,
                                            ecut=ecut, pawecutdg=pawecutdg, **kwargs)
 
@@ -80,9 +80,9 @@ class GbrvCompoundRelaxAndEosWork(Work):
         """
         Build a :class:`Work` for the computation of the relaxed lattice parameter.
 
-        Args:   
-            structure: :class:`Structure` object 
-            structure_type: fcc, bcc 
+        Args:
+            structure: :class:`Structure` object
+            structure_type: fcc, bcc
             pseudos: Pseudopotentials
             ecut: Cutoff energy in Hartree
             ngkpt: MP divisions.
@@ -115,7 +115,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
             #ecutsm=0.5,
             #nband=nband,
         )
-                                       
+
         self.extra_abivars.update(**kwargs)
         self.ecut = ecut
         self.smearing = Smearing.as_smearing(smearing)
@@ -139,7 +139,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
     def set_outdb(self, path):
         """
         This function set the outdb property (a database with the Gbrv results)
-        Use this function when you want the work to write the results of the 
+        Use this function when you want the work to write the results of the
         calculation to the ouddb calculation.
         """
         self._outdb_path = path
@@ -172,7 +172,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
             new_structure = Structure(new_lattice, relaxed_structure.species, relaxed_structure.frac_coords)
 
             # Add ecutsm
-            extra = self.extra_abivars.copy() 
+            extra = self.extra_abivars.copy()
             extra["ecutsm"] = 0.5
 
             scf_input = abilab.AbinitInput(new_structure, self.pseudos)
@@ -262,8 +262,8 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
     def on_all_ok(self):
         """
-        This method is called when self reaches S_OK. It reads the optimized 
-        structure from the netcdf file and builds a new work for the computation 
+        This method is called when self reaches S_OK. It reads the optimized
+        structure from the netcdf file and builds a new work for the computation
         of the EOS with the GBRV parameters.
         """
         if not self.add_eos_done:

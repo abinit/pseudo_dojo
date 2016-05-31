@@ -10,6 +10,7 @@ import numpy as np
 
 from collections import OrderedDict, defaultdict, Iterable
 from tabulate import tabulate
+from monty.json import MSONable, MontyEncoder
 from monty.string import list_strings, is_string
 from monty.bisect import find_le
 from pymatgen.analysis.eos import EOS
@@ -343,8 +344,9 @@ class DojoReport(dict):
 
     def json_write(self, filepath):
         """Write data to file."""
-        with open(filepath, "w") as fh:
-            json.dump(self, fh, indent=-1, sort_keys=True)
+        with open(filepath, "wt") as fh:
+            json.dump(self, fh, indent=-1, sort_keys=True, cls=MontyEncoder)
+            #json.dump(self, fh, indent=-1, sort_keys=True)
 
     @property
     def symbol(self):
@@ -940,6 +942,13 @@ class DojoReport(dict):
         """
         Plot electronic band structure.
 
+        ================  =============================
+        kwargs            Meaning
+        ================  =============================
+        width             Gaussian broadening in eV
+        step              Step of the DOS mesh in eV
+        ================  =============================
+
         Returns:
             `matplotlib` figure. None if the ebands test is not present.
         """
@@ -948,14 +957,13 @@ class DojoReport(dict):
             print("dojo report does not contain trial:", trial)
             return None
 
-        if ecut is None: ecut = self['ebands'].keys()[0]
-        path = self['ebands'][self['ebands'].keys()[0]]['GSR-nc']
+        if ecut is None: ecut = list(self['ebands'].keys())[0]
+        d = self["ebands"]["%.1f" % ecut]["ebands"]
+        from abipy import abilab
+        ebands = abilab.ElectronBands.from_dict(d)
+        edos = ebands.get_edos(width=kwargs.pop("width", 0.05), step=kwargs.pop("step", 0.02))
 
-        from abipy.abilab import abiopen
-        with abiopen(path) as gsr:
-            ebands = gsr.ebands
-            fig = ebands.plot_with_edos(ebands.get_edos(width=0.05, step=0.02))
-            return fig
+        return ebands.plot_with_edos(edos, **kwargs)
 
 ######################
 ## Pandas DataFrame ##
