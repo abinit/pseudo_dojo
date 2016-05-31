@@ -1,6 +1,6 @@
 {
 "basename": "Cd_r.psp8", 
-"deltafactor": {
+"deltafactor_soc": {
 "29.0": {
 "b0": 0.26977828639797696, 
 "b0_GPa": 43.223246326632534, 

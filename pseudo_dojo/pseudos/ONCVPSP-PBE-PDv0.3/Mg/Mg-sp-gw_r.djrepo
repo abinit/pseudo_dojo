@@ -1,6 +1,6 @@
 {
 "basename": "Mg-sp-gw_r.psp8", 
-"deltafactor": {
+"deltafactor_soc": {
 "30.0": {
 "b0": 0.2050898393536201, 
 "b0_GPa": 32.85901457759979, 

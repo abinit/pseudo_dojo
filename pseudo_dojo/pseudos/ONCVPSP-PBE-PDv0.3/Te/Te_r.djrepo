@@ -1,6 +1,6 @@
 {
 "basename": "Te_r.psp8", 
-"deltafactor": {
+"deltafactor_soc": {
 "2.0": {
 "b0": 0.23507780017825014, 
 "b0_GPa": 37.663615551468645, 

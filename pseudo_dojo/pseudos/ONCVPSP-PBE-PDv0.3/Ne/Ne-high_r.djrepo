@@ -1,6 +1,6 @@
 {
 "basename": "Ne-high_r.psp8", 
-"deltafactor": {
+"deltafactor_soc": {
 "30.0": {
 "b0": 0.010590549764487778, 
 "b0_GPa": 1.6967931234081264, 

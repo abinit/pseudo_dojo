@@ -40,7 +40,14 @@ def djrepo_fix(options):
             return 1
 
         # Remove ebands
-        #pseudo.dojo_report.pop("ebands", None)
+        pseudo.dojo_report.pop("ebands", None)
+
+        oldnew = [("deltafactor", "deltafactor_soc"),
+                   ("gbrv_fcc", "gbrv_fcc_soc"),
+                   ("gbrv_bcc", "gbrv_bcc_soc")]
+        for old, new in oldnew:
+            if old in pseudo.dojo_report:
+                pseudo.dojo_report[new] = pseudo.dojo_report.pop(old)
 
         pseudo.dojo_report.json_write(pseudo.djrepo_path)
         return 0

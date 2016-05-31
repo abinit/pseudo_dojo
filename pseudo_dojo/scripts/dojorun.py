@@ -181,7 +181,7 @@ def build_flow(pseudo, options):
         if "ghosts" in report and str_ecut in report["ghosts"]:
             cprint("[ghosts]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
         else:
-            work = ebands_factory.work_for_pseudo(pseudo, kppa=3000, max_ene=250,
+            work = ebands_factory.work_for_pseudo(pseudo, kppa=3000, maxene=250,
                                                   ecut=ecut, pawecutdg=pawecutdg,
                                                   mem_test=0)
             if work is not None:

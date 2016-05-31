@@ -1,6 +1,6 @@
 {
 "basename": "Ar_r.psp8", 
-"deltafactor": {
+"deltafactor_soc": {
 "19.0": {
 "b0": 0.005486510968399934, 
 "b0_GPa": 0.8790359603333142, 
