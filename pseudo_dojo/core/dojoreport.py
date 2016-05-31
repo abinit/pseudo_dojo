@@ -977,7 +977,7 @@ class DojoReport(dict):
             return None
 
         from abipy.electrons.ebands import ElectronBands
-        ebands = ElectronBands.from_dict(self[trial][ebands])
+        ebands = ElectronBands.from_dict(self[trial]["ebands"])
         edos = ebands.get_edos(width=kwargs.pop("width", 0.05), step=kwargs.pop("step", 0.02))
 
         return ebands.plot_with_edos(edos, **kwargs)

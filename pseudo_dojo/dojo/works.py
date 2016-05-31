@@ -257,7 +257,7 @@ class EbandsWork(DojoWork):
                task.history.info("Reached maximum number of bands. Setting dojo_status to -1 and exit")
                self._finalized = True
             else:
-                nband += (0.5 * nband)
+                nband += (0.2 * nband)
                 nbdbuf = max(int(0.1 * nband), 4)
                 nband += nbdbuf
                 nband += nband % 2
@@ -274,7 +274,17 @@ class EbandsWork(DojoWork):
                      maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene),
                      dojo_status=self.dojo_status, ebands=ebands.as_dict())
 
-        self.add_entry_to_dojoreport(entry)
+        # Update file content with Filelock.
+        root, ext = os.path.splitext(self.pseudo.filepath)
+        djrepo = root + ".djrepo"
+        with FileLock(djrepo):
+            # Read report from file.
+            file_report = DojoReport.from_file(djrepo)
+            file_report[self.dojo_trial] = entry
+            # Write new dojo report and update the pseudo attribute
+            file_report.json_write(djrepo)
+            self._pseudo.dojo_report = file_report
+
         return entry
 
 
