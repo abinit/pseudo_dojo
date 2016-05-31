@@ -141,7 +141,7 @@ class EbandsFactorWork(DojoWork):
 
     def __init__(self, structure, pseudo, kppa, maxene,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
-                 spin_mode="polarized", tolwfr=1.e-15, smearing="fermi_dirac:0.1 eV",
+                 spin_mode="unpolarized", tolwfr=1.e-15, smearing="fermi_dirac:0.1 eV",
                  chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of a bandstructure to check for ghosts.
