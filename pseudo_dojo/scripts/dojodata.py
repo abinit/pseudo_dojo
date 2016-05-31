@@ -317,15 +317,18 @@ def dojo_plot(options):
             # Plot total energy convergence.
             for with_soc in socs:
                 report.plot_deltafactor_convergence(pseudo.xc, with_soc=with_soc, title=pseudo.basename)
+
             for with_soc in socs:
                 report.plot_etotal_vs_ecut(with_soc=with_soc, title=pseudo.basename)
 
         # GBRV
         if any(k in options.what_plot for k in ("all", "gbrv")):
+            #print("trials", report.trials)
             count = 0
             for struct_type in ("fcc", "bcc"):
                 trial = "gbrv_" + struct_type
-                if report.has_trial(trial):
+                trial_soc = trial + "_soc"
+                if report.has_trial(trial) or report.has_trial(trial_soc):
                     count += 1
                     if options.eos:
                         report.plot_gbrv_eos(struct_type=struct_type, title=pseudo.basename)

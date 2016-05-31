@@ -49,8 +49,8 @@ def djrepo_fix(options):
         #for old, new in oldnew:
         #    if old in pseudo.dojo_report:
         #        pseudo.dojo_report[new] = pseudo.dojo_report.pop(old)
+        #pseudo.dojo_report.reorder()
 
-        pseudo.dojo_report.reorder()
         pseudo.dojo_report.json_write(pseudo.djrepo_path)
         return 0
 
