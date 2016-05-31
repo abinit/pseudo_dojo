@@ -170,7 +170,7 @@ class EbandsFactorWork(DojoWork):
         nval = structure.num_valence_electrons(self.pseudo)
         self.maxene = maxene
         b4ev = 1.4
-        nband = int(nval + int(1.4 * self.maxene))
+        nband = int(nval + int(b4ev * self.maxene))
         #nband = nval // 2 + 10
         if spin_mode.nsppol == 1: nband // 2
         nbdbuf = max(int(0.2 * nband), 4)
@@ -187,7 +187,8 @@ class EbandsFactorWork(DojoWork):
             nband=int(nband),
             nbdbuf=int(nbdbuf),
             tolwfr=tolwfr,
-            prtwf=1,
+            #prtwf=1,
+            prtwf=0,
             nstep=200,
             chkprim=0,
             mem_test=0
@@ -203,6 +204,8 @@ class EbandsFactorWork(DojoWork):
         scf_input.add_abiobjects(ksampling, smearing, spin_mode)
         scf_input.set_vars(extra_abivars)
         self.register_scf_task(scf_input)
+
+        self.dojo_status = 0
 
     @property
     def pseudo(self):
@@ -230,29 +233,30 @@ class EbandsFactorWork(DojoWork):
         # Increase nband if we haven't reached maxene and restart
         # dojo_status:
         #    0: if run completed
-        #    1: convergence is not reached. Used when we save previous results before restarting.
-        #    2: Cannot increase bands anymore because we are close to min_npw.
-        dojo_status = 0
+        #    > 0 convergence is not reached. Used when we save previous results before restarting.
+        #    -1: Cannot increase bands anymore because we are close to min_npw.
         nband_sentinel = int(0.85 * min_npw)
         nband_sentinel += nband_sentinel % 2
 
         if gsr_maxene >= self.maxene:
+            self.dojo_status = 0
             task.history.info("Convergence reached: gsr_maxene %s >= self.maxene %s" % (gsr_maxene, self.maxene))
         else:
-            task.history.info("Convergence not reached. Will try restart the task.")
+            task.history.info("Convergence not reached. Will test if one can restart the task.")
             task.history.info("gsr_maxene %s < self.maxene %s" % (gsr_maxene, self.maxene))
             nband = int(task.input["nband"])
 
-            if nband == nband_sentinel:
-               dojo_status = 2
-               task.history.info("Reached maximum number of bands. Setting dojo_status to 2.")
+            if nband >= nband_sentinel:
+               self.dojo_status = -1
+               task.history.info("Reached maximum number of bands. Setting dojo_status to -1 and exit")
+               self._finalized = True
             else:
-                dojo_status = 1
                 nband += (0.5 * nband)
                 nbdbuf = max(int(0.2 * nband), 4)
                 nband += nbdbuf
                 nband += nband % 2
-                if nband > nband_sentinel: nband = nband_sentinel - 2
+                if nband >= nband_sentinel: nband = nband_sentinel
+                self.dojo_status += 1
 
                 # Restart.
                 task.set_vars(nband=int(nband), nbdbuf=int(nbdbuf))
@@ -262,7 +266,7 @@ class EbandsFactorWork(DojoWork):
         # Convert to JSON and add results to the dojo report.
         entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, min_npw=int(min_npw),
                      maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene),
-                     dojo_status=dojo_status, ebands=ebands.as_dict())
+                     dojo_status=self.dojo_status, ebands=ebands.as_dict())
 
         self.add_entry_to_dojoreport(entry)
         return entry
