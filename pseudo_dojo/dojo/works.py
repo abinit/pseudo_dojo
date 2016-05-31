@@ -162,13 +162,16 @@ class EbandsFactorWork(DojoWork):
 
         # Here we find an initial guess for the number of bands
         # The goal is to reach max_ene eV above the fermi level.
+        # Assume ~ 1 eV per band
         # Add a buffer of nbdbuf states and enforce an even number of states
         nval = structure.num_valence_electrons(self.pseudo)
         self.max_ene = max_ene
-        nband = int((nval + int(self.max_ene)) * spin_mode.nsppol)
+        nband = int(nval + int(self.max_ene))
+        #nband = nval // 2 + 10
+        if spin_mode.nsppol == 1: nband // 2
         nbdbuf = max(int(0.2 * nband), 4)
         nband += nbdbuf
-        if nband % 2 != 0: nband += 1
+        nband += nband % 2
 
         # Set extra_abivars
         self.ecut, self.pawecutdg = ecut, pawecutdg
@@ -177,8 +180,8 @@ class EbandsFactorWork(DojoWork):
             ecut=ecut,
             pawecutdg=pawecutdg,
             ecutsm=ecutsm,
-            nband=nband,
-            nbdbuf=nbdbuf,
+            nband=int(nband),
+            nbdbuf=int(nbdbuf),
             tolwfr=tolwfr,
             prtwf=1,
             nstep=200,
@@ -213,20 +216,47 @@ class EbandsFactorWork(DojoWork):
         During the validation the bandstrure is plotted and the validator is asked to give
         the energy up to which no sign of ghosts is visible.
         """
-        # Read ebands from the GSR file. convert to JSON and add results to the dojo report.
+        # Read ebands from the GSR file, get also the minimum number of planewaves
         task = self[0]
         with task.open_gsr() as gsr:
             ebands = gsr.ebands
             min_npw = np.amin(gsr.reader.read_value("number_of_coefficients"))
             gsr_maxene = np.amax(ebands.eigens[:,:,-1] - ebands.fermie)
 
-        if gsr_maxene >= self.max_ene:
-            print("Convergence reached: gsr_maxene %s >= self.max_ene %s" % (gsr_maxene, self.max_ene))
-            #assert 0
-            #task.set_vars(nband=)
-            #task.restart(l)
+        # Increase nband if we haven't reached max_ene and restart
+        # dojo_status:
+        #    0: if run completed
+        #    1: convergence is not reached. Used when we save previous results before restarting.
+        #    2: Cannot increase bands anymore because we are close to min_npw.
+        dojo_status = 0
+        nband_sentinel = int(0.8 * min_npw)
+        nband_sentinel += nband_sentinel % 2
 
-        entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, max_ene=self.max_ene, gsr_maxene=float(gsr_maxene),
+        if gsr_maxene >= self.max_ene:
+            task.history.info("Convergence reached: gsr_maxene %s >= self.max_ene %s" % (gsr_maxene, self.max_ene))
+        else:
+            task.history.info("Convergence not reached. Will try restart the task.")
+            task.history.info("gsr_maxene %s < self.max_ene %s" % (gsr_maxene, self.max_ene))
+            nband = int(task.input["nband"])
+
+            if nband == nband_sentinel:
+               dojo_status = 2
+            else:
+                dojo_status = 1
+                nband += (0.5 * nband)
+                nbdbuf = max(int(0.2 * nband), 4)
+                nband += nbdbuf
+                nband += nband % 2
+                if nband > int(0.8 * min_npw): nband = nband_sentinel
+
+                # Restart.
+                task.set_vars(nband=int(nband), nbdbuf=int(nbdbuf))
+                self._finalized = False
+                task.restart()
+
+        # Convert to JSON and add results to the dojo report.
+        entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, min_npw=int(min_npw),
+                     max_ene=self.max_ene, gsr_maxene=float(gsr_maxene), dojo_status=dojo_status,
                      ebands=ebands.as_dict())
 
         self.add_entry_to_dojoreport(entry)

@@ -174,7 +174,7 @@ def build_flow(pseudo, options):
     if "ghosts" in options.trials:
         assert not options.soc
         ebands_factory = EbandsFactory(pseudo.xc)
-        ecut_hint = int(report["ppgen_hints"]["high"]["ecut"])
+        ecut = int(report["ppgen_hints"]["high"]["ecut"])
         pawecutdg = None if not pseudo.ispaw else int(report["ppgen_hints"]["high"]["pawecutdg"])
         str_ecut = '%.1f' % ecut
 
