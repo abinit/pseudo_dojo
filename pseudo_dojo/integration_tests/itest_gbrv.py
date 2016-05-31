@@ -28,7 +28,7 @@ def itest_gbrv_gga_pawxml_flow(fwp, tvars):
         work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg, paral_kgb=tvars.paral_kgb)
         flow.register_work(work)
 
-    flow.build_and_pickle_dump()
+    flow.build_and_pickle_dump(abivalidate=True)
 
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
@@ -54,28 +54,28 @@ def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
     factory = GbrvFactory(pseudo.xc)
     ecut = 6
     pawecutdg = 2 * ecut if pseudo.ispaw else None
- 
+
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
- 
+
     struct_types = ["fcc",] # "bcc"]
     assert pseudo.dojo_report.has_trial("gbrv_fcc", ecut=4)
     assert not pseudo.dojo_report.has_trial("gbrv_fcc", ecut=ecut)
- 
+
     for struct_type in struct_types:
-        work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg, 
+        work = factory.relax_and_eos_work(pseudo, struct_type, ecut, pawecutdg=pawecutdg,
                                           include_soc=True, paral_kgb=tvars.paral_kgb)
         flow.register_work(work)
- 
-    flow.build_and_pickle_dump()
- 
+
+    flow.build_and_pickle_dump(abivalidate=True)
+
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
     assert not fwp.scheduler.exceptions
- 
+
     flow.check_status(show=True)
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
     print(pseudo.dojo_report)
-    assert pseudo.dojo_report.has_trial("gbrv_fcc", ecut=ecut)
+    assert pseudo.dojo_report.has_trial("gbrv_fcc_soc", ecut=ecut)
     assert not pseudo.dojo_report.exceptions

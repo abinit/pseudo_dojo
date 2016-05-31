@@ -97,7 +97,8 @@ class EbandsFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, pseudo, kppa=3000, maxene=250, ecut=None, pawecutdg=None, spin_mode="unpolarized",
+    def work_for_pseudo(self, pseudo, kppa=3000, maxene=250, ecut=None, pawecutdg=None,
+                        spin_mode="unpolarized", include_soc=False,
                         tolwfr=1.e-15, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
@@ -129,19 +130,19 @@ class EbandsFactory(object):
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
 
-        return EbandsFactorWork(
+        return EbandsWork(
             structure, pseudo, kppa, maxene,
-            spin_mode=spin_mode, tolwfr=tolwfr, smearing=smearing,
+            spin_mode=spin_mode, include_soc=include_soc, tolwfr=tolwfr, smearing=smearing,
             ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
 
 
-class EbandsFactorWork(DojoWork):
+class EbandsWork(DojoWork):
     """Work for the calculation of the deltafactor."""
 
     def __init__(self, structure, pseudo, kppa, maxene,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
-                 spin_mode="unpolarized", tolwfr=1.e-15, smearing="fermi_dirac:0.1 eV",
+                 spin_mode="unpolarized", include_soc=False, tolwfr=1.e-15, smearing="fermi_dirac:0.1 eV",
                  chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of a bandstructure to check for ghosts.
@@ -152,13 +153,15 @@ class EbandsFactorWork(DojoWork):
             kppa: Number of k-points per atom.
             maxene: 250 eV
             spin_mode: Spin polarization mode.
+            include_soc=True of SOC should be included.
             tolwfr: Stopping criterion.
             smearing: Smearing technique.
             workdir: String specifing the working directory.
             manager: :class:`TaskManager` responsible for the submission of the tasks.
         """
-        super(EbandsFactorWork, self).__init__(workdir=workdir, manager=manager)
+        super(EbandsWork, self).__init__(workdir=workdir, manager=manager)
         self._pseudo = pseudo
+        self.include_soc = include_soc
 
         spin_mode = SpinMode.as_spinmode(spin_mode)
         smearing = Smearing.as_smearing(smearing)
@@ -213,7 +216,10 @@ class EbandsFactorWork(DojoWork):
 
     @property
     def dojo_trial(self):
-        return "ghosts"
+        if not self.include_soc:
+            return "ghosts"
+        else:
+            return "ghosts_soc"
 
     def on_all_ok(self):
         """
@@ -359,7 +365,7 @@ class DeltaFactory(object):
 
         return DeltaFactorWork(
             structure, pseudo, kppa, connect,
-            spin_mode=spin_mode, toldfe=toldfe, smearing=smearing,
+            spin_mode=spin_mode, include_soc=include_soc, toldfe=toldfe, smearing=smearing,
             ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
 
@@ -369,7 +375,7 @@ class DeltaFactorWork(DojoWork):
 
     def __init__(self, structure, pseudo, kppa, connect,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
-                 spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
+                 spin_mode="polarized", include_soc=False, toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
                  chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the deltafactor.
@@ -387,6 +393,7 @@ class DeltaFactorWork(DojoWork):
         """
         super(DeltaFactorWork, self).__init__(workdir=workdir, manager=manager)
         self._pseudo = pseudo
+        self.include_soc = include_soc
 
         spin_mode = SpinMode.as_spinmode(spin_mode)
         smearing = Smearing.as_smearing(smearing)
@@ -449,7 +456,10 @@ class DeltaFactorWork(DojoWork):
 
     @property
     def dojo_trial(self):
-        return "deltafactor"
+        if not self.include_soc:
+            return "deltafactor"
+        else:
+            return "deltafactor_soc"
 
     def on_all_ok(self):
         """
@@ -539,7 +549,8 @@ class GbrvFactory(object):
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
 
         return GbrvRelaxAndEosWork(structure, struct_type, pseudo,
-                                   ecut=ecut, pawecutdg=pawecutdg, spin_mode=spin_mode, **kwargs)
+                                   ecut=ecut, pawecutdg=pawecutdg, spin_mode=spin_mode, include_soc=include_soc,
+                                   **kwargs)
 
 
 def gbrv_nband(pseudo):
@@ -557,7 +568,7 @@ def gbrv_nband(pseudo):
 class GbrvRelaxAndEosWork(DojoWork):
 
     def __init__(self, structure, struct_type, pseudo, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
-                 spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
+                 spin_mode="unpolarized", include_soc=False, toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
                  ecutsm=0.05, chksymbreak=0,
                  workdir=None, manager=None, **kwargs):
         """
@@ -581,6 +592,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         # nband must be large enough to accomodate fractional occupancies.
         fband = kwargs.pop("fband", None)
         self._pseudo = pseudo
+        self.include_soc = include_soc
         nband = gbrv_nband(self.pseudo)
 
         # Set extra_abivars.
@@ -614,7 +626,10 @@ class GbrvRelaxAndEosWork(DojoWork):
 
     @property
     def dojo_trial(self):
-        return "gbrv_" + self.struct_type
+        if not self.include_soc:
+            return "gbrv_" + self.struct_type
+        else:
+            return "gbrv_" + self.struct_type + "_soc"
 
     @property
     def pseudo(self):
@@ -822,7 +837,7 @@ class DFPTPhononFactory(object):
         # Split input into gs_inp and ph_inputs
         return multi.split_datasets()
 
-    def work_for_pseudo(self, pseudo, workdir=None, manager=None, **kwargs):
+    def work_for_pseudo(self, pseudo, include_soc=False, workdir=None, manager=None, **kwargs):
         """
         Create a :class:`Work` for phonon calculations:
 
@@ -849,6 +864,7 @@ class DFPTPhononFactory(object):
                 "Pseudo xc differs from the XC used to instantiate the factory\n"
                 "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))
 
+        self.include_soc = include_soc
         structure_or_cif = self.get_cif_path(pseudo.symbol)
 
         if not isinstance(structure_or_cif, Structure):
@@ -883,9 +899,9 @@ class DFPTPhononFactory(object):
 
         work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork,
                                         workdir=workdir, manager=manager)
+
         #print('after build_oneshot_phonon', work)
         work.set_dojo_trial(qpt, trial_name)
-        #print(scf_input.keys())
         work.ecut = scf_input['ecut']
         work._pseudo = pseudo
 

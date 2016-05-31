@@ -373,8 +373,8 @@ class DojoReport(dict):
         True if the dojo_report contains dojo_trial with the given ecut.
         If ecut is None, we test if dojo_trial is present.
         """
-        if dojo_trial not in self.ALL_TRIALS:
-            raise ValueError("dojo_trial `%s` is not a registered DOJO TRIAL" % dojo_trial)
+        #if dojo_trial not in self.ALL_TRIALS:
+        #    raise ValueError("dojo_trial `%s` is not a registered DOJO TRIAL" % dojo_trial)
 
         if dojo_trial not in self: return False
         if ecut is None: return dojo_trial in self
@@ -484,8 +484,8 @@ class DojoReport(dict):
             entry: Dictionary with data.
             overwrite: By default, this method raises ValueError if this entry is already filled.
         """
-        if dojo_trial not in self.ALL_TRIALS:
-            raise ValueError("%s is not a registered trial")
+        #if dojo_trial not in self.ALL_TRIALS:
+        #    raise ValueError("%s is not a registered trial")
 
         if dojo_trial not in self: self[dojo_trial] = {}
         section = self[dojo_trial]
@@ -606,10 +606,6 @@ class DojoReport(dict):
                     app("%s: ecut %s is not in the global list" % (trial, ecut))
 
         return "\n".join(errors)
-
-    #def print_table(self, stream=sys.stdout):
-    #    from monty.pprint import pprint_table
-    #    pprint_table(self.get_dataframe(), out=stream)
 
     def convert(self, new_version):
         """
@@ -952,15 +948,15 @@ class DojoReport(dict):
         Returns:
             `matplotlib` figure. None if the ebands test is not present.
         """
-        trial = ""
+        trial = "ghosts"
         if trial not in self:
             print("dojo report does not contain trial:", trial)
             return None
 
         if ecut is None: ecut = list(self[''].keys())[0]
-        d = self[""]["%.1f" % ecut][""]
-        from abipy import abilab
-        ebands = abilab.ElectronBands.from_dict(d)
+        d = self[trial]["%.1f" % ecut][ebands]
+        from abipy.electrons.ebands import ElectronBands
+        ebands = ElectronBands.from_dict(d)
         edos = ebands.get_edos(width=kwargs.pop("width", 0.05), step=kwargs.pop("step", 0.02))
 
         return ebands.plot_with_edos(edos, **kwargs)

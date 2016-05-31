@@ -29,14 +29,14 @@ def itest_deltafactor_gga_pawxml(fwp, tvars):
     pawecutdg = ecut * 2 if pseudo.ispaw else None
 
     assert not pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
-    work = DeltaFactory(pseudo.xc).work_for_pseudo(pseudo, 
-                                          kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, 
+    work = DeltaFactory(pseudo.xc).work_for_pseudo(pseudo,
+                                          kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
                                           include_soc=False,
                                           paral_kgb=tvars.paral_kgb)
 
     # Register the workflow.
     flow.register_work(work)
-    flow.build_and_pickle_dump()
+    flow.build_and_pickle_dump(abivalidate=True)
 
     for task in flow[0]:
         task.start_and_wait()
@@ -77,16 +77,16 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
     pawecutdg = ecut * 2 if pseudo.ispaw else None
 
     assert pseudo.dojo_report.has_trial("deltafactor", ecut=12)
-    assert not pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
+    assert not pseudo.dojo_report.has_trial("deltafactor_soc", ecut=ecut)
 
-    work = DeltaFactory(pseudo.xc).work_for_pseudo(pseudo, 
-                                          kppa=kppa, ecut=ecut, pawecutdg=pawecutdg, 
+    work = DeltaFactory(pseudo.xc).work_for_pseudo(pseudo,
+                                          kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
                                           include_soc=True,
                                           paral_kgb=tvars.paral_kgb)
 
     # Register the workflow.
     flow.register_work(work)
-    flow.build_and_pickle_dump()
+    flow.build_and_pickle_dump(abivalidate=True)
 
     for task in flow[0]:
         task.start_and_wait()
@@ -96,5 +96,5 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
     assert all(work.finalized for work in flow)
     results = flow[0].get_results()
 
-    assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
+    assert pseudo.dojo_report.has_trial("deltafactor_soc", ecut=ecut)
     assert not pseudo.dojo_report.exceptions

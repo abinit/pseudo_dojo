@@ -24,25 +24,20 @@ def itest_gbrvcompounds_gga_pawxml_flow(fwp, tvars):
     formula, struct_type, accuracy = "LiF", "rocksalt", "normal"
     pseudos = pdj_data.pseudos("3li.pspnc", "9f.pspnc")
 
-    work = gbrv_factory.relax_and_eos_work(accuracy, pseudos, formula, struct_type, 
+    work = gbrv_factory.relax_and_eos_work(accuracy, pseudos, formula, struct_type,
                                            ecut=20, pawecutdg=None, **extra_abivars)
     flow.register_work(work)
 
-    flow.build_and_pickle_dump()
+    flow.build_and_pickle_dump(abivalidate=True)
     print("Working in ", flow.workdir)
 
-    isok, results = flow.abivalidate_inputs()
-    if not isok:
-        print(results)
-        assert isok
     assert len(flow[0]) == 1
 
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
     assert not fwp.scheduler.exceptions
- 
-    flow.check_status()
-    flow.show_status()
+
+    flow.check_status(show=True)
     assert all(work.finalized for work in flow)
     assert flow.all_ok
     assert len(flow[0]) == 1 + 9

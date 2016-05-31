@@ -20,7 +20,7 @@ def itest_phonons_without_asr(fwp, tvars):
 
     ecut = 8
     pawecutdg = 2 * ecut if pseudo.ispaw else None
-    kppa = 20  # this value is for testing purpose 
+    kppa = 20  # this value is for testing purpose
 
     # This one requires deltafactor!
     phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
@@ -30,7 +30,7 @@ def itest_phonons_without_asr(fwp, tvars):
     return
     print(work)
     flow.register_work(work)
-    flow.build_and_pickle_dump()
+    flow.build_and_pickle_dump(abivalidate=True)
 
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
