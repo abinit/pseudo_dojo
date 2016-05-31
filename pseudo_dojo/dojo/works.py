@@ -62,8 +62,11 @@ class DojoWork(Work):
             dojo_ecut = "%.1f" % self.ecut
 
             # Check that we are not going to overwrite data.
-            if dojo_ecut in file_report[dojo_trial] and not overwrite_data:
-                raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
+            if dojo_ecut in file_report[dojo_trial]:
+                if not overwrite_data:
+                    raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
+                else:
+                    file_report[dojo_trial].pop(dojo_ecut)
 
             # Update file_report by adding the new entry and write new file
             file_report[dojo_trial][dojo_ecut] = entry
@@ -94,7 +97,7 @@ class EbandsFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, pseudo, kppa=3000, max_ene=250, ecut=None, pawecutdg=None, spin_mode="unpolarized",
+    def work_for_pseudo(self, pseudo, kppa=3000, maxene=250, ecut=None, pawecutdg=None, spin_mode="unpolarized",
                         tolwfr=1.e-15, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
@@ -127,7 +130,7 @@ class EbandsFactory(object):
         structure = Structure.from_file(cif_path, primitive=False)
 
         return EbandsFactorWork(
-            structure, pseudo, kppa, max_ene,
+            structure, pseudo, kppa, maxene,
             spin_mode=spin_mode, tolwfr=tolwfr, smearing=smearing,
             ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
@@ -136,7 +139,7 @@ class EbandsFactory(object):
 class EbandsFactorWork(DojoWork):
     """Work for the calculation of the deltafactor."""
 
-    def __init__(self, structure, pseudo, kppa, max_ene,
+    def __init__(self, structure, pseudo, kppa, maxene,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
                  spin_mode="polarized", tolwfr=1.e-15, smearing="fermi_dirac:0.1 eV",
                  chksymbreak=0, workdir=None, manager=None, **kwargs):
@@ -147,7 +150,7 @@ class EbandsFactorWork(DojoWork):
             structure: :class:`Structure` object
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
             kppa: Number of k-points per atom.
-            max_ene: 250 eV
+            maxene: 250 eV
             spin_mode: Spin polarization mode.
             tolwfr: Stopping criterion.
             smearing: Smearing technique.
@@ -161,12 +164,12 @@ class EbandsFactorWork(DojoWork):
         smearing = Smearing.as_smearing(smearing)
 
         # Here we find an initial guess for the number of bands
-        # The goal is to reach max_ene eV above the fermi level.
+        # The goal is to reach maxene eV above the fermi level.
         # Assume ~ 1 eV per band
         # Add a buffer of nbdbuf states and enforce an even number of states
         nval = structure.num_valence_electrons(self.pseudo)
-        self.max_ene = max_ene
-        nband = int(nval + int(self.max_ene))
+        self.maxene = maxene
+        nband = int(nval + int(self.maxene))
         #nband = nval // 2 + 10
         if spin_mode.nsppol == 1: nband // 2
         nbdbuf = max(int(0.2 * nband), 4)
@@ -223,31 +226,32 @@ class EbandsFactorWork(DojoWork):
             min_npw = np.amin(gsr.reader.read_value("number_of_coefficients"))
             gsr_maxene = np.amax(ebands.eigens[:,:,-1] - ebands.fermie)
 
-        # Increase nband if we haven't reached max_ene and restart
+        # Increase nband if we haven't reached maxene and restart
         # dojo_status:
         #    0: if run completed
         #    1: convergence is not reached. Used when we save previous results before restarting.
         #    2: Cannot increase bands anymore because we are close to min_npw.
         dojo_status = 0
-        nband_sentinel = int(0.8 * min_npw)
+        nband_sentinel = int(0.85 * min_npw)
         nband_sentinel += nband_sentinel % 2
 
-        if gsr_maxene >= self.max_ene:
-            task.history.info("Convergence reached: gsr_maxene %s >= self.max_ene %s" % (gsr_maxene, self.max_ene))
+        if gsr_maxene >= self.maxene:
+            task.history.info("Convergence reached: gsr_maxene %s >= self.maxene %s" % (gsr_maxene, self.maxene))
         else:
             task.history.info("Convergence not reached. Will try restart the task.")
-            task.history.info("gsr_maxene %s < self.max_ene %s" % (gsr_maxene, self.max_ene))
+            task.history.info("gsr_maxene %s < self.maxene %s" % (gsr_maxene, self.maxene))
             nband = int(task.input["nband"])
 
             if nband == nband_sentinel:
                dojo_status = 2
+               task.history.info("Reached maximum number of bands. Setting dojo_statu to 2.")
             else:
                 dojo_status = 1
                 nband += (0.5 * nband)
                 nbdbuf = max(int(0.2 * nband), 4)
                 nband += nbdbuf
                 nband += nband % 2
-                if nband > int(0.8 * min_npw): nband = nband_sentinel
+                if nband > int(0.85 * min_npw): nband = nband_sentinel
 
                 # Restart.
                 task.set_vars(nband=int(nband), nbdbuf=int(nbdbuf))
@@ -256,8 +260,9 @@ class EbandsFactorWork(DojoWork):
 
         # Convert to JSON and add results to the dojo report.
         entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, min_npw=int(min_npw),
-                     max_ene=self.max_ene, gsr_maxene=float(gsr_maxene), dojo_status=dojo_status,
+                     maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene), dojo_status=dojo_status,
                      ebands=ebands.as_dict())
+
 
         self.add_entry_to_dojoreport(entry)
         return entry
