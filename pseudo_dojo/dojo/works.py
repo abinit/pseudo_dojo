@@ -169,11 +169,11 @@ class EbandsFactorWork(DojoWork):
         # Add a buffer of nbdbuf states and enforce an even number of states
         nval = structure.num_valence_electrons(self.pseudo)
         self.maxene = maxene
-        b4ev = 1.4
+        b4ev = 1.1
         nband = int(nval + int(b4ev * self.maxene))
         #nband = nval // 2 + 10
         if spin_mode.nsppol == 1: nband // 2
-        nbdbuf = max(int(0.2 * nband), 4)
+        nbdbuf = max(int(0.1 * nband), 4)
         nband += nbdbuf
         nband += nband % 2
 
@@ -252,7 +252,7 @@ class EbandsFactorWork(DojoWork):
                self._finalized = True
             else:
                 nband += (0.5 * nband)
-                nbdbuf = max(int(0.2 * nband), 4)
+                nbdbuf = max(int(0.1 * nband), 4)
                 nband += nbdbuf
                 nband += nband % 2
                 if nband >= nband_sentinel: nband = nband_sentinel
