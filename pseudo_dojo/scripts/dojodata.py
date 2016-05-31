@@ -282,6 +282,7 @@ def dojo_figures(options):
 def dojo_plot(options):
     """Plot DOJO results for specified pseudos."""
     pseudos = options.pseudos
+    #socs = [False, True]
 
     for pseudo in pseudos:
         if not pseudo.has_dojo_report:
@@ -303,21 +304,18 @@ def dojo_plot(options):
 		print(exc)
 
         # ghosts
-        if report.has_trial("ghosts") and any(k in options.what_plot for k in ("all", "ghosts")):
-            try:
-                report.plot_ebands(title=pseudo.basename)
-            except Exception as exc:
-                cprint(exc, "red")
+        if any(k in options.what_plot for k in ("all", "ghosts")):
+            report.plot_ebands(title=pseudo.basename)
 
         # Deltafactor
-        if report.has_trial("deltafactor") and any(k in options.what_plot for k in ("all", "df")):
+        if any(k in options.what_plot for k in ("all", "df")):
             if options.eos:
                 # Plot EOS curve
                 report.plot_deltafactor_eos(title=pseudo.basename)
 
             # Plot total energy convergence.
-            fig = report.plot_deltafactor_convergence(xc=pseudo.xc, title=pseudo.basename)
-            fig = report.plot_etotal_vs_ecut(title=pseudo.basename)
+            report.plot_deltafactor_convergence(pseudo.xc, with_soc=False, title=pseudo.basename)
+            report.plot_etotal_vs_ecut(with_soc=False, title=pseudo.basename)
 
         # GBRV
         if any(k in options.what_plot for k in ("all", "gbrv")):
@@ -333,8 +331,7 @@ def dojo_plot(options):
 
         # phonon
         if any(k in options.what_plot for k in ("all", "phonon")):
-            if report.has_trial("phonon"):
-                report.plot_phonon_convergence(title=pseudo.basename)
+            report.plot_phonon_convergence(title=pseudo.basename)
 
         #if any(k in options.what_plot for k in ("all", "phwoa")):
         #    if report.has_trial("phwoa"):

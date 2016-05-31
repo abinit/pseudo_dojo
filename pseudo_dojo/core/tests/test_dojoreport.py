@@ -82,8 +82,7 @@ class DojoReportTest(PseudoDojoTest):
         missings = report.find_missing_entries()
         assert "ghosts" in missings
         assert "phwoa" in missings
-        with self.assertRaises(ValueError):
-            report.has_trial("foo")
+        assert not report.has_trial("foo")
 
         for trial in report.trials:
             assert report.has_trial(trial)
@@ -94,7 +93,7 @@ class DojoReportTest(PseudoDojoTest):
         self.assert_almost_equal(report["deltafactor"][32]["volumes"][1],  66.80439150995784)
 
         assert not report.has_trial("deltafactor", ecut=-1)
-        with self.assertRaises(ValueError): report.has_trial("deafactor", ecut="32.00")
+        assert not report.has_trial("deafactor", ecut="32.00")
 
         # Test GBRV entries
         self.assert_almost_equal(report["gbrv_bcc"][32]["a0"], 1.8069170394120007)
@@ -122,10 +121,11 @@ class DojoReportTest(PseudoDojoTest):
         """Testing dojoreport plotting methods"""
         h_wdr = pdj_data.pseudo("H-wdr.psp8")
         report = h_wdr.dojo_report
-        self.assertIsInstance(report.plot_deltafactor_convergence(xc=h_wdr.xc, show=False), Fig)
-        self.assertIsInstance(report.plot_deltafactor_eos(show=False), Fig)
-        self.assertIsInstance(report.plot_etotal_vs_ecut(show=False), Fig)
-        self.assertIsInstance(report.plot_gbrv_convergence(show=False), Fig)
-        self.assertIsInstance(report.plot_gbrv_eos('bcc', show=False), Fig)
-        self.assertIsInstance(report.plot_gbrv_eos('fcc', show=False), Fig)
-        self.assertIsInstance(report.plot_phonon_convergence(show=False), Fig)
+        assert isinstance(report.plot_deltafactor_convergence(xc=h_wdr.xc, show=False), Fig)
+        assert report.plot_deltafactor_convergence(xc=h_wdr.xc, with_soc=True, show=False) is None
+        assert isinstance(report.plot_deltafactor_eos(show=False), Fig)
+        assert isinstance(report.plot_etotal_vs_ecut(show=False), Fig)
+        assert isinstance(report.plot_gbrv_convergence(show=False), Fig)
+        assert isinstance(report.plot_gbrv_eos('bcc', show=False), Fig)
+        assert isinstance(report.plot_gbrv_eos('fcc', show=False), Fig)
+        assert isinstance(report.plot_phonon_convergence(show=False), Fig)

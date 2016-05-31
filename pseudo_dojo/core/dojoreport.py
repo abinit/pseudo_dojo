@@ -373,9 +373,6 @@ class DojoReport(dict):
         True if the dojo_report contains dojo_trial with the given ecut.
         If ecut is None, we test if dojo_trial is present.
         """
-        #if dojo_trial not in self.ALL_TRIALS:
-        #    raise ValueError("dojo_trial `%s` is not a registered DOJO TRIAL" % dojo_trial)
-
         if dojo_trial not in self: return False
         if ecut is None: return dojo_trial in self
 
@@ -484,8 +481,8 @@ class DojoReport(dict):
             entry: Dictionary with data.
             overwrite: By default, this method raises ValueError if this entry is already filled.
         """
-        #if dojo_trial not in self.ALL_TRIALS:
-        #    raise ValueError("%s is not a registered trial")
+        if dojo_trial not in self.ALL_TRIALS and dojo_trial.replace("_soc", "", 1) not in self.ALL_TRIALS:
+            raise ValueError("%s is not a registered trial")
 
         if dojo_trial not in self: self[dojo_trial] = {}
         section = self[dojo_trial]
@@ -618,30 +615,31 @@ class DojoReport(dict):
         return new
 
     @add_fig_kwargs
-    def plot_etotal_vs_ecut(self, ax=None, inv_ecut=False, **kwargs):
+    def plot_etotal_vs_ecut(self, ax=None, inv_ecut=False, with_soc=False, **kwargs):
         """
         plot the convergence of the total energy as function of the energy cutoff ecut
 
         Args:
             ax: matplotlib Axes, if ax is None a new figure is created.
+            with_soc=If True, the results obtained with SOC are plotted (if available).
 
         Returns:
             `matplotlib` figure or None if the deltafactor test is not present
         """
-        trial = "deltafactor"
+        trial = "deltafactor" if not with_soc else "deltafactor_soc"
         if trial not in self:
             print("dojo report does not contain trial:", trial)
             return None
 
         # Extract the total energy of the AE relaxed structure (4).
-        d = OrderedDict([(ecut, data["etotals"][4]) for ecut, data in self["deltafactor"].items()])
+        d = OrderedDict([(ecut, data["etotals"][4]) for ecut, data in self[trial].items()])
 
         # Ecut mesh in Ha
         ecuts = np.array(list(d.keys()))
         ecut_min, ecut_max = np.min(ecuts), np.max(ecuts)
 
         # Energies per atom in meV and difference wrt 'converged' value
-        num_sites = [v["num_sites"] for v in self["deltafactor"].values()][0]
+        num_sites = [v["num_sites"] for v in self[trial].values()][0]
         etotals_mev = np.array([d[e] for e in ecuts]) * 1000  / num_sites
         ediffs = etotals_mev - etotals_mev[-1]
 
@@ -684,12 +682,13 @@ class DojoReport(dict):
         return fig
 
     @add_fig_kwargs
-    def plot_deltafactor_eos(self, ax=None, **kwargs):
+    def plot_deltafactor_eos(self, ax=None, with_soc=False, **kwargs):
         """
         plot the EOS computed with the deltafactor setup.
 
         Args:
             ax: matplotlib :class:`Axes` or None if a new figure should be created.
+            with_soc=If True, the results obtained with SOC are plotted (if available).
 
         ================  ==============================================================
         kwargs            Meaning
@@ -700,7 +699,7 @@ class DojoReport(dict):
         Returns:
             `matplotlib` figure or None if the deltafactor test is not present
         """
-        trial = "deltafactor"
+        trial = "deltafactor" if not with_soc else "deltafactor_soc"
         if trial not in self:
             print("dojo report does not contain trial:", trial)
             return None
@@ -725,19 +724,20 @@ class DojoReport(dict):
         return fig
 
     @add_fig_kwargs
-    def plot_deltafactor_convergence(self, xc, code="WIEN2k", what=None, ax_list=None, **kwargs):
+    def plot_deltafactor_convergence(self, xc, code="WIEN2k", with_soc=False, what=None, ax_list=None, **kwargs):
         """
         plot the convergence of the deltafactor parameters wrt ecut.
 
         Args:
             xc=String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE"
             code: Reference code
+            with_soc=If True, the results obtained with SOC are plotted (if available).
             ax_list: List of matplotlib Axes, if ax_list is None a new figure is created
 
         Returns:
             `matplotlib` figure or None if the deltafactor test is not present
         """
-        trial = "deltafactor"
+        trial = "deltafactor" if not with_soc else "deltafactor_soc"
         if trial not in self:
             print("dojo report does not contain trial:", trial)
             return None
@@ -758,7 +758,7 @@ class DojoReport(dict):
         reference = df_database(xc=xc).get_entry(symbol=self.symbol, code=code)
         print("Reference data:", reference)
 
-        d = self["deltafactor"]
+        d = self[trial]
         ecuts = list(d.keys())
 
         import matplotlib.pyplot as plt
@@ -776,6 +776,8 @@ class DojoReport(dict):
             refval = getattr(reference, key)
 
             # Plot difference pseudo - ref.
+            #print("ecuts", ecuts)
+            #print("values", values)
             ax.plot(ecuts, values - refval, "o-")
 
             ax.grid(True)
@@ -796,12 +798,13 @@ class DojoReport(dict):
         return fig
 
     @add_fig_kwargs
-    def plot_gbrv_eos(self, struct_type, ax=None, **kwargs):
+    def plot_gbrv_eos(self, struct_type, ax=None, with_soc=False, **kwargs):
         """
         Uses Matplotlib to plot the EOS computed with the GBRV setup
 
         Args:
             ax: matplotlib :class:`Axes` or None if a new figure should be created.
+            with_soc=If True, the results obtained with SOC are plotted (if available).
 
         ================  ==============================================================
         kwargs            Meaning
@@ -813,6 +816,8 @@ class DojoReport(dict):
             `matplotlib` figure or None if the GBRV test is not present
         """
         trial = "gbrv_" + struct_type
+        if with_soc: trial += "_soc"
+
         # Handle missing entries: noble gases, Hg ...
         if trial not in self:
             print("dojo report does not contain trial:", trial)
@@ -836,12 +841,13 @@ class DojoReport(dict):
         return fig
 
     @add_fig_kwargs
-    def plot_gbrv_convergence(self, ax_list=None, **kwargs):
+    def plot_gbrv_convergence(self, ax_list=None, with_soc=False, **kwargs):
         """
         Uses Matplotlib to plot the convergence of the GBRV parameters wrt ecut.
 
         Args:
             ax_list: List of matplotlib Axes, if ax_list is None a new figure is created
+            with_soc=If True, the results obtained with SOC are plotted (if available).
 
         Returns:
             `matplotlib` figure. None if the GBRV test is not present.
@@ -851,6 +857,7 @@ class DojoReport(dict):
 
         for stype in stypes:
             trial = "gbrv_" + stype
+            if with_soc: trial += "_soc"
             if trial not in self:
                 print("dojo report does not contain trial:", trial)
                 return None
@@ -866,6 +873,7 @@ class DojoReport(dict):
 
         for i, (ax, stype) in enumerate(zip(ax_list, stypes)):
             trial = "gbrv_" + stype
+            if with_soc: trial += "_soc"
             d = self[trial]
             ecuts = list(d.keys())
             values = np.array([float(d[ecut]["a0_rel_err"]) for ecut in ecuts])
@@ -881,17 +889,18 @@ class DojoReport(dict):
         return fig
 
     @add_fig_kwargs
-    def plot_phonon_convergence(self, ax_list=None, **kwargs):
+    def plot_phonon_convergence(self, ax_list=None, with_soc=False, **kwargs):
         """
         Plot the convergence of the phonon modes wrt ecut.
 
         Args:
             ax_list: List of matplotlib Axes, if ax_list is None a new figure is created
+            with_soc=If True, the results obtained with SOC are plotted (if available).
 
         Returns:
             `matplotlib` figure. None if the GBRV test is not present.
         """
-        trial = "phonon"
+        trial = "phonon" if not with_soc else "phonon_soc"
         if trial not in self:
             print("dojo report does not contain trial:", trial)
             return None
@@ -934,9 +943,13 @@ class DojoReport(dict):
         return fig
 
     @add_fig_kwargs
-    def plot_ebands(self, ecut=None, **kwargs):
+    def plot_ebands(self, ecut=None, with_soc=False, **kwargs):
         """
         Plot electronic band structure.
+
+        Args:
+            ecut:
+            with_soc=If True, the results obtained with SOC are plotted (if available).
 
         ================  =============================
         kwargs            Meaning
@@ -948,7 +961,7 @@ class DojoReport(dict):
         Returns:
             `matplotlib` figure. None if the ebands test is not present.
         """
-        trial = "ghosts"
+        trial = "ghosts" if not with_soc else "ghosts_soc"
         if trial not in self:
             print("dojo report does not contain trial:", trial)
             return None
@@ -971,7 +984,6 @@ class DojoDataFrame(DataFrame):
     """
     Extends pandas DataFrame adding helper functions.
     """
-
     # The frame has its own list so that one can easily change the
     # entries that should be analyzed by modifying this attributes.
     ALL_ACCURACIES = DojoReport.ALL_ACCURACIES
