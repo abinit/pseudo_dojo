@@ -952,7 +952,6 @@ class PhononDojoWork(OneShotPhononWork, DojoWork):
         return d
 
 
-
 class GammaPhononFactory(object):
     """
     Factory class producing `Workflow` objects for Phonon calculations at Gamma.
@@ -978,14 +977,14 @@ class GammaPhononFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    def works_for_pseudo(self, pseudo, kppa=2000, ecut=None, pawecutdg=None,
-                         smearing="fermi_dirac:0.1 eV", include_soc=False,
-                         workdir=None, manager=None, **kwargs):
+    def work_for_pseudo(self, pseudo, kppa=2000, ecut=None, pawecutdg=None,
+                        smearing="fermi_dirac:0.1 eV", include_soc=False,
+                        workdir=None, manager=None, **kwargs):
         """
-        Create and return two :class:`Work` objects
+        Create and return a :class:`Work` object contains
 
-            1) One workflow for the GS run.
-            2) One workflow for phonon calculations at Gamma
+            #. One task for the GS run.
+            #. Multiple phonon tasks for DFPT calculations at Gamma.
 
         Args:
             pseudo: filepath or :class:`Pseudo` object.
@@ -1012,25 +1011,32 @@ class GammaPhononFactory(object):
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
 
-        # Build GS task
-        #spin_mode = "unpolarized"
-        #if include_soc: spin_mode = "spinor"
+        # Build the GS input.
+        spin_mode = "unpolarized" if not include_soc else "spinor"
+
+        spin_mode = SpinMode.as_spinmode(spin_mode)
+        smearing = Smearing.as_smearing(smearing)
         ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=0)
 
-        #all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
-        #scf_input, ph_inputs = all_inps[0], all_inps[1:]
-        #work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork,
-        #                                workdir=workdir, manager=manager)
+        scf_input = abilab.AbinitInput(structure=structure, pseudos=pseudo)
+        scf_input.set_vars(ecut=ecut, pawecutdg=pawecutdg, tolwfr=1e-20)
+        scf_input.add_abiobjects(ksampling, smearing, spin_mode)
 
-        phg_work = PhononDojoWork.from_scf_task(scf_task, qpt)
+        # Build GS work and Phonon Work
+        #scf_work = abilab.Work(workdir=workdir, manager=manager)
+        #scf_task = scf_work.register_scf_task(scf_input)
+        work = PhononDojoWork.from_scf_input(scf_input, qpt)
 
-        # monkey patch
-        #phg_work.dojo_qpt = qpt
-        #phg_work.include_soc = include_soc
-        #phg_work._dojo_trial = "phonon"
-        #phg_work._pseudo = pseudo
+        # Monkey patch work
+        work.dojo_kppa = kppa
+        work.dojo_qpt = qpt
+        work.ecut = ecut
+        work.dojo_pawecutdg = pawecutdg
+        work.dojo_include_soc = include_soc
+        work._dojo_trial = "phgamma" if not include_soc else "phgamma_soc"
+        work._pseudo = pseudo
 
-        return [scf_work, phg_work]
+        return work
 
 
 class PhononDojoWork(PhononWork, DojoWork):
@@ -1044,21 +1050,22 @@ class PhononDojoWork(PhononWork, DojoWork):
         return self._pseudo
 
     def on_all_ok(self):
-        # Merge DDB file.
+        # Call super to merge DDB file.
         results = super(PhononDojoWork, self).on_all_ok()
 
         out_ddb = self.outdir.path_in("out_DDB")
         ddb = abilab.DdbFile(out_ddb)
 
         # Call anaddb with/without ASR.
-        #asr_phbands = ddb.anaget_phmodes_at_qpoint(qpoint=self.dojo_qpt, asr=2, chneut=1, dipdip=1, verbose=1)
-        #noasr_phbands = ddb.anaget_phmodes_at_qpoint(qpoint=self.dojo_qpt, asr=0, chneut=1, dipdip=1, verbose=1)
+        asr2_phbands = ddb.anaget_phmodes_at_qpoint(qpoint=self.dojo_qpt, asr=2, chneut=1, dipdip=1, verbose=1)
+        noasr_phbands = ddb.anaget_phmodes_at_qpoint(qpoint=self.dojo_qpt, asr=0, chneut=1, dipdip=1, verbose=1)
+        #print("asr", asr2_phbands.phfreqs); print("noasr", noasr_phbands.phfreqs)
 
         # Convert to JSON and add results to the dojo report.
-        #entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, min_npw=int(min_npw),
-        #             maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene), nband=gsr_nband,
-        #             dojo_status=self.dojo_status, kppa=self.kppa,
-        #             ebands=ebands.as_dict())
+        entry = dict(ecut=self.ecut, pawecutdg=self.dojo_pawecutdg, kppa=self.dojo_kppa,
+                     asr2_phfreqs_mev=(asr2_phbands.phfreqs * 1000).tolist(),
+                     noasr_phfreqs_mev=(noasr_phbands.phfreqs * 1000).tolist()
+                )
 
         self.add_entry_to_dojoreport(entry)
         return results

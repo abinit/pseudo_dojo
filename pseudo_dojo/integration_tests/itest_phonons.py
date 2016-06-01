@@ -5,13 +5,13 @@ import pytest
 import abipy.abilab as abilab
 import pseudo_dojo.data as pdj_data
 
-from pseudo_dojo.dojo.works import DFPTPhononFactory
+from pseudo_dojo.dojo.works import GammaPhononFactory
 
 
-def itest_phonons_without_asr(fwp, tvars):
-    """Testing the calculation of phonons without Asr."""
-    #pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
-    pseudo = pdj_data.pseudo("Si.psp8").as_tmpfile()
+def itest_nc_phonons_gamma(fwp, tvars):
+    """Testing the calculation of phonons at Gamma with/without the Asr (NC pseudos)."""
+    #pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile(fwp.workdir)
+    pseudo = pdj_data.pseudo("Si.psp8").as_tmpfile(fwp.workdir)
     assert pseudo is not None
     assert pseudo.has_dojo_report
     assert not pseudo.dojo_report.exceptions
@@ -20,15 +20,11 @@ def itest_phonons_without_asr(fwp, tvars):
 
     ecut = 8
     pawecutdg = 2 * ecut if pseudo.ispaw else None
-    kppa = 20  # this value is for testing purpose
 
     # This one requires deltafactor!
-    phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
-    work = phonon_factory.work_for_pseudo(pseudo, kppa=kppa, ecut=ecut, pawecutdg=pawecutdg,
-                                          tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], rfasr=0)
-    assert work is None
-    return
-    print(work)
+    factory = GammaPhononFactory(xc=pseudo.xc)
+    work = factory.work_for_pseudo(pseudo, kppa=20, ecut=ecut, pawecutdg=pawecutdg)
+
     flow.register_work(work)
     flow.build_and_pickle_dump(abivalidate=True)
 
@@ -40,5 +36,5 @@ def itest_phonons_without_asr(fwp, tvars):
     assert all(work.finalized for work in flow)
     assert flow.all_ok
 
-    #assert pseudo.dojo_report.has_trial("deltafactor", ecut=ecut)
     assert not pseudo.dojo_report.exceptions
+    assert pseudo.dojo_report.has_trial("phgamma", ecut=ecut)
