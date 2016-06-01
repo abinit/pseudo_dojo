@@ -45,8 +45,7 @@ def build_flow(pseudo, options):
 
     extra_abivars = {
             "mem_test": 0,
-            #"fband": 2,
-            "nstep": 100,
+            #"nstep": 100,
             "paral_kgb": options.paral_kgb
     }
     #flow.walknset_vars(extra_abivars)

@@ -435,6 +435,7 @@ class DeltaFactorWork(DojoWork):
             prtwf=-1 if not connect else 1,
             chkprim=0,
             nstep=200,
+            fband=2,   # 0.5 is the default value but it's not large enough from some systems.
             #paral_kgb=paral_kgb,
             #nband=nband,
             #mem_test=0,
@@ -574,18 +575,6 @@ class GbrvFactory(object):
                                    **kwargs)
 
 
-def gbrv_nband(pseudo):
-    # nband/fband are usually too small for the GBRV calculations.
-    # FIXME this is not optimal
-    nband = pseudo.Z_val
-    nband += 0.5 * nband
-    nband = int(nband)
-    nband = max(nband,  8)
-    # Use even numer of bands. Needed when nspinor == 2
-    if nband % 2 != 0: nband += 1
-    return nband
-
-
 class GbrvRelaxAndEosWork(DojoWork):
 
     def __init__(self, structure, struct_type, pseudo, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
@@ -611,9 +600,20 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.struct_type = struct_type
 
         # nband must be large enough to accomodate fractional occupancies.
-        fband = kwargs.pop("fband", None)
         self._pseudo = pseudo
         self.include_soc = include_soc
+
+        def gbrv_nband(pseudo):
+            # nband/fband are usually too small for the GBRV calculations.
+            # FIXME this is not optimal
+            nband = pseudo.Z_val
+            nband += 0.5 * nband
+            nband = int(nband)
+            nband = max(nband,  8)
+            # Use even numer of bands. Needed when nspinor == 2
+            if nband % 2 != 0: nband += 1
+            return nband
+
         nband = gbrv_nband(self.pseudo)
 
         # Set extra_abivars.
