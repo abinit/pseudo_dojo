@@ -18,14 +18,29 @@ from pseudo_dojo.ppcodes.ppgen import OncvGenerator
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter, oncv_make_open_notebook
 
 
+def oncv_output(path):
+    """
+    Fix possible error in the specification of filename when we want a `.out` file.
+    Return output path.
+    """
+    if path.endswith(".out"): return path
+    root, _ = os.path.splitext(path)
+    new_path = root + ".out"
+    if not os.path.exists(new_path):
+        raise ValueError("Cannot find neither %s nor %s" % (path, new_path))
+    cprint("Maybe you meant %s" % new_path, "yellow")
+    return new_path
+
+
 def oncv_nbplot(options):
     """Generate jupyter notebook to plot data. Requires oncvpsp output file."""
-    return oncv_make_open_notebook(options.filename)
+    out_path = oncv_output(options.filename)
+    return oncv_make_open_notebook(out_path)
 
 
 def oncv_plot(options):
     """Plot data with matplotlib. Requires oncvpsp output file."""
-    out_path = options.filename
+    out_path = oncv_output(options.filename)
 
     # Parse output file.
     onc_parser = OncvOutputParser(out_path)
@@ -75,7 +90,7 @@ def oncv_json(options):
     Produce a string with the results in a JSON dictionary and exit
     Requires oncvpsp output file.
     """
-    out_path = options.filename
+    out_path = oncv_output(options.filename)
     onc_parser = OncvOutputParser(out_path)
     onc_parser.scan()
     if not onc_parser.run_completed:

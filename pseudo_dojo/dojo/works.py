@@ -13,7 +13,7 @@ from monty.io import FileLock
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.analysis.eos import EOS
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
-from pymatgen.io.abinit.works import Work, build_oneshot_phononwork, OneShotPhononWork
+from pymatgen.io.abinit.works import Work, build_oneshot_phononwork, OneShotPhononWork, PhononWork
 from abipy.core.structure import Structure
 from abipy import abilab
 from pseudo_dojo.core.dojoreport import DojoReport, compute_dfact_entry
@@ -88,7 +88,7 @@ class FactoryError(Exception):
 
 
 class EbandsFactory(object):
-    """Factroy class producing work objects for the calculation of ebands for testing for ghosts."""
+    """Factory producing work objects for the calculation of ebands for testing for ghosts."""
 
     Error = FactoryError
 
@@ -106,7 +106,7 @@ class EbandsFactory(object):
 
     def work_for_pseudo(self, pseudo, kppa=3000, maxene=250, ecut=None, pawecutdg=None,
                         spin_mode="unpolarized", include_soc=False,
-                        tolwfr=1.e-15, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
+                        tolwfr=1.e-12, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
@@ -921,7 +921,6 @@ class DFPTPhononFactory(object):
         work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork,
                                         workdir=workdir, manager=manager)
 
-        #print('after build_oneshot_phonon', work)
         work.set_dojo_trial(qpt, trial_name)
         work.ecut = scf_input['ecut']
         work._pseudo = pseudo
@@ -951,3 +950,115 @@ class PhononDojoWork(OneShotPhononWork, DojoWork):
         entry = d['phonons'][0].freqs.tolist()
         self.add_entry_to_dojoreport(entry)
         return d
+
+
+
+class GammaPhononFactory(object):
+    """
+    Factory class producing `Workflow` objects for Phonon calculations at Gamma.
+    The work runs DFPT calculations at Gamma, produce  the DDB file, calls anaddb
+    to compute the acoustic modes with and without enforcing the acoustic sum rule.
+    The calculations are usually done for several energy cutoff to monitor the
+    convergence wrt ecut and the fulfillment pf the accoustic sum rule.
+    The structural parameters are taken from the deltafactor database.
+    We use the Wien2k equilibrium volume
+    """
+    Error = FactoryError
+
+    def __init__(self, xc):
+        """xc is the exchange-correlation functional e.g. PBE, PW."""
+        # Get reference to the deltafactor database
+        # Use the elemental solid in the gs configuration
+        self._dfdb = df_database(xc)
+
+    def get_cif_path(self, symbol):
+        """Returns the path to the CIF file associated to the given symbol."""
+        try:
+            return self._dfdb.get_cif_path(symbol)
+        except KeyError:
+            raise self.Error("%s: cannot find CIF file for symbol" % symbol)
+
+    def works_for_pseudo(self, pseudo, kppa=2000, ecut=None, pawecutdg=None,
+                         smearing="fermi_dirac:0.1 eV", include_soc=False,
+                         workdir=None, manager=None, **kwargs):
+        """
+        Create and return two :class:`Work` objects
+
+            1) One workflow for the GS run.
+            2) One workflow for phonon calculations at Gamma
+
+        Args:
+            pseudo: filepath or :class:`Pseudo` object.
+            workdir: Working directory.
+            manager: :class:`TaskManager` object.
+        """
+        symbol = pseudo.symbol
+        if pseudo.ispaw and pawecutdg is None:
+            raise ValueError("pawecutdg must be specified for PAW calculations.")
+
+        if pseudo.xc != self._dfdb.xc:
+            raise ValueError(
+                "Pseudo xc differs from the XC used to instantiate the factory\n"
+                "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))
+
+        qpt = np.zeros(3)
+        self.include_soc = include_soc
+
+        try:
+            cif_path = self.get_cif_path(pseudo.symbol)
+        except Exception as exc:
+            raise self.Error(str(exc))
+
+        # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
+        structure = Structure.from_file(cif_path, primitive=False)
+
+        # Build GS task
+        #spin_mode = "unpolarized"
+        #if include_soc: spin_mode = "spinor"
+        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=0)
+
+        #all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
+        #scf_input, ph_inputs = all_inps[0], all_inps[1:]
+        #work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork,
+        #                                workdir=workdir, manager=manager)
+
+        phg_work = PhononDojoWork.from_scf_task(scf_task, qpt)
+
+        # monkey patch
+        #phg_work.dojo_qpt = qpt
+        #phg_work.include_soc = include_soc
+        #phg_work._dojo_trial = "phonon"
+        #phg_work._pseudo = pseudo
+
+        return [scf_work, phg_work]
+
+
+class PhononDojoWork(PhononWork, DojoWork):
+
+    @property
+    def dojo_trial(self):
+        return self._dojo_trial
+
+    @property
+    def pseudo(self):
+        return self._pseudo
+
+    def on_all_ok(self):
+        # Merge DDB file.
+        results = super(PhononDojoWork, self).on_all_ok()
+
+        out_ddb = self.outdir.path_in("out_DDB")
+        ddb = abilab.DdbFile(out_ddb)
+
+        # Call anaddb with/without ASR.
+        #asr_phbands = ddb.anaget_phmodes_at_qpoint(qpoint=self.dojo_qpt, asr=2, chneut=1, dipdip=1, verbose=1)
+        #noasr_phbands = ddb.anaget_phmodes_at_qpoint(qpoint=self.dojo_qpt, asr=0, chneut=1, dipdip=1, verbose=1)
+
+        # Convert to JSON and add results to the dojo report.
+        #entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, min_npw=int(min_npw),
+        #             maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene), nband=gsr_nband,
+        #             dojo_status=self.dojo_status, kppa=self.kppa,
+        #             ebands=ebands.as_dict())
+
+        self.add_entry_to_dojoreport(entry)
+        return results
