@@ -176,11 +176,14 @@ def build_flow(pseudo, options):
         ecut = int(report["ppgen_hints"]["high"]["ecut"])
         pawecutdg = None if not pseudo.ispaw else int(report["ppgen_hints"]["high"]["pawecutdg"])
 
+        str_ecut = '%.1f' % ecut
+        print(report["ghosts"].pop(ecut, None))
+
         if report.has_trial("ghosts", ecut=ecut):
             cprint("[ghosts]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
         else:
             # Build and register the work.
-            work = ebands_factory.work_for_pseudo(pseudo, kppa=1000, maxene=250,
+            work = ebands_factory.work_for_pseudo(pseudo, kppa=2000, maxene=250,
                                                   ecut=ecut, pawecutdg=pawecutdg,
                                                   mem_test=0)
             if work is not None:
