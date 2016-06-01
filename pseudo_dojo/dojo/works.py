@@ -34,7 +34,7 @@ class DojoWork(Work):
     def dojo_trial(self):
         """String identifying the DOJO trial. Used to write results in the DOJO_REPORT."""
 
-    def add_entry_to_dojoreport(self, entry, overwrite_data=False):
+    def add_entry_to_dojoreport(self, entry, overwrite_data=False, pop_trial=False):
         """
         Write/update the DOJO_REPORT section of the pseudopotential.
         Important paramenters such as the name of the dojo_trial and the energy cutoff
@@ -45,9 +45,11 @@ class DojoWork(Work):
             entry: Dictionary with results.
             overwrite_data: If False, the routine raises an exception if this entry is
                 already filled.
+            pop_trial: True if the trial should be removed before adding the new entry.
         """
         root, ext = os.path.splitext(self.pseudo.filepath)
         djrepo = root + ".djrepo"
+        self.history.info("Writing dojreport data to %s" % djrepo)
 
         # Update file content with Filelock.
         with FileLock(djrepo):
@@ -56,7 +58,12 @@ class DojoWork(Work):
 
             # Create new entry if not already there
             dojo_trial = self.dojo_trial
-            if dojo_trial not in file_report: file_report[dojo_trial] = {}
+
+            if pop_trial:
+                file_report.pop(dojo_trial, None)
+
+            if dojo_trial not in file_report:
+                file_report[dojo_trial] = {}
 
             # Convert float to string with 1 decimal digit.
             dojo_ecut = "%.1f" % self.ecut
@@ -229,6 +236,7 @@ class EbandsWork(DojoWork):
         and we can enter on_ok again.
         """
         task = self[0]
+        # If this is not my business!
         if sender != task: return super(EbandsWork, self).on_ok(sender)
 
         # Read ebands from the GSR file, get also the minimum number of planewaves
@@ -250,7 +258,7 @@ class EbandsWork(DojoWork):
             self.dojo_status = 0
             task.history.info("Convergence reached: gsr_maxene %s >= self.maxene %s" % (gsr_maxene, self.maxene))
         else:
-            task.history.info("Convergence not reached. Will test if one can restart the task.")
+            task.history.info("Convergence not reached. Will test if it's possible to restart the task.")
             task.history.info("gsr_maxene %s < self.maxene %s" % (gsr_maxene, self.maxene))
             nband = int(task.input["nband"])
 
@@ -267,25 +275,29 @@ class EbandsWork(DojoWork):
 
                 # Restart.
                 task.set_vars(nband=int(nband), nbdbuf=int(nbdbuf))
-                task.set_status(task.S_UNCONVERGED, "Setting status to UNCONVERGED to allow for restaring")
-                self._finalized = False
+                #task.set_status(task.S_UNCONVERGED, "Setting status to UNCONVERGED to allow for restaring")
+                task.reset_from_scratch()
+                self.finalized = False
 
         # Convert to JSON and add results to the dojo report.
         entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, min_npw=int(min_npw),
                      maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene), nband=gsr_nband,
                      dojo_status=self.dojo_status, ebands=ebands.as_dict())
 
+        # Use pop_trial to avoid multiple keys with the same value!
+        self.add_entry_to_dojoreport(entry, pop_trial=True)
+
         # Update file content with Filelock.
-        root, ext = os.path.splitext(self.pseudo.filepath)
-        djrepo = root + ".djrepo"
-        with FileLock(djrepo):
-            # Read report from file.
-            file_report = DojoReport.from_file(djrepo)
-            #file_report.pop(self.dojo_trial)
-            file_report[self.dojo_trial] = entry
-            # Write new dojo report and update the pseudo attribute
-            file_report.json_write(djrepo)
-            self._pseudo.dojo_report = file_report
+        #root, ext = os.path.splitext(self.pseudo.filepath)
+        #djrepo = root + ".djrepo"
+        #with FileLock(djrepo):
+        #    # Read report from file.
+        #    file_report = DojoReport.from_file(djrepo)
+        #    #file_report.pop(self.dojo_trial)
+        #    file_report[self.dojo_trial] = entry
+        #    # Write new dojo report and update the pseudo attribute
+        #    file_report.json_write(djrepo)
+        #    self._pseudo.dojo_report = file_report
 
         return super(EbandsWork, self).on_ok(sender)
 
@@ -756,7 +768,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         """
         if not self.add_eos_done:
             self.add_eos_tasks()
-            self._finalized = False
+            self.finalized = False
         else:
             self.compute_eos()
 

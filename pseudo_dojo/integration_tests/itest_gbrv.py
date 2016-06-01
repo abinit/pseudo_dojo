@@ -10,7 +10,7 @@ from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory
 
 def itest_gbrv_gga_pawxml_flow(fwp, tvars):
     """Testing the GBRV flow with GGA and PAW-XML (relaxation + EOS)"""
-    pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
+    pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile(tmpdir=fwp.workdir)
     assert pseudo is not None
     assert pseudo.has_dojo_report
     assert not pseudo.dojo_report.exceptions
@@ -46,7 +46,7 @@ def itest_gbrv_gga_pawxml_flow(fwp, tvars):
 def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
     """Testing the GBRV flow with GGA and ONCVPSP+SO (relaxation + EOS)"""
     #return
-    pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile()
+    pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile(tmpdir=fwp.workdir)
     assert pseudo is not None
     assert pseudo.supports_soc
     assert not pseudo.dojo_report.exceptions

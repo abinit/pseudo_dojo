@@ -13,7 +13,7 @@ def itest_deltafactor_gga_pawxml(fwp, tvars):
     Testing the flow used for the computation of the deltafactor with PAW and GGA XC.
     """
     # Path of the pseudopotential to test.
-    pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
+    pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile(tmpdir=fwp.workdir)
     assert pseudo is not None
     assert pseudo.has_dojo_report
     assert not pseudo.dojo_report.exceptions
@@ -61,7 +61,7 @@ def itest_deltafactor_gga_ncsoc(fwp, tvars):
     """
     # return
     # Path of the pseudopotential to test.
-    pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile()
+    pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile(tmpdir=fwp.workdir)
     assert pseudo.has_dojo_report
     assert pseudo.supports_soc
     assert not pseudo.dojo_report.exceptions

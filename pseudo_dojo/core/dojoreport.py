@@ -326,7 +326,7 @@ class DojoReport(dict):
             # Convert ecut to float and build an OrderedDict (results are indexed by ecut in ascending order)
             try:
                 d = self[trial]
-                print("Reordering", trial)
+                #print("Reordering", trial)
             except KeyError:
                 continue
             ecuts_keys = sorted([(float(k), k) for k in d], key=lambda t: t[0])
@@ -357,6 +357,7 @@ class DojoReport(dict):
 
     def json_write(self, filepath):
         """Write data to file."""
+        #self.reorder()
         with open(filepath, "wt") as fh:
             #json.dump(self, fh, indent=-1, sort_keys=True)
             #json.dump(self, fh, sort_keys=True, cls=MontyEncoder)
@@ -975,9 +976,10 @@ class DojoReport(dict):
         if trial not in self:
             print("dojo report does not contain trial:", trial)
             return None
+        ecut = list(self[trial].keys())[-1]
 
         from abipy.electrons.ebands import ElectronBands
-        ebands = ElectronBands.from_dict(self[trial]["ebands"])
+        ebands = ElectronBands.from_dict(self[trial][ecut]["ebands"])
         edos = ebands.get_edos(width=kwargs.pop("width", 0.05), step=kwargs.pop("step", 0.02))
 
         return ebands.plot_with_edos(edos, **kwargs)

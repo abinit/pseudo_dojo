@@ -10,7 +10,7 @@ from pseudo_dojo.dojo.works import EbandsFactory
 
 def itest_ebands_gga_pawxml_flow(fwp, tvars):
     """Testing the ebands flow for PAW-XML"""
-    pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile()
+    pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile(tmpdir=fwp.workdir)
     assert pseudo is not None
     print(pseudo)
     assert pseudo.has_dojo_report
@@ -19,10 +19,12 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
     ebands_factory = EbandsFactory(xc=pseudo.xc)
 
-    ecut = 6
+    ecut = 10
     pawecutdg = 2 * ecut if pseudo.ispaw else None
-    work = ebands_factory.work_for_pseudo(pseudo, kppa=20, maxene=100, ecut=ecut, pawecutdg=pawecutdg,
+    # maxene 200 will make the task restart.
+    work = ebands_factory.work_for_pseudo(pseudo, kppa=20, maxene=200, ecut=ecut, pawecutdg=pawecutdg,
                                           spin_mode="unpolarized")
+    assert work.dojo_trial == "ghosts"
     flow.register_work(work)
     flow.build_and_pickle_dump(abivalidate=True)
 
@@ -33,10 +35,12 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     flow.check_status(show=True)
     assert all(work.finalized for work in flow)
     assert flow.all_ok
+    #assert work[0].num_restarts > 1
 
     assert not pseudo.dojo_report.exceptions
     assert pseudo.dojo_report.has_trial("ghosts", ecut=ecut)
-    data = pseudo.dojo_report["ghosts"]["%.1f" % ecut]
+    key = "%.1f" % ecut
+    data = pseudo.dojo_report["ghosts"][key]
     assert data["dojo_status"] == 0
     assert data["ecut"] == ecut
     ebands = abilab.ElectronBands.from_dict(data["ebands"])
@@ -47,7 +51,7 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
 
 def itest_ebands_gga_ncsoc_flow(fwp, tvars):
     """Testing the ebands flow for NC+SOC pseudos."""
-    pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile()
+    pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile(tmpdir=fwp.workdir)
     assert pseudo is not None
     print(pseudo)
     assert pseudo.has_dojo_report
@@ -62,6 +66,7 @@ def itest_ebands_gga_ncsoc_flow(fwp, tvars):
     kppa = 20  # this value is for testing purpose
     work = ebands_factory.work_for_pseudo(pseudo, kppa=kppa, maxene=2, ecut=ecut, pawecutdg=pawecutdg,
                                           spin_mode="spinor", include_soc=True)
+    assert work.dojo_trial == "ghosts_soc"
     flow.register_work(work)
     flow.build_and_pickle_dump(abivalidate=True)
 
@@ -75,8 +80,10 @@ def itest_ebands_gga_ncsoc_flow(fwp, tvars):
 
     # Reconstruct ElectronBands from JSON.
     assert not pseudo.dojo_report.exceptions
+    print((pseudo.dojo_report.keys()))
     assert pseudo.dojo_report.has_trial("ghosts_soc", ecut=ecut)
-    data = pseudo.dojo_report["ghosts_soc"]["%.1f" % ecut]
+    key = "%.1f" % ecut
+    data = pseudo.dojo_report["ghosts_soc"][key]
     assert data["dojo_status"] == 0
     assert data["ecut"] == ecut
     ebands = abilab.ElectronBands.from_dict(data["ebands"])
