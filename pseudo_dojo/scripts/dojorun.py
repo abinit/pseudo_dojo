@@ -176,8 +176,8 @@ def build_flow(pseudo, options):
         ecut = int(report["ppgen_hints"]["high"]["ecut"])
         pawecutdg = None if not pseudo.ispaw else int(report["ppgen_hints"]["high"]["pawecutdg"])
 
-        #str_ecut = '%.1f' % ecut
-        #print(report["ghosts"].pop(ecut, None))
+        str_ecut = '%.1f' % ecut
+        print(report["ghosts"].pop(ecut, None))
 
         if report.has_trial("ghosts", ecut=ecut):
             cprint("[ghosts]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
