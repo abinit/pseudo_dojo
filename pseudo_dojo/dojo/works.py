@@ -190,8 +190,7 @@ class EbandsWork(DojoWork):
             nband=int(nband),
             nbdbuf=int(nbdbuf),
             tolwfr=tolwfr,
-            #prtwf=1,
-            prtwf=0,
+            #prtwf=0,
             nstep=200,
             chkprim=0,
             mem_test=0
@@ -221,16 +220,18 @@ class EbandsWork(DojoWork):
         else:
             return "ghosts_soc"
 
-    def on_all_ok(self):
+    def on_ok(self, sender):
         """
-        Callback executed when all tasks in the work have reached S_OK.
+        This callback is called when one task reaches status S_OK.
 
         Here we extract the band structure from the GSR file and we save it in the JSON file.
-        During the validation the bandstrure is plotted and the validator is asked to give
-        the energy up to which no sign of ghosts is visible.
+        If maxene is not reached, task is set to unconverged so that the launcher will restart it
+        and we can enter on_ok again.
         """
-        # Read ebands from the GSR file, get also the minimum number of planewaves
         task = self[0]
+        if sender != task: return super(EbandsWork, self).on_ok(sender)
+
+        # Read ebands from the GSR file, get also the minimum number of planewaves
         with task.open_gsr() as gsr:
             ebands = gsr.ebands
             min_npw = np.amin(gsr.reader.read_value("number_of_coefficients"))
@@ -239,8 +240,8 @@ class EbandsWork(DojoWork):
 
         # Increase nband if we haven't reached maxene and restart
         # dojo_status:
-        #    0: if run completed
-        #    > 0 convergence is not reached. Used when we save previous results before restarting.
+        #     0: if run completed
+        #    >0: convergence is not reached. Used when we save previous results before restarting.
         #    -1: Cannot increase bands anymore because we are close to min_npw.
         nband_sentinel = int(0.85 * min_npw)
         nband_sentinel += nband_sentinel % 2
@@ -286,7 +287,7 @@ class EbandsWork(DojoWork):
             file_report.json_write(djrepo)
             self._pseudo.dojo_report = file_report
 
-        return entry
+        return super(EbandsWork, self).on_ok(sender)
 
 
 class DeltaFactory(object):
