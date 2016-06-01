@@ -35,7 +35,6 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     flow.check_status(show=True)
     assert all(work.finalized for work in flow)
     assert flow.all_ok
-    #assert work[0].num_restarts > 1
 
     assert not pseudo.dojo_report.exceptions
     assert pseudo.dojo_report.has_trial("ghosts", ecut=ecut)
@@ -44,6 +43,9 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     assert data["dojo_status"] == 0
     assert data["ecut"] == ecut
     ebands = abilab.ElectronBands.from_dict(data["ebands"])
+
+    # This is to make sure that restart works as expected.
+    #assert work[0].num_restarts > 0
 
     #fig = pseudo.dojo_report.plot_ebands(ecut=ecut, show=False)
     #assert fig is not None

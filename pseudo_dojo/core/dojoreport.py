@@ -980,7 +980,17 @@ class DojoReport(dict):
 
         from abipy.electrons.ebands import ElectronBands
         ebands = ElectronBands.from_dict(self[trial][ecut]["ebands"])
-        edos = ebands.get_edos(width=kwargs.pop("width", 0.05), step=kwargs.pop("step", 0.02))
+        #edos = ebands.get_edos(width=kwargs.pop("width", 0.05), step=kwargs.pop("step", 0.02))
+        #edos = ebands.get_edos(width=kwargs.pop("width", 0.15), step=kwargs.pop("step", 0.05))
+        edos = ebands.get_edos(width=kwargs.pop("width", 0.3), step=kwargs.pop("step", 0.1))
+
+        dless_states = ebands.dispersionless_bands(deltae=0.05, kfact=0.9)
+        if not dless_states:
+            print("No dispersionless state detected")
+        else:
+            print("Found %s dispersionless states" % len(dless_states))
+            for s in dless_states:
+                print(s)
 
         return ebands.plot_with_edos(edos, **kwargs)
 

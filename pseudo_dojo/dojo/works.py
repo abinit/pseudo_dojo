@@ -179,7 +179,7 @@ class EbandsWork(DojoWork):
         # Add a buffer of nbdbuf states and enforce an even number of states
         nval = structure.num_valence_electrons(self.pseudo)
         self.maxene = maxene
-        b4ev = 1.1
+        b4ev = 1.3
         nband = int(nval + int(b4ev * self.maxene))
         #nband = nval // 2 + 10
         if spin_mode.nsppol == 1: nband // 2
@@ -197,7 +197,7 @@ class EbandsWork(DojoWork):
             nband=int(nband),
             nbdbuf=int(nbdbuf),
             tolwfr=tolwfr,
-            #prtwf=0,
+            prtwf=0,
             nstep=200,
             chkprim=0,
             mem_test=0
@@ -206,6 +206,7 @@ class EbandsWork(DojoWork):
         extra_abivars.update(**kwargs)
 
         # Disable time-reversal if nspinor == 2
+        self.kppa = kppa
         ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=chksymbreak,
                                                 use_time_reversal=spin_mode.nspinor==1)
 
@@ -260,13 +261,19 @@ class EbandsWork(DojoWork):
         else:
             task.history.info("Convergence not reached. Will test if it's possible to restart the task.")
             task.history.info("gsr_maxene %s < self.maxene %s" % (gsr_maxene, self.maxene))
-            nband = int(task.input["nband"])
+            nband = nband_old = int(task.input["nband"])
 
             if nband >= nband_sentinel:
                self.dojo_status = -1
                task.history.info("Reached maximum number of bands. Setting dojo_status to -1 and exit")
             else:
-                nband += (0.2 * nband)
+                # Use previous run to compute better estimate of b4ev.
+                nval = task.input.num_valence_electrons
+                b4ev = (nband_old - nval // 2) / gsr_maxene
+                task.history.info("New b4ev: %s" % b4ev)
+                nband = int(nval + int(b4ev * self.maxene))
+                # Previous version.
+                #nband += (0.2 * nband_old)
                 nbdbuf = max(int(0.1 * nband), 4)
                 nband += nbdbuf
                 nband += nband % 2
@@ -276,28 +283,18 @@ class EbandsWork(DojoWork):
                 # Restart.
                 task.set_vars(nband=int(nband), nbdbuf=int(nbdbuf))
                 #task.set_status(task.S_UNCONVERGED, "Setting status to UNCONVERGED to allow for restaring")
-                task.reset_from_scratch()
+                #task.reset_from_scratch()
+                task.restart()
                 self.finalized = False
 
         # Convert to JSON and add results to the dojo report.
         entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, min_npw=int(min_npw),
                      maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene), nband=gsr_nband,
-                     dojo_status=self.dojo_status, ebands=ebands.as_dict())
+                     dojo_status=self.dojo_status, kppa=self.kppa,
+                     ebands=ebands.as_dict())
 
         # Use pop_trial to avoid multiple keys with the same value!
         self.add_entry_to_dojoreport(entry, pop_trial=True)
-
-        # Update file content with Filelock.
-        #root, ext = os.path.splitext(self.pseudo.filepath)
-        #djrepo = root + ".djrepo"
-        #with FileLock(djrepo):
-        #    # Read report from file.
-        #    file_report = DojoReport.from_file(djrepo)
-        #    #file_report.pop(self.dojo_trial)
-        #    file_report[self.dojo_trial] = entry
-        #    # Write new dojo report and update the pseudo attribute
-        #    file_report.json_write(djrepo)
-        #    self._pseudo.dojo_report = file_report
 
         return super(EbandsWork, self).on_ok(sender)
 
