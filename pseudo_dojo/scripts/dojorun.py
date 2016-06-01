@@ -45,7 +45,7 @@ def build_flow(pseudo, options):
 
     extra_abivars = {
             "mem_test": 0,
-            "fband": 2,
+            #"fband": 2,
             "nstep": 100,
             "paral_kgb": options.paral_kgb
     }
@@ -185,7 +185,7 @@ def build_flow(pseudo, options):
             # Build and register the work.
             work = ebands_factory.work_for_pseudo(pseudo, kppa=2000, maxene=250,
                                                   ecut=ecut, pawecutdg=pawecutdg,
-                                                  mem_test=0)
+                                                  **extra_abivars)
             if work is not None:
                 flow.register_work(work, workdir='EbandsAt' + str(ecut))
             else:
