@@ -27,12 +27,7 @@ class DeltaFactorTest(PseudoDojoTest):
         work = df_factory.work_for_pseudo(pseudo, kppa=1, ecut=2, pawecutdg=None, **extra_abivars)
         flow.register_work(work)
 
-        flow.build_and_pickle_dump()
-        isok, results = flow.abivalidate_inputs()
-        if not isok:
-            print(results)
-            assert isok
-
+        flow.build_and_pickle_dump(abivalidate=True)
         flow.rmtree()
 
 
@@ -41,22 +36,15 @@ class GbrvTest(PseudoDojoTest):
     def test_nc_silicon_gbrv_factory(self):
         """Testing GBRV work for NC silicon."""
         pseudo = pdj_data.pseudo("Si.psp8")
-
         gbrv_factory = GbrvFactory(xc=pseudo.xc)
 
         flow = abilab.Flow.temporary_flow()
         for struct_type in ("fcc", "bcc"):
-            work = gbrv_factory.relax_and_eos_work(pseudo, struct_type,
-                ecut=3, pawecutdg=None)
+            work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=3, pawecutdg=None)
             flow.register_work(work)
 
-        flow.build_and_pickle_dump()
-        isok, results = flow.abivalidate_inputs()
-        if not isok:
-            print(results)
-            assert isok
+        flow.build_and_pickle_dump(abivalidate=True)
         assert len(flow[0]) == 1
-
         flow.rmtree()
 
 
@@ -71,10 +59,19 @@ class EbandsTest(PseudoDojoTest):
         work = ebands_factory.work_for_pseudo(pseudo, ecut=3, pawecutdg=None)
         flow.register_work(work)
 
-        flow.build_and_pickle_dump()
-        isok, results = flow.abivalidate_inputs()
-        if not isok:
-            print(results)
-            assert isok
+        flow.build_and_pickle_dump(abivalidate=True)
+        flow.rmtree()
 
+class GammaPhononTest(PseudoDojoTest):
+
+    def test_nc_silicon_gammaphonon_factory(self):
+        """Testing GammaPhononFactory for NC silicon."""
+        pseudo = pdj_data.pseudo("Si.psp8")
+        phgamma_factory = GammaPhononFactory(xc=pseudo.xc)
+
+        flow = abilab.Flow.temporary_flow()
+        work = phgamma_factory.work_for_pseudo(pseudo, ecut=3, pawecutdg=None)
+        flow.register_work(work)
+
+        flow.build_and_pickle_dump(abivalidate=True)
         flow.rmtree()

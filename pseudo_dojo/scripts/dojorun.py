@@ -15,7 +15,7 @@ from monty.functools import prof_main
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
-from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, DFPTPhononFactory, EbandsFactory
+from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, EbandsFactory
 
 
 logger = logging.getLogger(__name__)
@@ -130,45 +130,6 @@ def build_flow(pseudo, options):
                                                        include_soc=options.soc, ntime=50, **extra_abivars)
                 flow.register_work(work, workdir="GBRV_" + struct_type + str(ecut))
 
-    # PHONON test
-    if "phonon" in options.trials:
-        assert not options.soc
-        phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
-        dojo_trial = "phonon"
-
-        for ecut in ecut_list:
-            if report.has_trial(dojo_trial, ecut=ecut):
-                cprint("[phonon]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
-                continue
-
-            # Build and register the work.
-            pawecutdg = 2 * ecut if pseudo.ispaw else None
-            work = phonon_factory.work_for_pseudo(pseudo, kppa=1000, ecut=ecut, pawecutdg=pawecutdg,
-                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], mem_test=0)
-            if work is not None:
-                flow.register_work(work, workdir='GammaPhononsAt' + str(ecut))
-            else:
-                cprint('Cannot create GammaPhononsAt%s work, factory returned None' % str(ecut), "magenta")
-
-    # PHONON WihtOut Asr test
-    if "phwoa" in options.trials:
-        assert not options.soc
-        phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
-
-        for ecut in [ecut_list[0], ecut_list[-1]]:
-            str_ecut = '%.1f' % ecut
-            if "phwoa" in report and str_ecut in report["phwoa"]:
-                cprint("[phwoa]: ignoring ecut=%s because it's already in the DOJO_REPORT" % str_ecut, "magenta")
-                continue
-
-            pawecutdg = 2 * ecut if pseudo.ispaw else None
-            work = phonon_factory.work_for_pseudo(pseudo, kppa=1000, ecut=ecut, pawecutdg=pawecutdg,
-                                                  tolwfr=1.e-20, smearing="fermi_dirac:0.0005", qpt=[0,0,0], rfasr=0)
-            if work is not None:
-                flow.register_work(work, workdir='GammaPhononsAt'+str(ecut)+'WOA')
-            else:
-                cprint('Cannot create GammaPhononsAt %s WOA work, factory returned None' % str(ecut), "red")
-
     # GHOSTS test
     if "ghosts" in options.trials:
         assert not options.soc
@@ -244,15 +205,15 @@ Usage Example:
                         "Perform non-collinear run (nspinor==2, kptopt=3). Pseudo must have spin-orbit characteristic"))
 
     def parse_trials(s):
-        if s == "all": return ["df", "gbrv", "phonon", "phowa"]
+        if s == "all": return ["df", "gbrv"]
         return s.split(",")
 
     parser.add_argument('--trials', default="all",  type=parse_trials,
-                        help=("List of tests e.g --trials=df,gbrv,phonon,phwoa\n"
-                        "  df:     test delta factor against all electron reference.\n"
-                        "  gbrv:   test fcc and bcc lattice parameters against AE reference.\n"
-                        "  phonon: test convergence of phonon modes at gamma.\n"
-                        "  phwoa:  test violation of the acoustic sum rule (without enforcing it) at the min and max ecut\n"))
+                        help=("List of tests e.g --trials=ghosts,df,gbrv\n"
+                        "  ghosts:  tests ghost states in the conduction region.\n"
+                        "  df:      test delta factor against all electron reference.\n"
+                        "  gbrv:    test fcc and bcc lattice parameters against AE reference.\n"
+                        "  phgamma:  test violation of the acoustic sum rule\n"))
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")

@@ -343,10 +343,6 @@ def dojo_plot(options):
             for with_soc in socs:
                 report.plot_phonon_convergence(with_soc=with_soc, title=pseudo.basename)
 
-        #if any(k in options.what_plot for k in ("all", "phwoa")):
-        #    if report.has_trial("phwoa"):
-        #        report.plot_phonon_convergence(title=pseudo.basename+"W/O ASR", woasr=True)
-
     return 0
 
 
