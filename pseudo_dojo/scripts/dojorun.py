@@ -99,10 +99,11 @@ def build_flow(pseudo, options):
     # Computation of the deltafactor.
     if "df" in options.trials:
         factory = DeltaFactory(xc=pseudo.xc)
+        dojo_trial = "deltafactor" is not options.soc else "deltafactor_soc"
 
         for ecut in ecut_list:
-            if report.has_trial("deltafactor", ecut=ecut):
-                cprint("[deltafactor]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
+            if report.has_trial(dojo_trial, ecut=ecut):
+                cprint("[%s]: ignoring ecut=%s because it's already in the DOJO_REPORT" % (dojo_trial, ecut), "magenta")
                 continue
 
             # Build and register the work.
@@ -133,10 +134,10 @@ def build_flow(pseudo, options):
     if "phonon" in options.trials:
         assert not options.soc
         phonon_factory = DFPTPhononFactory(xc=pseudo.xc)
-        trial = "phonon"
+        dojo_trial = "phonon"
 
         for ecut in ecut_list:
-            if report.has_trial(trial, ecut=ecut):
+            if report.has_trial(dojo_trial, ecut=ecut):
                 cprint("[phonon]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
                 continue
 
@@ -171,6 +172,7 @@ def build_flow(pseudo, options):
     # GHOSTS test
     if "ghosts" in options.trials:
         assert not options.soc
+        dojo_trial = "ghosts" is not options.soc else "ghosts_soc"
         ebands_factory = EbandsFactory(pseudo.xc)
         ecut = int(report["ppgen_hints"]["high"]["ecut"])
         pawecutdg = None if not pseudo.ispaw else int(report["ppgen_hints"]["high"]["pawecutdg"])
@@ -178,8 +180,8 @@ def build_flow(pseudo, options):
         #str_ecut = '%.1f' % ecut
         #print(report["ghosts"].pop(ecut, None))
 
-        if report.has_trial("ghosts", ecut=ecut):
-            cprint("[ghosts]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
+        if report.has_trial(dojo_trial, ecut=ecut):
+            cprint("[%s]: ignoring ecut=%s because it's already in the DOJO_REPORT" % (dojo_trial, ecut), "magenta")
         else:
             # Build and register the work.
             work = ebands_factory.work_for_pseudo(pseudo, kppa=2000, maxene=250,
@@ -189,6 +191,26 @@ def build_flow(pseudo, options):
                 flow.register_work(work, workdir='EbandsAt' + str(ecut))
             else:
                 cprint('Cannot create EbandsAt%s work, factory returned None' % str(ecut), "magenta")
+
+    # phonons at gamma test.
+    if "phgamma" in options.trials:
+        assert not options.soc
+        phg_factory = GammaPhononFactory(pseudo.xc)
+        dojo_trial = "phgamma" if not options.soc else "phgamma_soc"
+
+        for ecut in ecut_list:
+            if report.has_trial(dojo_trial, ecut=ecut):
+                cprint("[%d]: ignoring ecut=%s because it's already in the DOJO_REPORT" % (dojo_trial, ecut), "magenta")
+                continue
+
+            # Build and register the work.
+            pawecutdg = 2 * ecut if pseudo.ispaw else None
+            work = phg_factory.work_for_pseudo(pseudo, kppa=1000, ecut=ecut, pawecutdg=pawecutdg,
+                                               include_soc=options.soc)
+            if work is not None:
+                flow.register_work(work)
+            else:
+                cprint('Cannot create phgamma work for ecut %s, factory returned None' % str(ecut), "magenta")
 
     if len(flow) > 0:
         return flow.allocate()

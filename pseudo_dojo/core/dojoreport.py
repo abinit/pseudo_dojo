@@ -3,6 +3,7 @@
 from __future__ import unicode_literals, division, print_function
 
 import sys
+import os
 import json
 import logging
 import copy
@@ -212,8 +213,11 @@ class DojoReport(dict):
     @classmethod
     def from_file(cls, filepath):
         """Read the DojoReport from file."""
+        filepath = os.path.abspath(filepath)
         with open(filepath, "rt") as fh:
-            return cls(**json.load(fh))
+            d = json.load(fh)
+            #d["filepath"] = filepath
+            return cls(**d)
 
     @classmethod
     def empty_from_pseudo(cls, pseudo, hints, devel=False):
@@ -232,6 +236,7 @@ class DojoReport(dict):
         #coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 35, step=5)
 
         new = cls()
+        #filepath=pseudo.djrepo_path
 
         estart = hints["high"]["ecut"]
         dense_right = np.linspace(estart - 10, estart + 10, num=11)
@@ -268,7 +273,7 @@ class DojoReport(dict):
         return d
 
     def from_dict(cls, d):
-        # Preventive copy becayse we are gonna change the input dict.
+        # Preventive copy because we are gonna change the input dict.
         d = copy.deepcopy(d)
 
         new = cls()
@@ -320,6 +325,9 @@ class DojoReport(dict):
 
         if "version" not in self:
             self["version"] = self.LAST_VERSION
+
+        #if "filepath" not in self:
+        #    raise self.Error("filepath should be specified")
 
     def reorder(self):
         for trial in self.ALL_TRIALS:
@@ -396,6 +404,21 @@ class DojoReport(dict):
         ecut_str = self._ecut2key(ecut)
         if ecut_str in self[dojo_trial]: return True
         return False
+
+    def remove_trial(self, dojo_trial, ecut=None, write=True):
+        """
+        Remove the entry associated to `dojo_trial` and write new JSON file.
+        If ecut is None, the entire `dojo_trial` is removed.
+        The writing of the JSON file can be postponed by setting write=False.
+        """
+        if ecut is None:
+            self.pop(dojo_trial)
+        else:
+            if not is_string(ecut): ecut = "%.1f" % ecut
+            self[dojo_trial].pop(ecut)
+
+        if write:
+            self.json_write(self["filepath"])
 
     def add_ecuts(self, new_ecuts):
         """Add a list of new ecut values."""
@@ -562,20 +585,6 @@ class DojoReport(dict):
 
         return dfact_meV, dfp
 
-    #def compute_hints(self):
-    #    ecuts, dfacts = self.get_ecut_dfactprime()
-    #    abs_diffs = np.abs((dfacts - dfacts[-1]))
-    #    #print(list(zip(ecuts, dfacts)), abs_diffs)
-
-    #    hints = 3 * [None]
-    #    for ecut, adiff in zip(ecuts, abs_diffs):
-    #        for i in range(3):
-    #            if adiff <= self.ATOLS[i] and hints[i] is None:
-    #                hints[i] = ecut
-    #            if adiff > self.ATOLS[i]:
-    #                hints[i] = None
-    #    return hints
-
     def check(self, check_trials=None):
         """
         Check the dojo report for inconsistencies.
@@ -619,16 +628,6 @@ class DojoReport(dict):
 
         return "\n".join(errors)
 
-    #def convert(self, new_version):
-    #    """
-    #    Convert to new_version.
-    #    Return new DojoReport object.
-    #    """
-    #    if self["version"] == new_version: return self
-    #    assert new_version == "2.0"
-
-    #    return new
-
     @add_fig_kwargs
     def plot_etotal_vs_ecut(self, ax=None, inv_ecut=False, with_soc=False, **kwargs):
         """
@@ -636,7 +635,7 @@ class DojoReport(dict):
 
         Args:
             ax: matplotlib Axes, if ax is None a new figure is created.
-            with_soc=If True, the results obtained with SOC are plotted (if available).
+            with_soc: If True, the results obtained with SOC are plotted (if available).
 
         Returns:
             `matplotlib` figure or None if the deltafactor test is not present
@@ -699,11 +698,11 @@ class DojoReport(dict):
     @add_fig_kwargs
     def plot_deltafactor_eos(self, ax=None, with_soc=False, **kwargs):
         """
-        plot the EOS computed with the deltafactor setup.
+        Olot the equation of state computed with the deltafactor setup.
 
         Args:
             ax: matplotlib :class:`Axes` or None if a new figure should be created.
-            with_soc=If True, the results obtained with SOC are plotted (if available).
+            with_soc: If True, the results obtained with SOC are plotted (if available).
 
         ================  ==============================================================
         kwargs            Meaning
@@ -738,12 +737,12 @@ class DojoReport(dict):
     @add_fig_kwargs
     def plot_deltafactor_convergence(self, xc, code="WIEN2k", with_soc=False, what=None, ax_list=None, **kwargs):
         """
-        plot the convergence of the deltafactor parameters wrt ecut.
+        Plot the convergence of the deltafactor parameters wrt ecut.
 
         Args:
-            xc=String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE"
+            xc: String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE"
             code: Reference code
-            with_soc=If True, the results obtained with SOC are plotted (if available).
+            with_soc: If True, the results obtained with SOC are plotted (if available).
             ax_list: List of matplotlib Axes, if ax_list is None a new figure is created
 
         Returns:
@@ -815,7 +814,7 @@ class DojoReport(dict):
 
         Args:
             ax: matplotlib :class:`Axes` or None if a new figure should be created.
-            with_soc=If True, the results obtained with SOC are plotted (if available).
+            with_soc: If True, the results obtained with SOC are plotted (if available).
 
         ================  ==============================================================
         kwargs            Meaning
@@ -858,7 +857,7 @@ class DojoReport(dict):
 
         Args:
             ax_list: List of matplotlib Axes, if ax_list is None a new figure is created
-            with_soc=If True, the results obtained with SOC are plotted (if available).
+            with_soc: If True, the results obtained with SOC are plotted (if available).
 
         Returns:
             `matplotlib` figure. None if the GBRV test is not present.
@@ -906,7 +905,7 @@ class DojoReport(dict):
 
         Args:
             ax_list: List of matplotlib Axes, if ax_list is None a new figure is created
-            with_soc=If True, the results obtained with SOC are plotted (if available).
+            with_soc: If True, the results obtained with SOC are plotted (if available).
 
         Returns:
             `matplotlib` figure. None if the GBRV test is not present.
@@ -960,7 +959,7 @@ class DojoReport(dict):
 
         Args:
             ecut:
-            with_soc=If True, the results obtained with SOC are plotted (if available).
+            with_soc: If True, the results obtained with SOC are plotted (if available).
 
         ================  =============================
         kwargs            Meaning

@@ -494,8 +494,9 @@ def dojo_table(options):
         cprint("WRONG".center(80, "*"), "red")
         print(wrong)
 
-    #data = calc_errors(data)
-    #data.to_json('table.json')
+    if options.json:
+        #data = calc_errors(data)
+        data.to_json('table.json')
 
     try:
         data = data[
@@ -801,6 +802,8 @@ Usage example:
 
     # Subparser for table command.
     p_table = subparsers.add_parser('table', parents=[copts_parser], help=dojo_table.__doc__)
+    p_table.add_argument("-j", '--json', default=False, action="store_true",
+                         help="Dump table in json format to file table.json")
 
     # Subparser for dist command.
     p_dist = subparsers.add_parser('dist', parents=[copts_parser], help=dojo_dist.__doc__)

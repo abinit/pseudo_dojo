@@ -44,17 +44,10 @@ class GbrvTest(PseudoDojoTest):
 
         gbrv_factory = GbrvFactory(xc=pseudo.xc)
 
-        extra_abivars = {
-            "mem_test": 0,
-            "fband": 2,
-            "nstep": 100,
-            "paral_kgb": 0,
-        }
-
         flow = abilab.Flow.temporary_flow()
         for struct_type in ("fcc", "bcc"):
-            work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, 
-                ecut=3, pawecutdg=None, **extra_abivars)
+            work = gbrv_factory.relax_and_eos_work(pseudo, struct_type,
+                ecut=3, pawecutdg=None)
             flow.register_work(work)
 
         flow.build_and_pickle_dump()
@@ -73,13 +66,6 @@ class EbandsTest(PseudoDojoTest):
         """Testing Ebands work for NC silicon."""
         pseudo = pdj_data.pseudo("Si.psp8")
         ebands_factory = EbandsFactory(xc=pseudo.xc)
-
-        #extra_abivars = {
-        #    "mem_test": 0,
-        #    "fband": 2,
-        #    "nstep": 100,
-        #    "paral_kgb": 0,
-        #}
 
         flow = abilab.Flow.temporary_flow()
         work = ebands_factory.work_for_pseudo(pseudo, ecut=3, pawecutdg=None)

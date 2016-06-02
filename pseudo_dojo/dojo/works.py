@@ -112,7 +112,7 @@ class EbandsFactory(object):
 
         Args:
             pseudo: :class:`Pseudo` object.
-            kppa: Number of k-points per atom.
+            kppa: Number of k-points per reciprocal atom.
             ecut: Cutoff energy in Hartree
             pawecutdg: Cutoff energy of the fine grid (PAW only)
             spin_mode: Spin polarization option
@@ -157,7 +157,7 @@ class EbandsWork(DojoWork):
         Args:
             structure: :class:`Structure` object
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
-            kppa: Number of k-points per atom.
+            kppa: Number of k-points per reciprocal atom.
             maxene: 250 eV
             spin_mode: Spin polarization mode.
             include_soc=True of SOC should be included.
@@ -323,7 +323,7 @@ class DeltaFactory(object):
 
         Args:
             pseudo: :class:`Pseudo` object.
-            kppa: kpoint per atom
+            kppa: kpoint per reciprocal atom
             ecut: Cutoff energy in Hartree
             pawecutdg: Cutoff energy of the fine grid (PAW only)
             toldfe: Tolerance on the energy (Ha)
@@ -404,7 +404,7 @@ class DeltaFactorWork(DojoWork):
         Args:
             structure: :class:`Structure` object
             pseudo: :class:`Pseudo` object.
-            kppa: Number of k-points per atom.
+            kppa: Number of k-points per reciprocal atom.
             connect: True if the SCF run should be initialized from the previous run.
             spin_mode: Spin polarization mode.
             toldfe: Tolerance on the energy (Ha)
@@ -802,7 +802,7 @@ class DFPTPhononFactory(object):
 
         kwargs:
             ecut: the ecut at which the input is generated
-            kppa: kpoint per atom
+            kppa: kpoint per reciprocal atom
             smearing: is removed
             qpt: optional, list of qpoints. if not present gamma is added
 
@@ -979,7 +979,7 @@ class GammaPhononFactory(object):
 
     def work_for_pseudo(self, pseudo, kppa=2000, ecut=None, pawecutdg=None,
                         smearing="fermi_dirac:0.1 eV", include_soc=False,
-                        workdir=None, manager=None, **kwargs):
+                        workdir=None, manager=None):
         """
         Create and return a :class:`Work` object contains
 
@@ -988,6 +988,11 @@ class GammaPhononFactory(object):
 
         Args:
             pseudo: filepath or :class:`Pseudo` object.
+            kppa: Number of k-points per reciprocal atom.
+            ecut: Cutoff energy in Hartree
+            pawecutdg: Cutoff energy of the fine grid (PAW only)
+            smearing: Smearing technique.
+            include_soc=True of SOC should be included.
             workdir: Working directory.
             manager: :class:`TaskManager` object.
         """
