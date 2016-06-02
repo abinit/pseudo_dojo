@@ -99,7 +99,7 @@ def build_flow(pseudo, options):
     # Computation of the deltafactor.
     if "df" in options.trials:
         factory = DeltaFactory(xc=pseudo.xc)
-        dojo_trial = "deltafactor" is not options.soc else "deltafactor_soc"
+        dojo_trial = "deltafactor" if not options.soc else "deltafactor_soc"
 
         for ecut in ecut_list:
             if report.has_trial(dojo_trial, ecut=ecut):
@@ -133,7 +133,7 @@ def build_flow(pseudo, options):
     # GHOSTS test
     if "ghosts" in options.trials:
         assert not options.soc
-        dojo_trial = "ghosts" is not options.soc else "ghosts_soc"
+        dojo_trial = "ghosts" if not options.soc else "ghosts_soc"
         ebands_factory = EbandsFactory(pseudo.xc)
         ecut = int(report["ppgen_hints"]["high"]["ecut"])
         pawecutdg = None if not pseudo.ispaw else int(report["ppgen_hints"]["high"]["pawecutdg"])

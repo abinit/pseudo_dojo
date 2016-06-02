@@ -11,7 +11,7 @@ from monty.functools import prof_main
 from monty.termcolor import cprint
 from monty.os.path import find_exts
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
-from pseudo_dojo.core.dojoreport import compute_dfact_entry
+from pseudo_dojo.core.dojoreport import DojoReport, compute_dfact_entry
 
 
 def djrepo_fix(options):
@@ -108,6 +108,21 @@ def djrepo_recalc(options):
     return 0
 
 
+def djrepo_pop(options):
+    """Remove trials from djrepo files."""
+    for path in options.paths:
+        pseudo = dojopseudo_from_file(path)
+        report = pseudo.dojo_report
+        count = 0
+        for trial in options.trials:
+            if report.pop(trial, None) is not None:
+                cprint("[%s] removed from %s" % (trial, path), "yellow")
+                count += 1
+
+        if count != 0:
+            pseudo.dojo_report.json_write(pseudo.djrepo_path)
+
+
 @prof_main
 def main():
     def str_examples():
@@ -125,6 +140,20 @@ Example usage:
         if err_msg:
             sys.stderr.write("Fatal Error\n" + err_msg + "\n")
         sys.exit(error_code)
+
+    def parse_trials(s):
+        if s == "all": return ["df", "gbrv"]
+        return s.split(",")
+
+    def parse_trials(s):
+        if s == "all": return DojoReport.ALL_TRIALS
+        trials = s.split(",")
+        unknowns = [t for t in trials if t not in DojoReport.ALL_TRIALS]
+        if unknowns:
+            cprint("The following names are not valid PseudoDojo trials", "red")
+            print(str(unknowns))
+            raise SystemExit()
+        return trials
 
     # Parent parser for commands that need to know on which subset of pseudos we have to operate.
     copts_parser = argparse.ArgumentParser(add_help=False)
@@ -146,6 +175,9 @@ Example usage:
 
     # Subparser for convert command.
     #p_convert = subparsers.add_parser('convert', parents=[copts_parser], help=djrepo_convert.__doc__)
+
+    p_pop = subparsers.add_parser('pop', parents=[copts_parser], help=djrepo_pop.__doc__)
+    p_pop.add_argument('--trials', default="all",  type=parse_trials, help="Select trials to remove.")
 
     # Subparser for fix command.
     p_fix = subparsers.add_parser('fix', parents=[copts_parser], help=djrepo_fix.__doc__)

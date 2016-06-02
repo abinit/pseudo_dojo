@@ -848,8 +848,6 @@ class GammaPhononFactory(object):
         scf_input.add_abiobjects(ksampling, smearing, spin_mode)
 
         # Build GS work and Phonon Work
-        #scf_work = abilab.Work(workdir=workdir, manager=manager)
-        #scf_task = scf_work.register_scf_task(scf_input)
         work = PhononDojoWork.from_scf_input(scf_input, qpt)
 
         # Monkey patch work
@@ -865,7 +863,6 @@ class GammaPhononFactory(object):
 
 
 class PhononDojoWork(PhononWork, DojoWork):
-
     @property
     def dojo_trial(self):
         return self._dojo_trial
@@ -893,4 +890,50 @@ class PhononDojoWork(PhononWork, DojoWork):
                 )
 
         self.add_entry_to_dojoreport(entry)
+        return results
+
+
+class RelaxAndPhGammaWork(RelaxWork):
+    """
+    Work for structural relaxations. The first task relaxes the atomic position
+    while keeping the unit cell parameters fixed. The second task uses the final
+    structure to perform a structural relaxation in which both the atomic positions
+    and the lattice parameters are optimized.
+    """
+    #def __init__(self, ion_input, ioncell_input, workdir=None, manager=None, target_dilatmx=None):
+
+    def on_all_ok(self):
+        """
+        This method is called when self reaches S_OK. It reads the optimized structure
+        from the netcdf file and builds a new work for the computation of phonons
+        """
+        results = super(RelaxAndPhGammaWork, self).on_all_ok()
+
+        # Get the relaxed structure.
+        task = self[1]
+        final_structure = task.get_final_tructure()
+
+        # Use new structure in GS + DFPT runs and change some values.
+        scf_input = task.input.deepcopy()
+        scf_input.set_structure(final_structure)
+
+        # Remove input variables that can enter into conflict with DFPT.
+        scf_input.pop_tolerances()
+        scf_input.pop_par_vars()
+        scf_input.pop_irdvars()
+        scf_input["tolwfr"] = 1e-20
+
+        # Build GS work and Phonon Work
+        work = PhononDojoWork.from_scf_input(scf_input, qpt)
+
+        # Monkey patch work
+        work.dojo_kppa = kppa
+        work.dojo_qpt = qpt
+        work.ecut = ecut
+        work.dojo_pawecutdg = pawecutdg
+        work.dojo_include_soc = include_soc
+        work._dojo_trial = "phgamma" if not include_soc else "phgamma_soc"
+        work._pseudo = pseudo
+
+        self.flow.register(work)
         return results
