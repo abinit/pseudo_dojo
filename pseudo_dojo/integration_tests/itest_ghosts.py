@@ -1,15 +1,15 @@
-"""Integration tests for EbandsFactory."""
+"""Integration tests for GhostsFactory."""
 from __future__ import print_function, division, unicode_literals, absolute_import
 
 import pytest
 import pseudo_dojo.data as pdj_data
 import abipy.abilab as abilab
 
-from pseudo_dojo.dojo.works import EbandsFactory
+from pseudo_dojo.dojo.works import GhostsFactory
 
 
-def itest_ebands_gga_pawxml_flow(fwp, tvars):
-    """Testing the ebands flow for PAW-XML"""
+def itest_ghosts_gga_pawxml_flow(fwp, tvars):
+    """Testing the ghosts flow for PAW-XML"""
     pseudo = pdj_data.pseudo("Si.GGA_PBE-JTH-paw.xml").as_tmpfile(tmpdir=fwp.workdir)
     assert pseudo is not None
     print(pseudo)
@@ -17,13 +17,13 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     assert not pseudo.dojo_report.exceptions
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
-    ebands_factory = EbandsFactory(xc=pseudo.xc)
+    factory = GhostsFactory(xc=pseudo.xc)
 
     ecut = 10
     pawecutdg = 2 * ecut if pseudo.ispaw else None
     # maxene 200 will make the task restart.
-    work = ebands_factory.work_for_pseudo(pseudo, kppa=20, maxene=200, ecut=ecut, pawecutdg=pawecutdg,
-                                          spin_mode="unpolarized")
+    work = factory.work_for_pseudo(pseudo, kppa=20, maxene=200, ecut=ecut, pawecutdg=pawecutdg,
+                                   spin_mode="unpolarized")
     assert work.dojo_trial == "ghosts"
     flow.register_work(work)
     flow.build_and_pickle_dump(abivalidate=True)
@@ -51,8 +51,8 @@ def itest_ebands_gga_pawxml_flow(fwp, tvars):
     #assert fig is not None
 
 
-def itest_ebands_gga_ncsoc_flow(fwp, tvars):
-    """Testing the ebands flow for NC+SOC pseudos."""
+def itest_ghosts_gga_ncsoc_flow(fwp, tvars):
+    """Testing the ghosts flow for NC+SOC pseudos."""
     pseudo = pdj_data.pseudo("Pb-d-3_r.psp8").as_tmpfile(tmpdir=fwp.workdir)
     assert pseudo is not None
     print(pseudo)
@@ -61,13 +61,13 @@ def itest_ebands_gga_ncsoc_flow(fwp, tvars):
     assert not pseudo.dojo_report.exceptions
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
-    ebands_factory = EbandsFactory(xc=pseudo.xc)
+    factory = GhostsFactory(xc=pseudo.xc)
 
     ecut = 4
     pawecutdg = 2 * ecut if pseudo.ispaw else None
     kppa = 20  # this value is for testing purpose
-    work = ebands_factory.work_for_pseudo(pseudo, kppa=kppa, maxene=2, ecut=ecut, pawecutdg=pawecutdg,
-                                          spin_mode="spinor", include_soc=True)
+    work = factory.work_for_pseudo(pseudo, kppa=kppa, maxene=2, ecut=ecut, pawecutdg=pawecutdg,
+                                   spin_mode="spinor", include_soc=True)
     assert work.dojo_trial == "ghosts_soc"
     flow.register_work(work)
     flow.build_and_pickle_dump(abivalidate=True)
@@ -82,7 +82,7 @@ def itest_ebands_gga_ncsoc_flow(fwp, tvars):
 
     # Reconstruct ElectronBands from JSON.
     assert not pseudo.dojo_report.exceptions
-    print((pseudo.dojo_report.keys()))
+    print(list(pseudo.dojo_report.keys()))
     assert pseudo.dojo_report.has_trial("ghosts_soc", ecut=ecut)
     key = "%.1f" % ecut
     data = pseudo.dojo_report["ghosts_soc"][key]

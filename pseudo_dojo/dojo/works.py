@@ -13,7 +13,7 @@ from monty.io import FileLock
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.analysis.eos import EOS
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
-from pymatgen.io.abinit.works import Work, PhononWork
+from pymatgen.io.abinit.works import Work, RelaxWork, PhononWork
 from abipy.core.structure import Structure
 from abipy import abilab
 from pseudo_dojo.core.dojoreport import DojoReport, compute_dfact_entry
@@ -27,7 +27,7 @@ class DojoWork(Work):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractproperty
-    def pseudo(self):
+    def dojo_pseudo(self):
         """:class:`Pseudo` object"""
 
     @abc.abstractproperty
@@ -47,7 +47,7 @@ class DojoWork(Work):
                 already filled.
             pop_trial: True if the trial should be removed before adding the new entry.
         """
-        root, ext = os.path.splitext(self.pseudo.filepath)
+        root, ext = os.path.splitext(self.dojo_pseudo.filepath)
         djrepo = root + ".djrepo"
         self.history.info("Writing dojreport data to %s" % djrepo)
 
@@ -87,9 +87,10 @@ class FactoryError(Exception):
     """Base Error class raised by Factory objects."""
 
 
-class EbandsFactory(object):
-    """Factory producing work objects for the calculation of ebands for testing for ghosts."""
-
+class GhostsFactory(object):
+    """
+    Factory producing work objects for the calculation of ebands for testing for ghosts.
+    """
     Error = FactoryError
 
     def __init__(self, xc):
@@ -137,14 +138,14 @@ class EbandsFactory(object):
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
 
-        return EbandsWork(
+        return GhostsWork(
             structure, pseudo, kppa, maxene,
             spin_mode=spin_mode, include_soc=include_soc, tolwfr=tolwfr, smearing=smearing,
             ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
 
 
-class EbandsWork(DojoWork):
+class GhostsWork(DojoWork):
     """Work for the calculation of the deltafactor."""
 
     def __init__(self, structure, pseudo, kppa, maxene,
@@ -166,7 +167,7 @@ class EbandsWork(DojoWork):
             workdir: String specifing the working directory.
             manager: :class:`TaskManager` responsible for the submission of the tasks.
         """
-        super(EbandsWork, self).__init__(workdir=workdir, manager=manager)
+        super(GhostsWork, self).__init__(workdir=workdir, manager=manager)
         self._pseudo = pseudo
         self.include_soc = include_soc
 
@@ -177,7 +178,7 @@ class EbandsWork(DojoWork):
         # The goal is to reach maxene eV above the fermi level.
         # Assume ~ b4ev fact eV per band
         # Add a buffer of nbdbuf states and enforce an even number of states
-        nval = structure.num_valence_electrons(self.pseudo)
+        nval = structure.num_valence_electrons(self.dojo_pseudo)
         self.maxene = maxene
         b4ev = 1.3
         nband = int(nval + int(b4ev * self.maxene))
@@ -210,7 +211,7 @@ class EbandsWork(DojoWork):
         ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=chksymbreak,
                                                 use_time_reversal=spin_mode.nspinor==1)
 
-        scf_input = abilab.AbinitInput(structure=structure, pseudos=self.pseudo)
+        scf_input = abilab.AbinitInput(structure=structure, pseudos=self.dojo_pseudo)
         scf_input.add_abiobjects(ksampling, smearing, spin_mode)
         scf_input.set_vars(extra_abivars)
         self.register_scf_task(scf_input)
@@ -218,7 +219,7 @@ class EbandsWork(DojoWork):
         self.dojo_status = 0
 
     @property
-    def pseudo(self):
+    def dojo_pseudo(self):
         return self._pseudo
 
     @property
@@ -238,7 +239,7 @@ class EbandsWork(DojoWork):
         """
         task = self[0]
         # If this is not my business!
-        if sender != task: return super(EbandsWork, self).on_ok(sender)
+        if sender != task: return super(GhostsWork, self).on_ok(sender)
 
         # Read ebands from the GSR file, get also the minimum number of planewaves
         with task.open_gsr() as gsr:
@@ -296,7 +297,7 @@ class EbandsWork(DojoWork):
         # Use pop_trial to avoid multiple keys with the same value!
         self.add_entry_to_dojoreport(entry, pop_trial=True)
 
-        return super(EbandsWork, self).on_ok(sender)
+        return super(GhostsWork, self).on_ok(sender)
 
 
 class DeltaFactory(object):
@@ -456,7 +457,7 @@ class DeltaFactorWork(DojoWork):
             ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak,
                                                     use_time_reversal=spin_mode.nspinor==1)
 
-            scf_input = abilab.AbinitInput(structure=new_structure, pseudos=self.pseudo)
+            scf_input = abilab.AbinitInput(structure=new_structure, pseudos=self.dojo_pseudo)
             scf_input.add_abiobjects(ksampling, smearing, spin_mode)
             scf_input.set_vars(extra_abivars)
 
@@ -473,7 +474,7 @@ class DeltaFactorWork(DojoWork):
                 task.add_deps({self[middle + i]: filetype})
 
     @property
-    def pseudo(self):
+    def dojo_pseudo(self):
         return self._pseudo
 
     @property
@@ -492,9 +493,9 @@ class DeltaFactorWork(DojoWork):
         num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")
 
-        d, eos_fit = compute_dfact_entry(self.pseudo, num_sites, self.volumes, etotals)
+        d, eos_fit = compute_dfact_entry(self.dojo_pseudo, num_sites, self.volumes, etotals)
 
-        print("[%s]" % self.pseudo.symbol, "eos_fit:", eos_fit)
+        print("[%s]" % self.dojo_pseudo.symbol, "eos_fit:", eos_fit)
         print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, d["dfact_meV"], d["dfactprime_meV"]))
 
         self.add_entry_to_dojoreport(d)
@@ -614,7 +615,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             if nband % 2 != 0: nband += 1
             return nband
 
-        nband = gbrv_nband(self.pseudo)
+        nband = gbrv_nband(self.dojo_pseudo)
 
         # Set extra_abivars.
         self.extra_abivars = dict(
@@ -653,7 +654,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             return "gbrv_" + self.struct_type + "_soc"
 
     @property
-    def pseudo(self):
+    def dojo_pseudo(self):
         return self._pseudo
 
     def add_eos_tasks(self):
@@ -678,7 +679,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             extra = self.extra_abivars.copy()
             extra["ecutsm"] = 0.5
 
-            scf_input = abilab.AbinitInput(new_structure, self.pseudo)
+            scf_input = abilab.AbinitInput(new_structure, self.dojo_pseudo)
             scf_input.add_abiobjects(self.ksampling, self.spin_mode, self.smearing)
             scf_input.set_vars(extra)
 
@@ -725,7 +726,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         ))
 
         db = gbrv_database()
-        entry = db.get_entry(self.pseudo.symbol, stype=self.struct_type)
+        entry = db.get_entry(self.dojo_pseudo.symbol, stype=self.struct_type)
 
         pawabs_err = a0 - entry.gbrv_paw
         pawrel_err = 100 * (a0 - entry.gbrv_paw) / entry.gbrv_paw
@@ -774,20 +775,22 @@ class GbrvRelaxAndEosWork(DojoWork):
 
 class GammaPhononFactory(object):
     """
-    Factory class producing `Workflow` objects for Phonon calculations at Gamma.
-    The work runs DFPT calculations at Gamma, produce  the DDB file, calls anaddb
-    to compute the acoustic modes with and without enforcing the acoustic sum rule.
-    The calculations are usually done for several energy cutoff to monitor the
-    convergence wrt ecut and the fulfillment pf the accoustic sum rule.
-    The structural parameters are taken from the deltafactor database.
-    We use the Wien2k equilibrium volume
+    Factory class producing a specialized `Workflow` for Relaxation + Phonon calculations at the Gamma point.
+    The initial structural parameters are taken from the deltafactor database.
+
+    The work returned by `work_for_pseudo` peforms a full structural relaxation: ions + ions_cell
+    Once the optimized structure is known, a new Workflow for GS + DFPT with the optimized parameters
+    is created and added to the flow. This second work merges the DDB files, calls anaddb to compute
+    the acoustic frequencies with asr in [0, 2] and save the results in the dojoreport.
+
+    Client code usually builds severals works with different values of ecut in order
+    to monitor the convergence of the frequencies and the fulfillment of the accoustic sum rule.
     """
     Error = FactoryError
 
     def __init__(self, xc):
         """xc is the exchange-correlation functional e.g. PBE, PW."""
         # Get reference to the deltafactor database
-        # Use the elemental solid in the gs configuration
         self._dfdb = df_database(xc)
 
     def get_cif_path(self, symbol):
@@ -797,14 +800,11 @@ class GammaPhononFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, pseudo, kppa=2000, ecut=None, pawecutdg=None,
+    def work_for_pseudo(self, pseudo, kppa=1000, ecut=None, pawecutdg=None,
                         smearing="fermi_dirac:0.1 eV", include_soc=False,
                         workdir=None, manager=None):
         """
-        Create and return a :class:`Work` object contains
-
-            #. One task for the GS run.
-            #. Multiple phonon tasks for DFPT calculations at Gamma.
+        Create and return a :class:`RelaxAndAddPhGammaWork` object.
 
         Args:
             pseudo: filepath or :class:`Pseudo` object.
@@ -836,20 +836,21 @@ class GammaPhononFactory(object):
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
 
-        # Build the GS input.
         spin_mode = "unpolarized" if not include_soc else "spinor"
 
-        spin_mode = SpinMode.as_spinmode(spin_mode)
-        smearing = Smearing.as_smearing(smearing)
-        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=0)
+        # Build inputs for structural relaxation.
+        from abipy.abio.factories import ion_ioncell_relax_input
+        multi = ion_ioncell_relax_input(
+                            structure, pseudo,
+                            kppa=kppa, nband=None,
+                            ecut=ecut, pawecutdg=pawecutdg, accuracy="normal", spin_mode=spin_mode,
+                            smearing=smearing)
 
-        scf_input = abilab.AbinitInput(structure=structure, pseudos=pseudo)
-        scf_input.set_vars(ecut=ecut, pawecutdg=pawecutdg, tolwfr=1e-20)
-        scf_input.add_abiobjects(ksampling, smearing, spin_mode)
-
-        # Build GS work and Phonon Work
-        work = PhononDojoWork.from_scf_input(scf_input, qpt)
-
+        # Construct a *specialized" work for structural relaxation
+        # This work will create a new workflow for phonon calculations
+        # with the final relaxed structure (see on_all_ok below).
+        work = RelaxAndAddPhGammaWork(ion_input=multi[0], ioncell_input=multi[1])
+                                      #workdir=None, manager=None, target_dilatmx=None):
         # Monkey patch work
         work.dojo_kppa = kppa
         work.dojo_qpt = qpt
@@ -857,9 +858,59 @@ class GammaPhononFactory(object):
         work.dojo_pawecutdg = pawecutdg
         work.dojo_include_soc = include_soc
         work._dojo_trial = "phgamma" if not include_soc else "phgamma_soc"
-        work._pseudo = pseudo
+        work.dojo_pseudo = pseudo
 
         return work
+
+
+class RelaxAndAddPhGammaWork(RelaxWork):
+    """
+    Work for structural relaxations. The first task relaxes the atomic position
+    while keeping the unit cell parameters fixed. The second task uses the final
+    structure to perform a structural relaxation in which both the atomic positions
+    and the lattice parameters are optimized.
+    """
+
+    def on_all_ok(self):
+        """
+        Here I extend the implementation of super in order to create a new workflow
+        for phonons with the optimized structural parameters.
+        """
+        results = super(RelaxAndAddPhGammaWork, self).on_all_ok()
+
+        # Get the relaxed structure.
+        relax_task = self[1]
+        final_structure = relax_task.get_final_structure()
+
+        # Use new structure in GS + DFPT runs and change some values.
+        scf_input = relax_task.input.deepcopy()
+        scf_input.set_structure(final_structure)
+
+        # Remove input variables that can enter into conflict with DFPT.
+        scf_input.pop_tolerances()
+        scf_input.pop_par_vars()
+        scf_input.pop_irdvars()
+        scf_input.remove_vars(["ionmov", "optcell", "dilatmx"], strict=True)
+        scf_input["tolwfr"] = 1e-20
+
+        # Build GS work and Phonon Work
+        work = PhononDojoWork.from_scf_input(scf_input, self.dojo_qpt)
+
+        # Monkey patch work
+        work.dojo_kppa = self.dojo_kppa
+        work.dojo_qpt = self.dojo_qpt
+        work.ecut = self.ecut
+        work.dojo_pawecutdg = self.dojo_pawecutdg
+        work.dojo_include_soc = self.dojo_include_soc
+        work._dojo_trial = "phgamma" if not self.dojo_include_soc else "phgamma_soc"
+        work._pseudo = self.dojo_pseudo
+
+        self.flow.register_work(work)
+        # Allocate new tasks and update the pickle database.
+        self.flow.allocate()
+        self.flow.build_and_pickle_dump()
+
+        return results
 
 
 class PhononDojoWork(PhononWork, DojoWork):
@@ -868,13 +919,18 @@ class PhononDojoWork(PhononWork, DojoWork):
         return self._dojo_trial
 
     @property
-    def pseudo(self):
+    def dojo_pseudo(self):
         return self._pseudo
 
     def on_all_ok(self):
-        # Call super to merge DDB file.
+        """
+        merge the DDB files, invoke anaddb to compute the phonon frequencies with/without ASR
+        Results are written to the dojoreport.
+        """
+        # Call super to merge the DDB files.
         results = super(PhononDojoWork, self).on_all_ok()
 
+        # Read the final DDB produced in outdir.
         out_ddb = self.outdir.path_in("out_DDB")
         ddb = abilab.DdbFile(out_ddb)
 
@@ -890,50 +946,4 @@ class PhononDojoWork(PhononWork, DojoWork):
                 )
 
         self.add_entry_to_dojoreport(entry)
-        return results
-
-
-class RelaxAndPhGammaWork(RelaxWork):
-    """
-    Work for structural relaxations. The first task relaxes the atomic position
-    while keeping the unit cell parameters fixed. The second task uses the final
-    structure to perform a structural relaxation in which both the atomic positions
-    and the lattice parameters are optimized.
-    """
-    #def __init__(self, ion_input, ioncell_input, workdir=None, manager=None, target_dilatmx=None):
-
-    def on_all_ok(self):
-        """
-        This method is called when self reaches S_OK. It reads the optimized structure
-        from the netcdf file and builds a new work for the computation of phonons
-        """
-        results = super(RelaxAndPhGammaWork, self).on_all_ok()
-
-        # Get the relaxed structure.
-        task = self[1]
-        final_structure = task.get_final_tructure()
-
-        # Use new structure in GS + DFPT runs and change some values.
-        scf_input = task.input.deepcopy()
-        scf_input.set_structure(final_structure)
-
-        # Remove input variables that can enter into conflict with DFPT.
-        scf_input.pop_tolerances()
-        scf_input.pop_par_vars()
-        scf_input.pop_irdvars()
-        scf_input["tolwfr"] = 1e-20
-
-        # Build GS work and Phonon Work
-        work = PhononDojoWork.from_scf_input(scf_input, qpt)
-
-        # Monkey patch work
-        work.dojo_kppa = kppa
-        work.dojo_qpt = qpt
-        work.ecut = ecut
-        work.dojo_pawecutdg = pawecutdg
-        work.dojo_include_soc = include_soc
-        work._dojo_trial = "phgamma" if not include_soc else "phgamma_soc"
-        work._pseudo = pseudo
-
-        self.flow.register(work)
         return results

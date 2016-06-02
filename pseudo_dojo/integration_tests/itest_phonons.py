@@ -28,6 +28,7 @@ def itest_nc_phonons_gamma(fwp, tvars):
     flow.register_work(work)
     flow.build_and_pickle_dump(abivalidate=True)
 
+    #return
     fwp.scheduler.add_flow(flow)
     assert fwp.scheduler.start() == 0
     assert not fwp.scheduler.exceptions

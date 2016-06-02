@@ -15,7 +15,7 @@ from monty.functools import prof_main
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
-from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, EbandsFactory
+from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, GhostsFactory
 
 
 logger = logging.getLogger(__name__)
@@ -134,7 +134,7 @@ def build_flow(pseudo, options):
     if "ghosts" in options.trials:
         assert not options.soc
         dojo_trial = "ghosts" if not options.soc else "ghosts_soc"
-        ebands_factory = EbandsFactory(pseudo.xc)
+        ghosts_factory = GhostsFactory(pseudo.xc)
         ecut = int(report["ppgen_hints"]["high"]["ecut"])
         pawecutdg = None if not pseudo.ispaw else int(report["ppgen_hints"]["high"]["pawecutdg"])
 
@@ -145,17 +145,16 @@ def build_flow(pseudo, options):
             cprint("[%s]: ignoring ecut=%s because it's already in the DOJO_REPORT" % (dojo_trial, ecut), "magenta")
         else:
             # Build and register the work.
-            work = ebands_factory.work_for_pseudo(pseudo, kppa=2000, maxene=250,
+            work = ghosts_factory.work_for_pseudo(pseudo, kppa=2000, maxene=250,
                                                   ecut=ecut, pawecutdg=pawecutdg,
                                                   **extra_abivars)
             if work is not None:
-                flow.register_work(work, workdir='EbandsAt' + str(ecut))
+                flow.register_work(work, workdir='GhostsAt' + str(ecut))
             else:
-                cprint('Cannot create EbandsAt%s work, factory returned None' % str(ecut), "magenta")
+                cprint('Cannot create GhostsAt%s work, factory returned None' % str(ecut), "magenta")
 
     # phonons at gamma test.
     if "phgamma" in options.trials:
-        assert not options.soc
         phg_factory = GammaPhononFactory(pseudo.xc)
         dojo_trial = "phgamma" if not options.soc else "phgamma_soc"
 

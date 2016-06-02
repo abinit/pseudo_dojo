@@ -48,15 +48,15 @@ class GbrvTest(PseudoDojoTest):
         flow.rmtree()
 
 
-class EbandsTest(PseudoDojoTest):
+class GhostsTest(PseudoDojoTest):
 
-    def test_nc_silicon_ebands_factory(self):
-        """Testing Ebands work for NC silicon."""
+    def test_nc_silicon_ghosts_factory(self):
+        """Testing GhostsWork for NC silicon."""
         pseudo = pdj_data.pseudo("Si.psp8")
-        ebands_factory = EbandsFactory(xc=pseudo.xc)
+        factory = GhostsFactory(xc=pseudo.xc)
 
         flow = abilab.Flow.temporary_flow()
-        work = ebands_factory.work_for_pseudo(pseudo, ecut=3, pawecutdg=None)
+        work = factory.work_for_pseudo(pseudo, ecut=3, pawecutdg=None)
         flow.register_work(work)
 
         flow.build_and_pickle_dump(abivalidate=True)
