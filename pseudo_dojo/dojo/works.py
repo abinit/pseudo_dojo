@@ -890,8 +890,10 @@ class RelaxAndAddPhGammaWork(RelaxWork):
         scf_input.pop_tolerances()
         scf_input.pop_par_vars()
         scf_input.pop_irdvars()
-        scf_input.remove_vars(["ionmov", "optcell", "dilatmx"], strict=True)
+        scf_input.remove_vars(["ionmov", "optcell", "ntime", "dilatmx"], strict=True)
         scf_input["tolwfr"] = 1e-20
+        scf_input["nstep"] = 100
+        #nval = scf_input.num_valence_electrons
 
         # Build GS work and Phonon Work
         work = PhononDojoWork.from_scf_input(scf_input, self.dojo_qpt)

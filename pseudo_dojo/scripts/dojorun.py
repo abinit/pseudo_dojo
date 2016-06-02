@@ -15,7 +15,7 @@ from monty.functools import prof_main
 from pymatgen.io.abinit.pseudos import Pseudo
 from pymatgen.core.periodic_table import PeriodicTable
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
-from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, GhostsFactory
+from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, GhostsFactory, GammaPhononFactory
 
 
 logger = logging.getLogger(__name__)
