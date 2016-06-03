@@ -15,6 +15,7 @@ from pymatgen.analysis.eos import EOS
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
 from pymatgen.io.abinit.works import Work, RelaxWork, PhononWork
 from abipy.core.structure import Structure
+from abipy.abio.factories import ion_ioncell_relax_input
 from abipy import abilab
 from pseudo_dojo.core.dojoreport import DojoReport, compute_dfact_entry
 from pseudo_dojo.refdata.gbrv import gbrv_database
@@ -815,11 +816,16 @@ class GammaPhononFactory(object):
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
 
+        # Get spinat and spin_mode from df database.
         spinat, spin_mode = self._dfdb.spinat_spinmode_for_symbol(symbol)
+
+        # DFPT with AFM is not supported. Could try AFM in Relax and then polarized
+        # in WFK + DFPT but this one is safer.
+        if spin_mode == "afm": spin_mode = "polarized"
         if include_soc: spin_mode = "spinor"
 
         # Build inputs for structural relaxation.
-        from abipy.abio.factories import ion_ioncell_relax_input
+
         multi = ion_ioncell_relax_input(
                             structure, pseudo,
                             kppa=kppa, nband=None,

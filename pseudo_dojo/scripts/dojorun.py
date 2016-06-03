@@ -13,7 +13,6 @@ import abipy.abilab as abilab
 from monty.termcolor import cprint
 from monty.functools import prof_main
 from pymatgen.io.abinit.pseudos import Pseudo
-from pymatgen.core.periodic_table import PeriodicTable
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, GhostsFactory, GammaPhononFactory
 
@@ -250,7 +249,7 @@ Usage Example:
         return 1
 
     if options.dry_run:
-        flow.build_and_pickle_dump()
+        flow.build_and_pickle_dump(abivalidate=False)
         return 0
     else:
         # Run the flow with the scheduler.
