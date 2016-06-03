@@ -21,6 +21,11 @@ class DeltaFactorDatabaseTest(PseudoDojoTest):
         assert "WIEN2k" in self.pbe_db.codes
         assert "VASP" in self.pbe_db.codes
 
+        spinat, spin_mode = self.pbe_db.spinat_spinmode_for_symbol("Si")
+        assert spinat is None and spin_mode == "unpolarized"
+        spinat, spin_mode = self.pbe_db.spinat_spinmode_for_symbol("Fe")
+        assert spinat == 2 * [(0, 0, 2.3)] and spin_mode == "polarized"
+
         self.pw_db = df_database("PW")
         assert self.pw_db.xc == "PW"
         assert self.pw_db is not self.pbe_db
@@ -55,7 +60,7 @@ class DeltaFactorDatabaseTest(PseudoDojoTest):
 
         # PW_MOD has the same results as PW
         e_pwmod = self.pwmod_db.get_entry("Si")
-        self.assert_equal([e.v0, e.b0_GPa, e.b1], 
+        self.assert_equal([e.v0, e.b0_GPa, e.b1],
                           [e_pwmod.v0, e_pwmod.b0_GPa, e_pwmod.b1])
         assert e_pwmod.xc == "PW_MOD"
         assert e_pwmod.xc != e.xc

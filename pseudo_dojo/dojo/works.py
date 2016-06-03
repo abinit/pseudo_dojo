@@ -355,30 +355,9 @@ class DeltaFactory(object):
         # WARNING: DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
 
-        # Include spin polarization for O, Cr and Mn (antiferromagnetic)
-        # and Fe, Co, and Ni (ferromagnetic).
-        # antiferromagnetic Cr, O, ferrimagnetic Mn
-        spin_mode = "unpolarized"
-
-        if symbol in ["Fe", "Co", "Ni"]:
-            spin_mode = "polarized"
-            if symbol == "Fe":
-                kwargs['spinat'] = 2 * [(0, 0, 2.3)]
-            if symbol == "Co":
-                kwargs['spinat'] = 2 * [(0, 0, 1.2)]
-            if symbol == "Ni":
-                kwargs['spinat'] = 4 * [(0, 0, 0.6)]
-
-        if symbol in ["O", "Cr", "Mn"]:
-            # Here we could have problems with include_so since we don't enforce "afm"
-            spin_mode = "afm"
-            if symbol == 'O':
-                kwargs['spinat'] = [(0, 0, 1.5), (0, 0, 1.5), (0, 0, -1.5), (0, 0, -1.5)]
-            elif symbol == 'Cr':
-                kwargs['spinat'] = [(0, 0, 1.5), (0, 0, -1.5)]
-            elif symbol == 'Mn':
-                kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
-
+        # Include spin polarization and initial spinat for particular elements
+        # TODO: Not sure spinat is ok if LDA.
+        kwargs["spinat"], spin_mode = self._dfdb.spinat_spinmode_for_symbol(symbol)
         if include_soc: spin_mode = "spinor"
 
         # Magnetic elements:
@@ -836,7 +815,8 @@ class GammaPhononFactory(object):
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
 
-        spin_mode = "unpolarized" if not include_soc else "spinor"
+        spinat, spin_mode = self._dfdb.spinat_spinmode_for_symbol(symbol)
+        if include_soc: spin_mode = "spinor"
 
         # Build inputs for structural relaxation.
         from abipy.abio.factories import ion_ioncell_relax_input
@@ -845,12 +825,14 @@ class GammaPhononFactory(object):
                             kppa=kppa, nband=None,
                             ecut=ecut, pawecutdg=pawecutdg, accuracy="normal", spin_mode=spin_mode,
                             smearing=smearing)
+        # Set spinat from internal database.
+        multi.set_vars(chkprim=0, mem_test=0, spinat=spinat)
 
         # Construct a *specialized" work for structural relaxation
         # This work will create a new workflow for phonon calculations
         # with the final relaxed structure (see on_all_ok below).
         work = RelaxAndAddPhGammaWork(ion_input=multi[0], ioncell_input=multi[1])
-                                      #workdir=None, manager=None, target_dilatmx=None):
+
         # Monkey patch work
         work.dojo_kppa = kppa
         work.dojo_qpt = qpt
@@ -896,6 +878,8 @@ class RelaxAndAddPhGammaWork(RelaxWork):
 
         # Build GS work and Phonon Work
         work = PhononDojoWork.from_scf_input(scf_input, self.dojo_qpt)
+        for task in work[1:]:
+            task.set_vars(prtwf=-1)
 
         # Monkey patch work
         work.dojo_kppa = self.dojo_kppa

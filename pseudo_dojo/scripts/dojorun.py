@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Compute the deltafactor for a given pseudopotential."""
+"""Script to prepare and run different PseudoDojo tests for a given pseudopotential."""
 from __future__ import division, print_function, unicode_literals
 
 import sys
@@ -22,7 +22,9 @@ logger = logging.getLogger(__name__)
 
 
 def build_flow(pseudo, options):
-    """Build the flow, returns None if no calculation must be performed."""
+    """
+    Build the flow, returns None if the test has been already performed.
+    """
     print(pseudo)
     if not pseudo.has_dojo_report:
         raise ValueError("Cannot find dojo_report")
@@ -36,7 +38,7 @@ def build_flow(pseudo, options):
     report = pseudo.dojo_report
     if options.verbose > 1: print(report)
 
-    workdir = pseudo.basename + "_DOJO"
+    workdir = pseudo.basename + "_DOJO" if options.workdir is None else options.workdir
     if os.path.exists(workdir):
         cprint("Directory %s already exists" % workdir, "red")
         return None
@@ -77,11 +79,10 @@ def build_flow(pseudo, options):
         except KeyError:
             ecut_hint = ppgen_ecut
 
-    #if 'extend' in options:
+    #if options.extend:
     #    next_ecut = max(ecut_list) + 2
     #    ecut_list.append(next_ecut)
-
-    #if 'new-ecut' in options:
+    #if options.new_ecut:
     #    ecut_list.append(options['new-ecut'])
 
     add_ecuts = False
@@ -194,14 +195,15 @@ Usage Example:
     parser = argparse.ArgumentParser(epilog=str_examples())
 
     parser.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
+    parser.add_argument('-w', '--workdir', type=str, default=None,
+                        help="Working directory. Default: Automatically generated from pseudo name.")
     parser.add_argument('-d', '--dry-run', default=False, action="store_true",
                         help="Dry run, build the flow without submitting it")
     parser.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
-    parser.add_argument('-p', '--plot', default=False, action="store_true", help="Plot convergence when the flow is done")
-    parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store",
-                        help="Extend the ecut grid with the new-ecut point")
     parser.add_argument('--soc', default=False, action="store_true", help=(
                         "Perform non-collinear run (nspinor==2, kptopt=3). Pseudo must have spin-orbit characteristic"))
+    #parser.add_argument('-n', '--new-ecut', type=int, default=None, action="store",
+    #                    help="Extend the ecut grid with the new-ecut point")
 
     def parse_trials(s):
         if s == "all": return ["df", "gbrv"]
@@ -223,7 +225,7 @@ Usage Example:
 
     try:
         options = parser.parse_args()
-    except:
+    except Exception as exc:
         show_examples_and_exit(1)
 
     # loglevel is bound to the string value obtained from the command line argument.

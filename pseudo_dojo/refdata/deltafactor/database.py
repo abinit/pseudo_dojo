@@ -226,6 +226,38 @@ class DeltaFactorDatabase(object):
         except KeyError:
             raise self.Error("No entry found for code %s, symbol %s" % (code, symbol))
 
+    def spinat_spinmode_for_symbol(self, symbol):
+        """
+        Return the value of spinat and spinmode from the chemical symbol.
+        """
+        # TODO: Not sure spinat is ok if LDA.
+        # Include spin polarization for O, Cr and Mn (antiferromagnetic)
+        # and Fe, Co, and Ni (ferromagnetic).
+        # antiferromagnetic Cr, O, ferrimagnetic Mn
+        spinat = None
+        spin_mode = "unpolarized"
+
+        if symbol in ["Fe", "Co", "Ni"]:
+            spin_mode = "polarized"
+            if symbol == "Fe":
+                spinat = 2 * [(0, 0, 2.3)]
+            if symbol == "Co":
+                spinat = 2 * [(0, 0, 1.2)]
+            if symbol == "Ni":
+                spinat = 4 * [(0, 0, 0.6)]
+
+        if symbol in ["O", "Cr", "Mn"]:
+            # Here we could have problems with include_so since we don't enforce "afm"
+            spin_mode = "afm"
+            if symbol == 'O':
+                spinat = [(0, 0, 1.5), (0, 0, 1.5), (0, 0, -1.5), (0, 0, -1.5)]
+            elif symbol == 'Cr':
+                spinat = [(0, 0, 1.5), (0, 0, -1.5)]
+            elif symbol == 'Mn':
+                spinat = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
+
+        return spinat, spin_mode
+
     @add_fig_kwargs
     def plot_error_of_code(self, codename_or_data, values=("v0", "b0", "b1"), ref_code=None, **kwargs):
         """Plot the error of one code vs ref_code."""
