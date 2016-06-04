@@ -425,8 +425,9 @@ class DojoReport(dict):
     def get_pdframe(self, dojo_trial, *args):
         """
         Return a pandas `DataFrame` with the results for this particular dojo_trial.
+        The frame is sorted according to the value of ecut.
 
-        The frame is sorted according to ecut. This function is used to plot/analyze data for a single pseudo.
+        This function is used to plot/analyze data for a single pseudo.
         Args is the list of variable that should be used to construct the frame a.k.a column names.
         If args is empty, all the keys found in the dictionary are used
 
@@ -696,19 +697,22 @@ class DojoReport(dict):
 
         label = kwargs.pop("label", None)
 
-        #frame = self.get_pdframe(trial)
-        #ecuts = frame["ecut"]
+        # Get Data Frame
+        frame = self.get_pdframe(trial, "etotals", "num_sites")
 
-        # Extract the total energy of the AE relaxed structure (4).
-        d = OrderedDict([(ecut, data["etotals"][4]) for ecut, data in self[trial].items()])
-
-        # Ecut mesh in Ha
-        ecuts = np.array(list(d.keys()))
+        # Get Ecut mesh in Ha
+        ecuts = np.array(frame["ecut"])
         ecut_min, ecut_max = np.min(ecuts), np.max(ecuts)
 
+        # Extract the total energy of the AE relaxed structure (4).
+        minenes = np.array([etots[4] for etots in frame["etotals"]])
+        num_sites = np.array(frame["num_sites"])
+        assert np.all(num_sites == num_sites[0])
+        num_sites = num_sites[0]
+
         # Energies per atom in meV and difference wrt 'converged' value
-        num_sites = [v["num_sites"] for v in self[trial].values()][0]
-        etotals_mev = np.array([d[e] for e in ecuts]) * 1000  / num_sites
+        #num_sites = [v["num_sites"] for v in self[trial].values()][0]
+        etotals_mev = minenes * 1000  / num_sites
         ediffs = etotals_mev - etotals_mev[-1]
 
         ax, fig, plt = get_ax_fig_plt(ax)
@@ -773,16 +777,24 @@ class DojoReport(dict):
         ax, fig, plt = get_ax_fig_plt(ax)
         cmap = kwargs.pop("cmap", plt.get_cmap("jet"))
 
-        ecuts = list(self[trial].keys())
-        num_ecuts = len(ecuts)
+        # Get DataFrame.
+        frame = self.get_pdframe(trial, "num_sites", "volumes", "etotals")
+        ecuts = frame["ecut"]
+        num_sites = np.array(frame["num_sites"])
+        assert np.all(num_sites == num_sites[0])
+        num_sites = num_sites[0]
 
         for i, ecut in enumerate(ecuts):
-            d = self[trial][ecut]
-            num_sites, volumes, etotals = d["num_sites"], np.array(d["volumes"]), np.array(d["etotals"])
+            # Subframe with this value of ecut.
+            ecut_frame = frame.loc[frame["ecut"] == ecut]
+            assert ecut_frame.shape[0] == 1
+            # Extract volumes and energies for this ecut.
+            volumes = (np.array(list(ecut_frame["volumes"].values), dtype=np.float)).flatten()
+            etotals = (np.array(list(ecut_frame["etotals"].values), dtype=np.float)).flatten()
 
             # Use same fit as the one employed for the deltafactor.
             eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
-            eos_fit.plot(ax=ax, text=False, label="ecut %.1f" % ecut, color=cmap(i/num_ecuts, alpha=1), show=False)
+            eos_fit.plot(ax=ax, text=False, label="ecut %.1f" % ecut, color=cmap(i/len(ecuts), alpha=1), show=False)
 
         return fig
 
@@ -821,12 +833,9 @@ class DojoReport(dict):
         reference = df_database(xc=xc).get_entry(symbol=self.symbol, code=code)
         print("Reference data:", reference)
 
-        frame = self.get_pdframe(trial)
-        #ecuts = frame["ecut"]
-        print(frame)
-
-        d = self[trial]
-        ecuts = list(d.keys())
+        # Get DataFrame.
+        frame = self.get_pdframe(trial, *keys)
+        ecuts = np.array(frame["ecut"])
 
         import matplotlib.pyplot as plt
         if ax_list is None:
@@ -839,7 +848,7 @@ class DojoReport(dict):
             raise ValueError("len(keys)=%s != len(ax_list)=%s" %  (len(keys), len(ax_list)))
 
         for i, (ax, key) in enumerate(zip(ax_list, keys)):
-            values = np.array([float(d[ecut][key]) for ecut in ecuts])
+            values = np.array(frame[key])
             refval = getattr(reference, key)
 
             # Plot difference pseudo - ref.
@@ -893,19 +902,23 @@ class DojoReport(dict):
         cmap = kwargs.pop("cmap", plt.get_cmap("jet"))
 
         ecuts = list(self[trial].keys())
-        num_ecuts = len(ecuts)
 
-        #frame = self.get_pdframe(trial)
-        #ecuts = frame["ecut"]
+        # Get DataFrame.
+        frame = self.get_pdframe(trial, "volumes", "etotals")
+        ecuts = frame["ecut"]
 
         for i, ecut in enumerate(ecuts):
-            d = self[trial][ecut]
-            volumes, etotals = np.array(d["volumes"]), np.array(d["etotals"])
+            # Subframe with this value of ecut.
+            ecut_frame = frame.loc[frame["ecut"] == ecut]
+            assert ecut_frame.shape[0] == 1
+            # Extract volumes and energies for this ecut.
+            volumes = (np.array(list(ecut_frame["volumes"].values), dtype=np.float)).flatten()
+            etotals = (np.array(list(ecut_frame["etotals"].values), dtype=np.float)).flatten()
 
             eos_fit = EOS.Quadratic().fit(volumes, etotals)
             label = "ecut %.1f" % ecut if i % 2 == 0 else ""
             label = "ecut %.1f" % ecut
-            eos_fit.plot(ax=ax, text=False, label=label, color=cmap(i/num_ecuts, alpha=1), show=False)
+            eos_fit.plot(ax=ax, text=False, label=label, color=cmap(i/len(ecuts), alpha=1), show=False)
 
         return fig
 
@@ -943,9 +956,11 @@ class DojoReport(dict):
         for i, (ax, stype) in enumerate(zip(ax_list, stypes)):
             trial = "gbrv_" + stype
             if with_soc: trial += "_soc"
-            d = self[trial]
-            ecuts = list(d.keys())
-            values = np.array([float(d[ecut]["a0_rel_err"]) for ecut in ecuts])
+
+            # Get DataFrame
+            frame = self.get_pdframe(trial, "a0_rel_err")
+            ecuts = np.array(frame["ecut"])
+            values = np.array(frame["a0_rel_err"])
 
             ax.grid(True)
             ax.set_ylabel("$\Delta$" + trial + "a0_rel_err")
@@ -974,8 +989,8 @@ class DojoReport(dict):
             print("dojo report does not contain trial:", trial)
             return None
 
-        #frame = self.get_pdframe(trial)
-        #ecuts = frame["ecut"]
+        #frame = self.get_pdframe(trial, trial)
+        #ecuts = np.array(frame["ecut"])
 
         d = self[trial]
         ecuts = list(d.keys())
@@ -1041,8 +1056,6 @@ class DojoReport(dict):
 
         from abipy.electrons.ebands import ElectronBands
         ebands = ElectronBands.from_dict(self[trial][ecut]["ebands"])
-        #edos = ebands.get_edos(width=kwargs.pop("width", 0.05), step=kwargs.pop("step", 0.02))
-        #edos = ebands.get_edos(width=kwargs.pop("width", 0.15), step=kwargs.pop("step", 0.05))
         edos = ebands.get_edos(width=kwargs.pop("width", 0.3), step=kwargs.pop("step", 0.1))
 
         # Try to detect possible ghost states by looking at the dispersion of the bands.
