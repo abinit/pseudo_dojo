@@ -28,6 +28,7 @@ class DeltaFactorTest(PseudoDojoTest):
         flow.register_work(work)
 
         flow.build_and_pickle_dump(abivalidate=True)
+        flow.check_status(show=True)
         flow.rmtree()
 
 
@@ -44,6 +45,7 @@ class GbrvTest(PseudoDojoTest):
             flow.register_work(work)
 
         flow.build_and_pickle_dump(abivalidate=True)
+        flow.check_status(show=True)
         assert len(flow[0]) == 1
         flow.rmtree()
 
@@ -60,7 +62,9 @@ class GhostsTest(PseudoDojoTest):
         flow.register_work(work)
 
         flow.build_and_pickle_dump(abivalidate=True)
+        flow.check_status(show=True)
         flow.rmtree()
+
 
 class GammaPhononTest(PseudoDojoTest):
 
@@ -74,4 +78,5 @@ class GammaPhononTest(PseudoDojoTest):
         flow.register_work(work)
 
         flow.build_and_pickle_dump(abivalidate=True)
+        flow.check_status(show=True)
         flow.rmtree()

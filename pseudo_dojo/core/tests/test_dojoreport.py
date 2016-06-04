@@ -81,7 +81,6 @@ class DojoReportTest(PseudoDojoTest):
         # Basic consistency tests.
         missings = report.find_missing_entries()
         assert "ghosts" in missings
-        assert "phwoa" in missings
         assert not report.has_trial("foo")
 
         for trial in report.trials:

@@ -430,8 +430,8 @@ class DeltaFactorWork(DojoWork):
         self.volumes = v0 * np.arange(94, 108, 2) / 100.
 
         for vol in self.volumes:
+            # Build new structure
             new_lattice = structure.lattice.scale(vol)
-
             new_structure = Structure(new_lattice, structure.species, structure.frac_coords)
 
             ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak,
@@ -671,6 +671,11 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.flow.build_and_pickle_dump()
 
     def compute_eos(self):
+        """
+        This method compute the equation of state following the approach described in the GBRV paper.
+        Build dictionary with results and insert in the DOJO REPORT.
+        Return: dictionary with results
+        """
         self.history.info("Computing EOS")
 
         results = self.get_results()
@@ -736,6 +741,7 @@ class GbrvRelaxAndEosWork(DojoWork):
 
     @property
     def add_eos_done(self):
+        """True if the EOS has been computed."""
         return len(self) > 1
 
     def on_all_ok(self):
@@ -745,9 +751,11 @@ class GbrvRelaxAndEosWork(DojoWork):
         with the GBRV parameters.
         """
         if not self.add_eos_done:
+            # Build SCF tasks for the EOS and tell the world we are not done!
             self.add_eos_tasks()
             self.finalized = False
         else:
+            # Compute EOS, write data and enter in finalized mode.
             self.compute_eos()
 
         return super(GbrvRelaxAndEosWork, self).on_all_ok()
@@ -825,12 +833,12 @@ class GammaPhononFactory(object):
         if include_soc: spin_mode = "spinor"
 
         # Build inputs for structural relaxation.
-
         multi = ion_ioncell_relax_input(
                             structure, pseudo,
                             kppa=kppa, nband=None,
                             ecut=ecut, pawecutdg=pawecutdg, accuracy="normal", spin_mode=spin_mode,
                             smearing=smearing)
+
         # Set spinat from internal database.
         multi.set_vars(chkprim=0, mem_test=0, spinat=spinat)
 

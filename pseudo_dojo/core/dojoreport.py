@@ -8,6 +8,7 @@ import json
 import logging
 import copy
 import numpy as np
+import pandas as pd
 
 from collections import OrderedDict, defaultdict, Iterable
 from tabulate import tabulate
@@ -182,17 +183,18 @@ class DojoReport(dict):
         "gbrv_bcc",
         "gbrv_fcc",
         "phonon",
-        "phwoa",
+        #"phwoa",
         "ghosts",
     ]
 
+    # Add trials done with SOC.
     ALL_TRIALS += [n + "_soc" for n in ALL_TRIALS]
 
     _TRIALS2KEY = {
         "deltafactor": "dfact_meV",
         "gbrv_bcc": "a0_rel_err",
         "gbrv_fcc": "a0_rel_err",
-        "phwoa": "all",
+        #"phwoa": "all",
         "phonon": "all",
         "ghosts": "all",
     }
@@ -222,11 +224,11 @@ class DojoReport(dict):
     @classmethod
     def empty_from_pseudo(cls, pseudo, hints, devel=False):
         """
-        Initialize an empty DojoReport from the pseudo and an initial guess for
-        the cutoff energies in Hartree
+        Initialize an empty `DojoReport` from the pseudo and an initial guess
+        for the cutoff energies in Hartree
 
         Args:
-            pseudo: Pseudo object.
+            pseudo: :class:`Pseudo` object.
             hints: Initial hints on the cutoff energy provided by the pp generator.
                 Dictionary [accuracy]["ecut"] --> ecut_value
         """
@@ -420,6 +422,54 @@ class DojoReport(dict):
         if write:
             self.json_write(self["filepath"])
 
+    def get_pdframe(self, dojo_trial, *args):
+        """
+        Return a pandas `DataFrame` with the results for this particular dojo_trial.
+
+        The frame is sorted according to ecut. This function is used to plot/analyze data for a single pseudo.
+        Args is the list of variable that should be used to construct the frame a.k.a column names.
+        If args is empty, all the keys found in the dictionary are used
+
+        Examples:
+
+        To extract all data available:
+
+            frame = dojo_report.get_pdframe("deltafactor")
+
+        To build a frame with ["ecut", "dfact_meV", "b0"]:
+
+            frame = dojo_report.get_pdframe("deltafactor", "dfact_meV", "b0")
+        """
+        if dojo_trial not in self:
+            raise self.Error("dojo_trial %s not present" % dojo_trial)
+        if not args:
+            #args = list(self[dojo_trial][0].keys())
+            # OLD DOJO
+            args = []
+            for ecut, data in self[dojo_trial].items():
+                args.extend(list(data.keys()))
+            args = set(args)
+
+        # Build list of dictionaries.
+        dict_list = []
+
+        # This code is compatible with dict: ecut --> entry
+        for ecut, data in self[dojo_trial].items():
+            d = dict(ecut=float(ecut), pawecutdg = data.get("pawecutdg", None))
+            d.update({k: data[k] for k in args})
+            dict_list.append(d)
+
+        # TODO: This code assumes a list of entries instead of a dict: ecut --> entry
+        #for entry in self[dojo_trial]:
+        #    d = entry["ecut"]
+        #    d["pawecutdg"] = entry.get("pawecutdg", None)
+        #    d.update({k: entry[k] for k in args})
+        #    dict_list.append(d)
+
+        # Build DataFrame from dict_list and sort wrt ecut.
+        frame = pd.DataFrame(dict_list)
+        return frame.sort_values("ecut")
+
     def add_ecuts(self, new_ecuts):
         """Add a list of new ecut values."""
         # Be careful with the format here! it should be %.1f
@@ -463,7 +513,6 @@ class DojoReport(dict):
         Return an ipython widget with controllers to validate the pseudo.
         """
         import ipywidgets as ipw
-
         low_ecut = ipw.FloatText(description='Low ecut:')
         normal_ecut = ipw.FloatText(description='Normal ecut:')
         high_ecut = ipw.FloatText(description='High ecut:')
@@ -647,6 +696,9 @@ class DojoReport(dict):
 
         label = kwargs.pop("label", None)
 
+        #frame = self.get_pdframe(trial)
+        #ecuts = frame["ecut"]
+
         # Extract the total energy of the AE relaxed structure (4).
         d = OrderedDict([(ecut, data["etotals"][4]) for ecut, data in self[trial].items()])
 
@@ -769,6 +821,10 @@ class DojoReport(dict):
         reference = df_database(xc=xc).get_entry(symbol=self.symbol, code=code)
         print("Reference data:", reference)
 
+        frame = self.get_pdframe(trial)
+        #ecuts = frame["ecut"]
+        print(frame)
+
         d = self[trial]
         ecuts = list(d.keys())
 
@@ -838,6 +894,9 @@ class DojoReport(dict):
 
         ecuts = list(self[trial].keys())
         num_ecuts = len(ecuts)
+
+        #frame = self.get_pdframe(trial)
+        #ecuts = frame["ecut"]
 
         for i, ecut in enumerate(ecuts):
             d = self[trial][ecut]
@@ -915,6 +974,9 @@ class DojoReport(dict):
             print("dojo report does not contain trial:", trial)
             return None
 
+        #frame = self.get_pdframe(trial)
+        #ecuts = frame["ecut"]
+
         d = self[trial]
         ecuts = list(d.keys())
 
@@ -983,6 +1045,7 @@ class DojoReport(dict):
         #edos = ebands.get_edos(width=kwargs.pop("width", 0.15), step=kwargs.pop("step", 0.05))
         edos = ebands.get_edos(width=kwargs.pop("width", 0.3), step=kwargs.pop("step", 0.1))
 
+        # Try to detect possible ghost states by looking at the dispersion of the bands.
         dless_states = ebands.dispersionless_states(deltae=0.05, kfact=0.9)
         if not dless_states:
             print("No dispersionless state detected")
@@ -997,11 +1060,9 @@ class DojoReport(dict):
 ## Pandas DataFrame ##
 ######################
 
-from pandas import DataFrame
-
-class DojoDataFrame(DataFrame):
+class DojoDataFrame(pd.DataFrame):
     """
-    Extends pandas DataFrame adding helper functions.
+    Extends pandas `DataFrame` adding helper functions.
     """
     # The frame has its own list so that one can easily change the
     # entries that should be analyzed by modifying this attributes.
@@ -1014,7 +1075,7 @@ class DojoDataFrame(DataFrame):
         "gbrv_bcc": "gbrv_bcc_a0_rel_err",
         "gbrv_fcc": "gbrv_fcc_a0_rel_err",
         "phonon": "all",
-        "phwoa": "all",
+        #"phwoa": "all",
         "ghosts": "all"
     }
 
@@ -1024,7 +1085,7 @@ class DojoDataFrame(DataFrame):
         "gbrv_bcc": "BCC $\Delta a_0$ (%)",
         "gbrv_fcc": "FCC $\Delta a_0$ (%)",
         "phonon": "Phonons with ASR",
-        "phwoa": "Phonons without ASR",
+        #"phwoa": "Phonons without ASR",
         "ghosts": "Electronic band structure"
     }
 
@@ -1233,7 +1294,7 @@ class DojoDataFrame(DataFrame):
         return fig
 
 
-class DfGbrvDataFrame(DataFrame):
+class DfGbrvDataFrame(pd.DataFrame):
     """
     Extends pandas DataFrame adding helper functions.
     """
