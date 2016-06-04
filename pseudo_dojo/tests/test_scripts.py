@@ -7,6 +7,8 @@ import os
 from scripttest import TestFileEnvironment
 from monty.inspect import all_subclasses
 from pseudo_dojo.core.testing import PseudoDojoTest
+from pseudo_dojo.pseudos import dojotable_absdir
+import pseudo_dojo.data as pdj_data
 
 
 script_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "scripts"))
@@ -28,6 +30,7 @@ def test_if_all_scripts_are_tested():
 
 class ScriptTest(PseudoDojoTest):
     loglevel = "--loglevel=ERROR"
+    verbose = "--verbose"
 
     def get_env(self):
         #import tempfile
@@ -43,17 +46,22 @@ class ScriptTest(PseudoDojoTest):
         # Script must provide a version option
         #r = env.run(self.script, "--version", expect_stderr=True)
         #assert r.stderr.strip() == "%s version %s" % (os.path.basename(self.script), abilab.__version__)
-
         return env
 
 
 class TestDojoRun(ScriptTest):
     script = os.path.join(script_dir, "dojorun.py")
 
-    def test_dojorun(self):
-        """Testing dojorun.py script"""
+    def test_dojorun_dryrun(self):
+        """Testing dojorun.py script in dry-run mode."""
         env = self.get_env()
-        #env.run(self.script, self.loglevel, "man", "ecut")
+
+        # Build new env to run the script in dry-run mode
+        # Copy file from data to env.
+        env = TestFileEnvironment(template_path=pdj_data.dirpath)
+        env.writefile("Si.psp8", frompath="Si.psp8")
+        env.writefile("Si.djrepo", frompath="Si.djrepo_empty")
+        env.run(self.script, "Si.psp8", self.loglevel, self.verbose, "--dry-run")
 
 
 class TestDojoData(ScriptTest):
@@ -62,7 +70,14 @@ class TestDojoData(ScriptTest):
     def test_dojodata(self):
         """Testing dojodata.py script"""
         env = self.get_env()
-        #env.run(self.script, self.loglevel, "man", "ecut")
+
+        # Test dojodata table
+        path = dojotable_absdir("ONCVPSP-PBE-PDv0.3")
+        env.run(self.script, "table", path, self.loglevel, self.verbose)
+
+        # Test dojodata check
+        #path = dojotable_absdir("ONCVPSP-PBE-PDv0.3")
+        #env.run(self.script, "check", path, self.loglevel, self.verbose)
 
 
 class TestOncv(ScriptTest):

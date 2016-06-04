@@ -178,6 +178,7 @@ def build_flow(pseudo, options):
         # Empty flow since all trials have been already performed.
         return None
 
+
 @prof_main
 def main():
     def str_examples():
@@ -210,10 +211,10 @@ Usage Example:
 
     parser.add_argument('--trials', default="all",  type=parse_trials,
                         help=("List of tests e.g --trials=ghosts,df,gbrv\n"
-                        "  ghosts:  tests ghost states in the conduction region.\n"
-                        "  df:      test delta factor against all electron reference.\n"
-                        "  gbrv:    test fcc and bcc lattice parameters against AE reference.\n"
-                        "  phgamma:  test violation of the acoustic sum rule\n"))
+                              "  ghosts:  tests ghost states in the conduction region.\n"
+                              "  df:      test delta factor against all electron reference.\n"
+                              "  gbrv:    test fcc and bcc lattice parameters against AE reference.\n"
+                              "  phgamma: test violation of the acoustic sum rule\n"))
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")

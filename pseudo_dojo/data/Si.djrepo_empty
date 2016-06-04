@@ -1,0 +1,28 @@
+{
+    "ecuts": [
+        16.0, 
+        18.0, 
+        20.0, 
+        22.0, 
+        24.0, 
+        26.0, 
+        36.0
+    ], 
+    "ppgen_hints": {
+        "high": {
+            "ecut": 16.0, 
+            "pawecutdg": 16.0
+        }, 
+        "low": {
+            "ecut": 8.0, 
+            "pawecutdg": 8.0
+        }, 
+        "normal": {
+            "ecut": 10.0, 
+            "pawecutdg": 10.0
+        }
+    }, 
+    "pseudo_type": "NC", 
+    "symbol": "Si", 
+    "version": "1.0"
+}

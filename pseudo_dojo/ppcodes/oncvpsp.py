@@ -1031,8 +1031,8 @@ class OncvOutputParser(PseudoGenOutputParser):
 
 def oncv_make_open_notebook(outpath):
     """
-    Generate an ipython notebook from the oncvpsp outputh and open it in the browser.
-    Return system exit code.
+    Generate an ipython notebook from the oncvpsp outputh
+    and open it in the browser. Return system exit code.
 
     Raise:
         RuntimeError if jupyther or ipython are not in $PATH
