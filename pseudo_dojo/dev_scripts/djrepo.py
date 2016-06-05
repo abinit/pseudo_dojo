@@ -11,7 +11,7 @@ from monty.functools import prof_main
 from monty.termcolor import cprint
 from monty.os.path import find_exts
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
-from pseudo_dojo.core.dojoreport import DojoReport, compute_dfact_entry
+from pseudo_dojo.core.dojoreport import DojoReport, dojo_dfact_results
 
 
 def djrepo_fix(options):
@@ -98,7 +98,7 @@ def djrepo_recalc(options):
 
         # Recompute delfactor for the different ecut.
         for ecut, entry in data.items():
-            new_entry, eos_fit = compute_dfact_entry(pseudo, entry["num_sites"], entry["volumes"], entry["etotals"])
+            new_entry, eos_fit = dojo_dfact_results(pseudo, entry["num_sites"], entry["volumes"], entry["etotals"])
             print("ecut: ", ecut, "(new - old) df:", new_entry["dfact_meV"] - entry["dfact_meV"])
             data[ecut] = new_entry
 

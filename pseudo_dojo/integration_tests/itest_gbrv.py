@@ -52,7 +52,8 @@ def itest_gbrv_gga_ncsoc_flow(fwp, tvars):
     assert not pseudo.dojo_report.exceptions
 
     factory = GbrvFactory(pseudo.xc)
-    ecut = 6
+    ecut = 2
+    #ecut = 6
     pawecutdg = 2 * ecut if pseudo.ispaw else None
 
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)

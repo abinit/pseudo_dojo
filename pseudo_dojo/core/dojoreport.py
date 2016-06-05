@@ -19,12 +19,13 @@ from pymatgen.analysis.eos import EOS
 from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
+from pseudo_dojo.refdata.gbrv import gbrv_database
 
 
 logger = logging.getLogger(__name__)
 
 
-def compute_dfact_entry(pseudo, num_sites, volumes, etotals):
+def dojo_dfact_results(pseudo, num_sites, volumes, etotals):
     """
     This function computes the deltafactor and returns the dictionary to be inserted
     in the dojoreport file.
@@ -36,13 +37,13 @@ def compute_dfact_entry(pseudo, num_sites, volumes, etotals):
         etotals: List of total energies in eV.
 
     Return:
-        (outd, eos_fit)
-        where outd is the Dictionary with results to be inserted in the djrepo file.
+        (dojo_entry, eos_fit)
+        where dojo_entry is the Dictionary with results to be inserted in the djrepo file.
         eos_fit is the object storing the results of the EOS fit.
     """
     nan = float('NaN')
 
-    outd = dict(
+    dojo_entry = dict(
         etotals=list(etotals),
         volumes=list(volumes),
         num_sites=num_sites,
@@ -82,12 +83,84 @@ def compute_dfact_entry(pseudo, num_sites, volumes, etotals):
             v = v if not isinstance(v, complex) else nan
             dfres[k] = v
 
-        outd.update(dfres)
+        dojo_entry.update(dfres)
 
     except EOS.Error as exc:
-        outd["_exceptions"] = str(exc)
+        dojo_entry["_exceptions"] = str(exc)
 
-    return outd, eos_fit
+    return dojo_entry, eos_fit
+
+
+def dojo_gbrv_results(pseudo, struct_type, num_sites, volumes, etotals):
+    """
+    This function computes the GBRV results and returns the dictionary
+    to be inserted in the dojoreport file.
+
+    Args:
+        pseudo: Pseudopotential object.
+        struct_type: "fcc" or "bcc"
+        num_sites: Number of sites in unit cell
+        volumes: List with unit cell volumes in Ang**3
+        etotals: List of total energies in eV.
+
+    Return:
+        (dojo_entry, eos_fit)
+        where dojo_entry is the Dictionary with results to be inserted in the djrepo file.
+        eos_fit is the object storing the results of the EOS fit.
+    """
+    # Read etotals and fit E(V) with a parabola to find the minimum
+    assert len(etotals) == len(volumes)
+
+    dojo_entry = dict(
+        volumes=list(volumes),
+        etotals=list(etotals),
+        num_sites=num_sites,
+    )
+
+    eos_fit = None
+    try:
+        eos_fit = EOS.Quadratic().fit(volumes, etotals)
+    except EOS.Error as exc:
+        dojo_entry["_exceptions"] = str(exc)
+        return dojo_entry, eos_fit
+
+    # Function to compute cubic a0 from primitive v0 (depends on struct_type)
+    vol2a = {"fcc": lambda vol: (4 * vol) ** (1/3.),
+             "bcc": lambda vol: (2 * vol) ** (1/3.),
+             }[struct_type]
+
+    a0 = vol2a(eos_fit.v0)
+    dojo_entry.update(dict(
+        v0=eos_fit.v0,
+        b0=eos_fit.b0,
+        b1=eos_fit.b1,
+        a0=a0,
+        struct_type=struct_type
+    ))
+
+    db = gbrv_database()
+    ref = db.get_entry(pseudo.symbol, stype=struct_type)
+
+    pawabs_err = a0 - ref.gbrv_paw
+    pawrel_err = 100 * (a0 - ref.gbrv_paw) / ref.gbrv_paw
+
+    # AE results for P and Hg are missing.
+    if ref.ae is not None:
+        abs_err = a0 - ref.ae
+        rel_err = 100 * (a0 - ref.ae) / ref.ae
+    else:
+        # Use GBRV_PAW as reference.
+        abs_err = pawabs_err
+        rel_err = pawrel_err
+
+    print("for GBRV struct_type: ", struct_type, "a0= ", a0, "Angstrom")
+    print("AE - THIS: abs_err = %f, rel_err = %f %%" % (abs_err, rel_err))
+    print("GBRV-PAW - THIS: abs_err = %f, rel_err = %f %%" % (pawabs_err, pawrel_err))
+
+    dojo_entry["a0_abs_err"] = abs_err
+    dojo_entry["a0_rel_err"] = rel_err
+
+    return dojo_entry, eos_fit
 
 
 #def insert(self, data):

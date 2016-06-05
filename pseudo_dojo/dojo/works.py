@@ -17,7 +17,7 @@ from pymatgen.io.abinit.works import Work, RelaxWork, PhononWork
 from abipy.core.structure import Structure
 from abipy.abio.factories import ion_ioncell_relax_input
 from abipy import abilab
-from pseudo_dojo.core.dojoreport import DojoReport, compute_dfact_entry
+from pseudo_dojo.core.dojoreport import DojoReport, dojo_dfact_results, dojo_gbrv_results
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
@@ -473,7 +473,7 @@ class DeltaFactorWork(DojoWork):
         num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")
 
-        d, eos_fit = compute_dfact_entry(self.dojo_pseudo, num_sites, self.volumes, etotals)
+        d, eos_fit = dojo_dfact_results(self.dojo_pseudo, num_sites, self.volumes, etotals)
 
         print("[%s]" % self.dojo_pseudo.symbol, "eos_fit:", eos_fit)
         print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, d["dfact_meV"], d["dfactprime_meV"]))
@@ -678,12 +678,16 @@ class GbrvRelaxAndEosWork(DojoWork):
         """
         self.history.info("Computing EOS")
 
-        results = self.get_results()
-
         # Read etotals and fit E(V) with a parabola to find the minimum
         etotals = self.read_etotals(unit="eV")[1:]
         assert len(etotals) == len(self.volumes)
 
+        num_sites = len(self.relaxed_structure)
+        dojo_entry, eos_fit = dojo_gbrv_results(self.dojo_pseudo, self.struct_type, num_sites, self.volumes, etotals)
+        self.add_entry_to_dojoreport(dojo_entry)
+
+        """
+        results = self.get_results()
         results.update(dict(
             etotals=list(etotals),
             volumes=list(self.volumes),
@@ -738,6 +742,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.add_entry_to_dojoreport(d)
 
         return results
+        """
 
     @property
     def add_eos_done(self):
