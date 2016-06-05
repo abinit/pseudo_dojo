@@ -626,7 +626,7 @@ def dojo_make_hints(options):
             if ans:
                 report.add_hints(hints)
                 print(report.has_hints)
-                report.json_write(pseudo.djrepo_path)
+                report.json_write()
             else:
                 print("The dojoreport contains ecuts :\n%s" % report.ecuts)
                 new_ecuts = prompt("Enter new ecuts to compute (comma-separated values or empty string to abort)")
@@ -636,7 +636,7 @@ def dojo_make_hints(options):
                 new_ecuts = np.array([float(k) for k in new_ecuts.strip().split(",")])
                 print("new_ecuts", new_ecuts)
                 report.add_ecuts(new_ecuts)
-                report.json_write(pseudo.djrepo_path)
+                report.json_write()
 
         except Exception as exc:
             cprint("[%s]: python exception: %s" % (pseudo.basename, type(exc)), "red")
@@ -677,7 +677,7 @@ def dojo_validate(options):
                         ans = float(prompt('Please enter the energy (eV) up until there is no sign of ghosts:\n'))
                         if ans > 0:
                             report["ghosts"][ecut]["ghost_free_upto_eV"] = ans
-                            report.json_write(p.djrepo_path)
+                            report.json_write()
             else:
                 cprint('no ghosts trial present, pseudo cannot be validated', "red")
                 continue
@@ -728,7 +728,7 @@ def dojo_validate(options):
         if ask_yesno('Will you validate this pseudo? [n]'):
             name = prompt("Please enter your name for later reference: ")
             report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime())}
-            report.json_write(p.djrepo_path)
+            report.json_write()
 
     return 0
 

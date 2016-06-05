@@ -51,7 +51,7 @@ def djrepo_fix(options):
         #        pseudo.dojo_report[new] = pseudo.dojo_report.pop(old)
         #pseudo.dojo_report.reorder()
 
-        pseudo.dojo_report.json_write(pseudo.djrepo_path)
+        pseudo.dojo_report.json_write()
         return 0
 
     print("Will fix %s djrepo files" % len(options.paths))
@@ -82,7 +82,7 @@ def djrepo_convert(options):
         old_version = report["version"]
         if  old_version == new_version: continue
         report = report.to_version(new_version)
-        report.json_write(path)
+        report.json_write()
 
     return 0
 
@@ -103,7 +103,7 @@ def djrepo_recalc(options):
             data[ecut] = new_entry
 
         # Write new djson file.
-        pseudo.dojo_report.json_write(pseudo.djrepo_path)
+        pseudo.dojo_report.json_write()
 
     return 0
 
@@ -120,7 +120,7 @@ def djrepo_pop(options):
                 count += 1
 
         if count != 0:
-            pseudo.dojo_report.json_write(pseudo.djrepo_path)
+            pseudo.dojo_report.json_write()
 
 
 @prof_main
