@@ -50,9 +50,9 @@ def dojo_figures(options):
                 data = line.split(',')
                 #print(data)
                 data_dict = {'name': data[0],
-                            'high_dfact_meV': float(data[1]),
-                            'rell_high_dfact_meV': float(data[2]),
-                            'high_dfactprime_meV': float(data[3])}
+                             'high_dfact_meV': float(data[1]),
+                             'rell_high_dfact_meV': float(data[2]),
+                             'high_dfactprime_meV': float(data[3])}
                 if data[5] != 'nan':
                     data_dict['high_gbrv_bcc_a0_rel_err'] = float(data[5])
                     data_dict['high_gbrv_fcc_a0_rel_err'] = float(data[7])
@@ -60,10 +60,14 @@ def dojo_figures(options):
     else:
 	# Get data from dojoreport
 	data_dojo, errors = pseudos.get_dojo_dataframe()
+
 	if errors:
 	    cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
-	    if options.verbose:
-		for i, e in enumerate(errors): print("[%s]" % i, e)
+	    if not options.verbose:
+                print("Use --verbose for details.")
+            else:
+		for i, e in enumerate(errors):
+                    print("[%s]" % i, e)
 
 	# add data that is not part of the dojo report
 	data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
@@ -78,35 +82,24 @@ def dojo_figures(options):
 
 	data = concat([data_dojo, data_pseudo], axis=1)
 
-    """Select entries per element"""
-    grouped = data.groupby("symbol")
-
+    # Select "best" entries per element.
     rows, names = [], []
-    for name, group in grouped:
+    sortby, ascending = "high_dfact_meV", True
 
-        if False: # options.semicore
-            select = group.sort("nv").iloc[-1]
-        elif False: # options.valence
-            select = group.sort("nv").iloc[0]
-        else:
-            select = group.sort("high_dfact_meV").iloc[0]
+    for name, group in data.groupby("symbol"):
+        # Sort group and select best pseudo depending on sortby and ascending.
+        select = group.sort_values(sortby, ascending=ascending).iloc[0]
+        l = {k: getattr(select, k, None) for k in (
+                                             'name', "symbol", 'Z',
+                                             'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
+                                             'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err',
+                                             'high_gbrv_fcc_a0_rel_err', 'high_ecut', #'low_phonon', 'high_phonon',
+                                             'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
+                                             'nv', 'valence', 'rcmin', 'rcmax')}
+        for k, v in l.items():
+            if v is None: cprint("[%s] Got None for %s" % (name, k), "red")
 
         names.append(name)
-
-        try:
-            l = {k: getattr(select, k) for k in ('name', "symbol", 'Z',
-                                         'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
-                                         'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err',
-                                         'high_gbrv_fcc_a0_rel_err', 'high_ecut', 'low_phonon', 'high_phonon',
-                                         'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
-                                         'nv', 'valence', 'rcmin', 'rcmax')}
-        except AttributeError as exc:
-            cprint("[%s] Exception %s" (name, exc), "magenta")
-            l = {k: getattr(select, k) for k in ('name', "symbol", 'Z',
-                                         'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
-                                         'high_dfactprime_meV', 'high_ecut',
-                                         'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
-                                         'nv', 'valence', 'rcmin', 'rcmax')}
         rows.append(l)
 
     import matplotlib.pyplot as plt
@@ -128,7 +121,7 @@ def dojo_figures(options):
 
     def ar(elt):
         """Atomic Radius [Bohr]"""
-        return elt['atomic_radii']*0.018897161646320722
+        return elt['atomic_radii'] * 0.018897161646320722
 
     def df(elt):
         """Delta Factor [meV / atom]"""
@@ -141,22 +134,18 @@ def dojo_figures(options):
     def bcc(elt):
         """GBRV BCC [% relative error]"""
         try:
-            v_bcc = elt['high_gbrv_bcc_a0_rel_err'] if str(elt['high_gbrv_bcc_a0_rel_err']) != 'nan' else -99
-            # print(v_bcc)
-            return v_bcc
+            return elt['high_gbrv_bcc_a0_rel_err'] if str(elt['high_gbrv_bcc_a0_rel_err']) != 'nan' else -99
         except KeyError:
             #print('bcc func fail: ', elt)
-            return -99 #float('NaN')
+            return float('NaN')
 
     def fcc(elt):
         """GBRV FCC [% relative error]"""
         try:
-            v_fcc = elt['high_gbrv_fcc_a0_rel_err'] if str(elt['high_gbrv_fcc_a0_rel_err']) != 'nan' else -99
-            #print(v_fcc)
-            return v_fcc
+            return elt['high_gbrv_fcc_a0_rel_err'] if str(elt['high_gbrv_fcc_a0_rel_err']) != 'nan' else -99
         except KeyError:
             #print('fcc func fail: ', elt)
-            return -99 #float('NaN')
+            return float('NaN')
 
     def low_phon_with(elt):
         """Acoustic mode low_cut"""
@@ -188,37 +177,47 @@ def dojo_figures(options):
 
     els = []
     elsgbrv = []
-    elsphon = []
+    #elsphon = []
     rel_ers = []
     elements_data = {}
 
     for el in rows:
         symbol = el["symbol"]
 
-        try:
-            rel_ers.append(max(abs(el['high_gbrv_bcc_a0_rel_err']),abs(el['high_gbrv_fcc_a0_rel_err'])))
-        except (TypeError, KeyError) as exc:
-            if options.verbose: print(exc)
-
-        if el['high_dfact_meV'] > 0:
+        # Prepare data for deltafactor
+        if el['high_dfact_meV'] is None:
+            cprint('[%s] failed reading high_dfact_meV %s:' % (symbol, el['high_dfact_meV']), "magenta")
+        else:
+            if el['high_dfact_meV'] < 0:
+                cprint('[%s] negative high_dfact_meV %s:' % (symbol, el['high_dfact_meV']), "red")
+                print(symbol, el['high_dfact_meV'])
+            #assert el['high_dfact_meV'] >= 0
             elements_data[symbol] = el
             els.append(symbol)
-        else:
-            cprint('[%s] failed reading high_dfact_meV %s:' % (symbol, el['high_dfact_meV']), "magenta")
+
+        # Prepare data for GBRV
+        try:
+            rel_ers.append(max(abs(el['high_gbrv_bcc_a0_rel_err']), abs(el['high_gbrv_fcc_a0_rel_err'])))
+        except (TypeError, KeyError) as exc:
+            cprint('[%s] failed reading high_gbrv:' % symbol, "magenta")
+            if options.verbose: print(exc)
 
         try:
             if el['high_gbrv_bcc_a0_rel_err'] > -100 and el['high_gbrv_fcc_a0_rel_err'] > -100:
                 elsgbrv.append(symbol)
         except (KeyError, TypeError) as exc:
-            cprint('[%s] failed reading gbrv' % symbol, "magenta")
+            cprint('[%s] failed reading GBRV data for ' % symbol, "magenta")
             if options.verbose: print(exc)
 
-        try:
-            if len(el['high_phonon']) > 2:
-                elsphon.append(symbol)
-        except (KeyError, TypeError) as exc:
-            cprint('[%s] failed reading high_phonon' % symbol, "magenta")
-            if options.verbose: print(exc)
+        #try:
+        #    if len(el['high_phonon']) > 2:
+        #        elsphon.append(symbol)
+        #except (KeyError, TypeError) as exc:
+        #    cprint('[%s] failed reading high_phonon' % symbol, "magenta")
+        #    if options.verbose: print(exc)
+
+        #if symbol == "Br":
+        #    print (elements_data[symbol])
 
     try:
         max_rel_err = 0.05 * int((max(rel_ers) / 0.05) + 1)
@@ -230,7 +229,7 @@ def dojo_figures(options):
     cm1 = mpl_cm.jet
     cm2 = mpl_cm.jet
     cm1.set_under('w', 1.0)
-    epd.ptable(functions=[bcc,fcc,df], font={'color': color}, cmaps=[cm1, cm1, cm2],
+    epd.ptable(functions=[bcc, fcc, df], font={'color': color}, cmaps=[cm1, cm1, cm2],
                #clims=[[-max_rel_err, max_rel_err],[-max_rel_err, max_rel_err], [-20,20]])
                clims=[[-0.6,0.6],[-0.6, 0.6], [-4,4]])
     plt.show()
@@ -245,13 +244,13 @@ def dojo_figures(options):
 
     # plot the periodic table with deltafactor and deltafactor prime.
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
-    epd.ptable(functions=[df,dfp], font={'color':color}, cmaps=cmap, clims=[[0, 6]])
+    epd.ptable(functions=[df, dfp], font={'color': color}, cmaps=cmap, clims=[[0, 6]])
     plt.show()
     #plt.savefig('df.eps', format='eps')
 
     # plot the GBVR results periodic table
     epd = ElementDataPlotterRangefixer(elements=elsgbrv, data=elements_data)
-    epd.ptable(functions=[bcc,fcc], font={'color':color}, cmaps=mpl_cm.jet, clims=[[-max_rel_err, max_rel_err]])
+    epd.ptable(functions=[bcc, fcc], font={'color': color}, cmaps=mpl_cm.jet, clims=[[-max_rel_err, max_rel_err]])
     plt.show()
     #plt.savefig('gbrv.eps', format='eps')
 
@@ -259,22 +258,22 @@ def dojo_figures(options):
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
     cm = mpl_cm.cool
     cm.set_under('w', 1.0)
-    epd.ptable(functions=[low_ecut, high_ecut, normal_ecut], font={'color':color}, clims=[[6, 80]],  cmaps=cmap)
+    epd.ptable(functions=[low_ecut, high_ecut, normal_ecut], font={'color': color}, clims=[[6, 80]],  cmaps=cmap)
     plt.show()
     #plt.savefig('rc.eps', format='eps')
 
     # plot the radii periodic table
     epd = ElementDataPlotterRangefixer(elements=els, data=elements_data)
-    epd.ptable(functions=[rcmin, rcmax, ar], font={'color':color}, clims=[[0, 4]], cmaps=cmap)
+    epd.ptable(functions=[rcmin, rcmax, ar], font={'color': color}, clims=[[0, 4]], cmaps=cmap)
     plt.show()
     #plt.savefig('rc.eps', format='eps')
 
-    # plot the accoustic mode periodic table
-    epd = ElementDataPlotterRangefixer(elements=elsphon, data=data)
-    cm = mpl_cm.winter
-    cm.set_under('orange', 1.0)
-    epd.ptable(functions=[high_phon_with], font={'color':color}, cmaps=cm, clims=[[-2, 0]])
-    plt.show()
+    # plot the acoustic mode periodic table
+    #epd = ElementDataPlotterRangefixer(elements=elsphon, data=data)
+    #cm = mpl_cm.winter
+    #cm.set_under('orange', 1.0)
+    #epd.ptable(functions=[high_phon_with], font={'color':color}, cmaps=cm, clims=[[-2, 0]])
+    #plt.show()
     #plt.savefig('rc.eps', format='eps')
 
     return 0
@@ -346,6 +345,13 @@ def dojo_plot(options):
     return 0
 
 
+def dojo_nbtable(options):
+    """
+    Generate an ipython notebook for a pseudopotential table and open it in the browser.
+    """
+    return options.pseudos.make_open_notebook()
+
+
 def dojo_notebook(options):
     """
     Generate an ipython notebook for each pseudopotential and open it in the browser.
@@ -406,6 +412,9 @@ def dojo_table(options):
         if options.verbose:
             for i, e in enumerate(errors): print("[%s]" % i, e)
 
+    #data.plot_hist()
+    #data.plot_trials()
+
     #data.tabulate()
     #print(data.columns)
     #frame = data[["high_dfact_meV", "high_dfactprime_meV", "high_gbrv_bcc_a0_rel_err", "high_gbrv_fcc_a0_rel_err"]]
@@ -431,7 +440,7 @@ def dojo_table(options):
         rows, names = [], []
         for name, group in grouped:
             #print(name, group["high_dfact_meV"])
-            best = group.sort("high_dfact_meV").iloc[0]
+            best = group.sort_values("high_dfact_meV").iloc[0]
             names.append(name)
             #print(best.keys())
             #print(best.name)
@@ -441,7 +450,7 @@ def dojo_table(options):
 
         import pandas
         best_frame = pandas.DataFrame(rows, index=names)
-        best_frame = best_frame.sort("Z")
+        best_frame = best_frame.sort_values("Z")
         print(tabulate(best_frame, headers="keys"))
         print(tabulate(best_frame.describe(),  headers="keys"))
 
@@ -800,6 +809,8 @@ Usage example:
     p_table = subparsers.add_parser('table', parents=[copts_parser], help=dojo_table.__doc__)
     p_table.add_argument("-j", '--json', default=False, action="store_true",
                          help="Dump table in json format to file table.json")
+
+    p_nbtable = subparsers.add_parser('nbtable', parents=[copts_parser], help=dojo_nbtable.__doc__)
 
     # Subparser for dist command.
     p_dist = subparsers.add_parser('dist', parents=[copts_parser], help=dojo_dist.__doc__)

@@ -38,16 +38,11 @@ class DojoApiTest(PseudoDojoTest):
         # Select one particular table to be used for calculations.
         # Main entry point for client code.
         oncv_pbe_table = dojo_tables["ONCVPSP-PBE-PDv0.2-accuracy"]
-        print(oncv_pbe_table)
+        #print(oncv_pbe_table)
         assert oncv_pbe_table
         assert oncv_pbe_table.xc == "PBE"
         assert all(p.isnc for p in oncv_pbe_table)
         assert all(p.xc == oncv_pbe_table.xc for p in oncv_pbe_table)
-
-        frame = oncv_pbe_table.get_dojo_dataframe()
-        frame = oncv_pbe_table.get_dfgbrv_dataframe()
-        #print(frame)
-        #my_table.plot_dfgbrv_dist()
 
         # TODO: Validate tables.
         #retcode = 0

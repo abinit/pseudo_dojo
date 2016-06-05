@@ -279,11 +279,11 @@ class DojoTable(PseudoTable):
 
     def get_dojo_dataframe(self, **kwargs):
         """
-        Buid a pandas :class:`DataFrame` with the most important parameters extracted from the
+        Buid a pandas :class:`DojoDataFrame` with the most important parameters extracted from the
         `DOJO_REPORT` section of each pseudo in the table.
 
         Returns:
-            frame, errors
+            (frame, errors)
 
             where frame is the pandas :class:`DataFrame` and errors is a list of errors
             encountered while trying to read the `DOJO_REPORT` from the pseudopotential file.
@@ -366,6 +366,85 @@ class DojoTable(PseudoTable):
         """
         frame = self.get_dfgbrv_dataframe()
         return frame.plot_dfgbrv_dist(**kwargs)
+
+    def make_open_notebook(self, nbpath=None):
+        """
+        Generate an ipython notebook and open it in the browser.
+        If nbpath is None, a temporay file is created.
+        Return system exit code.
+
+        Raise:
+            RuntimeError if jupyther or ipython are not in $PATH
+        """
+        nbpath = self.write_notebook(nbpath=nbpath)
+
+        from monty.os.path import which
+        if which("jupyter") is not None:
+            return os.system("jupyter notebook %s" % nbpath)
+
+        if which("ipython") is not None:
+            return os.system("ipython notebook %s" % nbpath)
+
+        raise RuntimeError("Cannot find neither jupyther nor ipython. Install them with `pip install`")
+
+    def write_notebook(self, nbpath=None):
+        """
+        Write an ipython notebook to nbpath
+        If nbpath is None, a temporay file is created.
+        Return path to the notebook.
+        """
+        # See http://nbviewer.ipython.org/gist/fperez/9716279
+        try:
+            # Here we have a deprecation warning but the API of v4 is different!
+            from nbformat import current as nbf
+            #import nbformat.v3 as nbf
+        except ImportError:
+            from IPython.nbformat import current as nbf
+
+        # Get frame and write data in JSON format to tmp file so that we can reread in the notebook.
+        frame, errors = self.get_dojo_dataframe()
+
+        import tempfile
+        _, json_path = tempfile.mkstemp(suffix='.json', text=True)
+        frame.to_json(path_or_buf=json_path)
+
+        nb = nbf.new_notebook()
+
+        cells = [
+            nbf.new_heading_cell("This is an auto-generated notebook"),
+            nbf.new_code_cell("""\
+from __future__ import print_function, division, unicode_literals
+
+%matplotlib inline
+import seaborn as sns
+#sns.set(style="dark", palette="Set2")
+sns.set(style='ticks', palette='Set2')
+from pseudo_dojo.core.dojoreport import DojoDataFrame"""),
+
+            nbf.new_heading_cell("Init table from filenames$:"),
+            nbf.new_code_cell("dojo_frame = DojoDataFrame.from_json_file('%s')" % json_path),
+
+            nbf.new_code_cell("""\
+for row in dojo_frame.myrows():
+    print("row:", row)
+    dojo_frame.select_rows(row).plot_hist()"""),
+
+            nbf.new_code_cell("""\
+for family in dojo_frame.myfamilies():
+    print("family:", family)
+    dojo_frame.select_family(family).plot_hist()"""),
+        ]
+
+        # Now that we have the cells, we can make a worksheet with them and add it to the notebook:
+        nb['worksheets'].append(nbf.new_worksheet(cells=cells))
+
+        if nbpath is None:
+            _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
+
+        with open(nbpath, 'wt') as f:
+            nbf.write(nb, f, 'ipynb')
+
+        return nbpath
 
 
 class OfficialDojoTable(DojoTable):

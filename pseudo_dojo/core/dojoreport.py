@@ -24,125 +24,107 @@ from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 logger = logging.getLogger(__name__)
 
 
-class DojoEcutResults(object):
+def compute_dfact_entry(pseudo, num_sites, volumes, etotals):
     """
-    "ecut": "32.0"
-    "pawecutdg": "64.0",
-    "b0": 0.06400805819081799,
-    "b0_GPa": 10.255221080448488,
-    "b1": 2.6449207740813594,
-    "dfact_meV": 0.2774768889565598,
-    "dfactprime_meV": 4.701668998922405,
-    "etotals": []
-    "num_sites": 4,
-    "v0": 17.264380250637252,
-    "volumes": [],
+    This function computes the deltafactor and returns the dictionary to be inserted
+    in the dojoreport file.
 
-    ecuts = dfres.get_ecuts()
-    pawecutdgs = dfres.get_pawecutdgs()
-    b0_values = dfres.get_values("b0")
-    dfres.insert(data_dict)
-    data = dfres.get_data_for_ecut(ecut)
-    dfres.plot_ecut_convergence()
+    Args:
+        pseudo: Pseudopotential object.
+        num_sites: Number of sites in unit cell
+        volumes: List with unit cell volumes in Ang**3
+        etotals: List of total energies in eV.
+
+    Return:
+        (outd, eos_fit)
+        where outd is the Dictionary with results to be inserted in the djrepo file.
+        eos_fit is the object storing the results of the EOS fit.
     """
-    def __init__(self, dict_list=None, metadata=None):
-        self.dict_list = [] if dict_list is None else dict_list
-        self.metadata = {} if metadata is None else metadata
+    nan = float('NaN')
 
-    @staticmethod
-    def class_from_name(name):
-        for cls in DojoEcutResults.__subclasses__():
-            if cls.name == name: return cls
-        raise ValueError("Cannot find class associated to name: %s" % name)
+    outd = dict(
+        etotals=list(etotals),
+        volumes=list(volumes),
+        num_sites=num_sites,
+        dfact_meV=nan,
+        dfactprime_meV=nan,
+        v0=nan,
+        b0=nan,
+        b0_GPa=nan,
+        b1=nan,
+    )
 
-    @staticmethod
-    def all_names_and_classes():
-        return [(cls.name, cls) for cls in DojoEcutResults.__subclasses__()]
+    volumes, etotals = np.asarray(volumes), np.asarray(etotals)
+    eos_fit = None
+    try:
+        # Use same fit as the one employed for the deltafactor.
+        eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
 
-    def insert(self, data):
-        """
-        Insert new data so that the list is still ordered with increasing ecut
-        If an ecut is already stored, we replace the old entry.
-        """
-        # Handle first insertion
-        if not self.dict_list:
-            self.dict_list.append(data)
-            return
+        # Get reference results (Wien2K).
+        wien2k = df_database(pseudo.xc).get_entry(pseudo.symbol)
 
-        prev_ecuts = self.get_ecuts()
-        new_ecut = float(data["ecut"])
+        # Compute deltafactor estimator.
+        dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
+                           eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
 
-        # Find rightmost value less than or equal to x.
-        already_in = False
-        if new_ecut < prev_ecuts[0]:
-            i = 0
-        elif new_ecut > prev_ecuts[-1]:
-            i = len(prev_ecuts)
-        else:
-            i = find_le(prev_ecuts, new_ecut)
-            # Handle possible dupe.
-            already_in = prev_ecuts[i] == new_ecut
-            if already_in:
-                self.dict_list.pop(i)
-            else:
-                i += 1
+        dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa)
 
-        self.dict_list.insert(i, data)
+        dfres = {
+            "dfact_meV": dfact,
+            "dfactprime_meV": dfactprime_meV,
+            "v0": eos_fit.v0,
+            "b0": eos_fit.b0,
+            "b0_GPa": eos_fit.b0_GPa,
+            "b1": eos_fit.b1,
+        }
 
-    def get_data_for_ecut(self, ecut):
-        """Return the results for the given ecut"""
-        for data in self:
-            if abs(float(data["ecut"]) - float(ecut)) < 0.001: return data
-        raise ValueError("Cannot find ecut = %s" % ecut)
+        for k, v in dfres.items():
+            v = v if not isinstance(v, complex) else nan
+            dfres[k] = v
 
-    @staticmethod
-    def from_dict(d):
-        cls = DojoEcutResults.class_from_name(d["name"])
-        return cls(dict_list=d["dict_list"], metadata=d["metadata"])
+        outd.update(dfres)
 
-    #@pmg_serialize
-    def as_dict(self):
-        return dict(name=self.name, dict_list=self.dict_list, metadata=self.metadata)
+    except EOS.Error as exc:
+        outd["_exceptions"] = str(exc)
 
-    def __len__(self):
-        return self.dict_list.__len__()
-
-    def __iter__(self):
-        return self.dict_list.__iter__()
-
-    def __str__(self):
-        return str(self.as_dict())
-
-    def get_ecuts(self):
-        return [d.get("ecut") for d in self.dict_list]
-
-    def get_pawecutdgs(self):
-        return [d.get("pawecutdg") for d in self.dict_list if "pawecutdg" in d]
-
-    def get_values(self, vname):
-        return [d.get(vname) for d in self.dict_list]
-
-    #def get_dataframe(self):
+    return outd, eos_fit
 
 
-class DeltaFactorResults(DojoEcutResults):
-    name = "deltafactor"
-
-
-class GbrvFccResults(DojoEcutResults):
-    name = "gbrv_fcc"
-
-
-class GbrvBccResults(DojoEcutResults):
-    name = "gbrv_bcc"
-
-
-class PhononResults(DojoEcutResults):
-    name = "phonon"
-
-
-class EbandsResults(DojoEcutResults):
-    name = "ghosts"
+#def insert(self, data):
+#    """
+#    Insert new data so that the list is still ordered with increasing ecut
+#    If an ecut is already stored, we replace the old entry.
+#    """
+#    # Handle first insertion
+#    if not self.dict_list:
+#        self.dict_list.append(data)
+#        return
+#
+#    prev_ecuts = self.get_ecuts()
+#    new_ecut = float(data["ecut"])
+#
+#    # Find rightmost value less than or equal to x.
+#    already_in = False
+#    if new_ecut < prev_ecuts[0]:
+#        i = 0
+#    elif new_ecut > prev_ecuts[-1]:
+#        i = len(prev_ecuts)
+#    else:
+#        i = find_le(prev_ecuts, new_ecut)
+#        # Handle possible dupe.
+#        already_in = prev_ecuts[i] == new_ecut
+#        if already_in:
+#            self.dict_list.pop(i)
+#        else:
+#            i += 1
+#
+#    self.dict_list.insert(i, data)
+#
+#def get_data_for_ecut(self, ecut):
+#    """Return the results for the given ecut"""
+#    for data in self:
+#        if abs(float(data["ecut"]) - float(ecut)) < 0.001: return data
+#    raise ValueError("Cannot find ecut = %s" % ecut)
 
 
 class DojoReportError(Exception):
@@ -152,6 +134,8 @@ class DojoReportError(Exception):
 class DojoReport(dict):
     """
     Dict-like object with the validation results.
+    This object is usually created via the class methods:
+    DojoReport.from_file and DojoReport.empty_from_pseudo.
 
     {
     "version": "1.0"
@@ -175,15 +159,26 @@ class DojoReport(dict):
     "ghosts": []
     "phonons": []
     }
+
+    "ecut": 32.0
+    "pawecutdg": 64.0,
+    "b0": 0.06400805819081799,
+    "b0_GPa": 10.255221080448488,
+    "b1": 2.6449207740813594,
+    "dfact_meV": 0.2774768889565598,
+    "dfactprime_meV": 4.701668998922405,
+    "etotals": []
+    "num_sites": 4,
+    "v0": 17.264380250637252,
+    "volumes": [],
     """
-    # List of dojo_trials
-    # Remember to update the list if you add a new test to the DOJO_REPORT
+
+    # List of dojo_trials. Remember to update the list if you add a new test to the DOJO_REPORT
     ALL_TRIALS = [
         "deltafactor",
         "gbrv_bcc",
         "gbrv_fcc",
         "phonon",
-        #"phwoa",
         "ghosts",
     ]
 
@@ -194,7 +189,6 @@ class DojoReport(dict):
         "deltafactor": "dfact_meV",
         "gbrv_bcc": "a0_rel_err",
         "gbrv_fcc": "a0_rel_err",
-        #"phwoa": "all",
         "phonon": "all",
         "ghosts": "all",
     }
@@ -218,8 +212,10 @@ class DojoReport(dict):
         filepath = os.path.abspath(filepath)
         with open(filepath, "rt") as fh:
             d = json.load(fh)
-            #d["filepath"] = filepath
-            return cls(**d)
+            new = cls(**d)
+            new.path = filepath
+            #new.xc = XcFunc.from_dict(new["xc"])
+            return new
 
     @classmethod
     def empty_from_pseudo(cls, pseudo, hints, devel=False):
@@ -238,7 +234,6 @@ class DojoReport(dict):
         #coarse_high = np.arange(ppgen_ecut + 15, ppgen_ecut + 35, step=5)
 
         new = cls()
-        #filepath=pseudo.djrepo_path
 
         estart = hints["high"]["ecut"]
         dense_right = np.linspace(estart - 10, estart + 10, num=11)
@@ -264,34 +259,11 @@ class DojoReport(dict):
             ppgen_hints=hints,
             ecuts=ecuts,
         )
+        new.path = pseudo.djrepo_path
 
         return new
 
-    def to_dict(self):
-        d = {k: v for k, v in self.items()}
-        for name in DojoEcutResults.all_names():
-            if name not in d: continue
-            d[name] = d[name].to_dict()
-        return d
-
-    def from_dict(cls, d):
-        # Preventive copy because we are gonna change the input dict.
-        d = copy.deepcopy(d)
-
-        new = cls()
-
-        # Create instances of DojoEcutResults and add them to new.
-        results = []
-        for name, res_cls in DojoEcutResults.all_names_and_classes():
-            if name not in d: continue
-            res = res_cls.from_dict(d.pop(name))
-            results.append(res)
-            new[name] = res
-
-        # Inglobate the rest
-        new.update(d)
-        return new
-
+    # TODO Remove
     @classmethod
     def from_hints(cls, ppgen_ecut, symbol):
         """
@@ -328,9 +300,9 @@ class DojoReport(dict):
         if "version" not in self:
             self["version"] = self.LAST_VERSION
 
-        #if "filepath" not in self:
-        #    raise self.Error("filepath should be specified")
+        #new.xc = XcFunc.from_dict(new["xc"])
 
+    # TODO Remove
     def reorder(self):
         for trial in self.ALL_TRIALS:
             # Convert ecut to float and build an OrderedDict (results are indexed by ecut in ascending order)
@@ -341,6 +313,30 @@ class DojoReport(dict):
                 continue
             ecuts_keys = sorted([(float(k), k) for k in d], key=lambda t: t[0])
             self[trial] = OrderedDict([(t[0], d[t[1]]) for t in ecuts_keys])
+
+    def __str__(self):
+        """String representation."""
+        return(json.dumps(self, indent=4))
+
+    @property
+    def symbol(self):
+        """Chemical symbol."""
+        return self["symbol"]
+
+    @property
+    def element(self):
+        """Element object."""
+        return Element(self.symbol)
+
+    @property
+    def ecuts(self):
+        """list of ecuts that should be present in the dojo_trial sub-dicts"""
+        return self["ecuts"]
+
+    @property
+    def trials(self):
+        """Set of strings with the trials present in the report."""
+        return set(list(self.keys())).intersection(self.ALL_TRIALS)
 
     @property
     def exceptions(self):
@@ -357,41 +353,21 @@ class DojoReport(dict):
         """Remove the exception entry from the dictionary."""
         return self["_exceptions"].pop()
 
-    def __str__(self):
-        """String representation."""
-        return(json.dumps(self, indent=-1))
-
     def deepcopy(self):
         """Deepcopy of the object."""
         return copy.deepcopy(self)
 
-    def json_write(self, filepath):
-        """Write data to file."""
+    def json_write(self, filepath=None):
+        """
+        Write data to file in JSON format.
+        If filepath is None, self.path is used.
+        """
+        filepath = self.path if filepath is None else filepath
         #self.reorder()
         with open(filepath, "wt") as fh:
             #json.dump(self, fh, indent=-1, sort_keys=True)
             #json.dump(self, fh, sort_keys=True, cls=MontyEncoder)
             json.dump(self, fh, indent=-1, sort_keys=True, cls=MontyEncoder)
-
-    @property
-    def symbol(self):
-        """Chemical symbol."""
-        return self["symbol"]
-
-    @property
-    def element(self):
-        """Element object."""
-        return Element(self.symbol)
-
-    @property
-    def ecuts(self):
-        """Numpy array with the list of ecuts that should be present in the dojo_trial sub-dicts"""
-        return self["ecuts"]
-
-    @property
-    def trials(self):
-        """Set of strings with the trials present in the report."""
-        return set(list(self.keys())).intersection(self.ALL_TRIALS)
 
     def has_trial(self, dojo_trial, ecut=None):
         """
@@ -407,20 +383,20 @@ class DojoReport(dict):
         if ecut_str in self[dojo_trial]: return True
         return False
 
-    def remove_trial(self, dojo_trial, ecut=None, write=True):
+    def remove_trial(self, dojo_trial, ecut=None, write=False):
         """
         Remove the entry associated to `dojo_trial` and write new JSON file.
         If ecut is None, the entire `dojo_trial` is removed.
         The writing of the JSON file can be postponed by setting write=False.
         """
         if ecut is None:
-            self.pop(dojo_trial)
+            res = self.pop(dojo_trial)
         else:
             if not is_string(ecut): ecut = "%.1f" % ecut
-            self[dojo_trial].pop(ecut)
+            res = self[dojo_trial].pop(ecut)
 
-        if write:
-            self.json_write(self["filepath"])
+        if write: self.json_write()
+        return res
 
     def get_pdframe(self, dojo_trial, *args):
         """
@@ -443,9 +419,10 @@ class DojoReport(dict):
         """
         if dojo_trial not in self:
             raise self.Error("dojo_trial %s not present" % dojo_trial)
+
         if not args:
             #args = list(self[dojo_trial][0].keys())
-            # OLD DOJO
+            #OLD DOJO
             args = []
             for ecut, data in self[dojo_trial].items():
                 args.extend(list(data.keys()))
@@ -471,17 +448,22 @@ class DojoReport(dict):
         frame = pd.DataFrame(dict_list)
         return frame.sort_values("ecut")
 
-    def add_ecuts(self, new_ecuts):
-        """Add a list of new ecut values."""
+    def add_ecuts(self, new_ecuts, write=False):
+        """
+        Add a list of new set of ecuts to the global list
+        If write is True, the JSON file is immediately updated with the new data.
+        """
+        if not isinstance(new_ecuts, Iterable): new_ecuts = [new_ecuts]
+
         # Be careful with the format here! it should be %.1f
         # Select the list of ecuts reported in the DOJO section.
         prev_ecuts = self["ecuts"]
 
+        # prev_ecuts should be ordered.
         for i in range(len(prev_ecuts)-1):
             if prev_ecuts[i] >= prev_ecuts[i+1]:
                 raise self.Error("Ecut list is not ordered:\n %s" % prev_ecuts)
 
-        if not isinstance(new_ecuts, Iterable): new_ecuts = [new_ecuts]
         for e in new_ecuts:
             # Find rightmost value less than or equal to x.
             if e < prev_ecuts[0]:
@@ -495,19 +477,28 @@ class DojoReport(dict):
 
             prev_ecuts.insert(i, e)
 
+        if write: self.json_write()
+
     @property
     def has_hints(self):
         """True if hints on the cutoff energy are present."""
         return "hints" in self
 
-    def add_hints(self, hints):
-        """Add hints on the cutoff energy."""
+    #@property
+    #def hints(self):
+
+    def add_hints(self, hints, write=False):
+        """
+        Add hints on the cutoff energy.
+        If write is True, the JSON file is immediately updated with the new data.
+        """
         hints_dict = {
            "low": {'ecut': hints[0]},
            "normal": {'ecut': hints[1]},
            "high": {'ecut': hints[2]}
                      }
         self["hints"] = hints_dict
+        if write: self.json_write()
 
     def ipw_validate(self):
         """
@@ -535,7 +526,7 @@ class DojoReport(dict):
             #    'validated_by': validated_by.value,
             #    'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime())
             #}
-            #self.json_write(p.djrepo_path)
+            #self.json_write()
 
             # TODO: Print convergence of df, gbrv ...
             #df_last_ecut = sorted((self["deltafactor"].keys())[-1]
@@ -559,7 +550,7 @@ class DojoReport(dict):
             # Assume float
             return "%.1f" % ecut
 
-    def add_entry(self, dojo_trial, ecut, entry, overwrite=False):
+    def add_entry(self, dojo_trial, ecut, entry, overwrite=False, write=False):
         """
         Add an entry computed with the given ecut to the sub-dictionary associated to dojo_trial.
 
@@ -568,6 +559,7 @@ class DojoReport(dict):
             ecut: Cutoff energy in Hartree
             entry: Dictionary with data.
             overwrite: By default, this method raises ValueError if this entry is already filled.
+            write: if True, the JSON file is immediately updated with the new data.
         """
         if dojo_trial not in self.ALL_TRIALS and dojo_trial.replace("_soc", "", 1) not in self.ALL_TRIALS:
             raise ValueError("%s is not a registered trial")
@@ -582,14 +574,15 @@ class DojoReport(dict):
         # Add entry to section.
         section[key] = entry
 
+        if write: self.json_write()
+
     def find_missing_entries(self):
         """
-        Check the DojoReport.
         This function tests if each trial contains an ecut entry.
         Return a dictionary {trial_name: [list_of_missing_ecuts]}
         mapping the name of the Dojo trials to the list of ecut values that are missing
         """
-        d = {}
+        misse = {}
 
         for trial in self.ALL_TRIALS:
             data = self.get(trial, None)
@@ -598,19 +591,19 @@ class DojoReport(dict):
                 if "gbrv" in trial and self.element.is_noble_gas:
                     assert data is None
                     continue
-                d[trial] = self.ecuts
+                misse[trial] = self.ecuts
 
             else:
                 computed_ecuts = list(data.keys())
                 for e in self.ecuts:
                     if e not in computed_ecuts:
-                        if trial not in d: d[trial] = []
-                        d[trial].append(e)
+                        if trial not in misse: misse[trial] = []
+                        misse[trial].append(e)
 
-        if not d:
+        if not misse:
             assert len(computed_ecuts) == len(self.ecuts)
 
-        return d
+        return misse
 
     def get_ecut_dfactprime(self):
         """Return numpy arrays wit ecut list and the corresponding dfactprime values."""
@@ -657,7 +650,7 @@ class DojoReport(dict):
         # TODO: report should contain XC
         missing = defaultdict(list)
         for trial in check_trials:
-            # Gbrv results do not contain noble gases, Hg and Po so ignore the error
+            # GBRV results do not contain noble gases, Hg and Po so ignore the error
             if "gbrv" in trial and (self.element.is_noble_gas or self.symbol in ("Hg", "Po")):
                 continue
 
@@ -677,6 +670,10 @@ class DojoReport(dict):
                     app("%s: ecut %s is not in the global list" % (trial, ecut))
 
         return "\n".join(errors)
+
+    ##################
+    # Plotting tools #
+    ##################
 
     @add_fig_kwargs
     def plot_etotal_vs_ecut(self, ax=None, inv_ecut=False, with_soc=False, **kwargs):
@@ -711,7 +708,6 @@ class DojoReport(dict):
         num_sites = num_sites[0]
 
         # Energies per atom in meV and difference wrt 'converged' value
-        #num_sites = [v["num_sites"] for v in self[trial].values()][0]
         etotals_mev = minenes * 1000  / num_sites
         ediffs = etotals_mev - etotals_mev[-1]
 
@@ -719,7 +715,6 @@ class DojoReport(dict):
         #ax.yaxis.set_view_interval(-5, 5)
 
         lines, legends = [], []
-
         xs = 1/ecuts if inv_ecut else ecuts
         ys = etotals_mev if inv_ecut else ediffs
 
@@ -1077,19 +1072,15 @@ class DojoDataFrame(pd.DataFrame):
     """
     Extends pandas `DataFrame` adding helper functions.
     """
-    # The frame has its own list so that one can easily change the
-    # entries that should be analyzed by modifying this attributes.
-    ALL_ACCURACIES = DojoReport.ALL_ACCURACIES
-    ALL_TRIALS = DojoReport.ALL_TRIALS
-
+    # For each trial, the quantities that will be stored in the dataframe.
     _TRIALS2KEY = {
         "ecut": "ecut",
         "deltafactor": "dfact_meV",
         "gbrv_bcc": "gbrv_bcc_a0_rel_err",
         "gbrv_fcc": "gbrv_fcc_a0_rel_err",
-        "phonon": "all",
+        #"ghosts": "all",
+        #"phonon": "all",
         #"phwoa": "all",
-        "ghosts": "all"
     }
 
     _TRIALS2YLABEL = {
@@ -1097,10 +1088,17 @@ class DojoDataFrame(pd.DataFrame):
         "deltafactor": "$\Delta$-factor [meV]",
         "gbrv_bcc": "BCC $\Delta a_0$ (%)",
         "gbrv_fcc": "FCC $\Delta a_0$ (%)",
-        "phonon": "Phonons with ASR",
+        #"ghosts": "Electronic band structure"
+        #"phonon": "Phonons with ASR",
         #"phwoa": "Phonons without ASR",
-        "ghosts": "Electronic band structure"
     }
+
+    # The frame has its own list so that one can easily change the
+    # entries that should be analyzed by modifying this attributes.
+    #ALL_TRIALS = DojoReport.ALL_TRIALS
+    ALL_TRIALS = list(_TRIALS2KEY.keys())
+
+    ALL_ACCURACIES = DojoReport.ALL_ACCURACIES
 
     ACC2PLTOPTS = dict(
         low=dict(color="red"),
@@ -1110,34 +1108,41 @@ class DojoDataFrame(pd.DataFrame):
 
     for v in ACC2PLTOPTS.values():
         v.update(linewidth=2, linestyle='dashed', marker='o', markersize=8)
+    del v
+
+    @classmethod
+    def from_json_file(cls, path, **kwargs):
+        """Read the object from the json file `path`. kwargs are passed to `pandas.read_json`."""
+        new = pd.read_json(path_or_buf=path, **kwargs)
+        new.__class__ = cls
+        return new
 
     @classmethod
     def from_pseudos(cls, pseudos):
         """
-        Buid a pandas :class:`DataFrame` with the most important parameters extracted from the
-        `DOJO_REPORT` section of each pseudo in the table.
+        Buid a pandas :class:`DataFrame` with the most important parameters
+        extracted from the `DOJO_REPORT` section of each pseudo in the table.
 
-        Returns:
-            frame, errors
+        Returns: (frame, errors)
 
-            where frame is the pandas :class:`DataFrame` and errors is a list of errors
-            encountered while trying to read the `DOJO_REPORT` from the pseudopotential file.
+        where frame is the pandas :class:`DataFrame` and errors is a list of errors
+        encountered while trying to read the `DOJO_REPORT` from the pseudopotential file.
         """
         accuracies = ["low", "normal", "high"]
 
+        # For each trial, the quantities that will be stored in the dataframe.
         trial2keys = {
-            "deltafactor": ["dfact_meV", "dfactprime_meV"] + ["v0", "b0_GPa", "b1"],
+            "deltafactor": ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1"],
             "gbrv_bcc": ["a0_rel_err"],
             "gbrv_fcc": ["a0_rel_err"],
-            "phonon": "all",
-            #"phwoa": "all"
         }
 
         rows, names, errors = [], [], []
+        eapp = errors.append
 
         for p in pseudos:
             if not p.has_dojo_report:
-                print("Cannot find dojo_report in ", p.basename)
+                eapp("Cannot find dojo_report in %s" % p.basename)
                 continue
 
             report = p.dojo_report
@@ -1154,14 +1159,15 @@ class DojoDataFrame(pd.DataFrame):
                     # using -1 for non existing values facilitates plotting
                     d.update({acc + "_ecut_hint": -1.0 })
                     ecut_acc[acc] = -1
-
             for acc in accuracies:
                 d[acc + "_ecut"] = ecut_acc[acc]
 
             try:
                 for trial, keys in trial2keys.items():
                     data = report.get(trial, None)
-                    if data is None: continue
+                    if data is None:
+                        eapp("No %s for %s" % (trial, p.basename))
+                        continue
 
                     # if the current trial has an entry for this ecut change nothing, else we take the
                     # smallest, the middle and the highest ecut available for this trials
@@ -1179,7 +1185,7 @@ class DojoDataFrame(pd.DataFrame):
                         ecut = ecut_acc[acc] if ecut_acc[acc] in data.keys() else ecut_acc_trial[acc]
                         # store the actual ecut for this trial
                         d.update({acc + "_ecut_" + trial: ecut})
-                        if keys is 'all':
+                        if keys == 'all':
                             ecuts = data
                             d.update({acc + "_" + trial: data[ecut]})
                         else:
@@ -1190,42 +1196,52 @@ class DojoDataFrame(pd.DataFrame):
 
             except Exception as exc:
                 logger.warning("%s raised %s" % (p.basename, exc))
-                errors.append((p.basename, str(exc)))
+                eapp("%s raised %s" % (p.basename, exc))
 
             rows.append(d)
 
         # Build sub-class of pandas.DataFrame
         return cls(rows, index=names), errors
 
-    def tabulate(self, columns=None, stream=sys.stdout):
-        if columns is None:
-            accuracies = self.ALL_ACCURACIES
-            columns = [acc + "_dfact_meV" for acc in accuracies]
-            columns += [acc + "_ecut" for acc in accuracies]
-            columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
-            columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
+    def myrows(self):
+        """
+        Return list with the row indices available in the dataframe.
+        """
+        rows = []
+        for index, entry in self.iterrows():
+            element = Element.from_Z(entry.Z)
+            if element.row not in rows: rows.append(element.row)
+        return sorted(rows)
 
-        #return self[columns].to_html()
-        tablefmt = "grid"
-        floatfmt = ".2f"
-        stream.write(tabulate(self[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
+    def myfamilies(self):
+        """
+        Return list of families available in the dataframe.
+        """
+        # TODO: Move this list to pymatgen periodic table.
+        pd_families = [
+           "noble_gas", "transition_metal", "rare_earth_metal", "metalloid",
+           "alkali", "alkaline", "halogen", "lanthanoid", "actinoid",
+        ]
 
-    def get_accuracy(self, accuracy):
-        columns = [c for c in self if c.startswith(accuracy)]
-        return self.__class__(data=self[columns])
+        my_families = set()
+        for index, entry in self.iterrows():
+            element = Element.from_Z(entry.Z)
+            for fam in pd_families:
+                # e.g element.is_alkaline
+                if getattr(element, "is_" + fam):
+                    my_families.add(fam)
+                    break
 
-    def get_trials(self, accuracies="all"):
-        accuracies = self.ALL_ACCURACIES if accuracies == "all" else list_strings(accuracies)
-
-        columns = [acc + "_dfact_meV" for acc in accuracies]
-        columns += [acc + "_ecut" for acc in accuracies]
-        columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
-        columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
-
-        return self.__class__(data=self[columns])
+        return sorted(my_families)
 
     def select_rows(self, rows):
+        """
+        Select a list of rows of the periodic table.
+        Rows can be a integer or list of integers.
+        Return new :class:`DojoDataFrame`.
+        """
         if not isinstance(rows, (list, tuple)): rows = [rows]
+        rows = set(rows)
 
         data = []
         for index, entry in self.iterrows():
@@ -1235,6 +1251,10 @@ class DojoDataFrame(pd.DataFrame):
         return self.__class__(data=data)
 
     def select_family(self, family):
+        """
+        Select a particular family of elements in the periodic table.
+        Return new :class:`DojoDataFrame`.
+        """
         data = []
         for index, entry in self.iterrows():
             element = Element.from_Z(entry.Z)
@@ -1242,6 +1262,29 @@ class DojoDataFrame(pd.DataFrame):
             if getattr(element, "is_" + family): data.append(entry)
 
         return self.__class__(data=data)
+
+    def tabulate(self, columns=None, stream=sys.stdout):
+        if columns is None:
+            accuracies = self.ALL_ACCURACIES
+            columns = [acc + "_dfact_meV" for acc in accuracies]
+            columns += [acc + "_ecut" for acc in accuracies]
+            columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
+            columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
+
+        stream.write(tabulate(self[columns], headers="keys", tablefmt="grid", floatfmt=".2f"))
+        #return self[columns].to_html()
+
+    #def get_accuracy(self, accuracy):
+    #    columns = [c for c in self if c.startswith(accuracy)]
+    #    return self.__class__(data=self[columns])
+
+    #def get_trials(self, accuracies="all"):
+    #    accuracies = self.ALL_ACCURACIES if accuracies == "all" else list_strings(accuracies)
+    #    columns = [acc + "_dfact_meV" for acc in accuracies]
+    #    columns += [acc + "_ecut" for acc in accuracies]
+    #    columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
+    #    columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
+    #    return self.__class__(data=self[columns])
 
     @add_fig_kwargs
     def plot_hist(self, what="dfact_meV", bins=400, **kwargs):
@@ -1393,69 +1436,3 @@ class DfGbrvDataFrame(pd.DataFrame):
             ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
 
         return fig
-
-
-def compute_dfact_entry(pseudo, num_sites, volumes, etotals):
-    """
-    This function computes the deltafactor and returns the dictionary to be inserted
-    in the dojoreport file.
-
-    Args:
-        pseudo: Pseudopotential object.
-        num_sites: Number of sites in unit cell
-        volumes: List with unit cell volumes in Ang**3
-        etotals: List of total energies in eV.
-
-    Return:
-        (outd, eos_fit)
-        where outd is the Dictionary with results to be inserted in the djrepo file.
-        eos_fit is the object storing the results of the EOS fit.
-    """
-    nan = float('NaN')
-
-    outd = dict(
-        etotals=list(etotals),
-        volumes=list(volumes),
-        num_sites=num_sites,
-        dfact_meV=nan,
-        dfactprime_meV=nan,
-        v0=nan,
-        b0=nan,
-        b0_GPa=nan,
-        b1=nan,
-    )
-
-    volumes, etotals = np.asarray(volumes), np.asarray(etotals)
-    eos_fit = None
-    try:
-        # Use same fit as the one employed for the deltafactor.
-        eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
-
-        # Get reference results (Wien2K).
-        wien2k = df_database(pseudo.xc).get_entry(pseudo.symbol)
-
-        # Compute deltafactor estimator.
-        dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
-                           eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
-
-        dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa)
-
-        dfres = {
-            "dfact_meV": dfact,
-            "dfactprime_meV": dfactprime_meV,
-            "v0": eos_fit.v0,
-            "b0": eos_fit.b0,
-            "b0_GPa": eos_fit.b0_GPa,
-            "b1": eos_fit.b1,
-        }
-
-        for k, v in dfres.items():
-            v = v if not isinstance(v, complex) else nan
-            dfres[k] = v
-
-        outd.update(dfres)
-
-    except EOS.Error as exc:
-        outd["_exceptions"] = str(exc)
-
-    return outd, eos_fit

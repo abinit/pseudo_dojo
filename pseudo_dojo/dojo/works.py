@@ -80,7 +80,7 @@ class DojoWork(Work):
             file_report[dojo_trial][dojo_ecut] = entry
 
             # Write new dojo report and update the pseudo attribute
-            file_report.json_write(djrepo)
+            file_report.json_write()
             self._pseudo.dojo_report = file_report
 
 

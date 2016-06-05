@@ -1,4 +1,7 @@
+# coding: utf-8
 from __future__ import division, print_function, unicode_literals
+
+import tempfile
 
 from pprint import pprint
 from pseudo_dojo.core.testing import PseudoDojoTest
@@ -19,8 +22,45 @@ class DojoTableTest(PseudoDojoTest):
         # dojo_check_errors should detect it.
         md5dict = {p.basename: p.md5 for p in table}
         errors = table.dojo_find_errors(md5dict=md5dict, require_hints=False)
-        if errors: pprint(errors)
         assert errors
+
+        # Test Dojo DataFrame
+        dojo_frame, errors = table.get_dojo_dataframe()
+        #print(dojo_frame)
+        # TODO
+        #if errors: pprint(errors)
+        #assert not errors
+
+        # Write ipython notebook
+        table.write_notebook()
+
+        # Test helper functions
+        dojo_frame.tabulate()
+
+        # Test myfamilies and select_families
+        assert isinstance(dojo_frame.select_family("alkaline"), dojo_frame.__class__)
+        myfamilies = dojo_frame.myfamilies()
+        assert myfamilies
+        for family in myfamilies:
+            f = dojo_frame.select_family(family)
+            assert len(f) and isinstance(f, dojo_frame.__class__)
+
+        # Test myrows and select_rows
+        myrows = dojo_frame.myrows()
+        assert myrows
+        for row in myrows:
+            f = dojo_frame.select_rows(row)
+            assert len(f) and isinstance(f, dojo_frame.__class__)
+        assert isinstance(dojo_frame.select_rows([1, 3]), dojo_frame.__class__)
+
+        # Plot tools
+        dojo_frame.plot_hist(show=False)
+        dojo_frame.plot_trials(show=False)
+
+        # Test DeltaFactor, GBRV DataFrame
+        dfgbrv_frame = table.get_dfgbrv_dataframe()
+        #print(dfgbrv_frame)
+        dfgbrv_frame.plot_dfgbrv_dist(show=False)
 
     #def test_from_djson(self):
     #    """Initializing DojoTable from djson file."""
