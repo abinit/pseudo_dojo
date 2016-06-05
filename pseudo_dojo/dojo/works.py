@@ -945,9 +945,10 @@ class PhononDojoWork(PhononWork, DojoWork):
         #print("asr", asr2_phbands.phfreqs); print("noasr", noasr_phbands.phfreqs)
 
         # Convert to JSON and add results to the dojo report.
+        # Convert phfreqs[nq, 3* natom] to 1d vector because nq == 1 in this case.
         entry = dict(ecut=self.ecut, pawecutdg=self.dojo_pawecutdg, kppa=self.dojo_kppa,
-                     asr2_phfreqs_mev=(asr2_phbands.phfreqs * 1000).tolist(),
-                     noasr_phfreqs_mev=(noasr_phbands.phfreqs * 1000).tolist()
+                     asr2_phfreqs_mev=(asr2_phbands.phfreqs * 1000).ravel().tolist(),
+                     noasr_phfreqs_mev=(noasr_phbands.phfreqs * 1000).ravel().tolist()
                 )
 
         self.add_entry_to_dojoreport(entry)
