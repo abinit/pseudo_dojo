@@ -1,20 +1,29 @@
 """Unit tests for gbrv database."""
 from __future__ import division, print_function
 
+
+from pymatgen.core.xcfunc import XcFunc
 from pseudo_dojo.core.testing import PseudoDojoTest
-from pseudo_dojo.refdata.gbrv.database import GbrvDatabase
+from pseudo_dojo.refdata.gbrv.database import gbrv_database
 
 
 class TestGbrvDatabase(PseudoDojoTest):
     def test_gbrv(self):
         """Testing GBRV database..."""
         # Init the database.
-        db = GbrvDatabase()
+        db = gbrv_database(xc="PBE")
+        assert db.xc == "PBE"
+
+        # Cached?
+        assert gbrv_database(XcFunc.from_abinit_ixc(11)) is db
 
         # Test basic methods
         assert db.has_symbol("Si", stype="fcc")
         assert not db.has_symbol("Si", stype="rocksalt")
         assert "KMgF3" in db.all_symbols
+
+        with self.assertRaises(ValueError):
+            gbrv_database(xc="PW")
 
         # Get FCC entry for Silicon
         fcc_si = db.get_fcc_entry("Si")
@@ -57,7 +66,3 @@ class TestGbrvDatabase(PseudoDojoTest):
         #agalge.build_structure()
 
         #assert 0
-
-if __name__ == "__main__":
-    import unittest
-    unittest.main()

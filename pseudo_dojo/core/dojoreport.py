@@ -133,12 +133,12 @@ def dojo_gbrv_results(pseudo, struct_type, num_sites, volumes, etotals):
     dojo_entry.update(dict(
         v0=eos_fit.v0,
         b0=eos_fit.b0,
-        b1=eos_fit.b1,
+        #b1=eos_fit.b1, # infinity
         a0=a0,
         struct_type=struct_type
     ))
 
-    db = gbrv_database()
+    db = gbrv_database(pseudo.xc)
     ref = db.get_entry(pseudo.symbol, stype=struct_type)
 
     pawabs_err = a0 - ref.gbrv_paw

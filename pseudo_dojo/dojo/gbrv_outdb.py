@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 def sort_symbols_by_Z(symbols):
     """
-    Given a list of element symbols, sort the strings according to Z, 
+    Given a list of element symbols, sort the strings according to Z,
     Return sorted list.
 
     >>> assert sort_symbols_by_Z(["Si", "H"]) == ["H", "Si"]
@@ -37,11 +37,11 @@ def sort_symbols_by_Z(symbols):
 class GbrvRecord(dict):
     """
     Example of entry of LiCl:
-        
+
         record = {
             formula: "LiCl",
             pseudos_metadata: {
-                "Li": {basename: "Li-s-high.psp8", md5: 312}, 
+                "Li": {basename: "Li-s-high.psp8", md5: 312},
                 "Cl": {basename: "Cl.psp8", md5: 562}],
             }
             normal: {ecut:, a:, v0: , b0:, b1:},
@@ -51,13 +51,13 @@ class GbrvRecord(dict):
         where results is a dictionary
 
         "normal": {
-            "ecut": 6, 
-            "v0": 31.72020565768123, 
-            "a0": 5.024952898489712, 
-            "etotals": [-593.3490598305451, ...], 
-            "b0": 4.148379951739942, 
-            "b1": Infinity, 
-            "volumes": [31.410526411353832, ...], 
+            "ecut": 6,
+            "v0": 31.72020565768123,
+            "a0": 5.024952898489712,
+            "etotals": [-593.3490598305451, ...],
+            "b0": 4.148379951739942,
+            "b1": Infinity,
+            "volumes": [31.410526411353832, ...],
             "num_sites": 2
         }
     """
@@ -83,7 +83,7 @@ class GbrvRecord(dict):
 
     def __init__(self, struct_type, formula, pseudos_or_dict, dojo_pptable):
         """
-        Initialize the record for the chemical formula and the list of 
+        Initialize the record for the chemical formula and the list of
         pseudopotentials.
         """
         keys = ("basename", "Z_val", "l_max", "md5")
@@ -106,20 +106,20 @@ class GbrvRecord(dict):
 
             def pmatch(ps, esymb, d):
                 return (ps.md5 == d["md5"] and
-                        ps.symbol == esymb and 
+                        ps.symbol == esymb and
                         ps.Z_val == d["Z_val"] and
                         ps.l_max == d["l_max"])
 
             pseudos = []
             for esymb, d in meta.items():
                 for p in dojo_pptable.pseudo_with_symbol(esymb, allow_multi=True):
-                    if pmatch(p, esymb, d): 
+                    if pmatch(p, esymb, d):
                         pseudos.append(p)
                         break
                 else:
                     raise ValueError("Cannot find pseudo:\n %s\n in dojo_pptable" % str(d))
 
-        super(GbrvRecord, self).__init__(formula=formula, pseudos_metadata=meta, 
+        super(GbrvRecord, self).__init__(formula=formula, pseudos_metadata=meta,
                                          normal=None, high=None)
 
         self.pseudos = DojoTable.as_table(pseudos)
@@ -138,7 +138,7 @@ class GbrvRecord(dict):
                 o = other.pseudos.pseudo_with_symbol(p.symbol)
             except ValueError:
                 return False
-        
+
             if p != o: return False
 
         return True
@@ -168,7 +168,7 @@ class GbrvRecord(dict):
         return self[accuracy] not in self.STATUS_LIST
 
     def matches_pseudos(self, pseudos):
-        """Return True if the list of `pseudos` matches the one in the record.""" 
+        """Return True if the list of `pseudos` matches the one in the record."""
         d1 = {p.symbol: p for p in self.pseudos}
         d2 = {p.symbol: p for p in pseudos}
         return d1 == d2
@@ -180,10 +180,10 @@ class GbrvRecord(dict):
         """
         assert accuracy in self.ACCURACIES
         # TODO
-        #@ecut = max(p.hint_for_accuracy(accuracy).ecut for p in self.pseudos)        
+        #@ecut = max(p.hint_for_accuracy(accuracy).ecut for p in self.pseudos)
         ecut, pawecutdg = 6, None
 
-        return dict2namedtuple(formula=self.formula, struct_type=self.struct_type, accuracy=accuracy, 
+        return dict2namedtuple(formula=self.formula, struct_type=self.struct_type, accuracy=accuracy,
                                pseudos=self.pseudos, ecut=ecut, pawecutdg=pawecutdg)
 
     def compute_err(self, reference="ae", accuracy="normal"):
@@ -192,7 +192,7 @@ class GbrvRecord(dict):
         None if data is not available.
         """
         # Get the reference results
-        gbrv_db = gbrv_database()
+        gbrv_db = gbrv_database(xc=None) # FIXME
         gbrv_entry = gbrv_db.get_entry(self.formula, self.struct_type)
         ref_a = getattr(gbrv_entry, reference)
 
@@ -213,7 +213,7 @@ class GbrvRecord(dict):
 
         Args:
             ax: matplotlib :class:`Axes` or None if a new figure should be created.
-            
+
         Returns:
             `matplotlib` figure.
         """
@@ -230,7 +230,7 @@ class GbrvRecord(dict):
         eos_fit = eos.fit(volumes/num_sites, etotals/num_sites)
 
         label = "ecut %.1f" % d["ecut"]
-        eos_fit.plot(ax=ax, text=False, label=label,show=False) # color=cmap(i/num_ecuts, alpha=1), 
+        eos_fit.plot(ax=ax, text=False, label=label,show=False) # color=cmap(i/num_ecuts, alpha=1),
 
         return fig
 
@@ -290,13 +290,13 @@ class GbrvOutdb(MutableMapping):
             # Here I initialize the object with the data read from file.
             new = cls(dojo_dir, dojo_pptable)
             for formula, dict_list in d.items():
-                new[formula] = [GbrvRecord.from_dict(d, new.struct_type, dojo_pptable) 
+                new[formula] = [GbrvRecord.from_dict(d, new.struct_type, dojo_pptable)
                                 for d in dict_list]
 
             return new
 
     def __init__(self, dojo_dir, dojo_pptable):
-        gbrv_db = gbrv_database()
+        gbrv_db = gbrv_database(xc=None) # FIXME
         ord_keys = gbrv_db.tables[self.struct_type].keys()
 
         self.dojo_dir = os.path.basename(dojo_dir)
@@ -412,11 +412,11 @@ class GbrvOutdb(MutableMapping):
     @lazy_property
     def gbrv_formula_and_species(self):
         """
-        Return a list of tuples. Each tuple contains the formula and the list 
+        Return a list of tuples. Each tuple contains the formula and the list
         of chemical species in the same order as in formula.
         Example: ("LiF2", ["Li", "F", "F"])
         """
-        gbrv_db = gbrv_database()
+        gbrv_db = gbrv_database(xc=None) # FIXME
         formulas = gbrv_db.tables[self.struct_type].keys()
 
         items = []
@@ -437,7 +437,7 @@ class GbrvOutdb(MutableMapping):
         """
         nrec_removed, nrec_added = 0, 0
         missing = defaultdict(list)
-                                                                                      
+
         for formula, species in self.gbrv_formula_and_species:
             # Get **all** the possible combinations for these species.
             comb_list = self.dojo_pptable.all_combinations_for_elements(set(species))
@@ -448,7 +448,7 @@ class GbrvOutdb(MutableMapping):
             recidx_found = []
             for pseudos in comb_list:
                 for i, rec in enumerate(records):
-                    if rec.matches_pseudos(pseudos): 
+                    if rec.matches_pseudos(pseudos):
                         recidx_found.append(i)
                         break
 
@@ -468,7 +468,7 @@ class GbrvOutdb(MutableMapping):
                 for pseudos in pplist:
                     nrec_removed += 1
                     self[formula].append(GbrvRecord(self.struct_type, formula, pseudos, self.dojo_pptable))
-                                                                                      
+
         if missing or nrec_removed:
             print("Updating database.")
             self.json_write()
@@ -504,7 +504,7 @@ class GbrvOutdb(MutableMapping):
             `matplotlib` figure
         """
         ax, fig, plt = get_ax_fig_plt(ax)
-                                          
+
         ax.grid(True)
         ax.set_xlabel('r [Bohr]')
 
@@ -532,15 +532,15 @@ class GbrvOutdb(MutableMapping):
 
         Args:
             reference:
-            pptable: :class:`PseudoTable` object. If given. the frame will contains only the 
+            pptable: :class:`PseudoTable` object. If given. the frame will contains only the
                 entries with pseudopotential in pptable.
 
         Returns:
-            frame: pandas :class:`DataFrame` 
+            frame: pandas :class:`DataFrame`
         """
         def get_df(p):
             dfact_meV, df_prime = None, None
-            
+
             if p.has_dojo_report:
                 try:
                     data = p.dojo_report["deltafactor"]
@@ -561,7 +561,7 @@ class GbrvOutdb(MutableMapping):
         rows = []
         for formula, records in self.items():
             for rec in records:
-                d = dict(formula=formula, struct_type=self.struct_type, 
+                d = dict(formula=formula, struct_type=self.struct_type,
                          basenames=set(p.basename for p in rec.pseudos),
                          pseudos_meta={p.symbol: get_meta(p) for p in rec.pseudos},
                          symbols={p.symbol for p in rec.pseudos},
@@ -572,7 +572,7 @@ class GbrvOutdb(MutableMapping):
                     e = rec.compute_err(reference=reference, accuracy=acc)
                     if e is None: continue
                     has_data += 1
-                    d.update({acc + "_a0": e.a0, acc + "_rel_err": e.rel_err, #acc + "_abs_err": e.abs_err, 
+                    d.update({acc + "_a0": e.a0, acc + "_rel_err": e.rel_err, #acc + "_abs_err": e.abs_err,
                              })
 
                 if has_data:
@@ -637,7 +637,7 @@ class GbrvDataFrame(DataFrame):
         contains pseudopotentials in the PseudoDojo format.
 
         Args:
-            exclude_basenames: Optional string or list of strings with the 
+            exclude_basenames: Optional string or list of strings with the
                 pseudo basenames to be excluded.
         """
         # Construct the full table of pseudos from dojodir
@@ -694,11 +694,11 @@ class GbrvDataFrame(DataFrame):
                     print("Problem in a0_rel_err with %s" % p.basename)
                     continue
 
-                row = dict(formula=trial, struct_type=struct_type, 
+                row = dict(formula=trial, struct_type=struct_type,
                            basenames=set([p.basename]),
                            pseudos_meta={p.symbol: {"basename": p.basename, "md5": p.md5}},
                            symbols={p.symbol})
-                                                                                            
+
                 for acc in cls.ALL_ACCURACIES:
                     # FIXME: ecut should depend on accuracy.
                     # for the time being we get the last one
@@ -729,7 +729,7 @@ class GbrvDataFrame(DataFrame):
             sizes = 60 * sizes / sizes.max()
             sizes = sizes**2
 
-            ax.scatter(xs, ys, s=sizes, alpha=0.5) #c=close, 
+            ax.scatter(xs, ys, s=sizes, alpha=0.5) #c=close,
             ax.grid(True)
 
             l = np.linspace(np.min(xs), np.max(xs), num=50)
@@ -747,7 +747,7 @@ class GbrvDataFrame(DataFrame):
     def symbols(self):
         """List with the element symbols present in the table sorted by Z."""
         symbols = set()
-        for idx, row in self.iterrows(): 
+        for idx, row in self.iterrows():
             symbols.update(row.symbols)
 
         return sort_symbols_by_Z(symbols)
@@ -755,7 +755,7 @@ class GbrvDataFrame(DataFrame):
     #def multiple_pseudos(self):
     #    # Loop over the rows. Collect all the {symbol: md5}
     #    meta_set, multiple = set(), []
-    #    for idx, row in self.iterrows(): 
+    #    for idx, row in self.iterrows():
     #        for esymb, meta in row.pseudos_meta.items():
     #            meta = tuple([(k, v) for k, v in meta.items()])
     #            if meta not in meta_set:
@@ -766,7 +766,7 @@ class GbrvDataFrame(DataFrame):
 
     def print_info(self, **kwargs):
         """Pretty-print"""
-        frame = self[["formula", "normal_rel_err", "high_rel_err", "basenames"]] # "symbols", 
+        frame = self[["formula", "normal_rel_err", "high_rel_err", "basenames"]] # "symbols",
         s = frame.to_string(index=False)
         print(s)
         print("")
@@ -797,14 +797,14 @@ class GbrvDataFrame(DataFrame):
         #for acc in ("normal", "high"):
         for acc in ("high",):
             col = acc + "_rel_err"
-            values = self[col].dropna() 
+            values = self[col].dropna()
             sns.distplot(values, ax=ax, rug=True, hist=False, label=col)
 
             # Add text with Mean or (MARE/RMSRE)
             text = []; app = text.append
             app("MARE = %.2f" % values.abs().mean())
             app("RMSRE = %.2f" % np.sqrt((values**2).mean()))
-                                                                       
+
             ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
 
         return fig
@@ -851,7 +851,7 @@ class GbrvDataFrame(DataFrame):
             rows.append(row)
 
         new = self.__class__(rows)
-        if best_for_acc is None: 
+        if best_for_acc is None:
             return new
 
         # Handle best_for_acc
@@ -866,7 +866,7 @@ class GbrvDataFrame(DataFrame):
         #    print(type(best), best)
         #    #print(group[best])
         #    #rows.append(best.set_value("formula", formula))
-        
+
         d = defaultdict(list)
         for idx, row in new.iterrows():
             d[row.formula].append((row, row[key]))
@@ -918,7 +918,7 @@ class GbrvDataFrame(DataFrame):
 
         ax1 = ax_list[1]
         sns.stripplot(x="pseudo_basename", y="high_rel_err", data=frame, hue="formula", ax=ax1,
-                      jitter=True, size=10, marker="o", edgecolor="gray", alpha=.25, #palette="Set2", 
+                      jitter=True, size=10, marker="o", edgecolor="gray", alpha=.25, #palette="Set2",
         )
 
         ax1.grid(True)
@@ -953,7 +953,7 @@ class GbrvDataFrame(DataFrame):
     #@add_fig_kwargs
     #def plot_allpseudos_with_symbol(self, symbol, accuracy="normal", **kwargs):
     #    # For each pseudo:
-    #    # Extract the sub-frame for this pseudo and keep the rows with the 
+    #    # Extract the sub-frame for this pseudo and keep the rows with the
     #    # best result for the given accuracy
     #    ax, fig, plt = get_ax_fig_plt(None)
 
@@ -1042,21 +1042,21 @@ class GbrvDataFrame(DataFrame):
 
         newcol = "abs(high_rel_err)"
 
-        self[newcol] = self["high_rel_err"].abs() 
+        self[newcol] = self["high_rel_err"].abs()
 
         g = sns.jointplot("high_df_prime", "abs(high_rel_err)", data=self, kind="reg",)
                           #xlim=(0, 60), ylim=(0, 12), color="r", size=7)
 
         g = sns.jointplot("high_df", "abs(high_rel_err)", data=self, kind="reg",)
                           #xlim=(0, 60), ylim=(0, 12), color="r", size=7)
-                          
+
         # Remove the column
         self.drop([newcol], axis=1)
         return fig
 
     #def scatter(self, **kwarags):
     #    ax, fig, plt = get_ax_fig_plt()
-    #    xs 
+    #    xs
     #    ys
     #    #ax.scatter(delta1[:-1], delta1[1:], c=close, s=volume, alpha=0.5)
     #    return fig

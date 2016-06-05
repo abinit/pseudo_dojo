@@ -19,8 +19,9 @@ logger = logging.getLogger(__name__)
 
 class GbrvCompoundsFactory(object):
     """Factory class producing :class:`Work` objects for GBRV calculations."""
-    def __init__(self):
-        self._db = gbrv_database()
+    def __init__(self, xc):
+        """xc: Exchange-correlation functional."""
+        self._db = gbrv_database(xc)
 
     def make_ref_structure(self, formula, struct_type, ref):
         """
@@ -95,6 +96,11 @@ class GbrvCompoundRelaxAndEosWork(Work):
         super(GbrvCompoundRelaxAndEosWork, self).__init__(workdir=workdir, manager=manager)
 
         self.pseudos = pseudos
+        # FIXME
+        #if (any(p.xc) != pseudos[0].xc for p in pseudos): raise ValueError("Inconsistent XC")
+        #self.xc = pseudos[0].xc
+        self.xc = "PBE"
+
         self.formula = formula
         self.struct_type = struct_type
         self.accuracy = accuracy
@@ -230,7 +236,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         if self.outdb_path is not None:
             GbrvOutdb.update_record(self.outdb_path, self.formula, self.accuracy, self.pseudos, results)
 
-        db = gbrv_database()
+        db = gbrv_database(xc=self.xc)
         entry = db.get_entry(self.formula, stype=self.struct_type)
 
         pawabs_err = a0 - entry.gbrv_paw

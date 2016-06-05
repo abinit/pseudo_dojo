@@ -17,7 +17,9 @@ import numpy as np
 from collections import namedtuple, OrderedDict
 from monty.functools import lazy_property
 from pymatgen.core.units import FloatWithUnit
+from pymatgen.core.xcfunc import XcFunc
 from abipy.core.structure import Structure
+
 
 __all__ = [
     "gbrv_database",
@@ -40,7 +42,7 @@ def species_from_formula(formula):
 
 def count_species(formula):
     """
-    Construct a counter (OrderedDict) from a chemical formula. 
+    Construct a counter (OrderedDict) from a chemical formula.
     Assume chemical symbols start with a capital letter.
     The order of the symbols in formula is maintained.
 
@@ -66,7 +68,7 @@ def count_species(formula):
 
     # Tokenize.
     for i, start in enumerate(inds):
-        if (i+1) < len(inds): 
+        if (i+1) < len(inds):
             stop = inds[i+1]
             symbol = formula[start:stop]
         else:
@@ -104,7 +106,7 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
         vasp:  VASP PAW results
         pslib:  Espresso PAW results
         gbrv_paw:  PAW results (Abinit code)
-        struct_type:  Structure type used to select the appropriate table 
+        struct_type:  Structure type used to select the appropriate table
             possible values are listed in GbrvDatabase.all_struct_types.
 
     .. note::
@@ -187,10 +189,10 @@ def read_table_from_file(filename):
         1) Comment
         2) Header with column names
         3) rows in CSV format
-    
+
     Example:
-    
-        # {"struct_type": "fcc"}                                              
+
+        # {"struct_type": "fcc"}
         # fcc testing data,,Please see supplementary materials for details.,,,
         # Symbol,AE,GBRV_USPP,VASP,PSLIB,GBRV_PAW
         H,2.283,2.284,2.283,2.284,2.284
@@ -212,7 +214,7 @@ def read_table_from_file(filename):
                 if line.startswith("#") or not line: continue
                 tokens = line.split(",")
                 assert len(header) == len(tokens)
-                symbol = tokens[0] 
+                symbol = tokens[0]
 
                 d = {k: v for k, v in zip(header, tokens)}
                 d.update(info)
@@ -234,8 +236,15 @@ class GbrvDatabase(object):
         "hH",
     ]
 
-    def __init__(self):
-        """Read data from CSV files and initialize the object."""
+    def __init__(self, xc):
+        """
+        Read data from CSV files and initialize the object.
+        xc specifies the XC functionals used.
+        """
+        self.xc = XcFunc.asxc(xc)
+        if self.xc != "PBE":
+            raise ValueError("Gbrv database supports only PBE pseudos")
+
         # Directory containing the GBRV tables in CSV format.
         datadir = os.path.abspath(os.path.dirname(__file__))
         datadir = os.path.join(datadir, "data")
@@ -272,7 +281,7 @@ class GbrvDatabase(object):
 
     def get_entry(self, symbol, stype):
         """
-        Return :class:`GbrvEntry` in the table associated to structure type stype 
+        Return :class:`GbrvEntry` in the table associated to structure type stype
         and with the given symbol. Return None if symbol is not present.
 
         Args:
@@ -289,7 +298,7 @@ class GbrvDatabase(object):
         for stype in self.all_struct_types:
             e = self.get_entry(symbol, stype)
             if e is not None: entries.append(e)
-            
+
         return entries
 
     def get_fcc_entry(self, symbol):
@@ -317,12 +326,22 @@ class GbrvDatabase(object):
 # Public API to access the database
 ###################################
 
-__GBRV_DATABASE = None
+# Mapping XC --> Database.
+__GBRV_DATABASE_XC = None
 
 
-def gbrv_database():
-    """Returns the GBRV database with the reference results."""
-    global __GBRV_DATABASE
-    if __GBRV_DATABASE is None:
-        __GBRV_DATABASE = GbrvDatabase()
-    return __GBRV_DATABASE
+def gbrv_database(xc):
+    """
+    Returns the GBRV database with the reference results.
+    xc is the exchange-correlation functional. At present, only PBE is supported.
+    """
+    global __GBRV_DATABASE_XC
+    if __GBRV_DATABASE_XC is None:
+        __GBRV_DATABASE_XC = {}
+
+    # Create xc database and cache it.
+    if xc not in __GBRV_DATABASE_XC:
+        db = GbrvDatabase(xc)
+        __GBRV_DATABASE_XC[db.xc] = db
+
+    return __GBRV_DATABASE_XC[xc]

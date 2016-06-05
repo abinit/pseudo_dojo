@@ -488,10 +488,7 @@ class GbrvFactory(object):
 
     def __init__(self, xc):
         """xc: exchange-correlation functional e.g. PBE or PW."""
-        self.xc = XcFunc.asxc(xc)
-        if self.xc != "PBE":
-            raise ValueError("Gbrv database supports only PBE pseudos")
-        self._db = gbrv_database()
+        self._db = gbrv_database(xc)
 
     def make_ref_structure(self, symbol, struct_type, ref):
         """
@@ -516,6 +513,10 @@ class GbrvFactory(object):
             logger.critical("Cannot initialize structure for %s, returning None!" % symbol)
 
         return structure
+
+    @property
+    def xc(self):
+        return self._db.xc
 
     def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, include_soc=False,
                            ref="ae", **kwargs):
@@ -714,7 +715,7 @@ class GbrvRelaxAndEosWork(DojoWork):
             struct_type=self.struct_type
         ))
 
-        db = gbrv_database()
+        db = gbrv_database(xc)
         entry = db.get_entry(self.dojo_pseudo.symbol, stype=self.struct_type)
 
         pawabs_err = a0 - entry.gbrv_paw
