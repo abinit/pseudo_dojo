@@ -101,7 +101,7 @@ class OfficialTables(Mapping):
         Low-level method used to select tables.
 
         Args:
-            pp_type: NC for norm-conserving pseudos or PAW. If None no selection is done. 
+            pp_type: NC for norm-conserving pseudos or PAW. If None no selection is done.
             xc: If xc is not None, only the pseudos with this xc functional are selected.
                 else no selection is performed.
         Return:
@@ -165,7 +165,7 @@ class OfficialTables(Mapping):
 
     def select_pseudos(self, symbol, pp_type=None, xc=None):
         """
-        Return the full list of Pseudo objects available in the DojoTables 
+        Return the full list of Pseudo objects available in the DojoTables
         with the given `pp_type` and XC functional `xc`.
         """
         tables = self.select_tables(pp_type=pp_type, xc=xc)
@@ -210,3 +210,45 @@ class OfficialTables(Mapping):
     #    #epd.redraw_ptable()
 
     #    plt.show()
+
+
+def logo1():
+    return """\
+````````````````````````````````````````````````````````````````````````````````````````````````````
+```````````````-shyo.```````````````````````````````````````````````````````````````````````````````
+``````````-/oo`+hhhh-:s+/.````````````-:::::::-.````````````````````````````````````````-:::::.`````
+```````.+ss/-.``-//-``.:+ys/.`````````yhhooooyhy+``......```.......`..````..``......````/oooo+-`````
+`````.+yo-````````````````:sy:````````yhh`````shh.+ysooss+`+ysoooo+.yy````yy.:yyoooso-`/sso+oyo-````
+````.sy-````````````````````/h+```````yhh::::/yhs.oyo+///:`+hs////..hh.```hh.:hs```-hy-hh.```/hs````
+````sy-```````-------.```````/h/``````yhhooooo+:.`//::/ohy.+ho::::.`yh-..-hh.:hs...:hy.yh-``.+ho````
+``-shysssssss+yhhhhhhosssssssshhs`````oss`````````/soooos+`/ssoooo+`-oooooo:`:ssoooo+.`-osooos+.````
+``-hhhhhhhhhhshhhhhhhshhhhhhhhhhy`````````````````````````````````````````````````````````...```````
+``-hhhhhhhhhhshhhhhhhshhhhhhhhhhy`````://////:-.```.//////`````````.////+/``````````````````````````
+```-yy-------.+++++++:-------:hs-`````yhh++++shy+``.+ooo+/`````--``.+ooo+/``````````````````````````
+````:ho`````````````````````.yy.``````yhh`````ohh--sy+//oy+````yh.-sy+//oyo`````````````````````````
+`````-ys-``````````````````/yo.```````yhh`````+hh:sh/````yh-```yh-oh/````yh:````````````````````````
+``````./ys/.````````````-/ys:`````````yhh:::/+hho`+ho.``:hh-..-hh.+ho.``-hh.````````````````````````
+`````````:+sso/::-::/+oys+-```````````+oooooo+/-```:+oooo/.:ooo+-``:+oooo+.`````````````````````````
+````````````.-//++++/:-````````````````````````````````````````````````````.```````````````.````````
+"""
+
+
+def logo2():
+    return """\
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMd/--+NMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMNdyo+No----dh+oymNMMMMMMMMMMMdhhhhhhhdNMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMdhhhhhNMMMMM
+MMMMMMMms//ydNMMdyymMMmhs/+yNMMMMMMMMM/--++++/--sMMNNNNNNMMNNNNNNNNMNNMMMMNNMMNNNNNNMMMMyoo+oodMMMMM
+MMMMMNs:omMMMMMMMMMMMMMMMNh/:hMMMMMMMM/--MMMMM/--mo:+oo+/sMs-/oooooN::NMMN:-Nh-:o++/+dMy//oo+/+mMMMM
+MMMMN/:dMMMMMMMMMMMMMMMMMMMNy-sMMMMMMM/--hhhhs--/No:+osyyhMo-/yyyyNN--NMMN--Nh-/MMMd-:m--NMMMy-/MMMM
+MMMN/-mNNNNNNMmmmmmmmmNNNNNNNy-yNMMMMM/--+++++ohNMyyhhyo-:No-+hhhhmN--dNNm--Nh-/NNNh-/m--dNMNs-+MMMM
+MMm/--///////s-------+////////--+MMMMMo//MMMMMMMMMy++ooo/sNy/+oooooMd++oo++dMd//oo++smMdo+oo++sNMMMM
+MMd----------+-------+-----------MMMMMMNMMMMMMMMMMMMNNNNMMMMNNNNNNNMMMNNNNMMMMNNNNMMMMMMMNNNNMMMMMMM
+MMd----------+-------+-----------MMMMMhsssssyhdNMMMmsssssyMMMMMMMMMNsssssyMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMNd-:dmmmmmmmssssssshmmmmmmmh-+mMMMMM/--ssso/-:sMMmsooooyMMMMMmdMMNsooooyMMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMh-oNMMMMMMMMMMMMMMMMMMMMm/:NMMMMMM/--MMMMNo--dd/:syy+:oMMMM:-md/:syy+:oNMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMd:/dMMMMMMMMMMMMMMMMMNy:+NMMMMMMM/--MMMMMs--h+-yMMMN:-dMMM--m+-yMMMM/-dMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMNy:/yNMMMMMMMMMMMMms:/hMMMMMMMMM/--hhhyo--+Ns-+mMNd--mmNd--Ns-+mMNd--mMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMNho//oyhhddhys+:/smMMMMMMMMMMMs+++++ooymMMMho+++osmhooosmMMho+++osmMMMMMMMMMMMMMMMMMMMMMMMMM
+MMMMMMMMMMMMNdyssossyhmNMMMMMMMMMMMMMMNMMMMNMMMMMMMMNMMMMMMMMMMMMMMMMMNMMMMNMMMMMMMMMMMMMMMNMMMMMMMM
+"""

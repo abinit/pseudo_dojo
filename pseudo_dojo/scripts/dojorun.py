@@ -238,6 +238,9 @@ Usage Example:
 
     options.manager = abilab.TaskManager.as_manager(options.manager)
 
+    from pseudo_dojo import logo1
+    cprint(logo1(), "red")
+
     pseudo = dojopseudo_from_file(options.path)
     if pseudo is None:
         cprint("Error while parsing: %s" % options.path)
