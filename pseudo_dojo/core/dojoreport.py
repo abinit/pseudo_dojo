@@ -1058,6 +1058,7 @@ class DojoReport(dict):
             return None
 
         #frame = self.get_pdframe(trial, trial)
+        #print(frame)
         #ecuts = np.array(frame["ecut"])
 
         d = self[trial]

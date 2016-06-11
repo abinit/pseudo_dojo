@@ -1063,7 +1063,7 @@ class OncvOutputParser(PseudoGenOutputParser):
     def gnuplot(self):
         """
         Plot the results with gnuplot.
-        Based on the replot.sh script provided by oncvps.
+        Based on the `replot.sh` script provided by the oncvpsp code.
         """
         outfile = self.filepath
         base = os.path.basename(outfile)
@@ -1089,9 +1089,8 @@ class OncvOutputParser(PseudoGenOutputParser):
                 check_call(["gnuplot", gnufile])
             except KeyboardInterrupt:
                 print("Received KeyboardInterrupt")
-            finally:
-                for p in [gnufile, temp, plotfile]:
-                    os.remove(p)
+
+        os.rmdir(workdir)
 
 
 def oncv_make_open_notebook(outpath):

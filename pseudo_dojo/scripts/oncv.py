@@ -64,8 +64,6 @@ def oncv_plot(options):
         cprint("oncvpsp output is not complete. Exiting", "red")
         return 1
 
-    return onc_parser.gnuplot()
-
     # Build the plotter
     plotter = onc_parser.make_plotter()
 
@@ -185,7 +183,7 @@ def oncv_run(options):
 
     # Initialize and write djson file.
     report = DojoReport.empty_from_pseudo(pseudo, onc_parser.hints, devel=False)
-    report.json_write(djrepo_path)
+    report.json_write()
 
     return 0
 
@@ -196,7 +194,8 @@ def main():
         return """\
 Usage example:
     oncv.py run H.in         ==> Run oncvpsp input file (scalar relativistic mode).
-    oncv.py plot H.out       ==> Plot oncvpsp results for pseudo H.psp8.
+    oncv.py plot H.out       ==> Use matplotlib to plot oncvpsp results for pseudo H.psp8.
+    oncv.py gnuplot H.out    ==> Use gnuplot to plot oncvpsp results for pseudo H.psp8.
     oncv.py nbplot H.out     ==> Generate jupyter notebook to plot oncvpsp results.
     oncv.py json H.out       ==> Generate JSON file.
 """
