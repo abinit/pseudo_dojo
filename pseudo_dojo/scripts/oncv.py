@@ -18,7 +18,7 @@ from pseudo_dojo.ppcodes.ppgen import OncvGenerator
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter, oncv_make_open_notebook
 
 
-def oncv_output(path):
+def find_oncv_output(path):
     """
     Fix possible error in the specification of filename when we want a `.out` file.
     Return output path.
@@ -34,13 +34,13 @@ def oncv_output(path):
 
 def oncv_nbplot(options):
     """Generate jupyter notebook to plot data. Requires oncvpsp output file."""
-    out_path = oncv_output(options.filename)
+    out_path = find_oncv_output(options.filename)
     return oncv_make_open_notebook(out_path)
 
 
-def oncv_plot(options):
-    """Plot data with matplotlib. Requires oncvpsp output file."""
-    out_path = oncv_output(options.filename)
+def oncv_gnuplot(options):
+    """Plot data with gnuplot."""
+    out_path = find_oncv_output(options.filename)
 
     # Parse output file.
     onc_parser = OncvOutputParser(out_path)
@@ -48,6 +48,23 @@ def oncv_plot(options):
     if not onc_parser.run_completed:
         cprint("oncvpsp output is not complete. Exiting", "red")
         return 1
+
+    onc_parser.gnuplot()
+    return 0
+
+
+def oncv_plot(options):
+    """Plot data with matplotlib. Requires oncvpsp output file."""
+    out_path = find_oncv_output(options.filename)
+
+    # Parse output file.
+    onc_parser = OncvOutputParser(out_path)
+    onc_parser.scan()
+    if not onc_parser.run_completed:
+        cprint("oncvpsp output is not complete. Exiting", "red")
+        return 1
+
+    return onc_parser.gnuplot()
 
     # Build the plotter
     plotter = onc_parser.make_plotter()
@@ -90,7 +107,7 @@ def oncv_json(options):
     Produce a string with the results in a JSON dictionary and exit
     Requires oncvpsp output file.
     """
-    out_path = oncv_output(options.filename)
+    out_path = find_oncv_output(options.filename)
     onc_parser = OncvOutputParser(out_path)
     onc_parser.scan()
     if not onc_parser.run_completed:
@@ -119,9 +136,11 @@ def oncv_run(options):
     if options.rel == "nor":
         if not root.endswith("_nor"): root += "_nor"
     elif options.rel == "fr":
-        raise NotImplementedError("FR is not coded yet")
-        if not root.endswith("_r"): root += "_r"
+        if not root.endswith("_r"):
+            root += "_r"
+            cprint("FR calculation with input file without `_r` suffix. Will add `_r` to output files", "yellow")
 
+    # Build names of output files.
     psp8_path = root + ".psp8"
     djrepo_path = root + ".djrepo"
     out_path = root + ".out"
@@ -206,8 +225,8 @@ Usage example:
 
     # Create the parsers for the sub-commands
     p_run = subparsers.add_parser('run', parents=[copts_parser], help=oncv_run.__doc__)
-    p_run.add_argument("--rel", default="sr", help=("Relativistic treatment: nor for non-relativistic, "
-                       "sr for scalar-relativistic, fr for fully-relativistic."))
+    p_run.add_argument("--rel", default="sr", help=("Relativistic treatment: `nor` for non-relativistic, "
+                       "`sr` for scalar-relativistic, `fr` for fully-relativistic."))
     #p_run.add_argument("-d", "--devel", action="store_true", default=False,
     #                    help="put only two energies in the ecuts list for testing for developing the pseudo")
 
@@ -222,6 +241,8 @@ Usage example:
                               "df --> density form factor"))
 
     p_nbplot = subparsers.add_parser('nbplot', parents=[copts_parser], help=oncv_nbplot.__doc__)
+
+    p_gnuplot = subparsers.add_parser('gnuplot', parents=[copts_parser], help=oncv_gnuplot.__doc__)
 
     p_json = subparsers.add_parser('json', parents=[copts_parser], help=oncv_json.__doc__)
 

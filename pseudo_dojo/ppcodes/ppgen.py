@@ -64,7 +64,6 @@ class PseudoGenerator(object):
     produced by the pseudopotential code. Concrete classes must:
 
         1) call super().__init__() in their constructor.
-
         2) the object should have the input file stored in self.input_str
 
     Attributes:
@@ -115,25 +114,32 @@ class PseudoGenerator(object):
             # Build a temporary directory
             self.workdir = tempfile.mkdtemp(prefix=self.__class__.__name__)
 
-    # paths for stdin, stdout, stderr
     @property
     def stdin_path(self):
+        """Absolute path of the standard input."""
         return os.path.join(self.workdir, self.stdin_basename)
 
     @property
     def stdout_path(self):
+        """Absolute path of the standard output."""
         return os.path.join(self.workdir, self.stdout_basename)
 
     @property
     def stderr_path(self):
+        """Absolute path of the standard error."""
         return os.path.join(self.workdir, self.stderr_basename)
 
     @property
     def status(self):
+        """The status of the job."""
         return self._status
 
     @property
     def retcode(self):
+        """
+        Return code of the subprocess. None if not available because e.g. the job
+        has not been started yet.
+        """
         try:
             return self._retcode
         except AttributeError:
@@ -141,6 +147,7 @@ class PseudoGenerator(object):
 
     @property
     def pseudo(self):
+        """:class:`Pseudo` object."""
         try:
             return self._pseudo
         except AttributeError:
@@ -148,10 +155,12 @@ class PseudoGenerator(object):
 
     @property
     def executable(self):
+        """Name of the executable."""
         return self._executable
 
     @property
     def input_str(self):
+        """String with the input file."""
         return self._input_str
 
     def __repr__(self):
@@ -279,9 +288,14 @@ class PseudoGenerator(object):
 
     @abc.abstractmethod
     def plot_results(self, **kwargs):
-        """Plot the results with matplotlib."""
+        """
+        Plot the results with matplotlib.
+        """
 
     def parse_output(self):
+        """
+        Uses OutputParser to parse the output file.the output file.the output file.the output file.
+        """
         parser = self.OutputParser(self.stdout_path)
         try:
             parser.scan()
@@ -298,6 +312,10 @@ class PseudoGenerator(object):
 
     @property
     def plotter(self):
+        """
+        Return a plotter object that knows how to plot the results
+        of the pseudopotential generator
+        """
         return getattr(self, "_plotter", None)
 
 

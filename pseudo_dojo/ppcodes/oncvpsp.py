@@ -5,6 +5,7 @@ from __future__ import division, print_function, unicode_literals
 import os
 import abc
 import json
+import tempfile
 import numpy as np
 
 from collections import namedtuple, OrderedDict
@@ -12,7 +13,7 @@ from monty.os.path import which
 from monty.functools import lazy_property
 from monty.collections import AttrDict
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
-from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
+from pseudo_dojo.core import NlkState, RadialFunction, RadialWaveFunction
 from abipy.tools.derivatives import finite_diff
 
 import logging
@@ -30,6 +31,7 @@ _l2char = {
 }
 
 def is_integer(s):
+    """True if s in an integer."""
     try:
         c = float(s)
         return int(c) == c
@@ -94,7 +96,8 @@ class PseudoGenDataPlotter(object):
     def _wf_pltopts(self, l, aeps):
         """Plot options for wavefunctions."""
         return dict(
-            color=self.color_l[l], linestyle=self.linestyle_aeps[aeps], #marker=self.markers_aeps[aeps],
+            color=self.color_l[l],
+            linestyle=self.linestyle_aeps[aeps], #marker=self.markers_aeps[aeps],
             linewidth=self.linewidth, markersize=self.markersize)
 
     @add_fig_kwargs
@@ -127,7 +130,7 @@ class PseudoGenDataPlotter(object):
         """
         Plot ae and ps radial wavefunctions on axis ax.
 
-        lselect: List to select l channels
+        lselect: List to select l channels.
         """
         ax, fig, plt = get_ax_fig_plt(ax)
 
@@ -135,15 +138,19 @@ class PseudoGenDataPlotter(object):
         lselect = kwargs.get("lselect", [])
 
         lines, legends = [], []
-        for nl, ae_wf in ae_wfs.items():
-            ps_wf, l = ps_wfs[nl], nl.l
+        for nlk, ae_wf in ae_wfs.items():
+            ps_wf, l, k = ps_wfs[nlk], nlk.l, nlk.k
             if l in lselect: continue
+            #print(nlk)
 
             ae_line, = ax.plot(ae_wf.rmesh, ae_wf.values, **self._wf_pltopts(l, "ae"))
             ps_line, = ax.plot(ps_wf.rmesh, ps_wf.values, **self._wf_pltopts(l, "ps"))
 
             lines.extend([ae_line, ps_line])
-            legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
+            if k is None:
+                legends.extend(["AE l=%s" % l, "PS l=%s" % l])
+            else:
+                legends.extend(["AE l=%s, k=%s" % (l, k), "PS l=%s, k=%s" % (l, k)])
 
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$\phi(r)$", title="Wave Functions",
                     lines=lines, legends=legends)
@@ -162,11 +169,11 @@ class PseudoGenDataPlotter(object):
         lselect = kwargs.get("lselect", [])
 
         lines, legends = [], []
-        for nl, proj in self.projectors.items():
-            if nl.l in lselect: continue
+        for nlk, proj in self.projectors.items():
+            if nlk.l in lselect: continue
             line, = ax.plot(proj.rmesh, proj.values,
                             linewidth=self.linewidth, markersize=self.markersize)
-            lines.append(line); legends.append("Proj %s" % str(nl))
+            lines.append(line); legends.append("Proj %s" % str(nlk))
 
         decorate_ax(ax, xlabel="r [Bohr]", ylabel="$p(r)$", title="Projector Wave Functions",
                     lines=lines, legends=legends)
@@ -308,7 +315,7 @@ class PseudoGenDataPlotter(object):
     @add_fig_kwargs
     def plot_waves_and_projs(self, **kwargs):
         """Plot ae-ps wavefunctions and projectors on the same figure. Returns matplotlib Figure"""
-        lmax = max(nl.l for nl in self.radial_wfs.ae.keys())
+        lmax = max(nlk.l for nlk in self.radial_wfs.ae.keys())
         fig, ax_list = self._mplt.subplots(nrows=lmax+1, ncols=2, sharex=True, squeeze=False)
 
         for l in range(lmax+1):
@@ -752,7 +759,9 @@ class OncvOutputParser(PseudoGenOutputParser):
 
     @lazy_property
     def densities(self):
-        """Dictionary with charge densities on the radial mesh."""
+        """
+        Dictionary with charge densities on the radial mesh.
+        """
         # radii, charge, core charge, model core charge
         # !r   0.0100642   4.7238866  53.4149287   0.0000000
         rho_data = self._grep("!r").data
@@ -764,10 +773,19 @@ class OncvOutputParser(PseudoGenOutputParser):
 
     @lazy_property
     def radial_wfs(self):
-        """Read the radial wavefunctions."""
+        """
+        Read and set the radial wavefunctions.
+        """
+        # scalar-relativistic
         #n= 1,  l= 0, all-electron wave function, pseudo w-f
         #
         #&     0    0.009945   -0.092997    0.015273
+
+        # Fully-relativistic
+        #n= 1,  l= 0  kap=-1, all-electron wave function, pseudo w-f
+        #
+        #&     0    0.009955    0.066338    0.000979
+
         ae_waves, ps_waves = OrderedDict(), OrderedDict()
 
         beg = 0
@@ -777,18 +795,30 @@ class OncvOutputParser(PseudoGenOutputParser):
             beg = g.stop + 1
 
             header = self.lines[g.start-2]
-            n, l = header.split(",")[0:2]
-            n = int(n.split("=")[1])
-            l = int(l.split("=")[1])
-            nl = NlState(n=n, l=l)
-            logger.info("Got state: %s" % str(nl))
+            if not self.fully_relativistic:
+                #n= 1,  l= 0, all-electron wave function, pseudo w-f
+                n, l = header.split(",")[0:2]
+                n = int(n.split("=")[1])
+                l = int(l.split("=")[1])
+                k = None
+            else:
+                # n= 1,  l= 0  kap=-1, all-electron wave function, pseudo w-f
+                n, lk = header.split(",")[0:2]
+                n = int(n.split("=")[1])
+                toks = lk.split("=")
+                l = int(toks[1].split()[0])
+                k = int(toks[-1])
+
+            nlk = NlkState(n=n, l=l, k=k)
+            logger.info("Got state: %s" % str(nlk))
 
             rmesh = g.data[:, 1]
             ae_wf = g.data[:, 2]
             ps_wf = g.data[:, 3]
 
-            ae_waves[nl] = RadialWaveFunction(nl, str(nl), rmesh, ae_wf)
-            ps_waves[nl] = RadialWaveFunction(nl, str(nl), rmesh, ps_wf)
+            assert nlk not in ae_waves
+            ae_waves[nlk] = RadialWaveFunction(nlk, str(nlk), rmesh, ae_wf)
+            ps_waves[nlk] = RadialWaveFunction(nlk, str(nlk), rmesh, ps_wf)
 
         return self.AePsNamedTuple(ae=ae_waves, ps=ps_waves)
 
@@ -798,23 +828,25 @@ class OncvOutputParser(PseudoGenOutputParser):
         #n= 1 2  l= 0, projecctor pseudo wave functions, well or 2nd valence
         #
         #@     0    0.009945    0.015274   -0.009284
-        projectors_nl = OrderedDict()
+        projectors_nlk = OrderedDict()
         beg = 0
         while True:
             g = self._grep("@", beg=beg)
-            if g.data is None:
-                break
+            if g.data is None: break
             beg = g.stop + 1
+            # TODO: Get n, l, k from header.
+            header = self.lines[g.start-2]
 
             rmesh = g.data[:, 1]
             l = int(g.data[0, 0])
 
             for n in range(len(g.data[0]) - 2):
-                nl = NlState(n=n+1, l=l)
-                logger.info("Got projector with: %s" % str(nl))
-                projectors_nl[nl] = RadialWaveFunction(nl, str(nl), rmesh, g.data[:, n+2])
+                nlk = NlkState(n=n+1, l=l, k=None)
+                logger.info("Got projector with: %s" % str(nlk))
+                assert nlk not in projectors_nlk
+                projectors_nlk[nlk] = RadialWaveFunction(nlk, str(nlk), rmesh, g.data[:, n+2])
 
-        return projectors_nl
+        return projectors_nlk
 
     @lazy_property
     def atan_logders(self):
@@ -1028,6 +1060,39 @@ class OncvOutputParser(PseudoGenOutputParser):
         else:
             return self.GrepResults(data=np.array(data), start=intag, stop=stop)
 
+    def gnuplot(self):
+        """
+        Plot the results with gnuplot.
+        Based on the replot.sh script provided by oncvps.
+        """
+        outfile = self.filepath
+        base = os.path.basename(outfile)
+        gnufile = base + ".scr"
+        plotfile = base + ".plot"
+        temp = base + ".tmp"
+
+        from monty.os import cd
+        from subprocess import check_call
+        workdir = tempfile.mkdtemp()
+        print("Working in %s" % workdir)
+
+        with cd(workdir):
+            check_call("awk 'BEGIN{out=0};/GNUSCRIPT/{out=0}; {if(out == 1) {print}}; \
+                                /DATA FOR PLOTTING/{out=1}' %s > %s" % (outfile, plotfile), shell=True)
+
+            check_call("awk 'BEGIN{out=0};/END_GNU/{out=0}; {if(out == 1) {print}}; \
+                                /GNUSCRIPT/{out=1}' %s > %s" % (outfile, temp), shell=True)
+
+            check_call('sed -e 1,1000s/t1/"%s"/ %s > %s' % (plotfile, temp, gnufile), shell=True)
+
+            try:
+                check_call(["gnuplot", gnufile])
+            except KeyboardInterrupt:
+                print("Received KeyboardInterrupt")
+            finally:
+                for p in [gnufile, temp, plotfile]:
+                    os.remove(p)
+
 
 def oncv_make_open_notebook(outpath):
     """
@@ -1135,7 +1200,6 @@ plotter = onc_parser.make_plotter()"""),
     nb['worksheets'].append(nbf.new_worksheet(cells=cells))
 
     if nbpath is None:
-        import tempfile
         _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
 
     with open(nbpath, 'wt') as f:
