@@ -160,7 +160,7 @@ def build_flow(pseudo, options):
 
         for ecut in ecut_list:
             if report.has_trial(dojo_trial, ecut=ecut):
-                cprint("[%d]: ignoring ecut=%s because it's already in the DOJO_REPORT" % (dojo_trial, ecut), "magenta")
+                cprint("[%s]: ignoring ecut=%s because it's already in the DOJO_REPORT" % (dojo_trial, ecut), "magenta")
                 continue
 
             # Build and register the work.
