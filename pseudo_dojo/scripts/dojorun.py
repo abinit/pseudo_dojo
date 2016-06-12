@@ -97,7 +97,7 @@ def build_flow(pseudo, options):
         ecut_list = list(dense_left) + list(dense_right) + list(coarse_high)
 
     # Computation of the deltafactor.
-    if "df" in options.trials:
+    if "df" in options.trials or "deltafactor" in options.trials:
         factory = DeltaFactory(xc=pseudo.xc)
         dojo_trial = "deltafactor" if not options.soc else "deltafactor_soc"
 
