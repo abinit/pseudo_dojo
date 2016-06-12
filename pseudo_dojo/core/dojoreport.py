@@ -565,13 +565,18 @@ class DojoReport(dict):
         Add hints on the cutoff energy.
         If write is True, the JSON file is immediately updated with the new data.
         """
-        hints_dict = {
+        self["hints"] = {
            "low": {'ecut': hints[0]},
            "normal": {'ecut': hints[1]},
            "high": {'ecut': hints[2]}
-                     }
-        self["hints"] = hints_dict
+        }
+
         if write: self.json_write()
+
+    @property
+    def isvalidated(self):
+        """True if the dojoreport has been validated."""
+        return "validation" in self and self.has_hints
 
     def ipw_validate(self):
         """
@@ -594,17 +599,20 @@ class DojoReport(dict):
             #if "validation" in self and not force_new_validation:
             #    raise ValueError("DojoReport is already validated. Use force_new_validation")
 
+            # TODO: Print convergence of df, gbrv ...
+            #df_last_ecut = sorted((self["deltafactor"].keys())[-1]
+            #df_last = self["delfactor"][df_last_ecut]["dfact_meV"]
+            #dfprime_last = self["delfactor"][df_last_ecut]["dfactprime_meV"]
+
             #from time import gmtime, strftime
             #self['validation'] = {
             #    'validated_by': validated_by.value,
             #    'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime())
             #}
-            #self.json_write()
 
-            # TODO: Print convergence of df, gbrv ...
-            #df_last_ecut = sorted((self["deltafactor"].keys())[-1]
-            #df_last = self["delfactor"][df_last_ecut]["dfact_meV"]
-            #dfprime_last = self["delfactor"][df_last_ecut]["dfactprime_meV"]
+            # Add hints
+
+            #self.json_write()
 
         ok_button.on_click(on_button_clicked)
         return ipw.Box(children=[low_ecut, normal_ecut, high_ecut, validated_by, ok_button])
@@ -1052,49 +1060,54 @@ class DojoReport(dict):
         Returns:
             `matplotlib` figure. None if the GBRV test is not present.
         """
-        trial = "phonon" if not with_soc else "phonon_soc"
+        #trial = "phonon" if not with_soc else "phonon_soc"
+        trial = "phgamma" if not with_soc else "phgamma_soc"
         if trial not in self:
             print("dojo report does not contain trial:", trial)
             return None
 
-        #frame = self.get_pdframe(trial, trial)
-        #print(frame)
-        #ecuts = np.array(frame["ecut"])
+        frame = self.get_pdframe(trial, "asr2_phfreqs_mev", "noasr_phfreqs_mev")
+        ecuts = np.array(frame["ecut"])
+        num_modes  = len(frame["asr2_phfreqs_mev"][0])
 
-        d = self[trial]
-        ecuts = list(d.keys())
+        # Build array with frequencies computed at the different ecut.
+        asr2_phfreqs = np.empty((num_modes, len(ecuts)))
+        noasr_phfreqs = np.empty((num_modes, len(ecuts)))
 
-        l = [(ecut, float(ecut)) for ecut in ecuts]
-        s = sorted(l, key=lambda t: t[1])
-        max_ecut = s[-1][0]
-        s_ecuts = [ecut[0] for ecut in s]
+        for ie, ecut in enumerate(ecuts):
+            # Subframe with this value of ecut.
+            ecut_frame = frame.loc[frame["ecut"] == ecut]
+            asr2_phfreqs[:, ie] = np.array(list(ecut_frame["asr2_phfreqs_mev"].values))
+            noasr_phfreqs[:, ie] = np.array(list(ecut_frame["noasr_phfreqs_mev"].values))
 
         import matplotlib.pyplot as plt
-        fig, ax = plt.subplots(nrows=2, sharex=True)
+        fig, ax_list = plt.subplots(nrows=4, sharex=True)
         #ax_list, fig, plt = get_axarray_fig_plt(ax_list, nrows=len(keys), ncols=1, sharex=True, squeeze=False)
+        #if ax_list is None:
+        #    fig, ax_list = plt.subplots(nrows=len(stypes), ncols=1, sharex=True, squeeze=False)
+        #    ax_list = ax_list.ravel()
+        #else:
+        #    fig = plt.gcf()
 
-        fmin, fmax = np.inf, -np.inf
-        for i, v in enumerate(d[ecuts[0]]):
-            values1 = np.array([float(d[ecut][i]) for ecut in s_ecuts])
-            fmin = min(fmin, values1.min())
-            fmax = max(fmax, values1.max())
+        for ax in ax_list: ax.grid(True)
 
-            ax[0].plot(s_ecuts, values1, "o-")
-            ax[0].grid(True)
-            ax[0].set_ylabel("phonon modes [meV] (asr==2)")
-            ax[0].set_xlabel("Ecut [Ha]")
+        for mu in range(num_modes):
+            phecut = asr2_phfreqs[mu]
+            ax_list[0].plot(ecuts, phecut, "o-")
+            ax_list[0].set_ylabel("$\omega$ (asr=2)")
+            ax_list[1].plot(ecuts, phecut - phecut[-1], "o-")
+            ax_list[1].set_ylabel("$\omega-\omega_{max}$")
 
-            values2 = np.array([float(d[ecut][i]) - float(d[max_ecut][i]) for ecut in s_ecuts])
-
-            ax[1].plot(s_ecuts, values2, "o-")
-            ax[1].grid(True)
-            ax[1].set_ylabel("w - w(ecut_max) [meV]")
-            ax[1].set_xlabel("Ecut [Ha]")
+            phecut = noasr_phfreqs[mu]
+            ax_list[2].plot(ecuts, phecut, "o-")
+            ax_list[2].set_ylabel("$\omega$ (noasr)")
+            ax_list[3].plot(ecuts, phecut - phecut[-1], "o-")
+            ax_list[3].set_ylabel("$\omega-\omega_{max}$")
 
         # Adjust limits.
-        fmin -= 10
-        fmax += 10
-        ax[0].set_ylim(fmin, fmax)
+        ax_list[0].set_ylim(asr2_phfreqs.min() - 1, asr2_phfreqs.max() + 1)
+        ax_list[2].set_ylim(noasr_phfreqs.min() - 1, noasr_phfreqs.max() + 1)
+        ax_list[-1].set_xlabel("Ecut [Ha]")
 
         return fig
 
@@ -1152,9 +1165,6 @@ class DojoDataFrame(pd.DataFrame):
         "deltafactor": "dfact_meV",
         "gbrv_bcc": "gbrv_bcc_a0_rel_err",
         "gbrv_fcc": "gbrv_fcc_a0_rel_err",
-        #"ghosts": "all",
-        #"phonon": "all",
-        #"phwoa": "all",
     }
 
     _TRIALS2YLABEL = {
@@ -1162,9 +1172,6 @@ class DojoDataFrame(pd.DataFrame):
         "deltafactor": "$\Delta$-factor [meV]",
         "gbrv_bcc": "BCC $\Delta a_0$ (%)",
         "gbrv_fcc": "FCC $\Delta a_0$ (%)",
-        #"ghosts": "Electronic band structure"
-        #"phonon": "Phonons with ASR",
-        #"phwoa": "Phonons without ASR",
     }
 
     # The frame has its own list so that one can easily change the
@@ -1220,7 +1227,8 @@ class DojoDataFrame(pd.DataFrame):
                 continue
 
             report = p.dojo_report
-            d = {"symbol": p.symbol, "Z": p.Z, "filepath": p.filepath}
+            d = {"symbol": p.symbol, "Z": p.Z, "Z_val": p.Z_val, "l_max": p.l_max,
+                 "validated": report.isvalidated, "filepath": p.filepath}
             names.append(p.basename)
 
             ecut_acc = {}
@@ -1233,6 +1241,7 @@ class DojoDataFrame(pd.DataFrame):
                     # using -1 for non existing values facilitates plotting
                     d.update({acc + "_ecut_hint": -1.0 })
                     ecut_acc[acc] = -1
+
             for acc in accuracies:
                 d[acc + "_ecut"] = ecut_acc[acc]
 

@@ -93,7 +93,8 @@ def dojo_figures(options):
                                              'name', "symbol", 'Z',
                                              'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
                                              'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err',
-                                             'high_gbrv_fcc_a0_rel_err', 'high_ecut', #'low_phonon', 'high_phonon',
+                                             'high_gbrv_fcc_a0_rel_err', 'high_ecut',
+                                             #'low_phonon', 'high_phonon',
                                              'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
                                              'nv', 'valence', 'rcmin', 'rcmax')}
         for k, v in l.items():
@@ -337,8 +338,8 @@ def dojo_plot(options):
                 for with_soc in socs:
                     report.plot_gbrv_convergence(with_soc=with_soc, title=pseudo.basename)
 
-        # phonon
-        if any(k in options.what_plot for k in ("all", "phonon")):
+        # phgamma
+        if any(k in options.what_plot for k in ("all", "phgamma")):
             for with_soc in socs:
                 report.plot_phonon_convergence(with_soc=with_soc, title=pseudo.basename)
 
@@ -359,7 +360,7 @@ def dojo_notebook(options):
     from pseudo_dojo.util.notebook import make_open_notebook
     retcode = 0
     for p in options.pseudos:
-        retcode += make_open_notebook(p.filepath, with_validation=False, with_eos=True)
+        retcode += make_open_notebook(p.filepath, with_validation=True, with_eos=True)
         if retcode != 0: break
 
     return retcode

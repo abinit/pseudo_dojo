@@ -89,6 +89,9 @@ plotter = onc_parser.make_plotter()"""),
         #nbf.new_heading_cell("2-nd order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
         #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=2, show=False)"""),
 
+        nbf.new_heading_cell("Ghosts Test"),
+        nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False)"),
+
         nbf.new_heading_cell("Model core charge and form factors computed by ABINIT"),
         nbf.new_code_cell("""\
 with pseudo.open_pspsfile() as psps:
