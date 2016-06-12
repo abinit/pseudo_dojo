@@ -28,19 +28,20 @@ def djrepo_fix(options):
             return 1
 
         # Change md5
-        pseudo.dojo_report["md5"] = pseudo.compute_md5()
-        if pseudo.dojo_report["pseudo_type"] == "norm-conserving":
-            pseudo.dojo_report["pseudo_type"] = "NC"
+        #pseudo.dojo_report["md5"] = pseudo.compute_md5()
+        #if pseudo.dojo_report["pseudo_type"] == "norm-conserving":
+        #    pseudo.dojo_report["pseudo_type"] = "NC"
 
         # Add basename
-        if "basename" not in pseudo.dojo_report:
-            pseudo.dojo_report["basename"] = pseudo.basename
-        if pseudo.dojo_report["basename"] != pseudo.basename:
-            print("Inconsistent basename in %s" % pp_filepath)
-            return 1
+        #if "basename" not in pseudo.dojo_report:
+        #    pseudo.dojo_report["basename"] = pseudo.basename
+        #if pseudo.dojo_report["basename"] != pseudo.basename:
+        #    print("Inconsistent basename in %s" % pp_filepath)
+        #    return 1
 
         # Remove ebands
         #pseudo.dojo_report.pop("ebands", None)
+        if pseudo.dojo_report.pop("phonon", None) is None: return 0
 
         # Rename entries in FR pseudos.
         #oldnew = [("deltafactor", "deltafactor_soc"),
@@ -221,11 +222,6 @@ Example usage:
         print("Got %s djrepo files" % len(options.paths))
         if options.verbose > 1:
             for i, p in enumerate(options.paths): print("[%d] %s" % (i, p))
-
-    # This is to fix the djrepo files.
-    #for path in options.paths:
-    #    _fix_djrepo(path)
-    #return 0
 
     # Dispatch
     return globals()["djrepo_" + options.command](options)
