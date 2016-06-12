@@ -416,7 +416,7 @@ class DeltaFactorWork(DojoWork):
             prtwf=-1 if not connect else 1,
             chkprim=0,
             nstep=200,
-            fband=2,   # 0.5 is the default value but it's not large enough from some systems.
+            fband=1.5,   # 0.5 is the default value but it's not large enough from some systems.
             #paral_kgb=paral_kgb,
             #nband=nband,
             #mem_test=0,

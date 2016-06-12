@@ -28,9 +28,9 @@ def djrepo_fix(options):
             return 1
 
         # Change md5
-        pseudo.dojo_report["md5"] = pseudo.compute_md5()
-        if pseudo.dojo_report["pseudo_type"] == "norm-conserving":
-            pseudo.dojo_report["pseudo_type"] = "NC"
+        #pseudo.dojo_report["md5"] = pseudo.compute_md5()
+        #if pseudo.dojo_report["pseudo_type"] == "norm-conserving":
+        #    pseudo.dojo_report["pseudo_type"] = "NC"
 
         # Add basename
         #if "basename" not in pseudo.dojo_report:
