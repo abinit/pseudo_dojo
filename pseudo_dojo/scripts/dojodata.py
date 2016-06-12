@@ -408,6 +408,10 @@ def dojo_table(options):
     pseudos = options.pseudos
     data, errors = pseudos.get_dojo_dataframe()
 
+    # Compare FR with SR pseudos.
+    pseudos.plot_scalar_vs_fully_relativistic()
+    return 0
+
     if errors:
         cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
         if options.verbose:
@@ -453,7 +457,7 @@ def dojo_table(options):
         best_frame = pandas.DataFrame(rows, index=names)
         best_frame = best_frame.sort_values("Z")
         print(tabulate(best_frame, headers="keys"))
-        print(tabulate(best_frame.describe(),  headers="keys"))
+        print(tabulate(best_frame.describe(), headers="keys"))
 
         import matplotlib.pyplot as plt
         best_frame["high_dfact_meV"].hist(bins=100)

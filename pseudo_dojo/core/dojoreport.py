@@ -14,6 +14,7 @@ from collections import OrderedDict, defaultdict, Iterable
 from tabulate import tabulate
 from monty.json import MSONable, MontyEncoder
 from monty.string import list_strings, is_string
+from monty.termcolor import cprint
 from monty.bisect import find_le
 from pymatgen.analysis.eos import EOS
 from pymatgen.core.periodic_table import Element
@@ -693,21 +694,32 @@ class DojoReport(dict):
         values = np.array([data[e]["dfactprime_meV"] for e in ecuts])
         return np.array(ecuts), values
 
-    def get_last_df_dfp(self):
+    def get_last_df_results(self, with_soc=False):
         """
-        Return the last value i.e. the best estimate of deltafactor and deltafactor_prime
-        None, None if "deltafactor" is not present.
+        Return dictionary with the last value i.e. the best estimate of deltafactor
+        and deltafactor_prime. Empty dictionary if results are not available
+
+        Args:
+            with_soc: If True, the results obtained with SOC are returned (if available).
+            In this case, the name of variable contains the `_soc` suffix at the end e.g.
+            `v0` becomes `v0_soc`.
         """
+        trial = "deltafactor" if not with_soc else "deltafactor_soc"
         try:
-            data = self["deltafactor"]
+            data = self[trial]
         except KeyError:
-            return None, None
+            return {}
 
-        ecuts = list(data.keys())
-        dfact_meV = [data[e]["dfact_meV"] for e in ecuts][-1]
-        dfp = [data[e]["dfactprime_meV"] for e in ecuts][-1]
+        # Get the values associated with the last ecut (highest value).
+        vnames = ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1"]
+        frame = self.get_pdframe(trial, *vnames)
+        d = {vname: frame[vname].iloc[-1] for vname in vnames}
 
-        return dfact_meV, dfp
+        # Add `_soc` prefix.
+        if with_soc:
+            d = {k + "_soc": d[k] for k in d}
+
+        return d
 
     def check(self, check_trials=None):
         """
@@ -1278,7 +1290,7 @@ class DojoDataFrame(pd.DataFrame):
                                 d.update({acc + "_" + k: float(data[ecut][k]) for k in keys})
 
             except Exception as exc:
-                logger.warning("%s raised %s" % (p.basename, exc))
+                cprint("%s raised %s" % (p.basename, exc), "magenta")
                 eapp("%s raised %s" % (p.basename, exc))
 
             rows.append(d)
@@ -1465,7 +1477,7 @@ class DfGbrvDataFrame(pd.DataFrame):
 	    if not p.has_dojo_report:
 		msg = "%s does not have the dojo_report" % p.filepath
 		if not raise_if_none_dojoreport:
-		    logger.warning(msg)
+		    cprint(msg, "magenta")
                     continue
 		else:
 		    raise ValueError(msg)

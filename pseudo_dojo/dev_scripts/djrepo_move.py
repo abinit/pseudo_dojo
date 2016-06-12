@@ -9,7 +9,6 @@ import argparse
 
 from monty.functools import prof_main
 from monty.termcolor import cprint
-#from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from pseudo_dojo.core.dojoreport import DojoReport
 
 
@@ -49,9 +48,9 @@ Example usage:
 
     src, dst = os.path.abspath(options.src), os.path.abspath(options.dst)
 
+    # Look before you leap.
     if not src.endswith(".djrepo") or not dst.endswith(".djrepo"):
         raise ValueError("Invalid names")
-
     if os.path.exists(dst):
         raise ValueError("Cannot overwrite existent djrepo file: %s" % dst)
 

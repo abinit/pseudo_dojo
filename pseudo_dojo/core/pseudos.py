@@ -12,6 +12,7 @@ from monty.collections import AttrDict
 from monty.functools import lazy_property
 from monty.string import list_strings
 from monty.fnmatch import WildCard
+from monty.termcolor import cprint
 from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.util.plotting_utils import add_fig_kwargs
@@ -197,11 +198,9 @@ class DojoTable(PseudoTable):
             jdict = p.as_dict()
             entry = OrderedDict([(k, jdict[k]) for k in ("basename", "Z_val", "l_max", "md5")])
 
-            df, dfprime = None, None
-            if p.has_dojo_report:
-                df, dfprime = p.dojo_report.get_last_df_dfp()
-            entry["dfact_meV"] = df
-            entry["dfactprime_meV"] = dfprime
+            res = p.dojo_report.get_last_df_results(with_soc=False)
+            entry["dfact_meV"] = res.get("dfact_meV", None)
+            entry["dfactprime_meV"] = res.get("dfactprime_meV", None)
 
             return entry
 
@@ -366,6 +365,44 @@ class DojoTable(PseudoTable):
         """
         frame = self.get_dfgbrv_dataframe()
         return frame.plot_dfgbrv_dist(**kwargs)
+
+    @add_fig_kwargs
+    def plot_scalar_vs_fully_relativistic(self, **kwargs):
+        #l Build pandas dataframe with results.
+        rows = []
+        for p in self:
+            if not p.has_dojo_report:
+                cprint("Cannot find dojo_report in %s" % p.basename, "magenta")
+                continue
+            report = p.dojo_report
+            # Get data with/without SOC
+            soc_dict = p.dojo_report.get_last_df_results(with_soc=True)
+            sr_dict = p.dojo_report.get_last_df_results(with_soc=False)
+            row = {att: getattr(p, att) for att in ("basename", "Z", "Z_val", "l_max")}
+            row.update(sr_dict)
+            row.update(soc_dict)
+            rows.append(row)
+
+        # Create axes
+        import matplotlib.pyplot as plt
+        fig, ax_list = plt.subplots(nrows=2, ncols=2, sharex=True, squeeze=False)
+        ax_list = ax_list.ravel()
+
+        import pandas as pd
+        frame = pd.DataFrame(rows)
+
+        # Compute absolute differences SOC - SR
+        for i, vname in enumerate(["dfact_meV", "v0", "b0_GPa", "b1"]): # "dfactprime_meV",
+            newcol = "dsoc_" + vname
+            frame[newcol] = frame[vname + "_soc"] - frame[vname]
+            #frame.plot(x="Z", y=newcol, ax=ax_list[i], kind="scatter", grid=True)
+            frame.plot.scatter(x="Z", y=newcol, s=20*(frame["dfact_meV"] + 1), ax=ax_list[i], grid=True)
+
+        print(frame)
+
+        print(frame[frame["v0"].isnull()])
+        #print(frame[frame["v0_soc"].isnull()])
+        return fig
 
     def make_open_notebook(self, nbpath=None):
         """
