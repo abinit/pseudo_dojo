@@ -398,10 +398,9 @@ class DojoTable(PseudoTable):
             #frame.plot(x="Z", y=newcol, ax=ax_list[i], kind="scatter", grid=True)
             frame.plot.scatter(x="Z", y=newcol, s=20*(frame["dfact_meV"] + 1), ax=ax_list[i], grid=True)
 
-        print(frame)
-
+        #print(frame)
         print(frame[frame["v0"].isnull()])
-        #print(frame[frame["v0_soc"].isnull()])
+        print(frame[frame["v0_soc"].isnull()])
         return fig
 
     def make_open_notebook(self, nbpath=None):

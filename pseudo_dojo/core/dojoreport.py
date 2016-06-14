@@ -437,7 +437,6 @@ class DojoReport(dict):
         If filepath is None, self.path is used.
         """
         filepath = self.path if filepath is None else filepath
-        #self.reorder()
         with open(filepath, "wt") as fh:
             #json.dump(self, fh, indent=-1, sort_keys=True)
             #json.dump(self, fh, sort_keys=True, cls=MontyEncoder)
