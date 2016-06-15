@@ -409,8 +409,8 @@ def dojo_table(options):
     data, errors = pseudos.get_dojo_dataframe()
 
     # Compare FR with SR pseudos.
-    pseudos.plot_scalar_vs_fully_relativistic()
-    return 0
+    #pseudos.plot_scalar_vs_fully_relativistic()
+    #return 0
 
     if errors:
         cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
