@@ -37,15 +37,7 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=No
         nbf.new_heading_cell("This is an auto-generated notebook for %s" % os.path.basename(pseudopath)),
         nbf.new_code_cell("""\
 from __future__ import print_function, division, unicode_literals
-
-%matplotlib inline
-import mpld3
-from mpld3 import plugins as plugs
-plugs.DEFAULT_PLUGINS = [plugs.Reset(), plugs.Zoom(), plugs.BoxZoom(), plugs.MousePosition()]
-mpld3.enable_notebook()
-import seaborn as sns
-#sns.set(style="dark", palette="Set2")
-sns.set(style='ticks', palette='Set2')"""),
+%matplotlib notebook"""),
 
         nbf.new_code_cell("""\
 # Construct the pseudo object and get the DojoReport

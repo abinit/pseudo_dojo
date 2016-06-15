@@ -311,7 +311,7 @@ class DojoReport(dict):
 
         estart = hints["high"]["ecut"]
         dense_right = np.linspace(estart - 10, estart + 10, num=11)
-        ecuts = list(dense_right) + [dense_right[-1] + 8, dense_right[-1] + 10,],
+        ecuts = list(dense_right) + [dense_right[-1] + 8, dense_right[-1] + 10,]
 
         # devel is for tuning the pseudo, only two cutoffs
         # development run: few, relatively high ecut calculations
