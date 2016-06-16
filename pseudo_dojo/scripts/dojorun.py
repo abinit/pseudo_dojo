@@ -119,6 +119,7 @@ def build_flow(pseudo, options):
 
         for struct_type in gbrv_structs:
             dojo_trial = "gbrv_" + struct_type
+            if options.soc: dojo_trial += "_soc"
             for ecut in ecut_list:
                 if report.has_trial(dojo_trial, ecut=ecut):
                     cprint("[gbrv]: ignoring ecut=%s because it's already in the DOJO_REPORT" % ecut, "magenta")
