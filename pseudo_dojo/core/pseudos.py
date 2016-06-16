@@ -375,12 +375,21 @@ class DojoTable(PseudoTable):
                 cprint("Cannot find dojo_report in %s" % p.basename, "magenta")
                 continue
             report = p.dojo_report
-            # Get data with/without SOC
+            row = {att: getattr(p, att) for att in ("basename", "Z", "Z_val", "l_max")}
+
+            # Get deltafactor data with/without SOC
             soc_dict = p.dojo_report.get_last_df_results(with_soc=True)
             sr_dict = p.dojo_report.get_last_df_results(with_soc=False)
-            row = {att: getattr(p, att) for att in ("basename", "Z", "Z_val", "l_max")}
             row.update(sr_dict)
             row.update(soc_dict)
+
+            # TODO
+            #for struct_type in ("bcc", "fcc"):
+            #    soc_dict = p.dojo_report.get_last_gbrv_results(struct_type, with_soc=True)
+            #    sr_dict = p.dojo_report.get_last_gbrv_results(struct_type, with_soc=False)
+            #    row.update(sr_dict)
+            #    row.update(soc_dict)
+
             rows.append(row)
 
         # Create axes
@@ -395,11 +404,13 @@ class DojoTable(PseudoTable):
         for i, vname in enumerate(["dfact_meV", "v0", "b0_GPa", "b1"]): # "dfactprime_meV",
             newcol = "dsoc_" + vname
             frame[newcol] = frame[vname + "_soc"] - frame[vname]
-            #frame.plot(x="Z", y=newcol, ax=ax_list[i], kind="scatter", grid=True)
-            frame.plot.scatter(x="Z", y=newcol, s=20*(frame["dfact_meV"] + 1), ax=ax_list[i], grid=True)
+            frame.plot(x="Z", y=newcol, ax=ax_list[i], kind="scatter", grid=True)
+            #frame.plot.scatter(x="Z", y=newcol, s=20*(frame["dfact_meV"] + 1), ax=ax_list[i], grid=True)
 
         #print(frame)
+        print("entries without V0")
         print(frame[frame["v0"].isnull()])
+        print("entries without V0_soc")
         print(frame[frame["v0_soc"].isnull()])
         return fig
 
@@ -451,24 +462,26 @@ class DojoTable(PseudoTable):
             nbf.new_code_cell("""\
 from __future__ import print_function, division, unicode_literals
 
-%matplotlib inline
+%matplotlib notebook
 import seaborn as sns
 #sns.set(style="dark", palette="Set2")
 sns.set(style='ticks', palette='Set2')
 from pseudo_dojo.core.dojoreport import DojoDataFrame"""),
 
-            nbf.new_heading_cell("Init table from filenames$:"),
+            nbf.new_heading_cell("Init table from filenames:"),
             nbf.new_code_cell("dojo_frame = DojoDataFrame.from_json_file('%s')" % json_path),
 
             nbf.new_code_cell("""\
 for row in dojo_frame.myrows():
     print("row:", row)
-    dojo_frame.select_rows(row).plot_hist()"""),
+    row_frame = dojo_frame.select_rows(row)
+    row_frame.plot_hist()"""),
 
             nbf.new_code_cell("""\
 for family in dojo_frame.myfamilies():
     print("family:", family)
-    dojo_frame.select_family(family).plot_hist()"""),
+    family_frame = dojo_frame.select_family(family)
+    family_frame.plot_hist()"""),
         ]
 
         # Now that we have the cells, we can make a worksheet with them and add it to the notebook:
@@ -572,7 +585,9 @@ class OfficialDojoTable(DojoTable):
 
     @property
     def xc(self):
-        """The `XcFunc` object describing the XC functional used to generate the table."""
+        """
+        The `XcFunc` object describing the XC functional used to generate the table.
+        """
         return self._dojo_info.xc
 
     @property

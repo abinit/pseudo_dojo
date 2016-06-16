@@ -441,7 +441,13 @@ class DeltaFactorWork(DojoWork):
             scf_input.add_abiobjects(ksampling, smearing, spin_mode)
             scf_input.set_vars(extra_abivars)
 
-            self.register_scf_task(scf_input)
+	    # Magnetic materials with nspinor = 2 requires connection
+            # and a double SCF run (nsppol = 2 first then nspinor = 2).
+	    if connect and spin_mode.nspinor == 2:
+		print("Using collinear then noncollinear scf task")
+		self.register_collinear_then_noncollinear_scf_task(scf_input)
+	    else:
+		self.register_scf_task(scf_input)
 
         if connect:
             logger.info("Connecting SCF tasks using previous WFK file")

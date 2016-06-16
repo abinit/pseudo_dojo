@@ -720,6 +720,35 @@ class DojoReport(dict):
 
         return d
 
+    def get_last_gbrv_results(self, struct_type, with_soc=False):
+        """
+        Return dictionary with the last value i.e. the best estimate of the
+        gbrv results. Empty dictionary if results are not available
+
+        Args:
+	    struct_type: "bcc" or "fcc".
+            with_soc: If True, the results obtained with SOC are returned (if available).
+            In this case, the name of variable contains the `_soc` suffix at the end e.g.
+            `a0` becomes `a0_soc`.
+        """
+	trial = "gbrv_" + struct_type
+        if with_soc: trial += "_soc"
+        try:
+            data = self[trial]
+        except KeyError:
+            return {}
+
+        # Get the values associated with the last ecut (highest value).
+        vnames = ["a0", "a0_abs_err", "a0_rel_err"]
+        frame = self.get_pdframe(trial, *vnames)
+        d = {"gbrv_" + struct_type + "_" + vname: frame[vname].iloc[-1] for vname in vnames}
+
+        # Add `_soc` prefix.
+        if with_soc:
+            d = {k + "_soc": d[k] for k in d}
+
+        return d
+
     def check(self, check_trials=None):
         """
         Check the dojo report for inconsistencies.
@@ -1116,8 +1145,11 @@ class DojoReport(dict):
             ax_list[3].set_ylabel("$\omega-\omega_{max}$")
 
         # Adjust limits.
-        ax_list[0].set_ylim(asr2_phfreqs.min() - 1, asr2_phfreqs.max() + 1)
-        ax_list[2].set_ylim(noasr_phfreqs.min() - 1, noasr_phfreqs.max() + 1)
+	fact = 0.05
+	phmin, phmax = asr2_phfreqs.min(), asr2_phfreqs.max()
+        ax_list[0].set_ylim(phmin - fact * abs(phmin), phmax + fact * abs(phmax))
+	phmin, phmax = noasr_phfreqs.min(), noasr_phfreqs.max()
+        ax_list[2].set_ylim(phmin - fact * abs(phmin), phmax + fact * abs(phmax))
         ax_list[-1].set_xlabel("Ecut [Ha]")
 
         return fig
