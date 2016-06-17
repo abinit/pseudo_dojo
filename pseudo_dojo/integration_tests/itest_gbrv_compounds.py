@@ -12,17 +12,17 @@ def itest_gbrvcompounds_gga_pawxml_flow(fwp, tvars):
     """Testing the GBRV flow with GGA and PAW-XML (relaxation + EOS)"""
     # Unit test
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
-    gbrv_factory = GbrvCompoundsFactory()
+    gbrv_factory = GbrvCompoundsFactory(xc="PBE")
 
     extra_abivars = {
-        "mem_test": 0,
-        "fband": 2,
-        "nstep": 100,
-        "paral_kgb": 0,
+    #    "mem_test": 0,
+    #    "fband": 2,
+    #    "nstep": 100,
+    #    "paral_kgb": 0,
     }
 
     formula, struct_type, accuracy = "LiF", "rocksalt", "normal"
-    pseudos = pdj_data.pseudos("3li.pspnc", "9f.pspnc")
+    pseudos = pdj_data.pseudos("Si.psp8", "O.psp8")
 
     work = gbrv_factory.relax_and_eos_work(accuracy, pseudos, formula, struct_type,
                                            ecut=20, pawecutdg=None, **extra_abivars)
