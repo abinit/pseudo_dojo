@@ -199,7 +199,7 @@ class GhostsWork(DojoWork):
             nband=int(nband),
             nbdbuf=int(nbdbuf),
             tolwfr=tolwfr,
-            prtwf=0,
+            #prtwf=0,
             nstep=200,
             chkprim=0,
             mem_test=0

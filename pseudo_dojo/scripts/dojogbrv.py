@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Compute the deltafactor for a given pseudopotential."""
+"""Script to run the GBRV tests for binary and ternary compunds"""
 from __future__ import division, print_function, unicode_literals
 
 import sys
@@ -7,6 +7,7 @@ import os
 import argparse
 import logging
 
+from monty.termcolor import cprint
 from warnings import warn
 from abipy import abilab
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
@@ -22,11 +23,11 @@ def gbrv_generate(options):
     for cls in GbrvOutdb.__subclasses__():
         outdb = cls.new_from_dojodir(options.dojo_dir)
         if os.path.exists(outdb.filepath):
-            print("File %s already exists! " 
-                  "New file won't be created. Remove it and try again"  % outdb.basename)
+            cprint("File %s already exists! "
+                  "New file won't be created. Remove it and try again"  % outdb.basename, "red")
         else:
             outdb.json_write()
-            print("Written new database %s" % outdb.basename)
+            cprint("Written new database %s" % outdb.basename, "green")
 
     return 0
 
@@ -94,12 +95,11 @@ def gbrv_run(options):
     options.manager = abilab.TaskManager.as_manager(options.manager)
 
     outdb = GbrvOutdb.from_file(options.database)
-
     jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs, select_formulas=options.formulas)
 
     num_jobs = len(jobs)
     if num_jobs == 0:
-        print("Nothing to do, returning")
+        cprint("Nothing to do, returning", "yellow")
         return 0
     else:
         print("Will run %d works" % num_jobs)
@@ -122,20 +122,20 @@ def gbrv_run(options):
     for job in jobs:
         # FIXME this should be taken from the pseudos
         ecut = 30 if job.accuracy == "normal" else 45
-        work = gbrv_factory.relax_and_eos_work(job.accuracy, job.pseudos, job.formula, outdb.struct_type, 
+        work = gbrv_factory.relax_and_eos_work(job.accuracy, job.pseudos, job.formula, outdb.struct_type,
                                                ecut=ecut, pawecutdg=None, **extra_abivars)
 
         # Attach the database to the work to trigger the storage of the results.
         flow.register_work(work.set_outdb(outdb.filepath))
 
-    print("Working in: ", flow.workdir)                     
+    print("Working in: ", flow.workdir)
     flow.build_and_pickle_dump()
 
     if options.dry_run:
         print("dry-run mode, will validate input files")
-        isok, results = flow.abivalidate_inputs()              
-        if not isok:                                           
-            print(results)                                     
+        isok, results = flow.abivalidate_inputs()
+        if not isok:
+            print(results)
             return 1
     else:
         # Run the flow with the scheduler (enable smart_io)
@@ -152,7 +152,7 @@ def main():
 usage example:
    dojogbrv generate directory      =>  Generate the json files needed GBRV computations.
                                         directory contains the pseudopotential table.
-   dojogbrv update directory        =>  Update all the json files in directory (check for 
+   dojogbrv update directory        =>  Update all the json files in directory (check for
                                         new pseudos or stale entries)
    dojogbrv reset dir/*.json        =>  Reset all failed entries in the json files
    dojogbrv run json_database       =>  Read data from json file, create flows and submit them
@@ -202,16 +202,16 @@ usage example:
                        "of input files without submitting"))
     def parse_formulas(s):
         return s.split(",") if s is not None else None
-    p_run.add_argument('-f', '--formulas', type=parse_formulas, default=None,  
+    p_run.add_argument('-f', '--formulas', type=parse_formulas, default=None,
                         help="Optional list of formulas to be selected e.g. --formulas=LiF, NaCl")
     p_run.add_argument('database', help='Database with the output results.')
 
     try:
         options = parser.parse_args()
-    except Exception as exc: 
+    except Exception as exc:
         show_examples_and_exit(error_code=1)
 
-    # loglevel is bound to the string value obtained from the command line argument. 
+    # loglevel is bound to the string value obtained from the command line argument.
     # Convert to upper case to allow the user to specify --loglevel=DEBUG or --loglevel=debug
     import logging
     numeric_level = getattr(logging, options.loglevel.upper(), None)
@@ -221,14 +221,14 @@ usage example:
 
     # Dispatch.
     return globals()["gbrv_" + options.command](options)
-    
+
 
 if __name__ == "__main__":
     do_prof = False
     try:
         do_prof = sys.argv[1] == "prof"
         if do_prof: sys.argv.pop(1)
-    except: 
+    except:
         pass
 
     if do_prof:

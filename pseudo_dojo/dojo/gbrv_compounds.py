@@ -1,5 +1,5 @@
 # coding: utf-8
-"""Base class for Dojo Workflows."""
+"""Workflows to perform GBRV tests for binary and ternary compunds"""
 from __future__ import division, print_function, unicode_literals
 
 import numpy as np
@@ -23,14 +23,13 @@ class GbrvCompoundsFactory(object):
         """xc: Exchange-correlation functional."""
         self._db = gbrv_database(xc)
 
-    def make_ref_structure(self, formula, struct_type, ref):
+    def make_ref_structure(self, formula, struct_type, ref="ae"):
         """
-        Return the structure used in the GBRV tests given the chemical formula, the structure type
-        and the reference code.
+        Return the structure used in the GBRV tests given the chemical formula,
+        the structure type and the reference code.
         """
         # Get the entry in the database
         entry = self._db.get_entry(formula, struct_type)
-
         if entry is None:
             logger.critical("Cannot find entry for %s, returning None!" % formula)
             return None
@@ -39,9 +38,8 @@ class GbrvCompoundsFactory(object):
         structure = entry.build_structure(ref=ref)
 
         if structure is None:
-            logger.warning("No AE structure for %s\n Will use gbrv_uspp data." % formula)
+            logger.warning("No AE structure for %s. Will use gbrv_uspp data." % formula)
             structure = entry.build_structure(ref="gbrv_uspp")
-
         if structure is None:
             logger.critical("Cannot initialize structure for %s, returning None!" % formula)
 
@@ -75,7 +73,8 @@ class GbrvCompoundsFactory(object):
 
 class GbrvCompoundRelaxAndEosWork(Work):
 
-    def __init__(self, structure, formula, struct_type, pseudos, accuracy, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
+    def __init__(self, structure, formula, struct_type, pseudos, accuracy,
+                 ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
                  spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
                  ecutsm=0.05, chksymbreak=0, workdir=None, manager=None, **kwargs):
         """

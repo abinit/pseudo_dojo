@@ -16,6 +16,7 @@ from monty.collections import dict2namedtuple #AttrDict,
 from monty.functools import lazy_property
 from pymatgen.core.periodic_table import Element #sort_symbols_by_Z
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
+from pymatgen.analysis.eos import EOS
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formula
 
@@ -67,7 +68,9 @@ class GbrvRecord(dict):
 
     @classmethod
     def from_dict(cls, d, struct_type, dojo_pptable):
-        """Construct the object from a dictionary."""
+        """
+        Construct the object from a dictionary.
+        """
         d = d.copy()
         new = cls(struct_type, d.pop("formula"), d.pop("pseudos_metadata"), dojo_pptable)
 
@@ -223,10 +226,9 @@ class GbrvRecord(dict):
         d = self["accuracy"]
 
         num_sites, volumes, etotals = d["num_sites"], np.array(d["volumes"]), np.array(d["etotals"])
-        from pymatgen.io.abinit.eos import EOS
-        eos = EOS.Quadratic()
 
-        # Use same fit as the one employed for the deltafactor.
+        # Perform quadratic fit.
+        eos = EOS.Quadratic()
         eos_fit = eos.fit(volumes/num_sites, etotals/num_sites)
 
         label = "ecut %.1f" % d["ecut"]
@@ -237,7 +239,7 @@ class GbrvRecord(dict):
 
 class GbrvOutdb(MutableMapping):
     """
-    This object stores the results for the GBRV tests (binary and ternary compounds.
+    This object stores the results for the GBRV tests (binary and ternary compounds).
     This is a base class.
     """
     struct_type = None
@@ -611,13 +613,6 @@ class HalfHeuslersOutdb(GbrvOutdb):
     basename = struct_type + ".json"
 
 
-def print_full_frame(frame):
-    import pandas as pd
-    pd.set_option('display.max_rows', len(frame))
-    print(frame)
-    pd.reset_option('display.max_rows')
-
-
 class GbrvDataFrame(DataFrame):
     """
     Extends pandas :class:`DataFrame` by adding helper functions.
@@ -892,7 +887,8 @@ class GbrvDataFrame(DataFrame):
         ax.legend(loc="best")
         plt.setp(ax.xaxis.get_majorticklabels(), rotation=70)
 
-    def boxplot(self, ax=None):
+    @add_fig_kwargs
+    def boxplot(self, ax=None, **kwargs):
         import seaborn as sns
         ax, fig, plt = get_ax_fig_plt(ax)
 

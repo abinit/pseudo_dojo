@@ -773,8 +773,13 @@ class DojoReport(dict):
         missing = defaultdict(list)
         for trial in check_trials:
             # GBRV results do not contain noble gases, Hg and Po so ignore the error
-            if "gbrv" in trial and (self.element.is_noble_gas or self.symbol in ("Hg", "Po")):
-                continue
+            if "gbrv" in trial and (self.element.is_noble_gas or
+                                    self.element.is_lanthanoid or
+                                    self.element.is_actinoid or
+                                    self.symbol in ("Hg", "Po")): continue
+
+	    if "deltafactor" in trial and self.symbol != "Lu" and \
+		(self.element.is_lanthanoid or self.element.is_actinoid): continue
 
             for ecut in global_ecuts:
                 if not self.has_trial(trial, ecut=ecut):
@@ -871,7 +876,7 @@ class DojoReport(dict):
     @add_fig_kwargs
     def plot_deltafactor_eos(self, ax=None, with_soc=False, **kwargs):
         """
-        Olot the equation of state computed with the deltafactor setup.
+        Plot the equation of state computed with the deltafactor setup.
 
         Args:
             ax: matplotlib :class:`Axes` or None if a new figure should be created.
@@ -1147,8 +1152,10 @@ class DojoReport(dict):
         # Adjust limits.
 	fact = 0.05
 	phmin, phmax = asr2_phfreqs.min(), asr2_phfreqs.max()
+        if phmin == 0.0: phmin = -1
         ax_list[0].set_ylim(phmin - fact * abs(phmin), phmax + fact * abs(phmax))
 	phmin, phmax = noasr_phfreqs.min(), noasr_phfreqs.max()
+        if phmin == 0.0: phmin = -1
         ax_list[2].set_ylim(phmin - fact * abs(phmin), phmax + fact * abs(phmax))
         ax_list[-1].set_xlabel("Ecut [Ha]")
 
