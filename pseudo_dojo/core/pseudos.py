@@ -384,34 +384,59 @@ class DojoTable(PseudoTable):
             row.update(soc_dict)
 
             # TODO
-            #for struct_type in ("bcc", "fcc"):
-            #    soc_dict = p.dojo_report.get_last_gbrv_results(struct_type, with_soc=True)
-            #    sr_dict = p.dojo_report.get_last_gbrv_results(struct_type, with_soc=False)
-            #    row.update(sr_dict)
-            #    row.update(soc_dict)
+            for struct_type in ("bcc", "fcc"):
+                soc_dict = p.dojo_report.get_last_gbrv_results(struct_type, with_soc=True)
+                sr_dict = p.dojo_report.get_last_gbrv_results(struct_type, with_soc=False)
+                row.update(sr_dict)
+                row.update(soc_dict)
 
             rows.append(row)
-
-        # Create axes
-        import matplotlib.pyplot as plt
-        fig, ax_list = plt.subplots(nrows=2, ncols=2, sharex=True, squeeze=False)
-        ax_list = ax_list.ravel()
 
         import pandas as pd
         frame = pd.DataFrame(rows)
 
-        # Compute absolute differences SOC - SR
-        for i, vname in enumerate(["dfact_meV", "v0", "b0_GPa", "b1"]): # "dfactprime_meV",
-            newcol = "dsoc_" + vname
-            frame[newcol] = frame[vname + "_soc"] - frame[vname]
-            frame.plot(x="Z", y=newcol, ax=ax_list[i], kind="scatter", grid=True)
-            #frame.plot.scatter(x="Z", y=newcol, s=20*(frame["dfact_meV"] + 1), ax=ax_list[i], grid=True)
+        def print_frame(x):
+            with pd.option_context('display.max_rows', len(x),
+                                   'display.max_columns', len(list(x.keys()))):
+                print(x)
 
-        #print(frame)
-        print("entries without V0")
-        print(frame[frame["v0"].isnull()])
-        print("entries without V0_soc")
-        print(frame[frame["v0_soc"].isnull()])
+        # Create axes
+        import matplotlib.pyplot as plt
+        #fig, ax_list = plt.subplots(nrows=4, ncols=2, sharex=True, squeeze=False)
+        #ax_list = ax_list.ravel()
+
+        # Compute absolute differences SOC - SR
+        #for i, vname in enumerate(["dfact_meV", "v0", "b0_GPa", "b1"]): # "dfactprime_meV",
+        #    newcol = "dsoc_" + vname
+        #    frame[newcol] = frame[vname + "_soc"] - frame[vname]
+        #    frame.plot(x="Z", y=newcol, ax=ax_list[i], kind="scatter", grid=True)
+        #    #frame.plot.scatter(x="Z", y=newcol, s=20*(frame["dfact_meV"] + 1), ax=ax_list[i], grid=True)
+
+        #print_frame("entries without V0")
+        #print_frame(frame[frame["v0"].isnull()])
+        #print_frame("entries without V0_soc")
+        #print_frame(frame[frame["v0_soc"].isnull()])
+
+        # Plot GBRV results with/without SOC
+        fig, ax_list = plt.subplots(nrows=2, ncols=1, sharex=True, squeeze=False)
+        ax_list = ax_list.ravel()
+        for i, stype in enumerate(("bcc", "fcc")):
+            #"gbrv_fcc_soc_a0_rel_err"
+            for soc, color in zip(("", "_soc"), ("blue", "red")):
+                col = "gbrv_" + stype + soc + "_a0_rel_err"
+                frame.plot(x="Z", y=col, ax=ax_list[i], kind="scatter", grid=True, color=color)
+
+        # Plot GBRV diff between SR and FR with SOC
+        #frame["dsoc_bcc"] = frame["gbrv_bcc_soc_a0_rel_err"] - frame["gbrv_bcc_a0_rel_err"]
+        #frame.plot(x="Z", y="dsoc_bcc", ax=ax_list[0], kind="scatter", grid=True)
+        #frame["dsoc_fcc"] = frame["gbrv_fcc_soc_a0_rel_err"] - frame["gbrv_fcc_a0_rel_err"]
+        #frame.plot(x="Z", y="dsoc_fcc", ax=ax_list[1], kind="scatter", grid=True)
+
+        #print_frame(frame[frame["gbrv_fcc_soc_a0_rel_err"].isnull()])
+        #print_frame(frame[frame["gbrv_fcc_a0_rel_err"].isnull()])
+        #print_frame(frame[["basename", "Z", "Z_val", "dsoc_bcc", "dsoc_fcc"]])
+        #print_frame(frame)
+
         return fig
 
     def make_open_notebook(self, nbpath=None):

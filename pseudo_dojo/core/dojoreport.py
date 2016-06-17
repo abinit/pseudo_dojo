@@ -252,8 +252,8 @@ class DojoReport(dict):
         "deltafactor",
         "gbrv_bcc",
         "gbrv_fcc",
-        "phonon",
-        "ghosts",
+        #"phgamma",
+        #"ghosts",
     ]
 
     # Add trials done with SOC.
@@ -263,8 +263,8 @@ class DojoReport(dict):
         "deltafactor": "dfact_meV",
         "gbrv_bcc": "a0_rel_err",
         "gbrv_fcc": "a0_rel_err",
-        "phonon": "all",
-        "ghosts": "all",
+        #"phgamma": "all",
+        #"ghosts": "all",
     }
 
     # We use three different level of accuracy.
@@ -728,8 +728,6 @@ class DojoReport(dict):
         Args:
 	    struct_type: "bcc" or "fcc".
             with_soc: If True, the results obtained with SOC are returned (if available).
-            In this case, the name of variable contains the `_soc` suffix at the end e.g.
-            `a0` becomes `a0_soc`.
         """
 	trial = "gbrv_" + struct_type
         if with_soc: trial += "_soc"
@@ -741,11 +739,11 @@ class DojoReport(dict):
         # Get the values associated with the last ecut (highest value).
         vnames = ["a0", "a0_abs_err", "a0_rel_err"]
         frame = self.get_pdframe(trial, *vnames)
-        d = {"gbrv_" + struct_type + "_" + vname: frame[vname].iloc[-1] for vname in vnames}
+        d = {trial + "_" + vname: frame[vname].iloc[-1] for vname in vnames}
 
         # Add `_soc` prefix.
-        if with_soc:
-            d = {k + "_soc": d[k] for k in d}
+        #if with_soc:
+        #    d = {k + "_soc": d[k] for k in d}
 
         return d
 
@@ -759,10 +757,13 @@ class DojoReport(dict):
                 If None, all trials are analyzed.
         """
         check_trials = self.ALL_TRIALS if check_trials is None else list_strings(check_trials)
+	# Relativistic pseudos (_r.psp8) must have trials done with/without SOC
+	if not "_r" in self["basename"]:
+	    check_trials = [t for t in check_trials if not t.endswith("_soc")]
+
         errors = []
         app = errors.append
-
-        for k in ("version", "ppgen_hints", "md5"):
+        for k in ("version", "ppgen_hints", "md5", "ghosts"):
             if k not in self: app("%s is missing" % k)
 
         # Check if we have computed each trial for the full set of ecuts in global_ecuts
@@ -1100,7 +1101,6 @@ class DojoReport(dict):
         Returns:
             `matplotlib` figure. None if the GBRV test is not present.
         """
-        #trial = "phonon" if not with_soc else "phonon_soc"
         trial = "phgamma" if not with_soc else "phgamma_soc"
         if trial not in self:
             print("dojo report does not contain trial:", trial)

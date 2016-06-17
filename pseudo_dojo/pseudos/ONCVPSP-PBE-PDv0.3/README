@@ -1,1 +1,12 @@
-The pseudo potentials in this table use the extension switch = 1. Abinit versions < 7.11.10 will not be able to use this. The pseudos can be used without any problem by changing the corresonding line in the psp8 file. You can use the script in this folder to do this automatically. Note the Hash in the dojo report has been calculated with the extension switch 1. It will not be correct any more if the line has been changed. Hence automatic cheching using abipy will not work anymore in this case. 
+The pseudo potentials in this table use the extension switch = 1.
+Abinit versions < 7.11.10 will not be able to use this.
+The pseudos can be used without any problem by changing the corresponding line in the psp8 file.
+You can use the script in this folder to do this automatically.
+Note the Hash in the dojo report has been calculated with the extension switch 1.
+It will not be correct any more if the line has been changed. Hence automatic cheching using abipy
+will not work anymore in this case. 
+
+
+TO BE INVESTIGATED:
+
+Pt-sp
