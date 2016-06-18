@@ -47,7 +47,7 @@ class GbrvCompoundsFactory(object):
         return structure
 
     def relax_and_eos_work(self, accuracy, pseudos, formula, struct_type,
-                           ecut=None, pawecutdg=None, ref="ae", fband=2.0, **kwargs):
+                           ecut=None, pawecutdg=None, ref="ae", fband=2.0):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
@@ -69,15 +69,15 @@ class GbrvCompoundsFactory(object):
         structure = self.make_ref_structure(formula, struct_type=struct_type, ref=ref)
 
         return GbrvCompoundRelaxAndEosWork(structure, formula, struct_type, pseudos, self.db.xc, accuracy,
-                                           ecut=ecut, pawecutdg=pawecutdg, fband=fband, **kwargs)
+                                           ecut=ecut, pawecutdg=pawecutdg, fband=fband)
 
 
 class GbrvCompoundRelaxAndEosWork(Work):
 
     def __init__(self, structure, formula, struct_type, pseudos, xc, accuracy,
                  ecut=None, pawecutdg=None, ngkpt=(8, 8, 8), fband=2.0,
-                 spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
-                 ecutsm=0.05, chksymbreak=0, workdir=None, manager=None, **kwargs):
+                 spin_mode="unpolarized", smearing="fermi_dirac:0.001 Ha",
+                 ecutsm=0.05, chksymbreak=0, workdir=None, manager=None):
         """
         Build a :class:`Work` for the computation of the relaxed lattice parameter.
 
@@ -91,7 +91,6 @@ class GbrvCompoundRelaxAndEosWork(Work):
             ngkpt: MP divisions for k-mesh.
             fband:
             spin_mode: Spin polarization mode.
-            toldfe: Tolerance on the energy (Ha)
             smearing: Smearing technique.
             ecutsm:
             chksymbreak:
@@ -111,21 +110,27 @@ class GbrvCompoundRelaxAndEosWork(Work):
         self.set_name("_".join(["gbrv", struct_type, formula, accuracy]))
 
         # nband must be large enough to accomodate fractional occupancies.
-        #fband = kwargs.pop("fband", None)
-        # FIXME
         #nband = gbrv_nband(self.pseudo)
 
-        # TODO: toldfe for the EOS, tolvrs for the relaxation.
         # Set extra_abivars.
+        # Use tolvrs for the relaxation, toldfe for the EOS
         self.extra_abivars = dict(
             ecut=ecut,
             pawecutdg=pawecutdg,
-            toldfe=toldfe,
-            paral_kgb=kwargs.pop("paral_kgb", 0),
+            tolvrs=1e-10,
             fband=fband,
-            #ecutsm=0.5,
+            ecutsm=0.5,
+            mem_test=0,
+            #paral_kgb=kwargs.pop("paral_kgb", 0),
             #nband=nband,
         )
+
+        # Build inputs for structural relaxation.
+        #multi = ion_ioncell_relax_input(
+        #                    structure, pseudo,
+        #                    kppa=kppa, nband=None,
+        #                    ecut=ecut, pawecutdg=pawecutdg, accuracy="normal", spin_mode=spin_mode,
+        #                    smearing=smearing)
 
         self.extra_abivars.update(**kwargs)
         self.ecut = ecut
@@ -180,13 +185,13 @@ class GbrvCompoundRelaxAndEosWork(Work):
             new_lattice = relaxed_structure.lattice.scale(vol)
             new_structure = Structure(new_lattice, relaxed_structure.species, relaxed_structure.frac_coords)
 
-            # Add ecutsm
-            extra = self.extra_abivars.copy()
-            extra["ecutsm"] = 0.5
-
             scf_input = abilab.AbinitInput(new_structure, self.pseudos)
+
+            scf_input.set_vars(self.extra_abivars.copy())
             scf_input.add_abiobjects(self.ksampling, self.spin_mode, self.smearing)
-            scf_input.set_vars(extra)
+            # Use toldfe instead of tolvrs
+            scf_input.pop_tolerances()
+            scf_input.set_vars(toldfe=1e-10)
 
             # Register new task
             self.register_scf_task(scf_input)

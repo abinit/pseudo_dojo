@@ -4,7 +4,7 @@ Client code should use the official API gbrv_database() to access the database.
 
 Example::
 
-    db = gbrv_database("GGA")
+    db = gbrv_database(xc="PBE")
     fcc_si = db.get_fcc_entry("Si")
     print(fcc_si.ae, fcc_si.gbrv_uspp)
 """
@@ -157,7 +157,6 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
             return Structure.ABO3(a, self.species)
 
         elif stype == "hH":
-            print("Warning: Using half_heusler! TO BE TESTED")
             return Structure.half_heusler(a, self.species)
 
         raise ValueError("Don't know how to construct %s structure" % stype)

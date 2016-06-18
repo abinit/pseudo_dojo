@@ -106,18 +106,18 @@ def gbrv_dbrun(options):
 
     flow = abilab.Flow(workdir=workdir)
 
-    extra_abivars = {
-        "mem_test": 0,
-        "fband": 2,
-        "nstep": 100,
-        "paral_kgb": options.paral_kgb,
-    }
+    #extra_abivars = {
+        #"mem_test": 0,
+        #"fband": 2,
+        #"nstep": 100,
+        #"paral_kgb": options.paral_kgb,
+    #}
 
     for job in jobs:
         # FIXME this should be taken from the pseudos
         ecut = 30 if job.accuracy == "normal" else 45
         work = gbrv_factory.relax_and_eos_work(job.accuracy, job.pseudos, job.formula, outdb.struct_type,
-                                               ecut=ecut, pawecutdg=None, **extra_abivars)
+                                               ecut=ecut, pawecutdg=None)
 
         # Attach the database to the work to trigger the storage of the results.
         flow.register_work(work.set_outdb(outdb.filepath))
