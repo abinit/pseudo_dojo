@@ -21,6 +21,7 @@ class TestGbrvDatabase(PseudoDojoTest):
         assert db.has_symbol("Si", stype="fcc")
         assert not db.has_symbol("Si", stype="rocksalt")
         assert "KMgF3" in db.all_symbols
+        db.print_formulas()
 
         with self.assertRaises(ValueError):
             gbrv_database(xc="PW")

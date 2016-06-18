@@ -12,16 +12,28 @@ from monty.functools import prof_main
 from warnings import warn
 from abipy import abilab
 from pseudo_dojo.core.pseudos import DojoTable #dojopseudo_from_file,
-from pseudo_dojo.refdata.gbrv import gbrv_database
+from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formula
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
 from pseudo_dojo.dojo.gbrv_compounds import GbrvCompoundsFactory
 
 logger = logging.getLogger(__name__)
 
 
+def ecut_from_pseudos(pseudos):
+    """Get ecut from ppgen hints."""
+    ecut = 0.0
+    for p in pseudos:
+        # TODO: Should consider hints as well
+        ecut = max(ecut, p.dojo_report["ppgen_hints"]["high"]["ecut"])
+    assert ecut != 0.0
+    ecut += 10
+    return ecut
+
+
 def gbrv_dbgen(options):
     """Generate the GBRV output databases."""
     # FIXME bugme with workdir
+    raise NotImplementedError()
     for cls in GbrvOutdb.__subclasses__():
         outdb = cls.new_from_dojodir(options.dojo_dir)
         if os.path.exists(outdb.filepath):
@@ -36,6 +48,7 @@ def gbrv_dbgen(options):
 
 def gbrv_update(options):
     """Update the databases in dojo_dir."""
+    raise NotImplementedError()
     for cls in GbrvOutdb.__subclasses__():
         filepath = os.path.join(options.dojo_dir, cls.basename)
         if not os.path.exists(filepath): continue
@@ -51,6 +64,7 @@ def gbrv_update(options):
 
 def gbrv_reset(options):
     """Reset the failed entries in the list of databases specified by the user."""
+    raise NotImplementedError()
     status_list = []
     if "f" in options.status: status_list.append("failed")
     if "s" in options.status: status_list.append("scheduled")
@@ -68,7 +82,7 @@ def gbrv_reset(options):
 
 def gbrv_plot(options):
     """Plot results in the databases."""
-
+    raise NotImplementedError()
     for path in options.database_list:
         outdb = GbrvOutdb.from_file(path)
         frame = outdb.get_dataframe()
@@ -89,6 +103,7 @@ def gbrv_plot(options):
 
 def gbrv_dbrun(options):
     """Build flow and run it."""
+    raise NotImplementedError()
     outdb = GbrvOutdb.from_file(options.database)
     jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs, select_formulas=options.formulas)
     num_jobs = len(jobs)
@@ -124,23 +139,24 @@ def gbrv_dbrun(options):
 
     print("Working in: ", flow.workdir)
     flow.build_and_pickle_dump(abivalidate=options.dry_run)
+    if options.dry_run: return 0
 
-    if not options.dry_run:
-        # Run the flow with the scheduler (enable smart_io)
-        flow.use_smartio()
-        flow.make_scheduler().start()
-
-    return 0
+    # Run the flow with the scheduler (enable smart_io)
+    flow.use_smartio()
+    return flow.make_scheduler().start()
 
 
 def gbrv_pprun(options):
     """
-    Run GBRV compound tests for these pseudos.
+    Run GBRV compound tests given a list of pseudos.
     """
+    # Build table and list of symbols
     pseudos = options.pseudos = DojoTable(options.pseudos)
     symbols = [p.symbol for p in pseudos]
     if options.verbose > 1: print(pseudos)
 
+    # Consistency check
+    assert len(set(symbols)) == len(symbols)
     xc_list = [p.xc for p in pseudos]
     xc = xc_list[0]
     if any(xc != other_xc for other_xc in xc_list):
@@ -148,49 +164,108 @@ def gbrv_pprun(options):
 
     gbrv_factory = GbrvCompoundsFactory(xc=xc)
     db = gbrv_factory.db
-    #self.db = gbrv_database(xc)
-    #for pseudo in pseudos:
-    #    print(pseudo.symbol)
-    #    for entry in db.entries_with_symbol(pseudo.symbol):
-    #        print(entry)
 
     entries = db.entries_with_symbol_list(symbols)
     if not entries:
         cprint("Cannot find entries for %s! Returning" % str(symbols), "red")
         return 1
-    #print(entries)
 
-    workdir = "GBRV_COMPOUND_" + "_".join(p.basename for p in pseudos)
+    workdir = "GBRVCOMP_" + "_".join(p.basename for p in pseudos)
     print("Working in:", workdir)
     flow = abilab.Flow(workdir=workdir)
-    #outdb = os.path.join(flow.workdir, "gbrv.json")
 
-    # Get ecut from ppgen hints.
-    ecut = 0.0
-    for p in pseudos:
-        # TODO: Should consider hints as well
-        ecut = max(ecut, p.dojo_report["ppgen_hints"]["high"]["ecut"])
-    assert ecut != 0.0
-    ecut += 10
+    ecut = ecut_from_pseudos(pseudos)
 
     for entry in entries:
         print("Adding work for formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
         work = gbrv_factory.relax_and_eos_work("normal", pseudos, entry.symbol, entry.struct_type,
                                                ecut=ecut, pawecutdg=None)
-        #work.set_outdb(outdb)
         flow.register_work(work)
 
-    flow.build_and_pickle_dump() #abivalidate=True)
-
-    # Create output database.
-    #import json
-    #with open(outdb, "wt") as fh:
-    #    print("Creating %s" % outdb)
-    #    json.dump({}, fh)
+    flow.build_and_pickle_dump(abivalidate=options.dry_run)
+    if options.dry_run: return 0
 
     # Run the flow with the scheduler (enable smart_io)
     flow.use_smartio()
-    flow.make_scheduler().start()
+    return flow.make_scheduler().start()
+
+def gbrv_runform(options):
+    """
+    Run GBRV compound tests given a chemical formula.
+    """
+    formula = options.formula
+    symbols = set(species_from_formula(formula))
+
+    # Build table and build all possible combinations for the given formula.
+    table = DojoTable.from_dir(top=options.pseudo_dir, exts=("psp8"), exclude_dirs="_*")
+    pseudo_list = table.all_combinations_for_elements(symbols)
+    # Remove relativistic pseudos.
+    pseudo_list = [plist for plist in pseudo_list if not any("_r" in p.basename for p in plist)]
+
+    xc = "PBE"
+    gbrv_factory = GbrvCompoundsFactory(xc=xc)
+    db = gbrv_factory.db
+
+    # Consistency check
+    entries = db.entries_with_symbol_list(symbols)
+    if not entries:
+        cprint("Cannot find entries for %s! Returning" % str(symbols), "red")
+        return 1
+    assert len(entries) == 1
+    entry = entries[0]
+
+    workdir = "GBRVCOMP_" + formula
+    print("Working in:", workdir)
+    flow = abilab.Flow(workdir=workdir)
+
+    for pseudos in pseudo_list:
+        if any(xc != p.xc for p in pseudos):
+            raise ValueError("Pseudos with different XC functional")
+        ecut = ecut_from_pseudos(pseudos)
+        print("Adding work for pseudos:", pseudos)
+        print("    formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
+        work = gbrv_factory.relax_and_eos_work("normal", pseudos, entry.symbol, entry.struct_type,
+                                               ecut=ecut, pawecutdg=None)
+        flow.register_work(work)
+
+    flow.build_and_pickle_dump(abivalidate=options.dry_run)
+    if options.dry_run: return 0
+
+    # Run the flow with the scheduler (enable smart_io)
+    flow.use_smartio()
+    return flow.make_scheduler().start()
+
+
+def gbrv_find(options):
+    """
+    Run GBRV compound tests given a list of pseudos.
+    """
+    symbols = options.symbols
+    print("Print all formula containts symbols: ", symbols)
+
+    db = gbrv_database(xc="PBE")
+    entries = db.entries_with_symbol_list(symbols)
+    if not entries:
+        cprint("Cannot find entries for %s! Returning" % str(symbols), "red")
+        return 1
+
+    print("Found %d entries" % len(entries))
+    for i, entry in enumerate(entries):
+	print("[%i] % i", entry)
+
+    #for pseudo in pseudos:
+    #    print(pseudo.symbol)
+    #    for entry in db.entries_with_symbol(pseudo.symbol):
+    #        print(entry)
+    return 0
+
+
+def gbrv_info(options):
+    """
+    Print structure types and chemical formulas.
+    """
+    db = gbrv_database(xc="PBE")
+    db.print_formulas()
 
 
 @prof_main
@@ -220,6 +295,8 @@ usage example:
                               help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
     copts_parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
                               help='Verbose, can be supplied multiple times to increase verbosity')
+    copts_parser.add_argument('-d', '--dry-run', default=False, action="store_true",
+                              help=("Dry run, build the flow and check validity of input files without submitting"))
 
     # Build the main parser.
     parser = argparse.ArgumentParser(epilog=str_examples(), formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -250,8 +327,7 @@ usage example:
     p_dbrun.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
     p_dbrun.add_argument('-n', '--max-njobs', type=int, default=2,
                           help="Maximum number of jobs (a.k.a. flows) that will be submitted")
-    p_dbrun.add_argument('-d', '--dry-run', default=False, action="store_true",
-                         help=("Dry run, build the flow and check validity of input files without submitting"))
+
     def parse_formulas(s):
         return s.split(",") if s is not None else None
     p_dbrun.add_argument('-f', '--formulas', type=parse_formulas, default=None,
@@ -261,6 +337,15 @@ usage example:
     # Subparser for pprun command.
     p_pprun = subparsers.add_parser('pprun', parents=[copts_parser], help=gbrv_pprun.__doc__)
     p_pprun.add_argument('pseudos', nargs="+", help="Pseudopotential files")
+
+    p_runform = subparsers.add_parser('runform', parents=[copts_parser], help=gbrv_runform.__doc__)
+    p_runform.add_argument('formula', help="Chemical formula.")
+    p_runform.add_argument('-p', "--pseudo-dir", default=".", help="Directory with pseudos.")
+
+    p_find = subparsers.add_parser('find', parents=[copts_parser], help=gbrv_find.__doc__)
+    p_find.add_argument('symbols', nargs="+", help="Element symbols")
+
+    p_info = subparsers.add_parser('info', parents=[copts_parser], help=gbrv_info.__doc__)
 
     try:
         options = parser.parse_args()

@@ -85,6 +85,9 @@ def count_species(formula):
             num = int(symbol[digpos:])
             symbol = symbol[:digpos]
 
+        from pymatgen.core.periodic_table import Element
+        assert symbol in (e.symbol for e in Element)
+
         # Accumulate.
         if symbol in count:
             count[symbol] += num
@@ -96,17 +99,17 @@ def count_species(formula):
 
 def half_heusler(a, species):
     # fcc lattice with 3 atoms as basis
-    # XYZ, C1_b
-    # see http://arxiv.org/pdf/cond-mat/0510276v1.pdf
+    # prototype: AgAlGe
+    # See also http://www.cryst.ehu.es/cgi-bin/cryst/programs/nph-wp-list?gnum=216
     lattice = 0.5 * float(a) * np.array([
         0,  1,  1,
         1,  0,  1,
         1,  1,  0])
 
     frac_coords = np.reshape([
-       0,   0,   0,     # X
-       0.5, 0.5, 0.5,   # Y
-       1/4, 1/4, 1/4,   # Y
+       0,   0,   0,     # Ag
+       0.5, 0.5, 0.5,   # Al
+       1/4, 1/4, 1/4,   # Ge
        #3/4, 3/4, 3/4,  # Z
       ], (3, 3))
 
@@ -364,11 +367,16 @@ class GbrvDatabase(object):
 
         return entries
 
-
-
-
-
-
+    def print_formulas(self, width=80):
+        """
+        Print structure types and chemical formulas.
+        """
+        from textwrap import fill
+        for struct_type, table in self.tables.items():
+            print(width * "=")
+            print("Structure:", struct_type)
+            line = ", ".join(formula for formula in table)
+            print(fill(line, width=width))
 
 
 ###################################
