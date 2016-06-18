@@ -94,6 +94,25 @@ def count_species(formula):
     return count
 
 
+def half_heusler(a, species):
+    # fcc lattice with 3 atoms as basis
+    # XYZ, C1_b
+    # see http://arxiv.org/pdf/cond-mat/0510276v1.pdf
+    lattice = 0.5 * float(a) * np.array([
+        0,  1,  1,
+        1,  0,  1,
+        1,  1,  0])
+
+    frac_coords = np.reshape([
+       0,   0,   0,     # X
+       0.5, 0.5, 0.5,   # Y
+       1/4, 1/4, 1/4,   # Y
+       #3/4, 3/4, 3/4,  # Z
+      ], (3, 3))
+
+    return Structure(lattice, species, frac_coords, coords_are_cartesian=False)
+
+
 class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw struct_type")):
     """
     Store the GBRV lattice parameter obtained with the different codes and pseudos.
@@ -157,7 +176,7 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
             return Structure.ABO3(a, self.species)
 
         elif stype == "hH":
-            return Structure.half_heusler(a, self.species)
+            return half_heusler(a, self.species)
 
         raise ValueError("Don't know how to construct %s structure" % stype)
 
