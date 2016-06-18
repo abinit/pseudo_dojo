@@ -240,11 +240,13 @@ class GbrvCompoundRelaxAndEosWork(Work):
         db = gbrv_database(xc=self.xc)
         entry = db.get_entry(self.formula, stype=self.struct_type)
 
+        ref_a0 = entry.gbrv_paw
         pawabs_err = a0 - entry.gbrv_paw
         pawrel_err = 100 * (a0 - entry.gbrv_paw) / entry.gbrv_paw
 
         # If AE results are missing we use GBRV_PAW as reference.
         if entry.ae is not None:
+            ref_a0 = entry.ae
             abs_err = a0 - entry.ae
             rel_err = 100 * (a0 - entry.ae) / entry.ae
         else:
@@ -254,9 +256,12 @@ class GbrvCompoundRelaxAndEosWork(Work):
         results["a0_abs_err"] = abs_err
         results["a0_rel_err"] = rel_err
 
-        print("for %s (%s) a0=%.2f Angstrom" % (self.formula, self.struct_type, a0))
-        print("AE - THIS: abs_err = %f, rel_err = %f %%" % (abs_err, rel_err))
-        print("GBRV-PAW - THIS: abs_err = %f, rel_err = %f %%" % (pawabs_err, pawrel_err))
+        print(80 * "=")
+        print("pseudos:", list(p.basename for p in self.pseudos))
+        print("for %s (%s): my_a0=%.3f, ref_a0=%.3f Angstrom" % (self.formula, self.struct_type, a0, ref_a0))
+        print("AE - THIS: abs_err=%f, rel_err=%f %%" % (abs_err, rel_err))
+        print("GBRV-PAW - THIS: abs_err=%f, rel_err=%f %%" % (pawabs_err, pawrel_err))
+        print(80 * "=")
 
         # Write results in outdir in JSON format.
         with open(self.outdir.path_in("gbrv_results.json"), "wt") as fh:

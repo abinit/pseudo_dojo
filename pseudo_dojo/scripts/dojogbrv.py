@@ -123,15 +123,9 @@ def gbrv_dbrun(options):
         flow.register_work(work.set_outdb(outdb.filepath))
 
     print("Working in: ", flow.workdir)
-    flow.build_and_pickle_dump()
+    flow.build_and_pickle_dump(abivalidate=options.dry_run:)
 
-    if options.dry_run:
-        print("dry-run mode, will validate input files")
-        isok, results = flow.abivalidate_inputs()
-        if not isok:
-            print(results)
-            return 1
-    else:
+    if not options.dry_run:
         # Run the flow with the scheduler (enable smart_io)
         flow.use_smartio()
         flow.make_scheduler().start()
@@ -140,10 +134,12 @@ def gbrv_dbrun(options):
 
 
 def gbrv_pprun(options):
-    """Run GBRV compound tests for these pseudos."""
+    """
+    Run GBRV compound tests for these pseudos.
+    """
     pseudos = options.pseudos = DojoTable(options.pseudos)
     symbols = [p.symbol for p in pseudos]
-    #if options.verbose: print(pseudos)
+    if options.verbose > 1: print(pseudos)
 
     xc_list = [p.xc for p in pseudos]
     xc = xc_list[0]
@@ -170,10 +166,11 @@ def gbrv_pprun(options):
     #outdb = os.path.join(flow.workdir, "gbrv.json")
 
     # Get ecut from ppgen hints.
-    ecut = 0
+    ecut = 0.0
     for p in pseudos:
+        # TODO: Should consider hints as well
         ecut = max(ecut, p.dojo_report["ppgen_hints"]["high"]["ecut"])
-    #ecut = 6
+    assert ecut != 0.0
 
     for entry in entries:
         print("Adding work for formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
