@@ -219,6 +219,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
                  "bcc": lambda vol: (2 * vol) ** (1/3.),
                  "rocksalt": lambda vol: (4 * vol) ** (1/3.),
                  "ABO3": lambda vol: vol ** (1/3.),
+                 "hH": lambda vol: (4 * vol) ** (1/3.), # TODO To be tested
                  }[self.struct_type]
 
         a0 = vol2a(eos_fit.v0)
