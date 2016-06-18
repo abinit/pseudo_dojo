@@ -8,17 +8,19 @@ import argparse
 import logging
 
 from monty.termcolor import cprint
+from monty.functools import prof_main
 from warnings import warn
 from abipy import abilab
+from pseudo_dojo.core.pseudos import DojoTable #dojopseudo_from_file,
+from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
 from pseudo_dojo.dojo.gbrv_compounds import GbrvCompoundsFactory
 
 logger = logging.getLogger(__name__)
 
 
-def gbrv_generate(options):
+def gbrv_dbgen(options):
     """Generate the GBRV output databases."""
-
     # FIXME bugme with workdir
     for cls in GbrvOutdb.__subclasses__():
         outdb = cls.new_from_dojodir(options.dojo_dir)
@@ -34,7 +36,6 @@ def gbrv_generate(options):
 
 def gbrv_update(options):
     """Update the databases in dojo_dir."""
-
     for cls in GbrvOutdb.__subclasses__():
         filepath = os.path.join(options.dojo_dir, cls.basename)
         if not os.path.exists(filepath): continue
@@ -50,7 +51,6 @@ def gbrv_update(options):
 
 def gbrv_reset(options):
     """Reset the failed entries in the list of databases specified by the user."""
-
     status_list = []
     if "f" in options.status: status_list.append("failed")
     if "s" in options.status: status_list.append("scheduled")
@@ -67,20 +67,17 @@ def gbrv_reset(options):
 
 
 def gbrv_plot(options):
-    """Plot data with matplotlib."""
+    """Plot results in the databases."""
 
     for path in options.database_list:
         outdb = GbrvOutdb.from_file(path)
-
         frame = outdb.get_dataframe()
         print(frame)
-
         #import matplotlib.pyplot as plt
         #frame.plot(frame.index, ["normal_rel_err", "high_rel_err"])
         #ax.set_xticks(range(len(data.index)))
         #ax.set_xticklabels(data.index)
         #plt.show()
-
         #outdb.plot_errors(reference="ae", accuracy="normal")
         #for formula, records in outdb.values()
         #records = outdb["NaCl"]
@@ -90,13 +87,10 @@ def gbrv_plot(options):
     return 0
 
 
-def gbrv_run(options):
+def gbrv_dbrun(options):
     """Build flow and run it."""
-    options.manager = abilab.TaskManager.as_manager(options.manager)
-
     outdb = GbrvOutdb.from_file(options.database)
     jobs = outdb.find_jobs_torun(max_njobs=options.max_njobs, select_formulas=options.formulas)
-
     num_jobs = len(jobs)
     if num_jobs == 0:
         cprint("Nothing to do, returning", "yellow")
@@ -104,11 +98,13 @@ def gbrv_run(options):
     else:
         print("Will run %d works" % num_jobs)
 
+    gbrv_factory = GbrvCompoundsFactory(xc="PBE")
+
     import tempfile
     workdir=tempfile.mkdtemp(dir=os.getcwd(), prefix=outdb.struct_type + "_")
     #workdir=tempfile.mkdtemp()
 
-    flow = abilab.Flow(workdir=workdir, manager=options.manager)
+    flow = abilab.Flow(workdir=workdir)
 
     extra_abivars = {
         "mem_test": 0,
@@ -117,8 +113,6 @@ def gbrv_run(options):
         "paral_kgb": options.paral_kgb,
     }
 
-
-    gbrv_factory = GbrvCompoundsFactory()
     for job in jobs:
         # FIXME this should be taken from the pseudos
         ecut = 30 if job.accuracy == "normal" else 45
@@ -140,23 +134,79 @@ def gbrv_run(options):
     else:
         # Run the flow with the scheduler (enable smart_io)
         flow.use_smartio()
-        #flow.make_scheduler(rmflow=True).start()
         flow.make_scheduler().start()
 
     return 0
 
 
+def gbrv_pprun(options):
+    """Run GBRV compound tests for these pseudos."""
+    pseudos = options.pseudos = DojoTable(options.pseudos)
+    symbols = [p.symbol for p in pseudos]
+    #if options.verbose: print(pseudos)
+
+    xc = pseudos[0].xc
+    if any(p.xc != xc for p in pseudos):
+        raise ValueError("Pseudos with different XC functional")
+
+    gbrv_factory = GbrvCompoundsFactory(xc=xc)
+    db = gbrv_factory.db
+    #self.db = gbrv_database(xc)
+    #for pseudo in pseudos:
+    #    print(pseudo.symbol)
+    #    for entry in db.entries_with_symbol(pseudo.symbol):
+    #        print(entry)
+
+    entries = db.entries_with_symbol_list(symbols)
+    if not entries:
+        cprint("Cannot find entries for %s! Returning" % str(symbols), "red")
+        return 1
+    #print(entries)
+
+    workdir = "GBRV_COMPOUND_" + "_".join(p.basename for p in pseudos)
+    print("Working in:", workdir)
+    flow = abilab.Flow(workdir=workdir)
+    #outdb = os.path.join(flow.workdir, "gbrv.json")
+
+    # Get ecut form ppgen hints
+    ecut = 0
+    for p in pseudos:
+        ecut = max(ecut, p.dojo_report["ppgen_hints"]["high"]["ecut"])
+    ecut = 6
+
+    for entry in entries:
+        print("Adding work for formula", entry.symbol, "structure", entry.struct_type, ecut=ecut)
+        work = gbrv_factory.relax_and_eos_work("normal", pseudos, entry.symbol, entry.struct_type,
+                                               ecut=ecut, pawecutdg=None)
+        #work.set_outdb(outdb)
+        flow.register_work(work)
+
+    flow.build_and_pickle_dump() #abivalidate=True)
+
+    # Create output database.
+    #import json
+    #with open(outdb, "wt") as fh:
+    #    print("Creating %s" % outdb)
+    #    json.dump({}, fh)
+
+    # Run the flow with the scheduler (enable smart_io)
+    flow.use_smartio()
+    flow.make_scheduler().start()
+
+
+@prof_main
 def main():
     def str_examples():
         return """\
 usage example:
-   dojogbrv generate directory      =>  Generate the json files needed GBRV computations.
-                                        directory contains the pseudopotential table.
-   dojogbrv update directory        =>  Update all the json files in directory (check for
-                                        new pseudos or stale entries)
-   dojogbrv reset dir/*.json        =>  Reset all failed entries in the json files
-   dojogbrv run json_database       =>  Read data from json file, create flows and submit them
-                                        with the scheduler.
+   dojogbrv dbgen directory      => Generate the json files needed for the GBRV computations.
+                                    directory contains the pseudopotential table.
+   dojogbrv update directory     =>  Update all the json files in directory (check for
+                                     new pseudos or stale entries)
+   dojogbrv reset dir/*.json     =>  Reset all failed entries in the json files
+   dojogbrv dbrun json_database  =>  Read data from json file, create flows and submit them
+                                     with the scheduler.
+   dojogbrv pprun pseudos        =>  create flows and submit them with the scheduler.
 """
 
     def show_examples_and_exit(err_msg=None, error_code=1):
@@ -168,7 +218,9 @@ usage example:
     # Parent parser for common options.
     copts_parser = argparse.ArgumentParser(add_help=False)
     copts_parser.add_argument('--loglevel', default="ERROR", type=str,
-                               help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
+                              help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")
+    copts_parser.add_argument('-v', '--verbose', default=0, action='count', # -vv --> verbose=2
+                              help='Verbose, can be supplied multiple times to increase verbosity')
 
     # Build the main parser.
     parser = argparse.ArgumentParser(epilog=str_examples(), formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -176,35 +228,40 @@ usage example:
     # Create the parsers for the sub-commands
     subparsers = parser.add_subparsers(dest='command', help='sub-command help', description="Valid subcommands")
 
-    # Subparser for the generate command.
-    p_generate = subparsers.add_parser('generate', parents=[copts_parser], help="Denerate databases.")
-    p_generate.add_argument('dojo_dir', help='Directory containing the pseudopotentials.')
+    # Subparser for the dbgen command.
+    p_dbgen = subparsers.add_parser('dbgen', parents=[copts_parser], help=gbrv_dbgen.__doc__)
+    p_dbgen.add_argument('dojo_dir', help='Directory containing the pseudopotentials.')
 
     # Subparser for the update command.
-    p_update = subparsers.add_parser('update', parents=[copts_parser], help="Update databases.")
+    p_update = subparsers.add_parser('update', parents=[copts_parser], help=gbrv_update.__doc__)
     p_update.add_argument('dojo_dir', help='Directory containing the pseudopotentials.')
 
     # Subparser for the reset command.
-    p_reset = subparsers.add_parser('reset', parents=[copts_parser], help="Reset entries in the database.")
+    p_reset = subparsers.add_parser('reset', parents=[copts_parser], help=gbrv_reset.__doc__)
     p_reset.add_argument("-s", '--status', type=str, default="f", help='f for failed, s for scheduled, `fs` for both')
     p_reset.add_argument('database_list', nargs="+", help='Database(s) with the output results.')
 
     # Subparser for plot command.
-    p_plot = subparsers.add_parser('plot', parents=[copts_parser], help="Plot results in the databases.")
+    p_plot = subparsers.add_parser('plot', parents=[copts_parser], help=gbrv_plot.__doc__)
     p_plot.add_argument('database_list', nargs="+", help='Database(s) with the output results.')
 
-    # Subparser for run command.
-    p_run = subparsers.add_parser('run', parents=[copts_parser], help="Update databases.")
-    p_run.add_argument('-m', '--manager', type=str, default=None,  help="Manager file")
-    p_run.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
-    p_run.add_argument('-n', '--max-njobs', type=int, default=2, help="Maximum number of jobs (a.k.a. flows) that will be submitted")
-    p_run.add_argument('-d', '--dry-run', default=False, action="store_true", help=("Dry run, build the flow and check validity "
-                       "of input files without submitting"))
+    # Subparser for dbrun command.
+    p_dbrun = subparsers.add_parser('dbrun', parents=[copts_parser], help=gbrv_dbrun.__doc__)
+
+    p_dbrun.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
+    p_dbrun.add_argument('-n', '--max-njobs', type=int, default=2,
+                          help="Maximum number of jobs (a.k.a. flows) that will be submitted")
+    p_dbrun.add_argument('-d', '--dry-run', default=False, action="store_true",
+                         help=("Dry run, build the flow and check validity of input files without submitting"))
     def parse_formulas(s):
         return s.split(",") if s is not None else None
-    p_run.add_argument('-f', '--formulas', type=parse_formulas, default=None,
+    p_dbrun.add_argument('-f', '--formulas', type=parse_formulas, default=None,
                         help="Optional list of formulas to be selected e.g. --formulas=LiF, NaCl")
-    p_run.add_argument('database', help='Database with the output results.')
+    p_dbrun.add_argument('database', help='Database with the output results.')
+
+    # Subparser for pprun command.
+    p_pprun = subparsers.add_parser('pprun', parents=[copts_parser], help=gbrv_pprun.__doc__)
+    p_pprun.add_argument('pseudos', nargs="+", help="Pseudopotential files")
 
     try:
         options = parser.parse_args()
@@ -224,17 +281,4 @@ usage example:
 
 
 if __name__ == "__main__":
-    do_prof = False
-    try:
-        do_prof = sys.argv[1] == "prof"
-        if do_prof: sys.argv.pop(1)
-    except:
-        pass
-
-    if do_prof:
-        import pstats, cProfile
-        cProfile.runctx("main()", globals(), locals(), "Profile.prof")
-        s = pstats.Stats("Profile.prof")
-        s.strip_dirs().sort_stats("time").print_stats()
-    else:
-        sys.exit(main())
+    sys.exit(main())

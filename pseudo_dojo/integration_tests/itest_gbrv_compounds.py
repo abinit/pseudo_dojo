@@ -14,18 +14,11 @@ def itest_gbrvcompounds_gga_pawxml_flow(fwp, tvars):
     flow = abilab.Flow(workdir=fwp.workdir, manager=fwp.manager)
     gbrv_factory = GbrvCompoundsFactory(xc="PBE")
 
-    extra_abivars = {
-    #    "mem_test": 0,
-    #    "fband": 2,
-    #    "nstep": 100,
-    #    "paral_kgb": 0,
-    }
-
-    formula, struct_type, accuracy = "LiF", "rocksalt", "normal"
+    formula, struct_type, accuracy = "SiO", "rocksalt", "normal"
     pseudos = pdj_data.pseudos("Si.psp8", "O.psp8")
 
     work = gbrv_factory.relax_and_eos_work(accuracy, pseudos, formula, struct_type,
-                                           ecut=20, pawecutdg=None, **extra_abivars)
+                                           ecut=12, pawecutdg=None)
     flow.register_work(work)
 
     flow.build_and_pickle_dump(abivalidate=True)

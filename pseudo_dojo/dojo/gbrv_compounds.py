@@ -3,6 +3,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import numpy as np
+import json
 from abipy import abilab
 
 from pymatgen.analysis.eos import EOS
@@ -21,7 +22,7 @@ class GbrvCompoundsFactory(object):
     """Factory class producing :class:`Work` objects for GBRV calculations."""
     def __init__(self, xc):
         """xc: Exchange-correlation functional."""
-        self._db = gbrv_database(xc)
+        self.db = gbrv_database(xc)
 
     def make_ref_structure(self, formula, struct_type, ref="ae"):
         """
@@ -29,7 +30,7 @@ class GbrvCompoundsFactory(object):
         the structure type and the reference code.
         """
         # Get the entry in the database
-        entry = self._db.get_entry(formula, struct_type)
+        entry = self.db.get_entry(formula, struct_type)
         if entry is None:
             logger.critical("Cannot find entry for %s, returning None!" % formula)
             return None
@@ -67,13 +68,13 @@ class GbrvCompoundsFactory(object):
 
         structure = self.make_ref_structure(formula, struct_type=struct_type, ref=ref)
 
-        return GbrvCompoundRelaxAndEosWork(structure, formula, struct_type, pseudos, accuracy,
+        return GbrvCompoundRelaxAndEosWork(structure, formula, struct_type, pseudos, self.db.xc, accuracy,
                                            ecut=ecut, pawecutdg=pawecutdg, **kwargs)
 
 
 class GbrvCompoundRelaxAndEosWork(Work):
 
-    def __init__(self, structure, formula, struct_type, pseudos, accuracy,
+    def __init__(self, structure, formula, struct_type, pseudos, xc, accuracy,
                  ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
                  spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
                  ecutsm=0.05, chksymbreak=0, workdir=None, manager=None, **kwargs):
@@ -81,24 +82,27 @@ class GbrvCompoundRelaxAndEosWork(Work):
         Build a :class:`Work` for the computation of the relaxed lattice parameter.
 
         Args:
-            structure: :class:`Structure` object
-            structure_type: fcc, bcc
+            structure: :class:`Structure` object.
+            struct_type: fcc, bcc
             pseudos: Pseudopotentials
+            xc: Exchange-correlation type.
+            accuracy:
             ecut: Cutoff energy in Hartree
-            ngkpt: MP divisions.
+            ngkpt: MP divisions for k-mesh.
             spin_mode: Spin polarization mode.
             toldfe: Tolerance on the energy (Ha)
             smearing: Smearing technique.
+            ecutsm:
+            chksymbreak:
             workdir: String specifing the working directory.
             manager: :class:`TaskManager` responsible for the submission of the tasks.
         """
         super(GbrvCompoundRelaxAndEosWork, self).__init__(workdir=workdir, manager=manager)
 
         self.pseudos = pseudos
-        # FIXME
-        #if (any(p.xc) != pseudos[0].xc for p in pseudos): raise ValueError("Inconsistent XC")
-        #self.xc = pseudos[0].xc
-        self.xc = "PBE"
+        self.xc = xc
+        if (any(xc != p.xc for p in pseudos)):
+            raise ValueError("Input XC does not agree with XC from pseudos.")
 
         self.formula = formula
         self.struct_type = struct_type
@@ -128,8 +132,6 @@ class GbrvCompoundRelaxAndEosWork(Work):
         # Kpoint sampling: shiftk depends on struct_type
         #shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
         shiftk = [0, 0, 0]
-        #ngkpt = (4,4,4)
-
         self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk)
         self.spin_mode = SpinMode.as_spinmode(spin_mode)
         relax_algo = RelaxationMethod.atoms_and_cell()
@@ -193,7 +195,6 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
     def compute_eos(self):
         self.history.info("Computing EOS")
-        #results = self.get_results()
 
         # Read etotals and fit E(V) with a parabola to find the minimum
         etotals = self.read_etotals(unit="eV")[1:]
@@ -210,12 +211,11 @@ class GbrvCompoundRelaxAndEosWork(Work):
             eos_fit = EOS.Quadratic().fit(self.volumes, etotals)
         except EOS.Error as exc:
             results.push_exceptions(exc)
-        #return results
 
         # Function to compute cubic a0 from primitive v0 (depends on struct_type)
         vol2a = {"fcc": lambda vol: (4 * vol) ** (1/3.),
-                 "rocksalt": lambda vol: (4 * vol) ** (1/3.),
                  "bcc": lambda vol: (2 * vol) ** (1/3.),
+                 "rocksalt": lambda vol: (4 * vol) ** (1/3.),
                  "ABO3": lambda vol: vol ** (1/3.),
                  }[self.struct_type]
 
@@ -224,7 +224,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         results.update(dict(
             v0=eos_fit.v0,
             b0=eos_fit.b0,
-            b1=eos_fit.b1,
+            #b1=eos_fit.b1, # infinity
             a0=a0,
             ecut=self.ecut,
             #struct_type=self.struct_type
@@ -249,15 +249,16 @@ class GbrvCompoundRelaxAndEosWork(Work):
             abs_err = pawabs_err
             rel_err = pawrel_err
 
+        results["a0_abs_err"] = abs_err
+        results["a0_rel_err"] = rel_err
+
         print("for %s (%s) a0=%.2f Angstrom" % (self.formula, self.struct_type, a0))
         print("AE - THIS: abs_err = %f, rel_err = %f %%" % (abs_err, rel_err))
         print("GBRV-PAW - THIS: abs_err = %f, rel_err = %f %%" % (pawabs_err, pawrel_err))
 
-        #d = {k: results[k] for k in ("a0", "etotals", "volumes")}
-        #d["a0_abs_err"] = abs_err
-        #d["a0_rel_err"] = rel_err
-        #if results.exceptions:
-        #    d["_exceptions"] = str(results.exceptions)
+        # Write results in outdir in JSON format.
+        with open(self.outdir.path_in("gbrv_results.json"), "wt") as fh:
+             json.dump(results, fh, indent=-1, sort_keys=True) #, cls=MontyEncoder)
 
         return results
 

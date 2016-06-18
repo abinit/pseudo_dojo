@@ -65,4 +65,9 @@ class TestGbrvDatabase(PseudoDojoTest):
         # TODO
         #agalge.build_structure()
 
+        assert len(db.entries_with_symbol("Si")) == 10
+        assert not db.entries_with_symbol("Lu")
+        assert not db.entries_with_symbol_list(["Si", "Lu"])
+        assert len(db.entries_with_symbol_list(["Si", "O"])) == 1
+
         #assert 0

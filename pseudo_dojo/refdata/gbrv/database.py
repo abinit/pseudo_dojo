@@ -158,7 +158,7 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
 
         elif stype == "hH":
             raise NotImplementedError()
-            #return Structure.hH(a, sites)
+            return Structure.hH(a, sites)
 
         raise ValueError("Don't know how to construct %s structure" % stype)
 
@@ -265,7 +265,7 @@ class GbrvDatabase(object):
         except AttributeError:
             self._all_symbols = set()
             for d in self.tables.values():
-                self._all_symbols.update(d.keys())
+                self._all_symbols.update(list(d.keys()))
 
             return self._all_symbols
 
@@ -320,6 +320,37 @@ class GbrvDatabase(object):
     def get_hH_entry(self, formula):
         """Returns the entry in the half-Heusler table."""
         return self.get_entry(formula, "hH")
+
+    def entries_with_symbol(self, esymbol):
+        """
+        Returns all entries containing the element symbol `esymbol`.
+        """
+        entries = []
+        for struct_type, table in self.tables.items():
+            for formula, entry in table.items():
+                if esymbol in species_from_formula(formula):
+                    entries.append(entry)
+
+        return entries
+
+    def entries_with_symbol_list(self, esymbols):
+        """
+        Returns all entries with the given list of element symbols `esymbols`.
+        """
+        species = set(esymbols)
+        entries = []
+        for struct_type, table in self.tables.items():
+            for formula, entry in table.items():
+                if species == set(species_from_formula(formula)):
+                    entries.append(entry)
+
+        return entries
+
+
+
+
+
+
 
 
 ###################################

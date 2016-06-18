@@ -5,7 +5,6 @@ from __future__ import division, print_function, unicode_literals
 import abc
 import sys
 import os
-import json
 import logging
 import numpy as np
 
@@ -494,7 +493,7 @@ class GbrvFactory(object):
 
     def __init__(self, xc):
         """xc: exchange-correlation functional e.g. PBE or PW."""
-        self._db = gbrv_database(xc)
+        self.db = gbrv_database(xc)
 
     def make_ref_structure(self, symbol, struct_type, ref):
         """
@@ -502,7 +501,7 @@ class GbrvFactory(object):
         the structure type and the reference code.
         """
         # Get the entry in the database
-        entry = self._db.get_entry(symbol, struct_type)
+        entry = self.db.get_entry(symbol, struct_type)
 
         if entry is None:
             logger.critical("Cannot find entry for %s, returning None!" % symbol)
@@ -522,7 +521,7 @@ class GbrvFactory(object):
 
     @property
     def xc(self):
-        return self._db.xc
+        return self.db.xc
 
     def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, include_soc=False,
                            ref="ae", **kwargs):
