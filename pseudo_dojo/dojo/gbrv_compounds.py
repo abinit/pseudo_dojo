@@ -47,7 +47,7 @@ class GbrvCompoundsFactory(object):
         return structure
 
     def relax_and_eos_work(self, accuracy, pseudos, formula, struct_type,
-                           ecut=None, pawecutdg=None, ref="ae", **kwargs):
+                           ecut=None, pawecutdg=None, ref="ae", fband=2.0, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
@@ -69,13 +69,13 @@ class GbrvCompoundsFactory(object):
         structure = self.make_ref_structure(formula, struct_type=struct_type, ref=ref)
 
         return GbrvCompoundRelaxAndEosWork(structure, formula, struct_type, pseudos, self.db.xc, accuracy,
-                                           ecut=ecut, pawecutdg=pawecutdg, **kwargs)
+                                           ecut=ecut, pawecutdg=pawecutdg, fband=fband, **kwargs)
 
 
 class GbrvCompoundRelaxAndEosWork(Work):
 
     def __init__(self, structure, formula, struct_type, pseudos, xc, accuracy,
-                 ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
+                 ecut=None, pawecutdg=None, ngkpt=(8, 8, 8), fband=2.0,
                  spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
                  ecutsm=0.05, chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
@@ -89,6 +89,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
             accuracy:
             ecut: Cutoff energy in Hartree
             ngkpt: MP divisions for k-mesh.
+            fband:
             spin_mode: Spin polarization mode.
             toldfe: Tolerance on the energy (Ha)
             smearing: Smearing technique.
@@ -110,7 +111,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         self.set_name("_".join(["gbrv", struct_type, formula, accuracy]))
 
         # nband must be large enough to accomodate fractional occupancies.
-        fband = kwargs.pop("fband", None)
+        #fband = kwargs.pop("fband", None)
         # FIXME
         #nband = gbrv_nband(self.pseudo)
 
@@ -121,6 +122,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
             pawecutdg=pawecutdg,
             toldfe=toldfe,
             paral_kgb=kwargs.pop("paral_kgb", 0),
+            fband=fband,
             #ecutsm=0.5,
             #nband=nband,
         )

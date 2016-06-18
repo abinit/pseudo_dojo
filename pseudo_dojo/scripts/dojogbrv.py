@@ -173,7 +173,7 @@ def gbrv_pprun(options):
     ecut = 0
     for p in pseudos:
         ecut = max(ecut, p.dojo_report["ppgen_hints"]["high"]["ecut"])
-    ecut = 6
+    #ecut = 6
 
     for entry in entries:
         print("Adding work for formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
