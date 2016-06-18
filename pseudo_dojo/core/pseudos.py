@@ -65,6 +65,13 @@ def dojopseudo_from_file(filepath):
     return pseudo
 
 
+def add_dojoreport_to_pseudo(pseudo):
+    """Add the dojoreport to a pseudo."""
+    if not hasattr(pseudo, "dojo_report"):
+        pseudo.dojo_report = DojoReport.from_file(pseudo.djrepo_path)
+    return pseudo
+
+
 class DojoInfo(AttrDict):
     """
     Dictionary with metadata associated to the PseudoDojo table.
@@ -127,6 +134,13 @@ class DojoTable(PseudoTable):
     Methods and properties that assume a well defined set of pseudos fulfilling the pseudo_dojo
     constraints should be implemented in OfficialDojoTable (see below).
     """
+
+    def __init__(self, pseudos):
+        super(DojoTable, self).__init__(pseudos)
+        # Add dojo_report to pseudos.
+        for p in self:
+            add_dojoreport_to_pseudo(p)
+
     @classmethod
     def from_dojodir(cls, top, exclude_wildcard=None, exclude_basenames=None):
         """

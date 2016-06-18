@@ -145,8 +145,9 @@ def gbrv_pprun(options):
     symbols = [p.symbol for p in pseudos]
     #if options.verbose: print(pseudos)
 
-    xc = pseudos[0].xc
-    if any(p.xc != xc for p in pseudos):
+    xc_list = [p.xc for p in pseudos]
+    xc = xc_list[0]
+    if any(xc != other_xc for other_xc in xc_list):
         raise ValueError("Pseudos with different XC functional")
 
     gbrv_factory = GbrvCompoundsFactory(xc=xc)
@@ -168,14 +169,14 @@ def gbrv_pprun(options):
     flow = abilab.Flow(workdir=workdir)
     #outdb = os.path.join(flow.workdir, "gbrv.json")
 
-    # Get ecut form ppgen hints
+    # Get ecut from ppgen hints.
     ecut = 0
     for p in pseudos:
         ecut = max(ecut, p.dojo_report["ppgen_hints"]["high"]["ecut"])
     ecut = 6
 
     for entry in entries:
-        print("Adding work for formula", entry.symbol, "structure", entry.struct_type, ecut=ecut)
+        print("Adding work for formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
         work = gbrv_factory.relax_and_eos_work("normal", pseudos, entry.symbol, entry.struct_type,
                                                ecut=ecut, pawecutdg=None)
         #work.set_outdb(outdb)
