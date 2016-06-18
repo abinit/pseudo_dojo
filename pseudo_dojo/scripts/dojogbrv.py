@@ -171,6 +171,7 @@ def gbrv_pprun(options):
         # TODO: Should consider hints as well
         ecut = max(ecut, p.dojo_report["ppgen_hints"]["high"]["ecut"])
     assert ecut != 0.0
+    ecut += 10
 
     for entry in entries:
         print("Adding work for formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
