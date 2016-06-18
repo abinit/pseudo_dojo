@@ -77,7 +77,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
     def __init__(self, structure, formula, struct_type, pseudos, xc, accuracy,
                  ecut=None, pawecutdg=None, ngkpt=(8, 8, 8), fband=2.0,
                  spin_mode="unpolarized", smearing="fermi_dirac:0.001 Ha",
-                 ecutsm=0.05, chksymbreak=0, workdir=None, manager=None):
+                 chksymbreak=0, workdir=None, manager=None):
         """
         Build a :class:`Work` for the computation of the relaxed lattice parameter.
 
@@ -92,7 +92,6 @@ class GbrvCompoundRelaxAndEosWork(Work):
             fband:
             spin_mode: Spin polarization mode.
             smearing: Smearing technique.
-            ecutsm:
             chksymbreak:
             workdir: String specifing the working directory.
             manager: :class:`TaskManager` responsible for the submission of the tasks.
@@ -132,7 +131,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         #                    ecut=ecut, pawecutdg=pawecutdg, accuracy="normal", spin_mode=spin_mode,
         #                    smearing=smearing)
 
-        self.extra_abivars.update(**kwargs)
+        #self.extra_abivars.update(**kwargs)
         self.ecut = ecut
         self.smearing = Smearing.as_smearing(smearing)
 
