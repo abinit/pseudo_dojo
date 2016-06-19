@@ -92,7 +92,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
             fband: Input variable, used to compute the number of bands.
             spin_mode: Spin polarization mode.
             smearing: Smearing technique.
-            chksymbreak:
+            chksymbreak: Input variable.
             workdir: String specifing the working directory.
             manager: :class:`TaskManager` responsible for the submission of the tasks.
         """

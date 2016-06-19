@@ -666,6 +666,8 @@ class DojoReport(dict):
         """
         misse = {}
 
+        if "ghosts" not in self: misse["ghosts"] = [0]
+
         for trial in self.ALL_TRIALS:
             data = self.get(trial, None)
             if data is None:
@@ -782,20 +784,23 @@ class DojoReport(dict):
 	    if "deltafactor" in trial and self.symbol != "Lu" and \
 		(self.element.is_lanthanoid or self.element.is_actinoid): continue
 
-            for ecut in global_ecuts:
-                if not self.has_trial(trial, ecut=ecut):
-                    missing[trial].append(ecut)
+            if trial not in self:
+                missing[trial].append(0)
+
+            #for ecut in global_ecuts:
+            #    if not self.has_trial(trial, ecut=ecut):
+            #        missing[trial].append(ecut)
 
         if missing:
             app("%s: the following ecut values are missing:" % self.symbol)
             for trial, ecuts in missing.items():
                 app("    %s: %s" % (trial, ecuts))
 
-        for trial in check_trials:
-            if not self.has_trial(trial): continue
-            for ecut in self[trial]:
-                if ecut not in global_ecuts:
-                    app("%s: ecut %s is not in the global list" % (trial, ecut))
+        #for trial in check_trials:
+        #    if not self.has_trial(trial): continue
+        #    for ecut in self[trial]:
+        #        if ecut not in global_ecuts:
+        #            app("%s: ecut %s is not in the global list" % (trial, ecut))
 
         return "\n".join(errors)
 

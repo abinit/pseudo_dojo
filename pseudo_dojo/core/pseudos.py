@@ -267,18 +267,18 @@ class DojoTable(PseudoTable):
         # Test pseudopotential and dojo_report.
         for p in self:
             if not p.has_dojo_report:
-                eapp("%s does not have the DOJO_REPORT section" % repr(p))
+                eapp("[%s] does not have the DOJO_REPORT section" % repr(p))
                 continue
 
             estring = p.dojo_report.check()
             if estring:
-                eapp(estring)
+                eapp("[%s]:" % repr(p) + estring)
 
             if require_hints and not p.dojo_report.has_hints:
-                eapp("%s does not have hints" % repr(p))
+                eapp("[%s] does not have hints" % repr(p))
 
             if p.md5 != md5dict[p.basename]:
-                eapp("p.mdf5 != mdf5dict[p.basename]\n%s, %s" % (p.md5, md5dict[p.basename]))
+                eapp("[%s] p.mdf5 != mdf5dict[p.basename]\n%s, %s" % (repr(p), p.md5, md5dict[p.basename]))
 
         # Test support for SOC. All the pseudos much have the same level.
         # At present, this check makes sense only for NC pseudos.
@@ -286,7 +286,7 @@ class DojoTable(PseudoTable):
         for i, p in enumerate(self):
             if i == 0: p0 = p
             if p.supports_soc == p0.supports_soc: continue
-            eapp("%s has different SOC characteristics" % p)
+            eapp("[%s] has different SOC characteristics" % repr(p))
 
         return errors
 
@@ -554,12 +554,12 @@ class OfficialDojoTable(DojoTable):
         XC functional
     """
     @classmethod
-    def from_djson_file(cls, djson_path):
+    def from_djson_file(cls, json_path):
         """
         Initialize the pseudopotential table from one of **official** djson files
         located in one of the subdirectories inside pseudo_dojo.pseudos.
 
-        djson_path contains the following dictionary in JSON format:
+        json_path contains the following dictionary in JSON format:
 
         {
         "dojo_info": {
@@ -588,8 +588,8 @@ class OfficialDojoTable(DojoTable):
         }
         }
         """
-        djson_path = os.path.abspath(djson_path)
-        with open(djson_path, "rt") as fh:
+        json_path = os.path.abspath(json_path)
+        with open(json_path, "rt") as fh:
             d = json.load(fh)
 
         # Read and validate dojo_info.
@@ -597,16 +597,16 @@ class OfficialDojoTable(DojoTable):
         try:
             dojo_info.validate_json_schema()
         except Exception as exc:
-            print("Validation error in %s" % djson_path)
+            print("Validation error in %s" % json_path)
             raise exc
 
         meta = d["pseudos_metadata"]
 
-        top = os.path.dirname(djson_path)
+        top = os.path.dirname(json_path)
         paths, md5dict = [], {}
         for esymb, m in meta.items():
             if isinstance(m, (list, tuple)):
-                raise TypeError("Invalid djson file. Expecting dict but got list: %s" % str(m))
+                raise TypeError("Invalid djson file. Expecting dict but got list (multiple pseudos):\n\n %s" % str(m))
 
             path = os.path.join(top, esymb, m["basename"])
             paths.append(path)
