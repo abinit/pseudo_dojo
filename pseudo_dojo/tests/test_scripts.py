@@ -25,7 +25,7 @@ def test_if_all_scripts_are_tested():
         for i, s in enumerate(not_tested):
             print("[%d] %s" % (i, s))
 
-    assert not_tested == set(['dojogbrv.py'])
+    #assert not_tested == set(['dojogbrv.py'])
 
 
 class ScriptTest(PseudoDojoTest):
@@ -87,3 +87,22 @@ class TestOncv(ScriptTest):
         """Testing dojodata.py script"""
         env = self.get_env()
         #env.run(self.script, self.loglevel, "man", "ecut")
+
+
+class TestDojoGbrv(ScriptTest):
+    script = os.path.join(script_dir, "dojogbrv.py")
+
+    def test_dojogbrv_dryrun(self):
+        """Testing dojogbrv.py script."""
+        env = self.get_env()
+
+        env.run(self.script, "info", self.loglevel, self.verbose)
+        env.run(self.script, "find", "Si", "O", self.loglevel, self.verbose)
+
+        # TODO
+        # Build new env to run the script in dry-run mode
+        # Copy file from data to env.
+        #env = TestFileEnvironment(template_path=pdj_data.dirpath)
+        #env.writefile("Si.psp8", frompath="Si.psp8")
+        #env.writefile("Si.djrepo", frompath="Si.djrepo_empty")
+        #env.run(self.script, "runps", "Si.psp8", self.loglevel, self.verbose, "--dry-run")

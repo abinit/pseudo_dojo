@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Script to run the GBRV tests for binary and ternary compunds"""
+"""Script to run the GBRV tests for binary and ternary compunds."""
 from __future__ import division, print_function, unicode_literals
 
 import sys
@@ -9,7 +9,6 @@ import logging
 
 from monty.termcolor import cprint
 from monty.functools import prof_main
-from warnings import warn
 from abipy import abilab
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formula
@@ -20,13 +19,21 @@ logger = logging.getLogger(__name__)
 
 
 def ecut_from_pseudos(pseudos):
-    """Get ecut from ppgen hints."""
-    ecut = 0.0
+    """Compute ecut either from hints or from ppgen hints."""
+    ecut, use_ppgen_hints = 0.0, False
     for p in pseudos:
-        # TODO: Should consider hints as well
-        ecut = max(ecut, p.dojo_report["ppgen_hints"]["high"]["ecut"])
+        report = p.dojo_report
+        if "hints" in report:
+            ecut = max(ecut, report["hints"]["high"]["ecut"])
+        else:
+            use_ppgen_hints = True
+            ecut = max(ecut, report["ppgen_hints"]["high"]["ecut"])
+
     assert ecut != 0.0
-    ecut += 10
+    if use_ppgen_hints:
+        cprint("Hints are not available. Using ppgen_hints + 10", "yellow")
+        ecut += 10
+
     return ecut
 
 
@@ -158,9 +165,9 @@ def gbrv_runps(options):
     gbrv_factory = GbrvCompoundsFactory(xc=xc)
     db = gbrv_factory.db
 
-    entries = db.entries_with_symbol_list(symbols)
-    if not entries:
-        cprint("Cannot find entries for %s! Returning" % str(symbols), "red")
+    entry = db.match_symbols(symbols)
+    if entry is None:
+        cprint("Cannot find entry for %s! Returning" % str(symbols), "red")
         return 1
 
     workdir = "GBRVCOMP_" + "_".join(p.basename for p in pseudos)
@@ -168,12 +175,11 @@ def gbrv_runps(options):
     flow = abilab.Flow(workdir=workdir)
 
     ecut = ecut_from_pseudos(pseudos)
+    print("Adding work for formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
 
-    for entry in entries:
-        print("Adding work for formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
-        work = gbrv_factory.relax_and_eos_work("normal", pseudos, entry.symbol, entry.struct_type,
-                                               ecut=ecut, pawecutdg=None)
-        flow.register_work(work)
+    work = gbrv_factory.relax_and_eos_work("normal", pseudos, entry.symbol, entry.struct_type,
+                                           ecut=ecut, pawecutdg=None)
+    flow.register_work(work)
 
     flow.build_and_pickle_dump(abivalidate=options.dry_run)
     if options.dry_run: return 0
@@ -205,12 +211,10 @@ def gbrv_runform(options):
     db = gbrv_factory.db
 
     # Consistency check
-    entries = db.entries_with_symbol_list(symbols)
-    if not entries:
-        cprint("Cannot find entries for %s! Returning" % str(symbols), "red")
+    entry = db.match_symbols(symbols)
+    if entry is None:
+        cprint("Cannot find entry for %s! Returning" % str(symbols), "red")
         return 1
-    assert len(entries) == 1
-    entry = entries[0]
 
     workdir = "GBRVCOMP_" + formula
     print("Working in:", workdir)
@@ -235,28 +239,26 @@ def gbrv_runform(options):
     return flow.make_scheduler().start()
 
 
-def gbrv_list(options):
+def gbrv_find(options):
     """Print all formula containing symbols."""
     symbols = options.symbols
     print("Print all formula containing symbols: ", symbols)
 
     db = gbrv_database(xc="PBE")
-    entries = db.entries_with_symbol_list(symbols)
+    entries = db.entries_with_symbols(symbols)
     if not entries:
         cprint("Cannot find entries for %s! Returning" % str(symbols), "red")
         return 1
 
     print("Found %d entries" % len(entries))
     for i, entry in enumerate(entries):
-	print("[%i] % i", entry)
+	print("[%i]" % i, entry)
 
     return 0
 
 
 def gbrv_info(options):
-    """
-    Print structure types and chemical formulas.
-    """
+    """Print structure type and chemical formulas."""
     db = gbrv_database(xc="PBE")
     db.print_formulas()
 
@@ -265,7 +267,13 @@ def gbrv_info(options):
 def main():
     def str_examples():
         return """\
-usage example:
+Usage example:
+   dojogbrv.py info                         => Print all entries in the GBRV database.
+   dojogbrv.py find Sr Si                   => Find entries containing these elements.
+   dojogbrv.py runps Na/Na.psp8 F/F.psp8    => Run tests for a list of pseudos
+   dojogbrv.py runform NaF -p pseudodir     => Run tests for NaF, take pseudos from pseudodir
+
+   # Under development.
    dojogbrv dbgen directory              => Generate the json files needed for the GBRV computations.
                                             directory contains the pseudopotential table.
    dojogbrv update directory             => Update all the json files in directory (check for
@@ -273,8 +281,6 @@ usage example:
    dojogbrv reset dir/*.json             => Reset all failed entries in the json files
    dojogbrv rundb json_database          => Read data from json file, create flows and submit them
                                             with the scheduler.
-   dojogbrv runps Na/Na.psp8 F/F.psp8    => create flows and submit them with the scheduler.
-   dojogbrv.py runform NaF -p pseudodir  =>
 """
 
     def show_examples_and_exit(err_msg=None, error_code=1):
@@ -336,8 +342,8 @@ usage example:
     p_runform.add_argument('formula', help="Chemical formula.")
     p_runform.add_argument('-p', "--pseudo-dir", default=".", help="Directory with pseudos.")
 
-    p_list = subparsers.add_parser('list', parents=[copts_parser], help=gbrv_list.__doc__)
-    p_list.add_argument('symbols', nargs="+", help="Element symbols")
+    p_find = subparsers.add_parser('find', parents=[copts_parser], help=gbrv_find.__doc__)
+    p_find.add_argument('symbols', nargs="+", help="Element symbols")
 
     p_info = subparsers.add_parser('info', parents=[copts_parser], help=gbrv_info.__doc__)
 

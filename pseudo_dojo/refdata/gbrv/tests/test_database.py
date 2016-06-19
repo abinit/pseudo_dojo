@@ -68,7 +68,9 @@ class TestGbrvDatabase(PseudoDojoTest):
 
         assert len(db.entries_with_symbol("Si")) == 10
         assert not db.entries_with_symbol("Lu")
-        assert not db.entries_with_symbol_list(["Si", "Lu"])
-        assert len(db.entries_with_symbol_list(["Si", "O"])) == 1
+        assert db.match_symbols(["Si", "Lu"]) is None
+        assert db.match_symbols(["Si", "O"]).formula == "SiO"
+        e = db.entries_with_symbols(["Sr", "Si", "O"])
+        assert e and len(e) == 1 and e[0].formula == "SrSiO3"
 
         #assert 0

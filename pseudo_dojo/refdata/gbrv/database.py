@@ -149,6 +149,10 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
 
         return super(cls, GbrvEntry).__new__(cls, **kwargs)
 
+    @property
+    def formula(self):
+        return self.symbol
+
     @lazy_property
     def species(self):
         return species_from_formula(self.symbol)
@@ -348,15 +352,27 @@ class GbrvDatabase(object):
         """
         entries = []
         for struct_type, table in self.tables.items():
-            for formula, entry in table.items():
-                if esymbol in species_from_formula(formula):
-                    entries.append(entry)
+            for entry in table.values():
+                if esymbol in entry.species: entries.append(entry)
 
         return entries
 
-    def entries_with_symbol_list(self, esymbols):
+    def entries_with_symbols(self, esymbols):
         """
-        Returns all entries with the given list of element symbols `esymbols`.
+        Returns all entries that contains elements in esymbols
+        """
+        esymbols = set(esymbols)
+        entries = []
+        for struct_type, table in self.tables.items():
+            for entry in table.values():
+                if esymbols.issubset(set(entry.species)): entries.append(entry)
+
+        return entries
+
+    def match_symbols(self, esymbols):
+        """
+        Returns the entry with the given list of element symbols `esymbols`.
+        None if no entry can be found.
         """
         species = set(esymbols)
         entries = []
@@ -365,7 +381,10 @@ class GbrvDatabase(object):
                 if species == set(species_from_formula(formula)):
                     entries.append(entry)
 
-        return entries
+        if entries:
+            assert len(entries) == 1
+            return entries[0]
+        return None
 
     def print_formulas(self, width=80):
         """

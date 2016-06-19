@@ -185,7 +185,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
             etotals=list(etotals),
             volumes=list(self.volumes),
             num_sites=len(self.relaxed_structure),
-            pseudos=self.pseudos.as_dict(),
+            #pseudos=self.pseudos.as_dict(),
         ))
 
         try:

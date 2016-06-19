@@ -29,7 +29,7 @@ class OncvOutputParserTest(PseudoDojoTest):
         assert p.z == "8.00"
         assert p.iexc == "3"
         assert p.lmax == 1
-        assert p.nc == 1 
+        assert p.nc == 1
         assert p.nv == 2
         assert p.lmax == 1
 
@@ -59,7 +59,7 @@ class OncvOutputParserTest(PseudoDojoTest):
         assert p.atsym == "O"
         assert p.z == "8.00"
         assert p.iexc == "3"
-        assert p.nc == 1 
+        assert p.nc == 1
         assert p.nv == 2
         assert p.lmax == 1
 
@@ -76,25 +76,27 @@ class OncvOutputParserTest(PseudoDojoTest):
         # Test wavefunctions
         ae_wfs, ps_wfs = p.radial_wfs.ae, p.radial_wfs.ps
 
-        ae10, ps10 = ae_wfs[(1, 0)], ps_wfs[(1, 0)]
+        nlk = (1, 0, None)
+        ae10, ps10 = ae_wfs[nlk], ps_wfs[nlk]
         assert ae10[0] == (0.009945, -0.092997)
         assert ps10[0] == (0.009945,  0.015273)
         assert ae10[-1] == (3.964744, 0.037697)
         assert ps10[-1] == (3.964744, 0.037694)
 
-        ae21, ps21 = ae_wfs[(2, 1)], ps_wfs[(2, 1)]
+        nlk = (2, 1, None)
+        ae21, ps21 = ae_wfs[nlk], ps_wfs[nlk]
         assert ae21[0] == (0.009945, 0.001463)
         assert ps21[0] == (0.009945, 0.000396)
 
         # Test projectors
         prjs = p.projectors
-        assert prjs[(1, 0)][0] == (0.009945, 0.015274)
-        assert prjs[(2, 0)][0] == (0.009945, -0.009284)
-        assert prjs[(1, 0)][-1] == (3.964744, 0.037697)
-        assert prjs[(2, 0)][-1] == (3.964744, 0.330625)
+        assert prjs[(1, 0, None)][0] == (0.009945, 0.015274)
+        assert prjs[(2, 0, None)][0] == (0.009945, -0.009284)
+        assert prjs[(1, 0, None)][-1] == (3.964744, 0.037697)
+        assert prjs[(2, 0, None)][-1] == (3.964744, 0.330625)
 
-        assert prjs[(1, 1)][0] == (0.009945, 0.000395)
-        assert prjs[(2, 1)][0] == (0.009945, -0.000282)
+        assert prjs[(1, 1, None)][0] == (0.009945, 0.000395)
+        assert prjs[(2, 1, None)][0] == (0.009945, -0.000282)
 
         # Test convergence data
         c = p.ene_vs_ecut
@@ -129,8 +131,8 @@ class OncvOutputParserTest(PseudoDojoTest):
         assert p.atsym == "O"
         assert p.z == "8.00"
         assert p.iexc == "3"
-        assert p.nc == 1 
+        assert p.nc == 1
         assert p.nv == 2
         assert p.lmax == 1
-        
+
         # TODO: Wavefunctions
