@@ -47,7 +47,7 @@ class GbrvCompoundsFactory(object):
         return structure
 
     def relax_and_eos_work(self, accuracy, pseudos, formula, struct_type,
-                           ecut=None, pawecutdg=None, ref="ae", fband=2.0):
+                           ecut=None, pawecutdg=None, ref="ae", ngkpt=(8, 8, 8), fband=2.0):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
@@ -69,7 +69,7 @@ class GbrvCompoundsFactory(object):
         structure = self.make_ref_structure(formula, struct_type=struct_type, ref=ref)
 
         return GbrvCompoundRelaxAndEosWork(structure, formula, struct_type, pseudos, self.db.xc, accuracy,
-                                           ecut=ecut, pawecutdg=pawecutdg, fband=fband)
+                                           ecut=ecut, pawecutdg=pawecutdg, ngkpt=ngkpt, fband=fband)
 
 
 class GbrvCompoundRelaxAndEosWork(Work):
@@ -107,8 +107,6 @@ class GbrvCompoundRelaxAndEosWork(Work):
         self.struct_type = struct_type
         self.accuracy = accuracy
         self.ecut, self.pawecutdg = ecut, pawecutdg
-        # ???
-        self.set_name("_".join(["gbrv", struct_type, formula, accuracy]))
 
         # Set extra_abivars.
         # Use tolvrs for the relaxation, toldfe for the EOS
@@ -239,15 +237,14 @@ class GbrvCompoundRelaxAndEosWork(Work):
         print("GBRV-PAW - THIS: abs_err=%f, rel_err=%f %%" % (pawabs_err, pawrel_err))
         print(80 * "=")
 
-        # Update the database.
-        # TODO, handle error!
-        if self.outdb_path is not None:
-            GbrvOutdb.insert_results(self.outdb_path, self.struct_type, self.formula,
-                                     self.accuracy, self.pseudos, results)
-
         # Write results in outdir in JSON format.
         with open(self.outdir.path_in("gbrv_results.json"), "wt") as fh:
              json.dump(results, fh, indent=-1, sort_keys=True) #, cls=MontyEncoder)
+
+        # Update the database.
+        if self.outdb_path is not None:
+            GbrvOutdb.insert_results(self.outdb_path, self.struct_type, self.formula,
+                                     self.accuracy, self.pseudos, results)
 
         return results
 

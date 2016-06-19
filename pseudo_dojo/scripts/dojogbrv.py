@@ -44,17 +44,14 @@ def gbrv_gendb(options):
     table = OfficialDojoTable.from_djson_file(djson_path)
     if options.verbose > 1: print(table)
 
-    # Construct name of the output database.
-    root, ext = os.path.splitext(djson_path)
-    dbpath = root + "_gbrv_compounds.json"
-    if os.path.exists(dbpath):
-        cprint("File %s already exists. New file won't be created. Remove it and try again"  % dbpath, "red")
+    # Init database and dump it
+    db = GbrvOutdb.new_from_table(table, djson_path)
+    if os.path.exists(db.filepath):
+        cprint("File %s already exists. New file won't be created. Remove it and try again"  % db.path, "red")
         return 1
 
-    # Init database and dump it
-    db = GbrvOutdb.new_from_table(table, dbpath)
     db.json_write()
-    cprint("Written new database %s" % os.path.relpath(dbpath), "green")
+    cprint("Written new database %s" % os.path.relpath(db.path), "green")
     return 0
 
 
@@ -84,15 +81,17 @@ def gbrv_rundb(options):
     flow = abilab.Flow(workdir=workdir)
 
     gbrv_factory = GbrvCompoundsFactory(xc=outdb["xc_name"])
-    #ecut = max(p.hint_for_accuracy(accuracy).ecut for p in self.pseudos)
 
-    """
-    work = gbrv_factory.relax_and_eos_work(job.accuracy, job.pseudos, job.formula, job.struct_type,
-                                           ecut=job.ecut, pawecutdg=job.pawecutdg)
+    for accuracy in ("normal", "high"):
+        ecut = max(p.hint_for_accuracy(accuracy).ecut for p in job.pseudos)
+        pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in job.pseudos)
+        if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
+        work = gbrv_factory.relax_and_eos_work(accuracy, job.pseudos, job.formula, job.struct_type,
+                                               ngkpt=(2, 2, 2),
+                                               ecut=ecut, pawecutdg=pawecutdg)
 
-    # Attach the database to the work to trigger the storage of the results.
-    flow.register_work(work.set_outdb(outdb.filepath))
-    """
+        # Attach the database to the work to trigger the storage of the results.
+        flow.register_work(work.set_outdb(outdb.filepath))
 
     print("Working in:", flow.workdir)
     flow.build_and_pickle_dump(abivalidate=options.dry_run)

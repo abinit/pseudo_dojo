@@ -6,15 +6,14 @@ import os
 import json
 import numpy as np
 
-from collections import OrderedDict, defaultdict #MutableMapping,
-from warnings import warn
+from collections import OrderedDict, defaultdict
 from monty.io import FileLock
 from monty.string import list_strings
 from atomicfile import AtomicFile
 from pandas import DataFrame
-from monty.collections import dict2namedtuple #AttrDict,
+from monty.collections import dict2namedtuple
 from monty.functools import lazy_property
-from pymatgen.core.periodic_table import Element #sort_symbols_by_Z
+from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 from pymatgen.analysis.eos import EOS
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
@@ -48,41 +47,23 @@ class GbrvRecord(dict):
             }
             normal: results,
             high: results,
-        }
+        },
     }
 
     where results is the dictionary:
 
-    {"ecut": 6,
-     "v0": 31.72020565768123,
-     "a0": 5.024952898489712,
-     "b0": 4.148379951739942,
-     "num_sites": 2
-     "etotals": [-593.3490598305451, ...],
-     "volumes": [31.410526411353832, ...],
-    }
+        {"ecut": 6,
+         "v0": 31.72020565768123,
+         "a0": 5.024952898489712,
+         "b0": 4.148379951739942,
+         "num_sites": 2
+         "etotals": [-593.3490598305451, ...],
+         "volumes": [31.410526411353832, ...],
+        }
     """
+
     ACCURACIES = ("normal", "high")
-
     STATUS_LIST = (None, "scheduled" ,"failed")
-
-    #@classmethod
-    #def from_dict(cls, d, struct_type, dojo_pptable):
-    #    """
-    #    Construct the object from a dictionary.
-    #    """
-    #    d = d.copy()
-    #    new = cls(struct_type, d.pop("formula"), d.pop("pseudos_metadata"), dojo_pptable)
-
-    #    for acc in cls.ACCURACIES:
-    #        new[acc] = d.pop(acc)
-
-    #    assert not d
-    #    return new
-
-    #def as_dict(self):
-    #    """Dict representation."""
-    #    return {k: self[k] for k in self}
 
     def __init__(self, struct_type, formula, pseudos_or_dict, dojo_pptable):
         """
@@ -210,19 +191,29 @@ class GbrvOutdb(dict):
 
         GbrvOutdb.from_file and GbrvOutdb.new_from_table.
     """
+    # The structures stored in the database.
     struct_types = ["rocksalt", "ABO3", "hH"]
 
+    # The name of the json database should start with prefix.
+    prefix = "gbrv_compouds_"
+
     @classmethod
-    def new_from_table(cls, table, filepath):
-        """Initialize the object from an :class:`OfficialDojoTable` and the name of the json file."""
-        gbrv = gbrv_database(xc=table.xc)
-        new = cls(filepath=filepath, xc_name=table.xc.name)
+    def new_from_table(cls, table, djson_path):
+        """
+        Initialize the object from an :class:`OfficialDojoTable` and a djson file.
+        """
+        djson_path = os.path.abspath(djson_path)
+        dirname = os.path.dirname(djson_path)
+        new = cls(path=os.path.join(dirname, cls.prefix + os.path.basenane(djson_path)),
+                  djson_path=djson_path, xc_name=table.xc.name)
 
         # Init subdictionaries e.g. {'ABO3': {'KHgF3': None, 'SbNCa3': None}, "hH": {...}}
         # These dictionaries will be filled afterwards with the GBRV results.
+        gbrv = gbrv_database(xc=table.xc)
         for struct_type in cls.struct_types:
             new[struct_type] = {k: None for k in gbrv.tables[struct_type]}
 
+        # Get a reference to the table.
         new.table = table
         return new
 
@@ -237,26 +228,33 @@ class GbrvOutdb(dict):
             #new["xc"] = new["xc"]
 
         # Construct the full table of pseudos
-        djson_path = "/Users/gmatteo/git/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/standard.djson"
-        new.table = OfficialDojoTable.from_djson_file(djson_path)
+        new.table = OfficialDojoTable.from_djson_file(new["djson_path"])
         return new
 
+    def iter_struct_formula_data(self):
+        """Iterate over (struct_type, formula, data)."""
+        for struct_type in self.struct_types:
+            for formula, data in self[struct_type].items():
+                yield struct_type, formula, data
+
     @property
-    def filepath(self):
-        return self["filepath"]
+    def path(self):
+        return self["path"]
 
     def json_write(self, filepath=None):
         """
         Write data to file in JSON format.
-        If filepath is None, self["filepath"] is used.
+        If filepath is None, self.path is used.
         """
-        filepath = self["filepath"] if filepath is None else filepath
+        filepath = self.path if filepath is None else filepath
         with open(filepath, "wt") as fh:
             json.dump(self, fh, indent=-1, sort_keys=True) #, cls=MontyEncoder)
 
     @classmethod
     def insert_results(cls, filepath, struct_type, formula, accuracy, pseudos, results):
-        """Update the entry in the database."""
+        """
+        Update the entry in the database.
+        """
         with FileLock(filepath):
             with AtomicFile(filepath, mode="wt") as fh:
                 outdb = cls.from_file(filepath)
@@ -266,7 +264,7 @@ class GbrvOutdb(dict):
 
     def get_record(self, struct_type, formula):
         """
-        Find the record associated to the specified structure type and chemical formula
+        Find the record associated to the specified structure type and chemical formula.
         Return None if record is not present.
         """
         d = self.get(struct_type)
@@ -274,10 +272,8 @@ class GbrvOutdb(dict):
         data = d.get(formula)
         if data is None: return None
 
+        raise NotImplementedError()
         #return GbrvRecord.from_data(data, struct_type, formula, pseudos)
-
-    #def has_record(self, record):
-    #    return record in self[record.formula]
 
     def find_job_torun(self):
         """
@@ -287,38 +283,20 @@ class GbrvOutdb(dict):
             select_formulas:
         """
         job = None
-        for struct_type in self.struct_types:
-            if job is not None: break
-            for formula, data in self[struct_type].items():
-                if data in ("scheduled", "failed"): continue
-                if data is None:
-                    symbols = list(set(species_from_formula(formula)))
-                    pseudos = self.table.pseudos_with_symbols(symbols)
+        for struct_type, formula, data in self.iter_struct_formula_data():
+            if data in ("scheduled", "failed"): continue
+            if data is None:
+                symbols = list(set(species_from_formula(formula)))
+                pseudos = self.table.pseudos_with_symbols(symbols)
 
-                    job = dict2namedtuple(formula=formula, struct_type=struct_type, pseudos=pseudos)
-                                          #accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg)
-                    self[struct_type][formula] = "scheduled"
-                    break
+                job = dict2namedtuple(formula=formula, struct_type=struct_type, pseudos=pseudos)
+                                      #accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg)
+                self[struct_type][formula] = "scheduled"
+                break
 
         # Update the database.
-        if job: self.json_write()
+        if job is not None: self.json_write()
         return job
-
-    #@lazy_property
-    #def gbrv_formula_and_species(self):
-    #    """
-    #    Return a list of tuples. Each tuple contains the formula and the list
-    #    of chemical species in the same order as in formula.
-    #    Example: ("LiF2", ["Li", "F", "F"])
-    #    """
-    #    gbrv_db = gbrv_database(xc=None) # FIXME
-    #    formulas = gbrv_db.tables[self.struct_type].keys()
-
-    #    items = []
-    #    for formula in formulas:
-    #        items.append((formula, species_from_formula(formula)))
-
-    #    return items
 
     # TODO
     def check_update(self):
@@ -378,16 +356,13 @@ class GbrvOutdb(dict):
         """
         status_list = list_strings(status_list)
         count = 0
-
-        for struct_type in self.struct_types:
-            for formula, data in self[struct_type].items():
-                if data in status_list:
-                    self[struct_type][formula] = None
-                    count += 1
+        for struct_type, formula, data in self.iter_struct_formula_data():
+            if data in status_list:
+                self[struct_type][formula] = None
+                count += 1
 
         # Update the database.
         if count: self.json_write()
-
         return count
 
     #############################
@@ -459,6 +434,7 @@ class GbrvOutdb(dict):
             meta.update(get_df(p))
             return meta
 
+        #for struct_type, formula, data in self.iter_struct_formula_data():
         rows = []
         for formula, records in self.items():
             for rec in records:
