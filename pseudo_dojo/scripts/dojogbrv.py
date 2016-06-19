@@ -11,7 +11,7 @@ from monty.termcolor import cprint
 from monty.functools import prof_main
 from warnings import warn
 from abipy import abilab
-from pseudo_dojo.core.pseudos import DojoTable #dojopseudo_from_file,
+from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formula
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
 from pseudo_dojo.dojo.gbrv_compounds import GbrvCompoundsFactory
@@ -101,7 +101,7 @@ def gbrv_plot(options):
     return 0
 
 
-def gbrv_dbrun(options):
+def gbrv_rundb(options):
     """Build flow and run it."""
     raise NotImplementedError()
     outdb = GbrvOutdb.from_file(options.database)
@@ -116,17 +116,10 @@ def gbrv_dbrun(options):
     gbrv_factory = GbrvCompoundsFactory(xc="PBE")
 
     import tempfile
-    workdir=tempfile.mkdtemp(dir=os.getcwd(), prefix=outdb.struct_type + "_")
+    workdir = tempfile.mkdtemp(dir=os.getcwd(), prefix=outdb.struct_type + "_")
     #workdir=tempfile.mkdtemp()
 
     flow = abilab.Flow(workdir=workdir)
-
-    #extra_abivars = {
-        #"mem_test": 0,
-        #"fband": 2,
-        #"nstep": 100,
-        #"paral_kgb": options.paral_kgb,
-    #}
 
     for job in jobs:
         # FIXME this should be taken from the pseudos
@@ -146,7 +139,7 @@ def gbrv_dbrun(options):
     return flow.make_scheduler().start()
 
 
-def gbrv_pprun(options):
+def gbrv_runps(options):
     """
     Run GBRV compound tests given a list of pseudos.
     """
@@ -189,19 +182,24 @@ def gbrv_pprun(options):
     flow.use_smartio()
     return flow.make_scheduler().start()
 
+
 def gbrv_runform(options):
     """
     Run GBRV compound tests given a chemical formula.
     """
+    # Extract checmical symbols from formula
     formula = options.formula
     symbols = set(species_from_formula(formula))
 
-    # Build table and build all possible combinations for the given formula.
-    table = DojoTable.from_dir(top=options.pseudo_dir, exts=("psp8"), exclude_dirs="_*")
+    # Init pseudo table and construct all possible combinations for the given formula.
+    table = DojoTable.from_dir(top=options.pseudo_dir, exts=("psp8", "xml"), exclude_dirs="_*")
     pseudo_list = table.all_combinations_for_elements(symbols)
-    # Remove relativistic pseudos.
+
+    print("Removing relativistic pseudos from list")
     pseudo_list = [plist for plist in pseudo_list if not any("_r" in p.basename for p in plist)]
 
+    # This is hard-coded since we GBRV results are PBE-only.
+    # There's a check between xc and pseudo.xc below.
     xc = "PBE"
     gbrv_factory = GbrvCompoundsFactory(xc=xc)
     db = gbrv_factory.db
@@ -224,6 +222,7 @@ def gbrv_runform(options):
         ecut = ecut_from_pseudos(pseudos)
         print("Adding work for pseudos:", pseudos)
         print("    formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
+
         work = gbrv_factory.relax_and_eos_work("normal", pseudos, entry.symbol, entry.struct_type,
                                                ecut=ecut, pawecutdg=None)
         flow.register_work(work)
@@ -236,12 +235,10 @@ def gbrv_runform(options):
     return flow.make_scheduler().start()
 
 
-def gbrv_find(options):
-    """
-    Run GBRV compound tests given a list of pseudos.
-    """
+def gbrv_list(options):
+    """Print all formula containing symbols."""
     symbols = options.symbols
-    print("Print all formula containts symbols: ", symbols)
+    print("Print all formula containing symbols: ", symbols)
 
     db = gbrv_database(xc="PBE")
     entries = db.entries_with_symbol_list(symbols)
@@ -253,10 +250,6 @@ def gbrv_find(options):
     for i, entry in enumerate(entries):
 	print("[%i] % i", entry)
 
-    #for pseudo in pseudos:
-    #    print(pseudo.symbol)
-    #    for entry in db.entries_with_symbol(pseudo.symbol):
-    #        print(entry)
     return 0
 
 
@@ -273,14 +266,15 @@ def main():
     def str_examples():
         return """\
 usage example:
-   dojogbrv dbgen directory      => Generate the json files needed for the GBRV computations.
-                                    directory contains the pseudopotential table.
-   dojogbrv update directory     =>  Update all the json files in directory (check for
-                                     new pseudos or stale entries)
-   dojogbrv reset dir/*.json     =>  Reset all failed entries in the json files
-   dojogbrv dbrun json_database  =>  Read data from json file, create flows and submit them
-                                     with the scheduler.
-   dojogbrv pprun pseudos        =>  create flows and submit them with the scheduler.
+   dojogbrv dbgen directory              => Generate the json files needed for the GBRV computations.
+                                            directory contains the pseudopotential table.
+   dojogbrv update directory             => Update all the json files in directory (check for
+                                            new pseudos or stale entries)
+   dojogbrv reset dir/*.json             => Reset all failed entries in the json files
+   dojogbrv rundb json_database          => Read data from json file, create flows and submit them
+                                            with the scheduler.
+   dojogbrv runps Na/Na.psp8 F/F.psp8    => create flows and submit them with the scheduler.
+   dojogbrv.py runform NaF -p pseudodir  =>
 """
 
     def show_examples_and_exit(err_msg=None, error_code=1):
@@ -321,29 +315,29 @@ usage example:
     p_plot = subparsers.add_parser('plot', parents=[copts_parser], help=gbrv_plot.__doc__)
     p_plot.add_argument('database_list', nargs="+", help='Database(s) with the output results.')
 
-    # Subparser for dbrun command.
-    p_dbrun = subparsers.add_parser('dbrun', parents=[copts_parser], help=gbrv_dbrun.__doc__)
+    # Subparser for rundb command.
+    p_rundb = subparsers.add_parser('rundb', parents=[copts_parser], help=gbrv_rundb.__doc__)
 
-    p_dbrun.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
-    p_dbrun.add_argument('-n', '--max-njobs', type=int, default=2,
+    p_rundb.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
+    p_rundb.add_argument('-n', '--max-njobs', type=int, default=2,
                           help="Maximum number of jobs (a.k.a. flows) that will be submitted")
 
     def parse_formulas(s):
         return s.split(",") if s is not None else None
-    p_dbrun.add_argument('-f', '--formulas', type=parse_formulas, default=None,
+    p_rundb.add_argument('-f', '--formulas', type=parse_formulas, default=None,
                         help="Optional list of formulas to be selected e.g. --formulas=LiF, NaCl")
-    p_dbrun.add_argument('database', help='Database with the output results.')
+    p_rundb.add_argument('database', help='Database with the output results.')
 
-    # Subparser for pprun command.
-    p_pprun = subparsers.add_parser('pprun', parents=[copts_parser], help=gbrv_pprun.__doc__)
-    p_pprun.add_argument('pseudos', nargs="+", help="Pseudopotential files")
+    # Subparser for runps command.
+    p_runps = subparsers.add_parser('runps', parents=[copts_parser], help=gbrv_runps.__doc__)
+    p_runps.add_argument('pseudos', nargs="+", help="Pseudopotential files")
 
     p_runform = subparsers.add_parser('runform', parents=[copts_parser], help=gbrv_runform.__doc__)
     p_runform.add_argument('formula', help="Chemical formula.")
     p_runform.add_argument('-p', "--pseudo-dir", default=".", help="Directory with pseudos.")
 
-    p_find = subparsers.add_parser('find', parents=[copts_parser], help=gbrv_find.__doc__)
-    p_find.add_argument('symbols', nargs="+", help="Element symbols")
+    p_list = subparsers.add_parser('list', parents=[copts_parser], help=gbrv_list.__doc__)
+    p_list.add_argument('symbols', nargs="+", help="Element symbols")
 
     p_info = subparsers.add_parser('info', parents=[copts_parser], help=gbrv_info.__doc__)
 

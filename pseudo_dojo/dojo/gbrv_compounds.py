@@ -88,8 +88,8 @@ class GbrvCompoundRelaxAndEosWork(Work):
             xc: Exchange-correlation type.
             accuracy:
             ecut: Cutoff energy in Hartree
-            ngkpt: MP divisions for k-mesh.
-            fband:
+            ngkpt: Divisions for k-mesh.
+            fband: Input variable, used to compute the number of bands.
             spin_mode: Spin polarization mode.
             smearing: Smearing technique.
             chksymbreak:
@@ -108,30 +108,20 @@ class GbrvCompoundRelaxAndEosWork(Work):
         self.accuracy = accuracy
         self.set_name("_".join(["gbrv", struct_type, formula, accuracy]))
 
-        # nband must be large enough to accomodate fractional occupancies.
-        #nband = gbrv_nband(self.pseudo)
-
         # Set extra_abivars.
         # Use tolvrs for the relaxation, toldfe for the EOS
         self.extra_abivars = dict(
             ecut=ecut,
             pawecutdg=pawecutdg,
             tolvrs=1e-10,
-            fband=fband,
             ecutsm=0.5,
             mem_test=0,
+            fband=fband,
+            # nband must be large enough to accomodate fractional occupancies.
             #paral_kgb=kwargs.pop("paral_kgb", 0),
             #nband=nband,
         )
 
-        # Build inputs for structural relaxation.
-        #multi = ion_ioncell_relax_input(
-        #                    structure, pseudo,
-        #                    kppa=kppa, nband=None,
-        #                    ecut=ecut, pawecutdg=pawecutdg, accuracy="normal", spin_mode=spin_mode,
-        #                    smearing=smearing)
-
-        #self.extra_abivars.update(**kwargs)
         self.ecut = ecut
         self.smearing = Smearing.as_smearing(smearing)
 
@@ -148,23 +138,6 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
         # Register structure relaxation task.
         self.relax_task = self.register_relax_task(inp)
-
-    def set_outdb(self, path):
-        """
-        This function set the outdb property (a database with the Gbrv results)
-        Use this function when you want the work to write the results of the
-        calculation to the ouddb calculation.
-        """
-        self._outdb_path = path
-        return self
-
-    @property
-    def outdb_path(self):
-        """The path to the database with the output results, None if not set."""
-        try:
-            return self._outdb_path
-        except AttributeError:
-            return None
 
     def add_eos_tasks(self):
         """
@@ -200,6 +173,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         self.flow.build_and_pickle_dump()
 
     def compute_eos(self):
+        """Compute the EOS as describedin the GBRV paper."""
         self.history.info("Computing EOS")
 
         # Read etotals and fit E(V) with a parabola to find the minimum
@@ -211,6 +185,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
             etotals=list(etotals),
             volumes=list(self.volumes),
             num_sites=len(self.relaxed_structure),
+            pseudos=self.pseudos.as_dict(),
         ))
 
         try:
@@ -223,9 +198,8 @@ class GbrvCompoundRelaxAndEosWork(Work):
                  "bcc": lambda vol: (2 * vol) ** (1/3.),
                  "rocksalt": lambda vol: (4 * vol) ** (1/3.),
                  "ABO3": lambda vol: vol ** (1/3.),
-                 "hH": lambda vol: (4 * vol) ** (1/3.), # TODO To be tested
+                 "hH": lambda vol: (4 * vol) ** (1/3.),
                  }[self.struct_type]
-
         a0 = vol2a(eos_fit.v0)
 
         results.update(dict(
@@ -234,13 +208,8 @@ class GbrvCompoundRelaxAndEosWork(Work):
             #b1=eos_fit.b1, # infinity
             a0=a0,
             ecut=self.ecut,
-            #struct_type=self.struct_type
+            struct_type=self.struct_type,
         ))
-
-        # Update the database.
-        # TODO, handle error!
-        if self.outdb_path is not None:
-            GbrvOutdb.update_record(self.outdb_path, self.formula, self.accuracy, self.pseudos, results)
 
         db = gbrv_database(xc=self.xc)
         entry = db.get_entry(self.formula, stype=self.struct_type)
@@ -268,6 +237,11 @@ class GbrvCompoundRelaxAndEosWork(Work):
         print("GBRV-PAW - THIS: abs_err=%f, rel_err=%f %%" % (pawabs_err, pawrel_err))
         print(80 * "=")
 
+        # Update the database.
+        # TODO, handle error!
+        if self.outdb_path is not None:
+            GbrvOutdb.update_record(self.outdb_path, self.formula, self.accuracy, self.pseudos, results)
+
         # Write results in outdir in JSON format.
         with open(self.outdir.path_in("gbrv_results.json"), "wt") as fh:
              json.dump(results, fh, indent=-1, sort_keys=True) #, cls=MontyEncoder)
@@ -291,3 +265,20 @@ class GbrvCompoundRelaxAndEosWork(Work):
             self.compute_eos()
 
         return super(GbrvCompoundRelaxAndEosWork, self).on_all_ok()
+
+    def set_outdb(self, path):
+        """
+        This function set the outdb property (a database with the Gbrv results)
+        Use this function when you want the work to write the results of the
+        calculation to the ouddb calculation.
+        """
+        self._outdb_path = path
+        return self
+
+    @property
+    def outdb_path(self):
+        """The path to the database with the output results, None if not set."""
+        try:
+            return self._outdb_path
+        except AttributeError:
+            return None

@@ -178,8 +178,8 @@ class GbrvRecord(dict):
 
     def get_jobparams(self, accuracy):
         """
-        Return a namedtuple with the paramenters to be used to run
-        the job for the specified accuracy.
+        Return a namedtuple with the parameters to be used
+        to run the job for the specified accuracy.
         """
         assert accuracy in self.ACCURACIES
         # TODO
@@ -212,7 +212,7 @@ class GbrvRecord(dict):
     @add_fig_kwargs
     def plot_eos(self, ax=None, accuracy="normal", **kwargs):
         """
-        plot the equation of state.
+        Plot the equation of state.
 
         Args:
             ax: matplotlib :class:`Axes` or None if a new figure should be created.
@@ -781,7 +781,6 @@ class GbrvDataFrame(DataFrame):
         new.__class__ = self.__class__
         return new
 
-
     @add_fig_kwargs
     def plot_hist(self, ax=None, **kwargs):
         """Histogram plot."""
@@ -952,33 +951,24 @@ class GbrvDataFrame(DataFrame):
     #    # Extract the sub-frame for this pseudo and keep the rows with the
     #    # best result for the given accuracy
     #    ax, fig, plt = get_ax_fig_plt(None)
-
     #    key = accuracy + "_rel_err"
-
     #    # Find all pseudos with the given symbol in the table.
     #    frame = self.subframe_for_symbol(symbol)
-
     #    #for pseudo in frame.pseudos:
     #    #    frame.plot_error_pseudo(pseudo, ax=None)
-
     #    #import seaborn as sns
     #    # Initialize a grid of plots with an Axes for each walk
     #    #grid = sns.FacetGrid(df, col="walk", hue="walk", col_wrap=5, size=1.5)
     #    #grid = sns.FacetGrid(frame, col=key)#, hue="walk", col_wrap=5, size=1.5)
-
     #    # Draw a horizontal line to show the starting point
     #    #grid.map(plt.axhline, y=0, ls=":", c=".5")
-
     #    # Draw a line plot to show the trajectory of each random walk
     #    #grid.map(plt.plot, "formula", key, marker="o", ms=4)
-
     #    # Adjust the tick positions and labels
     #    #grid.set(xticks=np.arange(5), yticks=[-3, 3],
     #    #         xlim=(-.5, 4.5), ylim=(-3.5, 3.5))
-
     #    # Adjust the arrangement of the plots
     #    #grid.fig.tight_layout(w_pad=1)
-
     #    return fig
 
     @add_fig_kwargs
