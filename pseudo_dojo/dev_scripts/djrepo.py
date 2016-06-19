@@ -28,16 +28,16 @@ def djrepo_fix(options):
             return 1
 
         # Change md5
-        #pseudo.dojo_report["md5"] = pseudo.compute_md5()
-        #if pseudo.dojo_report["pseudo_type"] == "norm-conserving":
-        #    pseudo.dojo_report["pseudo_type"] = "NC"
+        pseudo.dojo_report["md5"] = pseudo.compute_md5()
+        if pseudo.dojo_report["pseudo_type"] == "norm-conserving":
+            pseudo.dojo_report["pseudo_type"] = "NC"
 
         # Add basename
-        #if "basename" not in pseudo.dojo_report:
-        #    pseudo.dojo_report["basename"] = pseudo.basename
-        #if pseudo.dojo_report["basename"] != pseudo.basename:
-        #    print("Inconsistent basename in %s" % pp_filepath)
-        #    return 1
+        if "basename" not in pseudo.dojo_report:
+            pseudo.dojo_report["basename"] = pseudo.basename
+        if pseudo.dojo_report["basename"] != pseudo.basename:
+            print("Inconsistent basename in %s" % pp_filepath)
+            return 1
 
         # Remove ebands
         #pseudo.dojo_report.pop("ebands", None)
@@ -58,6 +58,7 @@ def djrepo_fix(options):
     print("Will fix %s djrepo files" % len(options.paths))
     retcode = 0
     for path in options.paths:
+        if options.verbose: print(path)
         retcode += fix_filepath(path)
         if retcode:
             cprint("retcode != 0 in %s" % path, "red")

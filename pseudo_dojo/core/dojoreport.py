@@ -325,6 +325,7 @@ class DojoReport(dict):
             raise TypeValue("Neither NC nor PAW pseudo!")
 
         new.update(
+            basename=pseudo.basename,
             version=cls.LAST_VERSION,
             symbol=pseudo.symbol,
             pseudo_type=pseudo_type,
