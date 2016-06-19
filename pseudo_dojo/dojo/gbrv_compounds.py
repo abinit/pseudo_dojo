@@ -106,6 +106,8 @@ class GbrvCompoundRelaxAndEosWork(Work):
         self.formula = formula
         self.struct_type = struct_type
         self.accuracy = accuracy
+        self.ecut, self.pawecutdg = ecut, pawecutdg
+        # ???
         self.set_name("_".join(["gbrv", struct_type, formula, accuracy]))
 
         # Set extra_abivars.
@@ -122,7 +124,6 @@ class GbrvCompoundRelaxAndEosWork(Work):
             #nband=nband,
         )
 
-        self.ecut = ecut
         self.smearing = Smearing.as_smearing(smearing)
 
         # Kpoint sampling: shiftk depends on struct_type
@@ -203,12 +204,13 @@ class GbrvCompoundRelaxAndEosWork(Work):
         a0 = vol2a(eos_fit.v0)
 
         results.update(dict(
+            ecut=self.ecut,
+            pawecutdg=self.pawecutdg,
+            struct_type=self.struct_type,
             v0=eos_fit.v0,
             b0=eos_fit.b0,
             #b1=eos_fit.b1, # infinity
             a0=a0,
-            ecut=self.ecut,
-            struct_type=self.struct_type,
         ))
 
         db = gbrv_database(xc=self.xc)
@@ -240,7 +242,8 @@ class GbrvCompoundRelaxAndEosWork(Work):
         # Update the database.
         # TODO, handle error!
         if self.outdb_path is not None:
-            GbrvOutdb.update_record(self.outdb_path, self.formula, self.accuracy, self.pseudos, results)
+            GbrvOutdb.insert_results(self.outdb_path, self.struct_type, self.formula,
+                                     self.accuracy, self.pseudos, results)
 
         # Write results in outdir in JSON format.
         with open(self.outdir.path_in("gbrv_results.json"), "wt") as fh:
@@ -268,7 +271,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
     def set_outdb(self, path):
         """
-        This function set the outdb property (a database with the Gbrv results)
+        This function set the outdb property (a database with the Gbrv results for the compounds)
         Use this function when you want the work to write the results of the
         calculation to the ouddb calculation.
         """

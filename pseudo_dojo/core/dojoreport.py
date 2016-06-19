@@ -209,7 +209,8 @@ class DojoReport(dict):
     """
     Dict-like object with the validation results.
     This object is usually created via the class methods:
-    DojoReport.from_file and DojoReport.empty_from_pseudo.
+
+        DojoReport.from_file and DojoReport.empty_from_pseudo.
 
     {
     "version": "1.0"

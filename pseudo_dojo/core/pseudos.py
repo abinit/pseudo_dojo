@@ -612,6 +612,7 @@ class OfficialDojoTable(DojoTable):
             paths.append(path)
             md5dict[m["basename"]] = m["md5"]
 
+        # TODO: Avoid parsing the pseudos. Construct them from dict.
         new = cls(paths).sort_by_z()
         new.set_dojo_info(dojo_info)
 
