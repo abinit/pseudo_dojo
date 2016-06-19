@@ -204,7 +204,7 @@ class GbrvOutdb(dict):
         """
         djson_path = os.path.abspath(djson_path)
         dirname = os.path.dirname(djson_path)
-        new = cls(path=os.path.join(dirname, cls.prefix + os.path.basenane(djson_path)),
+        new = cls(path=os.path.join(dirname, cls.prefix + os.path.basename(djson_path)),
                   djson_path=djson_path, xc_name=table.xc.name)
 
         # Init subdictionaries e.g. {'ABO3': {'KHgF3': None, 'SbNCa3': None}, "hH": {...}}

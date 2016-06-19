@@ -46,7 +46,7 @@ def gbrv_gendb(options):
 
     # Init database and dump it
     db = GbrvOutdb.new_from_table(table, djson_path)
-    if os.path.exists(db.filepath):
+    if os.path.exists(db.path):
         cprint("File %s already exists. New file won't be created. Remove it and try again"  % db.path, "red")
         return 1
 
@@ -91,7 +91,7 @@ def gbrv_rundb(options):
                                                ecut=ecut, pawecutdg=pawecutdg)
 
         # Attach the database to the work to trigger the storage of the results.
-        flow.register_work(work.set_outdb(outdb.filepath))
+        flow.register_work(work.set_outdb(outdb.path))
 
     print("Working in:", flow.workdir)
     flow.build_and_pickle_dump(abivalidate=options.dry_run)
