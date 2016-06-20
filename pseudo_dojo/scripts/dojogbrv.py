@@ -75,6 +75,7 @@ def gbrv_rundb(options):
     retcode, count = 0, 0
     while True:
 	if count == 1: break
+	#if count == 2: break
 
         with FileLock(dbpath):
 	    outdb = GbrvOutdb.from_file(dbpath)
