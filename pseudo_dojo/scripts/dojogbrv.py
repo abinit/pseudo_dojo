@@ -71,12 +71,13 @@ def gbrv_update(options):
 
 def gbrv_rundb(options):
     """Build flow and run it."""
+    dbpath = os.path.abspath(options.path)
     retcode, count = 0, 0
     while True:
 	if count == 3: break
 
-        with FileLock(options.path):
-	    outdb = GbrvOutdb.from_file(options.path)
+        with FileLock(dbpath):
+	    outdb = GbrvOutdb.from_file(dbpath)
 	    job = outdb.find_job_torun()
 	    if job is None:
 		cprint("Nothing to do, returning 0", "yellow")
@@ -98,7 +99,7 @@ def gbrv_rundb(options):
                                                    ecut=ecut, pawecutdg=pawecutdg)
 
             # Attach the database to the work to trigger the storage of the results.
-            flow.register_work(work.set_outdb(outdb.path))
+            flow.register_work(work.set_outdb(dbpath))
 
         print("Working in:", flow.workdir)
         flow.build_and_pickle_dump(abivalidate=options.dry_run)
