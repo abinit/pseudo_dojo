@@ -19,7 +19,6 @@ from monty import termcolor
 from monty.termcolor import cprint
 from pymatgen.util.io_utils import ask_yesno, prompt
 from pseudo_dojo.core.pseudos import dojopseudo_from_file, DojoTable
-#from pseudo_dojo.core.dojoreport import DojoReport
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pseudo_dojo.pseudos import check_pseudo
 
@@ -910,6 +909,7 @@ Usage example:
     if not options.pseudos:
 	cprint("Empty pseudopotential list. Returning", "magenta")
 	return 1
+    if options.verbose: print(options.pseudos)
 
     if options.seaborn:
         import seaborn as sns

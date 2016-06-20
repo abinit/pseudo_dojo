@@ -164,43 +164,6 @@ def dojo_gbrv_results(pseudo, struct_type, num_sites, volumes, etotals):
     return dojo_entry, eos_fit
 
 
-#def insert(self, data):
-#    """
-#    Insert new data so that the list is still ordered with increasing ecut
-#    If an ecut is already stored, we replace the old entry.
-#    """
-#    # Handle first insertion
-#    if not self.dict_list:
-#        self.dict_list.append(data)
-#        return
-#
-#    prev_ecuts = self.get_ecuts()
-#    new_ecut = float(data["ecut"])
-#
-#    # Find rightmost value less than or equal to x.
-#    already_in = False
-#    if new_ecut < prev_ecuts[0]:
-#        i = 0
-#    elif new_ecut > prev_ecuts[-1]:
-#        i = len(prev_ecuts)
-#    else:
-#        i = find_le(prev_ecuts, new_ecut)
-#        # Handle possible dupe.
-#        already_in = prev_ecuts[i] == new_ecut
-#        if already_in:
-#            self.dict_list.pop(i)
-#        else:
-#            i += 1
-#
-#    self.dict_list.insert(i, data)
-#
-#def get_data_for_ecut(self, ecut):
-#    """Return the results for the given ecut"""
-#    for data in self:
-#        if abs(float(data["ecut"]) - float(ecut)) < 0.001: return data
-#    raise ValueError("Cannot find ecut = %s" % ecut)
-
-
 class DojoReportError(Exception):
     """Exception raised by DoJoReport."""
 

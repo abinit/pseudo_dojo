@@ -117,26 +117,6 @@ class GbrvRecord(dict):
     #def formula(self):
     #    return self["formula"]
 
-    #def add_results(self, accuracy, results):
-    #    # TODO Validate input.
-    #    assert accuracy in self.ACCURACIES
-    #    #assert set(data.keys()) == set(["ecut", "a0", "v0" , "b0", "b1"])
-
-    #    if self[accuracy] is not None:
-    #        logger.warning("Overwriting results for %s" % self.formula)
-
-    #    self[accuracy] = results
-
-    #def has_data(self, accuracy):
-    #    """True if the record contains computed data for this accuracy."""
-    #    return self[accuracy] not in self.STATUS_LIST
-
-    #def matches_pseudos(self, pseudos):
-    #    """Return True if the list of `pseudos` matches the one in the record."""
-    #    d1 = {p.symbol: p for p in self.pseudos}
-    #    d2 = {p.symbol: p for p in pseudos}
-    #    return d1 == d2
-
     #def compute_err(self, reference="ae", accuracy="normal"):
     #    """
     #    Return namedtuple with the absolute and the relative error.
@@ -169,7 +149,6 @@ class GbrvRecord(dict):
             `matplotlib` figure.
         """
         ax, fig, plt = get_ax_fig_plt(ax)
-
         if not self.has_data(accuracy): return fig
         d = self["accuracy"]
 
@@ -248,7 +227,7 @@ class GbrvOutdb(dict):
         """
         filepath = self.path if filepath is None else filepath
         with open(filepath, "wt") as fh:
-            json.dump(self, fh, indent=-1, sort_keys=True) #, cls=MontyEncoder)
+            json.dump(self, fh, indent=-1, sort_keys=True)
 
     @classmethod
     def insert_results(cls, filepath, struct_type, formula, accuracy, pseudos, results):
@@ -260,20 +239,7 @@ class GbrvOutdb(dict):
                 outdb = cls.from_file(filepath)
                 old_dict = outdb[struct_type].get(formula, {})
                 old_dict[accuracy] = results
-                json.dump(outdb, fh, indent=-1, sort_keys=True) #, cls=MontyEncoder)
-
-    def get_record(self, struct_type, formula):
-        """
-        Find the record associated to the specified structure type and chemical formula.
-        Return None if record is not present.
-        """
-        d = self.get(struct_type)
-        if d is None: return None
-        data = d.get(formula)
-        if data is None: return None
-
-        raise NotImplementedError()
-        #return GbrvRecord.from_data(data, struct_type, formula, pseudos)
+                json.dump(outdb, fh, indent=-1, sort_keys=True)
 
     def find_job_torun(self):
         """
@@ -290,13 +256,25 @@ class GbrvOutdb(dict):
                 pseudos = self.table.pseudos_with_symbols(symbols)
 
                 job = dict2namedtuple(formula=formula, struct_type=struct_type, pseudos=pseudos)
-                                      #accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg)
                 self[struct_type][formula] = "scheduled"
                 break
 
         # Update the database.
         if job is not None: self.json_write()
         return job
+
+   def get_record(self, struct_type, formula):
+       """
+       Find the record associated to the specified structure type and chemical formula.
+       Return None if record is not present.
+       """
+       d = self.get(struct_type)
+       if d is None: return None
+       data = d.get(formula)
+       if data is None: return None
+
+       raise NotImplementedError()
+       #return GbrvRecord.from_data(data, struct_type, formula, pseudos)
 
     # TODO
     def check_update(self):
@@ -381,7 +359,6 @@ class GbrvOutdb(dict):
             `matplotlib` figure
         """
         ax, fig, plt = get_ax_fig_plt(ax)
-
         ax.grid(True)
         #ax.set_xlabel('r [Bohr]')
 
@@ -397,10 +374,10 @@ class GbrvOutdb(dict):
 
         if not xs:
             print("No entry available for plotting")
+            return None
 
         ax.scatter(range(len(ys_rel)), ys_rel, s=20) #, c='b', marker='o', cmap=None, norm=None)
         #ax.scatter(xs, ys_rel, s=20) #, c='b', marker='o', cmap=None, norm=None)
-
         return fig
 
     def get_dataframe(self, reference="ae", pptable=None, **kwargs):

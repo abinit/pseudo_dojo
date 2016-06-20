@@ -43,12 +43,12 @@ def dojopseudo_from_file(filepath):
     if filepath.endswith(".djrepo"):
         dojo_report = DojoReport.from_file(filepath)
         pp_basename = dojo_report["basename"]
-        #pp_basename = os.path.basename(filepath).replace(".djrepo", ".psp8")
         filepath = os.path.join(os.path.dirname(filepath), pp_basename)
 
     # Init pseudo from file. Return None if parser error.
     pseudo = Pseudo.from_file(filepath)
     if pseudo is None: return pseudo
+    #pseudo.__class__.dojo_report = property(lambda self: self.a + 1)
 
     if dojo_report is not None:
         # We've already read the report.
