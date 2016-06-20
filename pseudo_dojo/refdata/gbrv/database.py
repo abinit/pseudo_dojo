@@ -124,7 +124,7 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
     Attributes:
         symbol: Chemical symbol of formula.
         ae:  AE results
-        gbrb_uspp:  Ultra-soft PP results (Espresso code)
+        gbrv_uspp:  Ultra-soft PP results (Espresso code)
         vasp:  VASP PAW results
         pslib:  Espresso PAW results
         gbrv_paw:  PAW results (Abinit code)
@@ -134,6 +134,8 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
     .. note::
         Lattice parameters are in Angstrom
     """
+    code_names = ["ae", "gbrv_uspp", "vasp", "pslib", "gbrv_paw"]
+
     def __new__(cls, **kwargs):
         """Extends the base class adding type conversion of arguments."""
         for k, v in kwargs.items():

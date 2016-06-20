@@ -132,8 +132,13 @@ def gbrv_reset(options):
 def gbrv_plot(options):
     """Plot results in the database."""
     outdb = GbrvOutdb.from_file(options.path)
-    frame = outdb.get_dataframe()
-    print(frame)
+    frame = outdb.get_pdframe()
+    #print(frame)
+    #print(frame.describe())
+
+    frame.plot_errors_for_structure("rocksalt")
+
+    #print(frame.select_badguys(rtol=0.4))
     #import matplotlib.pyplot as plt
     #frame.plot(frame.index, ["normal_rel_err", "high_rel_err"])
     #ax.set_xticks(range(len(data.index)))

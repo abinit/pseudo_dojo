@@ -117,26 +117,6 @@ class GbrvRecord(dict):
     #def formula(self):
     #    return self["formula"]
 
-    #def compute_err(self, reference="ae", accuracy="normal"):
-    #    """
-    #    Return namedtuple with the absolute and the relative error.
-    #    None if data is not available.
-    #    """
-    #    # Get the reference results
-    #    gbrv_db = gbrv_database(xc=None) # FIXME
-    #    gbrv_entry = gbrv_db.get_entry(self.formula, self.struct_type)
-    #    ref_a = getattr(gbrv_entry, reference)
-
-    #    # Get our value, Return None if not computed.
-    #    if not self.has_data(accuracy): return None
-    #    d = self[accuracy]
-
-    #    our_a = d["a0"]
-    #    abs_err = our_a - ref_a
-    #    rel_err = 100 * abs_err / ref_a
-
-    #    return dict2namedtuple(a0=our_a, abs_err=abs_err, rel_err=rel_err)
-
     @add_fig_kwargs
     def plot_eos(self, ax=None, accuracy="normal", **kwargs):
         """
@@ -205,10 +185,18 @@ class GbrvOutdb(dict):
             d = json.load(fh)
             new = cls(**d)
             #new["xc"] = new["xc"]
-            print("keys", new.keys())
+            #print("keys", new.keys())
 
         # Construct the full table of pseudos
-        new.table = OfficialDojoTable.from_djson_file(new["djson_path"])
+        djpath = new["djson_path"]
+        from pseudo_dojo.pseudos import dojotable_absdir
+        if not os.path.exists(djpath):
+            head, base = os.path.split(djpath)
+            _, dirname = os.path.split(head)
+            dojodir = dojotable_absdir(dirname)
+            djpath = os.path.join(dojodir, base)
+
+        new.table = OfficialDojoTable.from_djson_file(djpath)
         return new
 
     def iter_struct_formula_data(self):
@@ -383,7 +371,7 @@ class GbrvOutdb(dict):
         #ax.scatter(xs, ys_rel, s=20) #, c='b', marker='o', cmap=None, norm=None)
         return fig
 
-    def get_dataframe(self, reference="ae", pptable=None, **kwargs):
+    def get_pdframe(self, reference="ae", pptable=None, **kwargs):
         """
         Build and return a :class:`GbrvCompoundDataFrame` with the most important results.
 
@@ -395,49 +383,53 @@ class GbrvOutdb(dict):
         Returns:
             frame: pandas :class:`DataFrame`
         """
-        def get_df(p):
-            dfact_meV, df_prime = None, None
-            if p.has_dojo_report:
-                try:
-                    data = p.dojo_report["deltafactor"]
-                    high_ecut = list(data.keys())[-1]
-                    dfact_meV = data[high_ecut]["dfact_meV"]
-                    df_prime = data[high_ecut]["dfactprime_meV"]
-                except KeyError:
-                    pass
+        #def get_df(p):
+        #    dfact_meV, df_prime = None, None
+        #    if p.has_dojo_report:
+        #        try:
+        #            data = p.dojo_report["deltafactor"]
+        #            high_ecut = list(data.keys())[-1]
+        #            dfact_meV = data[high_ecut]["dfact_meV"]
+        #            df_prime = data[high_ecut]["dfactprime_meV"]
+        #        except KeyError:
+        #            pass
+        #    return dict(dfact_meV=dfact_meV, df_prime=df_prime)
 
-            return dict(dfact_meV=dfact_meV, df_prime=df_prime)
+        #def get_meta(p):
+        #    """Return dict with pseudo metadata."""
+        #    meta = {"basename": p.basename, "md5": p.md5}
+        #    meta.update(get_df(p))
+        #    return meta
 
-        def get_meta(p):
-            """Return dict with pseudo metadata."""
-            meta = {"basename": p.basename, "md5": p.md5}
-            meta.update(get_df(p))
-            return meta
+        gbrv = gbrv_database(xc=self["xc_name"])
 
-        #for struct_type, formula, data in self.iter_struct_formula_data():
-        rows = []
-        for formula, records in self.items():
-            for rec in records:
-                d = dict(formula=formula, struct_type=self.struct_type,
-                         basenames=set(p.basename for p in rec.pseudos),
-                         pseudos_meta={p.symbol: get_meta(p) for p in rec.pseudos},
-                         symbols={p.symbol for p in rec.pseudos},
-                        )
+        rows, miss = [], 0
+        for struct_type, formula, data in self.iter_struct_formula_data():
+            if not isinstance(data, dict):
+                miss += 1
+                continue
 
-                has_data = 0
-                for acc in ("normal", "high"):
-                    e = rec.compute_err(reference=reference, accuracy=acc)
-                    if e is None: continue
-                    has_data += 1
-                    d.update({acc + "_a0": e.a0, acc + "_rel_err": e.rel_err,
-                             #acc + "_abs_err": e.abs_err,
-                             })
+            a0 = data["high"]["a0"]
 
-                if has_data:
-                    rows.append(d)
+            row = dict(formula=formula, struct_type=struct_type, this=a0,
+                     #basenames=set(p.basename for p in rec.pseudos),
+                     #pseudos_meta={p.symbol: get_meta(p) for p in rec.pseudos},
+                     #symbols={p.symbol for p in rec.pseudos},
+                     )
 
-        # Build sub-class of pandas.DataFrame
-        return GbrvCompoundDataFrame(rows)
+            # Add results from the database.
+            entry = gbrv.get_entry(formula, struct_type)
+            #row.update({code: getattr(entry, code) for code in entry.code_names})
+            row.update({code: getattr(entry, code) for code in ["ae", "gbrv_paw"]})
+            rows.append(row)
+
+        if miss:
+            print("There are %d missing entries in %s\n" % (miss, self.path))
+
+        # Build sub-class of pandas.DataFrame and add relative error wrt AE results.
+        frame = GbrvCompoundDataFrame(rows)
+        frame["rel_err"] = 100 * (frame["this"] - frame["ae"]) / frame["ae"]
+        return frame
 
 
 class GbrvCompoundDataFrame(DataFrame):
@@ -446,29 +438,101 @@ class GbrvCompoundDataFrame(DataFrame):
 
     The frame has the structure:
 
-          a0         high_rel_err  normal_rel_err     basenames
-    CsCl  7.074637           NaN       -0.188528      set(Cs_basename, Cl_basename)
-    BeO   3.584316           NaN       -1.799555      {...}
+              ae formula  gbrv_paw  gbrv_uspp  pslib struct_type      this   vasp
+        0   4.073     AlN     4.079      4.079  4.068    rocksalt  4.068777  4.070
+        1   5.161    LiCl     5.153      5.151  5.160    rocksalt  5.150304  5.150
+        2   4.911      YN     4.909      4.908  4.915    rocksalt  4.906262  4.906
+
+    TODO: column with pseudos?
+
+    basenames
+    set(Cs_basename, Cl_basename)
+    {...}
     """
     ALL_ACCURACIES = ("normal", "high")
 
-    @classmethod
-    def from_dojodir(cls, dojo_dir, exclude_basenames=None):
-        """
-        Initialize the object from a top level directory that
-        contains pseudopotentials in the PseudoDojo format.
+    #def select_badguys(self, rtol=0.4):
+        #new = self[abs(100 * (self["this"] - self["ae"]) / self["ae"]) > rtol].copy()
+        #new["rel_err"] = 100 * (self["this"] - self["ae"]) / self["ae"]
+        #new.__class__ = self.__class__
+        #return new
 
-        Args:
-            exclude_basenames: Optional string or list of strings with the
-                pseudo basenames to be excluded.
-        """
-        # Construct the full table of pseudos from dojodir
-        dojo_pptable = DojoTable.from_dojodir(dojo_dir, exclude_basenames=exclude_basenames)
-        return cls.from_dojotable(dojo_pptable)
+    #def print_info(self, **kwargs):
+    #    """Pretty-print"""
+    #    frame = self[["formula", "normal_rel_err", "high_rel_err", "basenames"]] # "symbols",
+    #    s = frame.to_string(index=False)
+    #    print(s)
+    #    print("")
+    #    #print(frame.describe())
+    #    #print("")
+
+    #    for col in ["normal_rel_err", "high_rel_err"]:
+    #        print("For column:" , col)
+    #        print("mean(abs)", self[col].abs().mean())
+    #        print("RMS:", np.sqrt((self[col]**2).sum() / len(self)))
+
+    #def subframe_for_symbol(self, symbol):
+    #    """Extract the rows with the given element symbol. Return new `GbrvCompoundDataFrame`."""
+    #    # Extract the rows containing this pseudo and create new frame.
+    #    rows = []
+    #    for idx, row in self.iterrows():
+    #        if symbol not in row.symbols: continue
+    #        meta = row.pseudos_meta[symbol]
+
+    #        pseudo_basename = meta["basename"]
+    #        dfact_meV, df_prime = meta["dfact_meV"], meta["df_prime"]
+    #        row = row.set_value("dfact_meV", dfact_meV)
+    #        row = row.set_value("dfactprime_meV", df_prime)
+    #        row = row.set_value("pseudo_basename", pseudo_basename)
+
+    #        rows.append(row)
+
+    #    return self.__class__(rows)
+
+    @add_fig_kwargs
+    def plot_errors_for_structure(self, struct_type, ax=None, **kwargs):
+        ax, fig, plt = get_ax_fig_plt(ax=ax)
+        data = self[self["struct_type"] == struct_type].copy()
+
+        colnames = ["this", "gbrv_paw"]
+        for col in colnames:
+            data[col + "_rel_err"] = 100 * (data[col] - data["ae"]) / data["ae"]
+            data.plot(x="formula", y=col + "_rel_err", ax=ax, style="o-", grid=True)
+
+        #print(data)
+        plt.setp(ax.xaxis.get_majorticklabels(), rotation=70)
+        ax.set_ylim(-1, 1)
+
+        return fig
+
+    @add_fig_kwargs
+    def join_plot(self, **kwargs):
+        import seaborn as sns
+        sns.set(style="darkgrid", color_codes=True)
+
+        ax, fig, plt = get_ax_fig_plt()
+
+        #tips = sns.load_dataset("tips")
+        #g = sns.jointplot("total_bill", "tip", data=tips, kind="reg",
+        #                  xlim=(0, 60), ylim=(0, 12), color="r", size=7)
+        #print_full_frame(self[["formula", "high_df_prime", "basenames"]])
+
+        newcol = "abs(high_rel_err)"
+
+        self[newcol] = self["high_rel_err"].abs()
+
+        g = sns.jointplot("high_df_prime", "abs(high_rel_err)", data=self, kind="reg",)
+                          #xlim=(0, 60), ylim=(0, 12), color="r", size=7)
+
+        g = sns.jointplot("high_df", "abs(high_rel_err)", data=self, kind="reg",)
+                          #xlim=(0, 60), ylim=(0, 12), color="r", size=7)
+
+        # Remove the column
+        self.drop([newcol], axis=1)
+        return fig
 
     @classmethod
     def from_dojotable(cls, table):
-
         _TRIALS2KEY = {
             #"deltafactor": "dfact_meV",
             "gbrv_bcc": "a0_rel_err",
@@ -565,89 +629,6 @@ class GbrvCompoundDataFrame(DataFrame):
         new = cls(rows)
         return new
 
-    @lazy_property
-    def symbols(self):
-        """List with the element symbols present in the table sorted by Z."""
-        symbols = set()
-        for idx, row in self.iterrows():
-            symbols.update(row.symbols)
-
-        return sort_symbols_by_Z(symbols)
-
-    #def multiple_pseudos(self):
-    #    # Loop over the rows. Collect all the {symbol: md5}
-    #    meta_set, multiple = set(), []
-    #    for idx, row in self.iterrows():
-    #        for esymb, meta in row.pseudos_meta.items():
-    #            meta = tuple([(k, v) for k, v in meta.items()])
-    #            if meta not in meta_set:
-    #                meta_set.add(meta)
-    #            else:
-    #                multiple.append(meta)
-    #    return [{k: v for k, v in t} for t in multiple]
-
-    def print_info(self, **kwargs):
-        """Pretty-print"""
-        frame = self[["formula", "normal_rel_err", "high_rel_err", "basenames"]] # "symbols",
-        s = frame.to_string(index=False)
-        print(s)
-        print("")
-        #print(frame.describe())
-        #print("")
-
-        for col in ["normal_rel_err", "high_rel_err"]:
-            print("For column:" , col)
-            print("mean(abs)", self[col].abs().mean())
-            print("RMS:", np.sqrt((self[col]**2).sum() / len(self)))
-
-    def select_badguys(self, accuracy="high", atol=0.5):
-        col = accuracy + "_rel_err"
-        #bad = [row for idx, row in self.iterrows() if abs(row[col]) > atol]
-        #new = self.__class__(bad)
-        new = self[self[col].abs() > atol]
-        new.__class__ = self.__class__
-        return new
-
-    @add_fig_kwargs
-    def plot_hist(self, ax=None, **kwargs):
-        """Histogram plot."""
-        ax, fig, plt = get_ax_fig_plt(ax)
-        import seaborn as sns
-
-        ax.grid(True)
-        #for acc in ("normal", "high"):
-        for acc in ("high",):
-            col = acc + "_rel_err"
-            values = self[col].dropna()
-            sns.distplot(values, ax=ax, rug=True, hist=False, label=col)
-
-            # Add text with Mean or (MARE/RMSRE)
-            text = []; app = text.append
-            app("MARE = %.2f" % values.abs().mean())
-            app("RMSRE = %.2f" % np.sqrt((values**2).mean()))
-
-            ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
-
-        return fig
-
-    def subframe_for_symbol(self, symbol):
-        """Extract the rows with the given element symbol. Return new `GbrvCompoundDataFrame`."""
-        # Extract the rows containing this pseudo and create new frame.
-        rows = []
-        for idx, row in self.iterrows():
-            if symbol not in row.symbols: continue
-            meta = row.pseudos_meta[symbol]
-
-            pseudo_basename = meta["basename"]
-            dfact_meV, df_prime = meta["dfact_meV"], meta["df_prime"]
-            row = row.set_value("dfact_meV", dfact_meV)
-            row = row.set_value("dfactprime_meV", df_prime)
-            row = row.set_value("pseudo_basename", pseudo_basename)
-
-            rows.append(row)
-
-        return self.__class__(rows)
-
     def subframe_for_pseudo(self, pseudo, best_for_acc=None):
         """
         Extract the rows with the given pseudo. Return new `GbrvCompoundDataFrame`.
@@ -672,8 +653,7 @@ class GbrvCompoundDataFrame(DataFrame):
             rows.append(row)
 
         new = self.__class__(rows)
-        if best_for_acc is None:
-            return new
+        if best_for_acc is None: return new
 
         # Handle best_for_acc
         key = best_for_acc + "_rel_err"
@@ -772,32 +752,6 @@ class GbrvCompoundDataFrame(DataFrame):
 
         return fig
 
-    #@add_fig_kwargs
-    #def plot_allpseudos_with_symbol(self, symbol, accuracy="normal", **kwargs):
-    #    # For each pseudo:
-    #    # Extract the sub-frame for this pseudo and keep the rows with the
-    #    # best result for the given accuracy
-    #    ax, fig, plt = get_ax_fig_plt(None)
-    #    key = accuracy + "_rel_err"
-    #    # Find all pseudos with the given symbol in the table.
-    #    frame = self.subframe_for_symbol(symbol)
-    #    #for pseudo in frame.pseudos:
-    #    #    frame.plot_error_pseudo(pseudo, ax=None)
-    #    #import seaborn as sns
-    #    # Initialize a grid of plots with an Axes for each walk
-    #    #grid = sns.FacetGrid(df, col="walk", hue="walk", col_wrap=5, size=1.5)
-    #    #grid = sns.FacetGrid(frame, col=key)#, hue="walk", col_wrap=5, size=1.5)
-    #    # Draw a horizontal line to show the starting point
-    #    #grid.map(plt.axhline, y=0, ls=":", c=".5")
-    #    # Draw a line plot to show the trajectory of each random walk
-    #    #grid.map(plt.plot, "formula", key, marker="o", ms=4)
-    #    # Adjust the tick positions and labels
-    #    #grid.set(xticks=np.arange(5), yticks=[-3, 3],
-    #    #         xlim=(-.5, 4.5), ylim=(-3.5, 3.5))
-    #    # Adjust the arrangement of the plots
-    #    #grid.fig.tight_layout(w_pad=1)
-    #    return fig
-
     @add_fig_kwargs
     def hist_allpseudos_with_symbols(self, symbol, ax=None, **kwargs):
         import seaborn as sns
@@ -828,48 +782,23 @@ class GbrvCompoundDataFrame(DataFrame):
         return fig
 
     @add_fig_kwargs
-    def plot_formulas(self, ax=None, **kwargs):
-        ax, fig, plt = get_ax_fig_plt(ax=ax)
-
-        ynames = ["normal_rel_err", "high_rel_err"]
-        ynames = ["high_rel_err"]
-
-        self.plot("formula", ynames, ax=ax, style="o", grid=True)
-
-        plt.setp(ax.xaxis.get_majorticklabels(), rotation=70)
-        ax.set_ylim(-1, 1)
-
-        return fig
-
-    @add_fig_kwargs
-    def join_plot(self, **kwargs):
+    def plot_hist(self, ax=None, **kwargs):
+        """Histogram plot."""
+        ax, fig, plt = get_ax_fig_plt(ax)
         import seaborn as sns
-        sns.set(style="darkgrid", color_codes=True)
 
-        ax, fig, plt = get_ax_fig_plt()
+        ax.grid(True)
+        #for acc in ("normal", "high"):
+        for acc in ("high",):
+            col = acc + "_rel_err"
+            values = self[col].dropna()
+            sns.distplot(values, ax=ax, rug=True, hist=False, label=col)
 
-        #tips = sns.load_dataset("tips")
-        #g = sns.jointplot("total_bill", "tip", data=tips, kind="reg",
-        #                  xlim=(0, 60), ylim=(0, 12), color="r", size=7)
-        #print_full_frame(self[["formula", "high_df_prime", "basenames"]])
+            # Add text with Mean or (MARE/RMSRE)
+            text = []; app = text.append
+            app("MARE = %.2f" % values.abs().mean())
+            app("RMSRE = %.2f" % np.sqrt((values**2).mean()))
 
-        newcol = "abs(high_rel_err)"
+            ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
 
-        self[newcol] = self["high_rel_err"].abs()
-
-        g = sns.jointplot("high_df_prime", "abs(high_rel_err)", data=self, kind="reg",)
-                          #xlim=(0, 60), ylim=(0, 12), color="r", size=7)
-
-        g = sns.jointplot("high_df", "abs(high_rel_err)", data=self, kind="reg",)
-                          #xlim=(0, 60), ylim=(0, 12), color="r", size=7)
-
-        # Remove the column
-        self.drop([newcol], axis=1)
         return fig
-
-    #def scatter(self, **kwarags):
-    #    ax, fig, plt = get_ax_fig_plt()
-    #    xs
-    #    ys
-    #    #ax.scatter(delta1[:-1], delta1[1:], c=close, s=volume, alpha=0.5)
-    #    return fig
