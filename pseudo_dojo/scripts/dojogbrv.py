@@ -72,34 +72,39 @@ def gbrv_rundb(options):
     """Build flow and run it."""
     outdb = GbrvOutdb.from_file(options.path)
 
-    job = outdb.find_job_torun()
-    if job is None:
-        cprint("Nothing to do, returning 0", "yellow")
-        return 0
+    retcode = 0
+    while True:
+        job = outdb.find_job_torun()
+        if job is None:
+            cprint("Nothing to do, returning 0", "yellow")
+            return 0
 
-    workdir = os.path.join(os.getcwd(), "GBRV_OUTDB_" + job.formula)
-    flow = abilab.Flow(workdir=workdir)
+        workdir = os.path.join(os.getcwd(), "GBRV_OUTDB_" + job.formula)
+        flow = abilab.Flow(workdir=workdir)
 
-    gbrv_factory = GbrvCompoundsFactory(xc=outdb["xc_name"])
+        gbrv_factory = GbrvCompoundsFactory(xc=outdb["xc_name"])
 
-    for accuracy in ("normal", "high"):
-        ecut = max(p.hint_for_accuracy(accuracy).ecut for p in job.pseudos)
-        pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in job.pseudos)
-        if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
-        work = gbrv_factory.relax_and_eos_work(accuracy, job.pseudos, job.formula, job.struct_type,
-                                               ngkpt=(2, 2, 2),
-                                               ecut=ecut, pawecutdg=pawecutdg)
+        for accuracy in ("normal", "high"):
+            ecut = max(p.hint_for_accuracy(accuracy).ecut for p in job.pseudos)
+            pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in job.pseudos)
+            if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
+            # Increase by 10 since many pseudos only have ppgen_hints
+            ecut += 10
+            work = gbrv_factory.relax_and_eos_work(accuracy, job.pseudos, job.formula, job.struct_type,
+                                                   ecut=ecut, pawecutdg=pawecutdg)
 
-        # Attach the database to the work to trigger the storage of the results.
-        flow.register_work(work.set_outdb(outdb.path))
+            # Attach the database to the work to trigger the storage of the results.
+            flow.register_work(work.set_outdb(outdb.path))
 
-    print("Working in:", flow.workdir)
-    flow.build_and_pickle_dump(abivalidate=options.dry_run)
-    if options.dry_run: return 0
+        print("Working in:", flow.workdir)
+        flow.build_and_pickle_dump(abivalidate=options.dry_run)
+        if options.dry_run: return 0
 
-    # Run the flow with the scheduler (enable smart_io)
-    flow.use_smartio()
-    return flow.make_scheduler().start()
+        # Run the flow with the scheduler (enable smart_io)
+        flow.use_smartio()
+        retcode += flow.make_scheduler().start()
+
+    return retcode
 
 
 def gbrv_reset(options):
