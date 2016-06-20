@@ -471,37 +471,72 @@ class GbrvCompoundDataFrame(DataFrame):
     #        print("mean(abs)", self[col].abs().mean())
     #        print("RMS:", np.sqrt((self[col]**2).sum() / len(self)))
 
-    #def subframe_for_symbol(self, symbol):
-    #    """Extract the rows with the given element symbol. Return new `GbrvCompoundDataFrame`."""
-    #    # Extract the rows containing this pseudo and create new frame.
-    #    rows = []
-    #    for idx, row in self.iterrows():
-    #        if symbol not in row.symbols: continue
-    #        meta = row.pseudos_meta[symbol]
+    def select_symbol(self, symbol):
+        """
+        Extract the rows whose formula contain the given element symbol.
+        Return new `GbrvCompoundDataFrame`.
+        """
+        rows = []
+        for idx, row in self.iterrows():
+            if symbol not in species_from_formula(row.formula): continue
+            #meta = row.pseudos_meta[symbol]
+            #pseudo_basename = meta["basename"]
+            #dfact_meV, df_prime = meta["dfact_meV"], meta["df_prime"]
+            #row = row.set_value("dfact_meV", dfact_meV)
+            #row = row.set_value("dfactprime_meV", df_prime)
+            #row = row.set_value("pseudo_basename", pseudo_basename)
+            rows.append(row)
 
-    #        pseudo_basename = meta["basename"]
-    #        dfact_meV, df_prime = meta["dfact_meV"], meta["df_prime"]
-    #        row = row.set_value("dfact_meV", dfact_meV)
-    #        row = row.set_value("dfactprime_meV", df_prime)
-    #        row = row.set_value("pseudo_basename", pseudo_basename)
-
-    #        rows.append(row)
-
-    #    return self.__class__(rows)
+        return self.__class__(rows)
 
     @add_fig_kwargs
     def plot_errors_for_structure(self, struct_type, ax=None, **kwargs):
         ax, fig, plt = get_ax_fig_plt(ax=ax)
         data = self[self["struct_type"] == struct_type].copy()
+        if not data:
+            print("No results available for struct_type:", struct_type)
+            return None
 
         colnames = ["this", "gbrv_paw"]
         for col in colnames:
             data[col + "_rel_err"] = 100 * (data[col] - data["ae"]) / data["ae"]
+            #data[col + "_rel_err"] = abs(100 * (data[col] - data["ae"]) / data["ae"])
             data.plot(x="formula", y=col + "_rel_err", ax=ax, style="o-", grid=True)
 
+        # Set xticks and lables (show'em all)
         #print(data)
-        plt.setp(ax.xaxis.get_majorticklabels(), rotation=70)
+        ax.set_xticks(range(len(data.index)))
+        ax.set_xticklabels(data["formula"], rotation="vertical")
+        ax.tick_params(which='both', direction='out')
         ax.set_ylim(-1, 1)
+
+        return fig
+
+    @add_fig_kwargs
+    def plot_hist(self, ax=None, **kwargs):
+        """
+        Histogram plot.
+        """
+        #if codes is None: codes = ["ae"]
+        ax, fig, plt = get_ax_fig_plt(ax)
+        import seaborn as sns
+
+        codes = ["this", "gbrv_paw"] #, "gbrv_uspp", "pslib", "vasp"]
+        struct_type = "rocksalt"
+        new = self[self["struct_type"] == struct_type].copy()
+        for code in codes:
+            values = (100 * (new[code] - new["ae"]) / new["ae"]).dropna()
+            sns.distplot(values, ax=ax, rug=True, hist=False, label=code)
+
+            if code == "this":
+                # Add text with Mean or (MARE/RMSRE)
+                text = []; app = text.append
+                app("MARE = %.2f" % values.abs().mean())
+                app("RMSRE = %.2f" % np.sqrt((values**2).mean()))
+                ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
+
+        ax.grid(True)
+        ax.set_xlim(-1., 1.)
 
         return fig
 
@@ -511,14 +546,11 @@ class GbrvCompoundDataFrame(DataFrame):
         sns.set(style="darkgrid", color_codes=True)
 
         ax, fig, plt = get_ax_fig_plt()
-
         #tips = sns.load_dataset("tips")
         #g = sns.jointplot("total_bill", "tip", data=tips, kind="reg",
         #                  xlim=(0, 60), ylim=(0, 12), color="r", size=7)
         #print_full_frame(self[["formula", "high_df_prime", "basenames"]])
-
         newcol = "abs(high_rel_err)"
-
         self[newcol] = self["high_rel_err"].abs()
 
         g = sns.jointplot("high_df_prime", "abs(high_rel_err)", data=self, kind="reg",)
@@ -531,107 +563,10 @@ class GbrvCompoundDataFrame(DataFrame):
         self.drop([newcol], axis=1)
         return fig
 
-    @classmethod
-    def from_dojotable(cls, table):
-        _TRIALS2KEY = {
-            #"deltafactor": "dfact_meV",
-            "gbrv_bcc": "a0_rel_err",
-            "gbrv_fcc": "a0_rel_err",
-        }
-
-        rows = []
-
-        # This is for scatter.
-        hack = False
-        if hack:
-            xs, ys, sizes = [], [], []
-
-        for p in table:
-            # Extract GBRV results from dojo_report
-            report = p.dojo_report
-
-            # Add column with deltafactor prime.
-            # FIXME should depend on the accuracy.
-            try:
-                df_dict = report["deltafactor"]
-            except KeyError:
-                print("%s does not have deltafactor" % p.basename)
-                continue
-
-            df_ecuts, df_values = df_dict.keys(), df_dict.values()
-            last_ecut = list(sorted(df_ecuts))[-1]
-            df_prime = df_dict[last_ecut]["dfactprime_meV"]
-            df = df_dict[last_ecut]["dfact_meV"]
-            print(p.basename, "last_ecut:", last_ecut, "df", df, "df_prime", df_prime)
-
-            for trial in _TRIALS2KEY:
-                # Get results as function of ecut
-                try:
-                    data = report[trial]
-                except KeyError:
-                    print("%s does not have %s" % (p.basename, trial))
-                    continue
-
-                struct_type = {"gbrv_bcc": "bcc", "gbrv_fcc": "fcc"}[trial]
-                ecuts = data.keys()
-                try:
-                    values = np.array([float(data[ecut]["a0_rel_err"]) for ecut in ecuts])
-                except KeyError:
-                    print("Problem in a0_rel_err with %s" % p.basename)
-                    continue
-
-                row = dict(formula=trial, struct_type=struct_type,
-                           basenames=set([p.basename]),
-                           pseudos_meta={p.symbol: {"basename": p.basename, "md5": p.md5}},
-                           symbols={p.symbol})
-
-                for acc in cls.ALL_ACCURACIES:
-                    # FIXME: ecut should depend on accuracy.
-                    # for the time being we get the last one
-                    ecut = ecuts[-1]
-
-                    row.update({acc + "_rel_err": data[ecut]["a0_rel_err"]})
-                    row.update({acc + "_df": df, acc + "_df_prime": df_prime})
-
-                rows.append(row)
-
-                if hack:
-                    # Hack for scatter
-                    if trial == "gbrv_fcc":
-                        if "gbrv_bcc" in report:
-                            xs.append(data[ecut]["a0_rel_err"])
-                    else:
-                        if "gbrv_fcc" in report:
-                            ys.append(data[ecut]["a0_rel_err"])
-
-                    if "gbrv_bcc" in report and "gbrv_fcc" in report:
-                        #sizes.append(df)
-                        sizes.append(df_prime)
-
-        # Scatter hack
-        if hack:
-            ax, fig, plt = get_ax_fig_plt()
-            sizes = np.array(sizes)
-            sizes = 60 * sizes / sizes.max()
-            sizes = sizes**2
-
-            ax.scatter(xs, ys, s=sizes, alpha=0.5) #c=close,
-            ax.grid(True)
-
-            l = np.linspace(np.min(xs), np.max(xs), num=50)
-            ax.plot(l, l)
-
-            #ax.set_xlabel("bcc rel error")
-            #ax.set_ylabel("fcc_rel_error")
-            fig.tight_layout()
-            plt.show()
-
-        new = cls(rows)
-        return new
-
     def subframe_for_pseudo(self, pseudo, best_for_acc=None):
         """
-        Extract the rows with the given pseudo. Return new `GbrvCompoundDataFrame`.
+        Extract the rows with the given pseudo.
+        Return new `GbrvCompoundDataFrame`.
 
         Args:
             pseudo: :class:`Pseudo` object or string with the pseudo basename.
@@ -778,27 +713,5 @@ class GbrvCompoundDataFrame(DataFrame):
         ax.axvline(x=0.2, linewidth=2, color='r', linestyle="--")
         ax.axvline(x=-0.2, linewidth=2, color='r', linestyle="--")
         ax.legend(loc="best")
-
-        return fig
-
-    @add_fig_kwargs
-    def plot_hist(self, ax=None, **kwargs):
-        """Histogram plot."""
-        ax, fig, plt = get_ax_fig_plt(ax)
-        import seaborn as sns
-
-        ax.grid(True)
-        #for acc in ("normal", "high"):
-        for acc in ("high",):
-            col = acc + "_rel_err"
-            values = self[col].dropna()
-            sns.distplot(values, ax=ax, rug=True, hist=False, label=col)
-
-            # Add text with Mean or (MARE/RMSRE)
-            text = []; app = text.append
-            app("MARE = %.2f" % values.abs().mean())
-            app("RMSRE = %.2f" % np.sqrt((values**2).mean()))
-
-            ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
 
         return fig

@@ -137,7 +137,8 @@ def gbrv_plot(options):
     #print(frame)
     #print(frame.describe())
 
-    frame.plot_errors_for_structure("rocksalt")
+    #frame.plot_errors_for_structure("rocksalt")
+    frame.plot_hist()
 
     #print(frame.select_badguys(rtol=0.4))
     #import matplotlib.pyplot as plt
