@@ -310,7 +310,7 @@
 "l_max": 2, 
 "md5": "933af6ad78592d7f4e6eae225adf24f7", 
 "dfact_meV": 1.317633290718205, 
-"dfactprime_meV": 6.095135133908222, 
+"dfactprime_meV": 6.095135133908222
 }, 
 "Y": {
 "basename": "Y-sp.psp8", 

@@ -266,18 +266,18 @@ class GbrvOutdb(dict):
         if job is not None: self.json_write()
         return job
 
-   def get_record(self, struct_type, formula):
-       """
-       Find the record associated to the specified structure type and chemical formula.
-       Return None if record is not present.
-       """
-       d = self.get(struct_type)
-       if d is None: return None
-       data = d.get(formula)
-       if data is None: return None
+    def get_record(self, struct_type, formula):
+        """
+        Find the record associated to the specified structure type and chemical formula.
+        Return None if record is not present.
+        """
+        d = self.get(struct_type)
+        if d is None: return None
+        data = d.get(formula)
+        if data is None: return None
 
-       raise NotImplementedError()
-       #return GbrvRecord.from_data(data, struct_type, formula, pseudos)
+        raise NotImplementedError()
+        #return GbrvRecord.from_data(data, struct_type, formula, pseudos)
 
     # TODO
     def check_update(self):
