@@ -305,12 +305,12 @@
 "dfactprime_meV": 2.9100531514764643
 }, 
 "Sr": {
-"basename": "Sr-sp.psp8", 
+"basename": "Sr-sp-new.psp8", 
 "Z_val": 10.0, 
 "l_max": 2, 
-"md5": "ba4f1d82846063e066ef425151b7e891", 
-"dfact_meV": 1.3127003134414392, 
-"dfactprime_meV": 6.136528451300519
+"md5": "933af6ad78592d7f4e6eae225adf24f7", 
+"dfact_meV": 1.317633290718205, 
+"dfactprime_meV": 6.095135133908222, 
 }, 
 "Y": {
 "basename": "Y-sp.psp8", 

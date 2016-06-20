@@ -9,6 +9,7 @@ import logging
 
 from monty.termcolor import cprint
 from monty.functools import prof_main
+from monty.io import FileLock
 from abipy import abilab
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formula
@@ -70,21 +71,24 @@ def gbrv_update(options):
 
 def gbrv_rundb(options):
     """Build flow and run it."""
-    outdb = GbrvOutdb.from_file(options.path)
-
-    retcode = 0
+    retcode, count = 0, 0
     while True:
-        job = outdb.find_job_torun()
-        if job is None:
-            cprint("Nothing to do, returning 0", "yellow")
-            return 0
+	if count == 3: break
+
+        with FileLock(options.path):
+	    outdb = GbrvOutdb.from_file(options.path)
+	    job = outdb.find_job_torun()
+	    if job is None:
+		cprint("Nothing to do, returning 0", "yellow")
+		return 0
 
         workdir = os.path.join(os.getcwd(), "GBRV_OUTDB_" + job.formula)
         flow = abilab.Flow(workdir=workdir)
 
         gbrv_factory = GbrvCompoundsFactory(xc=outdb["xc_name"])
 
-        for accuracy in ("normal", "high"):
+        #for accuracy in ("normal", "high"):
+        for accuracy in ("high",):
             ecut = max(p.hint_for_accuracy(accuracy).ecut for p in job.pseudos)
             pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in job.pseudos)
             if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
@@ -103,6 +107,7 @@ def gbrv_rundb(options):
         # Run the flow with the scheduler (enable smart_io)
         flow.use_smartio()
         retcode += flow.make_scheduler().start()
+	count += 1
 
     return retcode
 

@@ -236,12 +236,12 @@ class GbrvOutdb(dict):
         Update the entry in the database.
         """
         with FileLock(filepath):
+            outdb = cls.from_file(filepath)
+            old_dict = outdb[struct_type][formula]
+            if not isinstance(old_dict, dict): old_dict = {}
+            old_dict[accuracy] = results
+            outdb[struct_type][formula] = old_dict
             with AtomicFile(filepath, mode="wt") as fh:
-                outdb = cls.from_file(filepath)
-                old_dict = outdb[struct_type][formula]
-                if not isinstance(old_dict, dict): old_dict = {}
-                old_dict[accuracy] = results
-                outdb[struct_type][formula] = old_dict
                 json.dump(outdb, fh, indent=-1, sort_keys=True) #, cls=MontyEncoder)
 
     def find_job_torun(self):
