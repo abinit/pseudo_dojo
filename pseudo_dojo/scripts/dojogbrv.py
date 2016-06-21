@@ -39,7 +39,7 @@ def ecut_from_pseudos(pseudos):
 
 
 def gbrv_gendb(options):
-    """Generate the GBRV output database."""
+    """Generate the GBRV output database from a djson file.."""
     # Build table from djson_path
     djson_path = os.path.abspath(options.djson_path)
     table = OfficialDojoTable.from_djson_file(djson_path)
@@ -115,7 +115,7 @@ def gbrv_rundb(options):
 
 
 def gbrv_reset(options):
-    """Reset the failed entries in the list of databases specified by the user."""
+    """Reset entries in the databases."""
     status_list = []
     if "f" in options.status: status_list.append("failed")
     if "s" in options.status: status_list.append("scheduled")
@@ -136,20 +136,12 @@ def gbrv_plot(options):
     frame = outdb.get_pdframe()
     #print(frame)
     #print(frame.describe())
+    frame.print_summary()
 
-    #frame.plot_errors_for_structure("rocksalt")
-    frame.plot_hist()
-
-    #print(frame.select_badguys(rtol=0.4))
-    #import matplotlib.pyplot as plt
-    #frame.plot(frame.index, ["normal_rel_err", "high_rel_err"])
-    #ax.set_xticks(range(len(data.index)))
-    #ax.set_xticklabels(data.index)
-    #plt.show()
-    #outdb.plot_errors(reference="ae", accuracy="normal")
-    #for formula, records in outdb.values()
-    #records = outdb["NaCl"]
-    #for rec in records: rec.plot_eos()
+    import seaborn as sns
+    for struct_type in frame.struct_types():
+	frame.plot_errors_for_structure(struct_type)
+	frame.plot_hist(struct_type)
 
     return 0
 

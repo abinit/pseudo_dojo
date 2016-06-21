@@ -23,6 +23,7 @@ from abipy.core.structure import Structure
 
 __all__ = [
     "gbrv_database",
+    "gbrv_code_names"
 ]
 
 
@@ -116,6 +117,10 @@ def half_heusler(a, species):
     return Structure(lattice, species, frac_coords, coords_are_cartesian=False)
 
 
+# List of codes available in the database.
+gbrv_code_names = ("ae", "gbrv_uspp", "vasp", "pslib", "gbrv_paw")
+
+
 class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw struct_type")):
     """
     Store the GBRV lattice parameter obtained with the different codes and pseudos.
@@ -134,7 +139,7 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
     .. note::
         Lattice parameters are in Angstrom
     """
-    code_names = ["ae", "gbrv_uspp", "vasp", "pslib", "gbrv_paw"]
+    code_names = gbrv_code_names
 
     def __new__(cls, **kwargs):
         """Extends the base class adding type conversion of arguments."""
@@ -255,13 +260,7 @@ class GbrvDatabase(object):
     This object stores the GBRV results and provides methods to access the data.
     """
     # List of structure types used to index the tables available in the database.
-    all_struct_types = [
-        "fcc",
-        "bcc",
-        "rocksalt",
-        "ABO3",
-        "hH",
-    ]
+    all_struct_types = ["fcc", "bcc", "rocksalt", "ABO3", "hH"]
 
     def __init__(self, xc):
         """

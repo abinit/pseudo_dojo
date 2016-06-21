@@ -17,7 +17,7 @@ from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 from pymatgen.analysis.eos import EOS
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
-from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formula
+from pseudo_dojo.refdata.gbrv.database import gbrv_database, gbrv_code_names, species_from_formula
 
 
 import logging
@@ -419,8 +419,8 @@ class GbrvOutdb(dict):
 
             # Add results from the database.
             entry = gbrv.get_entry(formula, struct_type)
-            #row.update({code: getattr(entry, code) for code in entry.code_names})
-            row.update({code: getattr(entry, code) for code in ["ae", "gbrv_paw"]})
+            row.update({code: getattr(entry, code) for code in gbrv_code_names})
+            #row.update({code: getattr(entry, code) for code in ["ae", "gbrv_paw"]})
             rows.append(row)
 
         if miss:
@@ -451,25 +451,44 @@ class GbrvCompoundDataFrame(DataFrame):
     """
     ALL_ACCURACIES = ("normal", "high")
 
-    #def select_badguys(self, rtol=0.4):
-        #new = self[abs(100 * (self["this"] - self["ae"]) / self["ae"]) > rtol].copy()
-        #new["rel_err"] = 100 * (self["this"] - self["ae"]) / self["ae"]
-        #new.__class__ = self.__class__
-        #return new
+    def struct_types(self):
+        """List of structure types available in the dataframe."""
+        return sorted(set(self["struct_type"]))
 
-    #def print_info(self, **kwargs):
-    #    """Pretty-print"""
-    #    frame = self[["formula", "normal_rel_err", "high_rel_err", "basenames"]] # "symbols",
-    #    s = frame.to_string(index=False)
-    #    print(s)
-    #    print("")
-    #    #print(frame.describe())
-    #    #print("")
+    def code_names(self):
+        """List of code names available in the dataframe."""
+        codes = sorted(c for c in self.keys() if c in gbrv_code_names)
+        # Add this
+        return ["this"] + codes
 
-    #    for col in ["normal_rel_err", "high_rel_err"]:
-    #        print("For column:" , col)
-    #        print("mean(abs)", self[col].abs().mean())
-    #        print("RMS:", np.sqrt((self[col]**2).sum() / len(self)))
+    def print_summary(self, choice="rms", **kwargs):
+        """Print table with the rms of the different codes."""
+        index, rows = [], []
+        ref_code = "ae"
+        for struct_type in self.struct_types():
+            new = self[self["struct_type"] == struct_type].copy()
+            index.append(struct_type)
+            row = {}
+            for code in self.code_names():
+                if code == ref_code: continue
+                values = (100 * (new[code] - new[ref_code]) / new[ref_code]).dropna()
+                if choice == "rms":
+                    row[code] = np.sqrt((values**2).mean())
+                elif choice == "mare":
+                    row[code] = values.abs().mean()
+                else:
+                    raise ValueError("Wrong value of choice: %s" % choice)
+
+            rows.append(row)
+
+        frame = DataFrame(rows, index=index)
+        print(frame)
+
+    def select_bad_guys(self, retol=0.4):
+        new = self[abs(100 * (self["this"] - self["ae"]) / self["ae"]) > retol].copy()
+        new["rel_err"] = 100 * (self["this"] - self["ae"]) / self["ae"]
+        new.__class__ = self.__class__
+        return new
 
     def select_symbol(self, symbol):
         """
@@ -493,7 +512,7 @@ class GbrvCompoundDataFrame(DataFrame):
     def plot_errors_for_structure(self, struct_type, ax=None, **kwargs):
         ax, fig, plt = get_ax_fig_plt(ax=ax)
         data = self[self["struct_type"] == struct_type].copy()
-        if not data:
+        if not len(data):
             print("No results available for struct_type:", struct_type)
             return None
 
@@ -513,7 +532,7 @@ class GbrvCompoundDataFrame(DataFrame):
         return fig
 
     @add_fig_kwargs
-    def plot_hist(self, ax=None, **kwargs):
+    def plot_hist(self, struct_type, ax=None, **kwargs):
         """
         Histogram plot.
         """
@@ -522,7 +541,6 @@ class GbrvCompoundDataFrame(DataFrame):
         import seaborn as sns
 
         codes = ["this", "gbrv_paw"] #, "gbrv_uspp", "pslib", "vasp"]
-        struct_type = "rocksalt"
         new = self[self["struct_type"] == struct_type].copy()
         for code in codes:
             values = (100 * (new[code] - new["ae"]) / new["ae"]).dropna()
