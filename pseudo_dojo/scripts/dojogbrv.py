@@ -102,7 +102,7 @@ def gbrv_rundb(options):
             flow.register_work(work.set_outdb(dbpath))
 
     print("Working in:", flow.workdir)
-    flow.build_and_pickle_dump(abivalidate=options.dry_run)
+    flow.build_and_pickle_dump() #abivalidate=options.dry_run)
     if options.dry_run: return 0
 
     # Run the flow with the scheduler (enable smart_io)
