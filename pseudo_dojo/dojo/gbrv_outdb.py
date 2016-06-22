@@ -232,15 +232,16 @@ class GbrvOutdb(dict):
             with AtomicFile(filepath, mode="wt") as fh:
                 json.dump(outdb, fh, indent=-1, sort_keys=True) #, cls=MontyEncoder)
 
-    def find_job_torun(self):
+    def find_jobs_torun(self, max_njobs):
         """
         Find entries whose results have not been yet calculated.
 
         Args:
             select_formulas:
         """
-        job = None
+        jobs, got = [], 0
         for struct_type, formula, data in self.iter_struct_formula_data():
+            if got == max_njobs: break
             if data in ("scheduled", "failed"): continue
             if data is None:
                 symbols = list(set(species_from_formula(formula)))
@@ -248,11 +249,12 @@ class GbrvOutdb(dict):
 
                 job = dict2namedtuple(formula=formula, struct_type=struct_type, pseudos=pseudos)
                 self[struct_type][formula] = "scheduled"
-                break
+                jobs.append(job)
+                got += 1
 
         # Update the database.
-        if job is not None: self.json_write()
-        return job
+        if jobs: self.json_write()
+        return jobs
 
     def get_record(self, struct_type, formula):
         """

@@ -72,23 +72,22 @@ def gbrv_update(options):
 def gbrv_rundb(options):
     """Build flow and run it."""
     dbpath = os.path.abspath(options.path)
-    retcode, count = 0, 0
-    while True:
-	if count == 1: break
-	#if count == 2: break
+    retcode = 0
 
-        with FileLock(dbpath):
-	    outdb = GbrvOutdb.from_file(dbpath)
-	    job = outdb.find_job_torun()
-	    if job is None:
-		cprint("Nothing to do, returning 0", "yellow")
-		return 0
+    # Get list of jobs to execute.
+    with FileLock(dbpath):
+        outdb = GbrvOutdb.from_file(dbpath)
+        jobs = outdb.find_jobs_torun(options.max_njobs)
+        if not jobs:
+            cprint("Nothing to do, returning 0", "yellow")
+            return 0
 
-        workdir = os.path.join(os.getcwd(), "GBRV_OUTDB_" + job.formula)
-        flow = abilab.Flow(workdir=workdir)
+    gbrv_factory = GbrvCompoundsFactory(xc=outdb["xc_name"])
 
-        gbrv_factory = GbrvCompoundsFactory(xc=outdb["xc_name"])
+    workdir = os.path.join(os.getcwd(), "GBRV_OUTDB_" + "-".join(job.formula for job in jobs))
+    flow = abilab.Flow(workdir=workdir)
 
+    for job in jobs:
         #for accuracy in ("normal", "high"):
         for accuracy in ("high",):
             ecut = max(p.hint_for_accuracy(accuracy).ecut for p in job.pseudos)
@@ -102,14 +101,13 @@ def gbrv_rundb(options):
             # Attach the database to the work to trigger the storage of the results.
             flow.register_work(work.set_outdb(dbpath))
 
-        print("Working in:", flow.workdir)
-        flow.build_and_pickle_dump(abivalidate=options.dry_run)
-        if options.dry_run: return 0
+    print("Working in:", flow.workdir)
+    flow.build_and_pickle_dump(abivalidate=options.dry_run)
+    if options.dry_run: return 0
 
-        # Run the flow with the scheduler (enable smart_io)
-        flow.use_smartio()
-        retcode += flow.make_scheduler().start()
-	count += 1
+    # Run the flow with the scheduler (enable smart_io)
+    flow.use_smartio()
+    retcode += flow.make_scheduler().start()
 
     return retcode
 
@@ -326,8 +324,8 @@ Usage example:
     p_rundb = subparsers.add_parser('rundb', parents=[copts_parser], help=gbrv_rundb.__doc__)
 
     #p_rundb.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
-    #p_rundb.add_argument('-n', '--max-njobs', type=int, default=2,
-    #                      help="Maximum number of jobs (a.k.a. flows) that will be submitted")
+    p_rundb.add_argument('-n', '--max-njobs', type=int, default=3,
+                          help="Maximum number of jobs (a.k.a. works) that will be build and submitted")
     #def parse_formulas(s):
     #    return s.split(",") if s is not None else None
     #p_rundb.add_argument('-f', '--formulas', type=parse_formulas, default=None,
