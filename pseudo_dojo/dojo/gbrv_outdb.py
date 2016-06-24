@@ -412,14 +412,11 @@ class GbrvOutdb(dict):
             RuntimeError if jupyther or ipython are not in $PATH
         """
         path = self.write_notebook(nbpath=nbpath)
+        cmd = "jupyter notebook %s" % path
+        if which("jupyter") is None:
+            raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
 
-        if which("jupyter") is not None:
-            return os.system("jupyter notebook %s" % path)
-
-        if which("ipython") is not None:
-            return os.system("ipython notebook %s" % path)
-
-        raise RuntimeError("Cannot find neither jupyther nor ipython. Install them with `pip install`")
+        return os.system(cmd)
 
     def write_notebook(self, nbpath):
         """

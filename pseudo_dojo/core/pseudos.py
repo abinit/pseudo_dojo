@@ -465,13 +465,9 @@ class DojoTable(PseudoTable):
         nbpath = self.write_notebook(nbpath=nbpath)
 
         from monty.os.path import which
-        if which("jupyter") is not None:
-            return os.system("jupyter notebook %s" % nbpath)
-
-        if which("ipython") is not None:
-            return os.system("ipython notebook %s" % nbpath)
-
-        raise RuntimeError("Cannot find neither jupyther nor ipython. Install them with `pip install`")
+        if which("jupyter") is None:
+            raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
+        return os.system("jupyter notebook %s" % nbpath)
 
     def write_notebook(self, nbpath=None):
         """
@@ -619,7 +615,7 @@ class OfficialDojoTable(DojoTable):
     @property
     def xc(self):
         """
-        The `XcFunc` object describing the XC functional used to generate the table.
+        The :class:`XcFunc` object describing the XC functional used to generate the table.
         """
         return self._dojo_info.xc
 

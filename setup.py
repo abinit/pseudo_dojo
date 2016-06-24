@@ -99,6 +99,7 @@ install_requires = [
     "pymatgen",
     "ipython",
     "nbformat",
+    "python-daemon",
     #"abipy",
     #"matplotlib",
 ]

@@ -561,21 +561,25 @@ class DojoReport(dict):
                 raise ValueError("not low_ecut.value <= normal_ecut.value <= high_ecut.value")
             if not validated_by.value:
                 raise ValueError("validated_by field must be filled")
-            #if "validation" in self and not force_new_validation:
-            #    raise ValueError("DojoReport is already validated. Use force_new_validation")
+            if self.isvalidated: # and not force_new_validation:
+                raise ValueError("DojoReport is already validated. Use force_new_validation")
 
             # TODO: Print convergence of df, gbrv ...
             #df_last_ecut = sorted((self["deltafactor"].keys())[-1]
             #df_last = self["delfactor"][df_last_ecut]["dfact_meV"]
             #dfprime_last = self["delfactor"][df_last_ecut]["dfactprime_meV"]
 
-            #from time import gmtime, strftime
-            #self['validation'] = {
-            #    'validated_by': validated_by.value,
-            #    'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime())
-            #}
+            from time import gmtime, strftime
+            self['validation'] = {
+                'validated_by': validated_by.value,
+                'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime())
+            }
 
             # Add hints
+            #hints = {}
+            #hints["low"]["ecut"] = low_ecut.value
+            #hints["normal"]["ecut"] = normal_ecut.value
+            #hints["high"]["ecut"] = high_ecut.value
 
             #self.json_write()
 
@@ -992,8 +996,6 @@ class DojoReport(dict):
 
         ax, fig, plt = get_ax_fig_plt(ax)
         cmap = kwargs.pop("cmap", plt.get_cmap("jet"))
-
-        ecuts = list(self[trial].keys())
 
         # Get DataFrame.
         frame = self.get_pdframe(trial, "volumes", "etotals")

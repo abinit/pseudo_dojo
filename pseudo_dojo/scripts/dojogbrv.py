@@ -151,7 +151,10 @@ def gbrv_notebook(options):
     Generate ipython notebook to analyze the results in the database.
     """
     outdb = GbrvOutdb.from_file(options.path)
-    return outdb.make_open_notebook()
+
+    import daemon
+    with daemon.DaemonContext(detach_process=True):
+        return outdb.make_open_notebook()
 
 
 def gbrv_runps(options):
