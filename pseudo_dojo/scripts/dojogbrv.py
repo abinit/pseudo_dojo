@@ -135,6 +135,8 @@ def gbrv_plot(options):
     #print(frame)
     #print(frame.describe())
     frame.print_summary()
+    frame.plot_errors_for_elements()
+    return 0
 
     import seaborn as sns
     for struct_type in frame.struct_types():
@@ -142,6 +144,14 @@ def gbrv_plot(options):
 	frame.plot_hist(struct_type)
 
     return 0
+
+
+def gbrv_notebook(options):
+    """
+    Generate ipython notebook to analyze the results in the database.
+    """
+    outdb = GbrvOutdb.from_file(options.path)
+    return outdb.make_open_notebook()
 
 
 def gbrv_runps(options):
@@ -319,6 +329,10 @@ Usage example:
     # Subparser for plot command.
     p_plot = subparsers.add_parser('plot', parents=[copts_parser], help=gbrv_plot.__doc__)
     p_plot.add_argument('path', help='path with the output results.')
+
+    # Subparser for plot command.
+    p_notebook = subparsers.add_parser('notebook', parents=[copts_parser], help=gbrv_notebook.__doc__)
+    p_notebook.add_argument('path', help='path with the output results.')
 
     # Subparser for rundb command.
     p_rundb = subparsers.add_parser('rundb', parents=[copts_parser], help=gbrv_rundb.__doc__)

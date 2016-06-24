@@ -36,6 +36,25 @@ def all_dojotable_absdirs():
     return [dojotable_absdir(bdir) for bdir in DOJOTABLE_BASEDIRS]
 
 
+def as_dojo_path(path):
+    """
+    Translate an absolute path into an official path inside the pseudo_dojo package.
+
+    This function is extremaly useful when we have absolute paths
+    produced on a different machine and we want to get the corresponding
+    path on the local host.
+    """
+    if os.path.exists(path): return path
+    # Use the final part of the path and change the root.
+    head, base = os.path.split(path)
+    _, dirname = os.path.split(head)
+    dojodir = dojotable_absdir(dirname)
+    path = os.path.join(dojodir, base)
+    if not os.path.exists(path):
+        raise RuntimeError("After filepath mangling. No such file: %s" % path)
+    return path
+
+
 def check_pseudo_path(path, verbose=0):
     """
     Check a pseudopotential given the filepath. Warnings are printed to stdout.

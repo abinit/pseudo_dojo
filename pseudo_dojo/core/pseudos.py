@@ -503,8 +503,6 @@ from __future__ import print_function, division, unicode_literals
 
 %matplotlib notebook
 import seaborn as sns
-#sns.set(style="dark", palette="Set2")
-sns.set(style='ticks', palette='Set2')
 from pseudo_dojo.core.dojoreport import DojoDataFrame"""),
 
             nbf.new_heading_cell("Init table from filenames:"),

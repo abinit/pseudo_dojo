@@ -1213,7 +1213,10 @@ class DojoDataFrame(pd.DataFrame):
 
     @classmethod
     def from_json_file(cls, path, **kwargs):
-        """Read the object from the json file `path`. kwargs are passed to `pandas.read_json`."""
+        """
+        Read the object from the json file `path`.
+        kwargs are passed to `pandas.read_json`.
+        """
         new = pd.read_json(path_or_buf=path, **kwargs)
         new.__class__ = cls
         return new
@@ -1242,14 +1245,15 @@ class DojoDataFrame(pd.DataFrame):
         eapp = errors.append
 
         for p in pseudos:
+            names.append(p.basename)
+            d = {"symbol": p.symbol, "Z": p.Z, "Z_val": p.Z_val, "l_max": p.l_max,
+                 "filepath": p.filepath}
+
             if not p.has_dojo_report:
                 eapp("Cannot find dojo_report in %s" % p.basename)
                 continue
-
             report = p.dojo_report
-            d = {"symbol": p.symbol, "Z": p.Z, "Z_val": p.Z_val, "l_max": p.l_max,
-                 "validated": report.isvalidated, "filepath": p.filepath}
-            names.append(p.basename)
+            d.update({"validated": report.isvalidated})
 
             ecut_acc = {}
             # read hints
@@ -1377,22 +1381,11 @@ class DojoDataFrame(pd.DataFrame):
         stream.write(tabulate(self[columns], headers="keys", tablefmt="grid", floatfmt=".2f"))
         #return self[columns].to_html()
 
-    #def get_accuracy(self, accuracy):
-    #    columns = [c for c in self if c.startswith(accuracy)]
-    #    return self.__class__(data=self[columns])
-
-    #def get_trials(self, accuracies="all"):
-    #    accuracies = self.ALL_ACCURACIES if accuracies == "all" else list_strings(accuracies)
-    #    columns = [acc + "_dfact_meV" for acc in accuracies]
-    #    columns += [acc + "_ecut" for acc in accuracies]
-    #    columns += [acc + "_gbrv_fcc_a0_rel_err" for acc in accuracies]
-    #    columns += [acc + "_gbrv_bcc_a0_rel_err" for acc in accuracies]
-    #    return self.__class__(data=self[columns])
-
     @add_fig_kwargs
     def plot_hist(self, what="dfact_meV", bins=400, **kwargs):
         import matplotlib.pyplot as plt
-        fig, ax_list = plt.subplots(nrows=len(self.ALL_ACCURACIES), ncols=1, sharex=True, sharey=False, squeeze=True)
+        fig, ax_list = plt.subplots(nrows=len(self.ALL_ACCURACIES), ncols=1,
+                                    sharex=True, sharey=False, squeeze=True)
 
         for acc, ax in zip(self.ALL_ACCURACIES, ax_list):
             col = acc + "_" + what

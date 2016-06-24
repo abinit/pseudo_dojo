@@ -6,18 +6,20 @@ import os
 import json
 import numpy as np
 
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict, defaultdict, Counter
 from monty.io import FileLock
 from monty.string import list_strings
 from atomicfile import AtomicFile
 from pandas import DataFrame
 from monty.collections import dict2namedtuple
 from monty.functools import lazy_property
+from monty.os.path import which
 from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 from pymatgen.analysis.eos import EOS
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, gbrv_code_names, species_from_formula
+from pseudo_dojo.pseudos import as_dojo_path
 
 
 import logging
@@ -32,6 +34,13 @@ def sort_symbols_by_Z(symbols):
     >>> assert sort_symbols_by_Z(["Si", "H"]) == ["H", "Si"]
     """
     return list(sorted(symbols, key=lambda s: Element(s).Z))
+
+
+def print_frame(x):
+    import pandas as pd
+    with pd.option_context('display.max_rows', len(x),
+                           'display.max_columns', len(list(x.keys()))):
+        print(x)
 
 
 class GbrvRecord(dict):
@@ -188,13 +197,8 @@ class GbrvOutdb(dict):
             #print("keys", new.keys())
 
         # Construct the full table of pseudos
-        djpath = new["djson_path"]
-        from pseudo_dojo.pseudos import dojotable_absdir
-        if not os.path.exists(djpath):
-            head, base = os.path.split(djpath)
-            _, dirname = os.path.split(head)
-            dojodir = dojotable_absdir(dirname)
-            djpath = os.path.join(dojodir, base)
+        # Translate djson_path into path insides pseudos
+        djpath = as_dojo_path(new["djson_path"])
 
         new.table = OfficialDojoTable.from_djson_file(djpath)
         return new
@@ -433,6 +437,86 @@ class GbrvOutdb(dict):
         frame["rel_err"] = 100 * (frame["this"] - frame["ae"]) / frame["ae"]
         return frame
 
+    def make_open_notebook(self, nbpath=None):
+        """
+        Generate an ipython notebook open it in the browser. Return system exit code.
+
+        Raise:
+            RuntimeError if jupyther or ipython are not in $PATH
+        """
+        path = self.write_notebook(nbpath=nbpath)
+
+        if which("jupyter") is not None:
+            return os.system("jupyter notebook %s" % path)
+
+        if which("ipython") is not None:
+            return os.system("ipython notebook %s" % path)
+
+        raise RuntimeError("Cannot find neither jupyther nor ipython. Install them with `pip install`")
+
+    def write_notebook(self, nbpath):
+        """
+        Write an ipython notebook. If `nbpath` is None, a temporay file is created.
+
+        Returns:
+            The path to the ipython notebook.
+
+        """
+        try:
+            # Here we have a deprecation warning but the API of v4 is different!
+            from nbformat import current as nbf
+            #import nbformat.v3 as nbf
+        except ImportError:
+            from IPython.nbformat import current as nbf
+
+        frame = self.get_pdframe()
+        nb = nbf.new_notebook()
+
+        cells = [
+            nbf.new_heading_cell("This is an auto-generated notebook"),
+            nbf.new_code_cell("""\
+from __future__ import print_function, division, unicode_literals
+from IPython.display import display
+import seaborn
+%matplotlib notebook"""),
+
+            nbf.new_code_cell("""\
+from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
+outdb = GbrvOutdb.from_file('%s')
+frame = outdb.get_pdframe()
+frame.print_summary()""" % as_dojo_path(self.path)),
+
+            nbf.new_code_cell("display(frame)"),
+        ]
+
+        for struct_type in frame.struct_types():
+            cells += [
+                nbf.new_heading_cell("GBRV results for structure %s:" % struct_type),
+                nbf.new_code_cell("fig = frame.plot_errors_for_structure('%s')" % struct_type),
+                nbf.new_code_cell("fig = frame.plot_hist('%s')" % struct_type),
+        ]
+
+        cells += [
+            nbf.new_heading_cell("GBRV Compounds: relative errors as function of chemical element"),
+            nbf.new_code_cell("fig = frame.plot_errors_for_elements()"),
+            nbf.new_heading_cell("Bad guys:"),
+            nbf.new_code_cell("bad, count = frame.select_bad_guys(reltol=0.4)"),
+            nbf.new_code_cell("display(bad)"),
+            nbf.new_code_cell("print(count)"),
+        ]
+
+        # Now that we have the cells, we can make a worksheet with them and add it to the notebook:
+        nb['worksheets'].append(nbf.new_worksheet(cells=cells))
+
+        if nbpath is None:
+            import tempfile
+            _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
+
+        with open(nbpath, 'wt') as f:
+            nbf.write(nb, f, 'ipynb')
+
+        return nbpath
+
 
 class GbrvCompoundDataFrame(DataFrame):
     """
@@ -480,16 +564,26 @@ class GbrvCompoundDataFrame(DataFrame):
                     row[code] = values.abs().mean()
                 else:
                     raise ValueError("Wrong value of choice: %s" % choice)
-
             rows.append(row)
 
         frame = DataFrame(rows, index=index)
         print(frame)
 
-    def select_bad_guys(self, retol=0.4):
-        new = self[abs(100 * (self["this"] - self["ae"]) / self["ae"]) > retol].copy()
+    def select_bad_guys(self, reltol=0.4):
+        new = self[abs(100 * (self["this"] - self["ae"]) / self["ae"]) > reltol].copy()
         new["rel_err"] = 100 * (self["this"] - self["ae"]) / self["ae"]
         new.__class__ = self.__class__
+        count = Counter()
+        for idx, row in new.iterrows():
+            for symbol in set(species_from_formula(row.formula)):
+                count[symbol] += 1
+
+        return new, count
+
+    def remove_bad_guys(self, reltol=0.4):
+        new = self[abs(100 * (self["this"] - self["ae"]) / self["ae"]) <= reltol].copy()
+        new.__class__ = self.__class__
+        new["rel_err"] = 100 * (self["this"] - self["ae"]) / self["ae"]
         return new
 
     def select_symbol(self, symbol):
@@ -524,9 +618,11 @@ class GbrvCompoundDataFrame(DataFrame):
             #data[col + "_rel_err"] = abs(100 * (data[col] - data["ae"]) / data["ae"])
             data.plot(x="formula", y=col + "_rel_err", ax=ax, style="o-", grid=True)
 
+        ax.set_title(struct_type)
+        ax.set_ylabel("relative error %")
         # Set xticks and lables (show'em all)
         #print(data)
-        ax.set_xticks(range(len(data.index)))
+        ax.set_xticks(list(range(len(data.index))))
         ax.set_xticklabels(data["formula"], rotation="vertical")
         ax.tick_params(which='both', direction='out')
         ax.set_ylim(-1, 1)
@@ -556,182 +652,44 @@ class GbrvCompoundDataFrame(DataFrame):
                 ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
 
         ax.grid(True)
-        ax.set_xlim(-1., 1.)
+        ax.set_xlabel("relative error %")
+        ax.set_xlim(-0.8, 0.8)
 
         return fig
 
     @add_fig_kwargs
-    def join_plot(self, **kwargs):
-        import seaborn as sns
-        sns.set(style="darkgrid", color_codes=True)
-
-        ax, fig, plt = get_ax_fig_plt()
-        #tips = sns.load_dataset("tips")
-        #g = sns.jointplot("total_bill", "tip", data=tips, kind="reg",
-        #                  xlim=(0, 60), ylim=(0, 12), color="r", size=7)
-        #print_full_frame(self[["formula", "high_df_prime", "basenames"]])
-        newcol = "abs(high_rel_err)"
-        self[newcol] = self["high_rel_err"].abs()
-
-        g = sns.jointplot("high_df_prime", "abs(high_rel_err)", data=self, kind="reg",)
-                          #xlim=(0, 60), ylim=(0, 12), color="r", size=7)
-
-        g = sns.jointplot("high_df", "abs(high_rel_err)", data=self, kind="reg",)
-                          #xlim=(0, 60), ylim=(0, 12), color="r", size=7)
-
-        # Remove the column
-        self.drop([newcol], axis=1)
-        return fig
-
-    def subframe_for_pseudo(self, pseudo, best_for_acc=None):
+    def plot_errors_for_elements(self, ax=None, **kwargs):
         """
-        Extract the rows with the given pseudo.
-        Return new `GbrvCompoundDataFrame`.
-
-        Args:
-            pseudo: :class:`Pseudo` object or string with the pseudo basename.
-            best_for_acc: If not None, the returned frame will contain one
-                entry for formula. This entry has the `best` relative error
-                i.e. it's the one with the minimum absolute error.
+        Plot the relative errors associated to the chemical elements.
         """
-        pname = pseudo.basename if hasattr(pseudo, "basename") else pseudo
-
-        rows = []
+        dict_list = []
         for idx, row in self.iterrows():
-            if pname not in row.basenames: continue
-            meta = row.pseudos_meta[p.symbol]
-            row.set_value("pseudo_basename", pname)
-            # Add values of deltafactor
-            #dfact_meV, df_prime = extract_df(row)
-            #row.set_value("dfact_meV", dfact_meV)
-            #row.set_value("dfactprime_meV", df_prime)
-            rows.append(row)
+            rerr = 100 * (row["this"] - row["ae"]) / row["ae"]
+            for symbol in set(species_from_formula(row.formula)):
+                dict_list.append(dict(
+                    element=symbol,
+                    rerr=rerr,
+                    formula=row.formula,
+                    struct_type=row.struct_type,
+                    ))
 
-        new = self.__class__(rows)
-        if best_for_acc is None: return new
+        frame = DataFrame(dict_list)
+        order = sort_symbols_by_Z(set(frame["element"]))
+        #print_frame(frame)
 
-        # Handle best_for_acc
-        key = best_for_acc + "_rel_err"
-
-        #raise NotImplementedError()
-        #rows = []
-        #for formula, group in new.groupby("formula"):
-        #    iloc = group[key].abs().idxmin()
-        #    #best = group.iloc(loc)
-        #    best = new.iloc(iloc)
-        #    print(type(best), best)
-        #    #print(group[best])
-        #    #rows.append(best.set_value("formula", formula))
-
-        d = defaultdict(list)
-        for idx, row in new.iterrows():
-            d[row.formula].append((row, row[key]))
-
-        rows = []
-        for formula, values in d.items():
-            best_row = sorted(values, key= lambda t: abs(t[1])) [0][0]
-            rows.append(best_row)
-
-        return self.__class__(rows)
-
-    @add_fig_kwargs
-    def plot_error_pseudo(self, pseudo, ax=None, **kwargs):
-        #frame = self.subframe_for_pseudo(pseudo)
-        frame = self.subframe_for_pseudo(pseudo, best_for_acc="high")
-
-        ax, fig, plt = get_ax_fig_plt(ax)
-        for acc in self.ALL_ACCURACIES:
-            yname = acc + "_rel_err"
-            frame.plot("formula", yname, grid=True, ax=ax, style="-o", label=acc)
-
-        ax.set_ylim(-1.0, +1.0)
-        ax.legend(loc="best")
-        plt.setp(ax.xaxis.get_majorticklabels(), rotation=70)
-
-    @add_fig_kwargs
-    def boxplot(self, ax=None, **kwargs):
-        import seaborn as sns
-        ax, fig, plt = get_ax_fig_plt(ax)
-
-        ax = sns.boxplot(self["high_rel_err"], groupby=self.formula) #, orient="h")
-
-        plt.setp(ax.xaxis.get_majorticklabels(), rotation=70)
-        ax.set_ylim(-0.5, 0.5)
-        ax.grid(True)
-
-        return fig
-
-    @add_fig_kwargs
-    def stripplot_symbol(self, symbol, **kwargs):
-        frame = self.subframe_for_symbol(symbol)
-
-        import seaborn as sns
-        sns.set(style="whitegrid", palette="pastel")
-        #ax, fig, plt = get_ax_fig_plt(None)
-
-        import matplotlib.pyplot as plt
-        fig, ax_list = plt.subplots(nrows=2, ncols=1, squeeze=True)
-        ax0, ax1 = ax_list.ravel()
-
-        ax1 = ax_list[1]
-        sns.stripplot(x="pseudo_basename", y="high_rel_err", data=frame, hue="formula", ax=ax1,
-                      jitter=True, size=10, marker="o", edgecolor="gray", alpha=.25, #palette="Set2",
-        )
-
-        ax1.grid(True)
-        ax1.axhline(y=-0.4, linewidth=2, color='r', linestyle="--")
-        ax1.axhline(y=0.0, linewidth=2, color='k', linestyle="--")
-        ax1.axhline(y=+0.4, linewidth=2, color='r', linestyle="--")
-
-        # Plot the deltafactor for the different pseudos on another Axes.
-        xlabels = ax1.xaxis.get_majorticklabels()
-
-        #xs, ys, ls  = [], [], []
-        rows = []
-        for xlabel in xlabels:
-            #print(dir(xlabel))
-            (x, y), basename = xlabel.get_position(), xlabel.get_text()
-
-            g = frame[frame["pseudo_basename"] == basename]
-            df = g.iloc[0]["dfact_meV"]
-            #print(x, y, df)
-            rows.append(dict(pseudo_basename=basename, dfact_meV=df))
-            #xs.append(x)
-            #ys.append(df)
-            #ls.append(basename)
-
-        #print(xs)
-        #ax0.plot(xs, ys, "-o")
-        frame = DataFrame(rows)
-        frame.plot("pseudo_basename", "dfact_meV", ax=ax0, style="-o")
-
-        return fig
-
-    @add_fig_kwargs
-    def hist_allpseudos_with_symbols(self, symbol, ax=None, **kwargs):
         import seaborn as sns
         ax, fig, plt = get_ax_fig_plt(ax=ax)
 
-        # Find all entries with this symbol and add new column with the basename
-        frame = self.subframe_for_symbol(symbol)
-        #frame["pseudo_name"] = [entry.pseudos_meta[symbol]["basename"] for index, entry in frame.iterrows()]
+        # Draw violinplot
+        #sns.violinplot(x="element", y="rerr", order=order, data=frame, ax=ax, orient="v")
 
-        # Group by basename and plot.
-        grouped = frame.groupby("pseudo_basename")
+        # Box plot
+        ax = sns.boxplot(x="element", y="rerr", data=frame, ax=ax, order=order, whis=np.inf, color="c")
+        # Add in points to show each observation
+        sns.stripplot(x="element", y="rerr", data=frame, ax=ax, order=order,
+                      jitter=True, size=5, color=".3", linewidth=0)
 
-        for name, group in grouped:
-            print(name) #; print(group)
-            acc = "high"
-            col = acc + "_rel_err"
-            s = group[col].dropna()
-            if len(s) in [0, 1]: continue
-            print(s)
-            sns.distplot(s, ax=ax, rug=True, hist=True, kde=False, label=name)
-            ax.set_xlim(-0.5, 0.5)
-
-        ax.axvline(x=0, linewidth=2, color='k', linestyle="--")
-        ax.axvline(x=0.2, linewidth=2, color='r', linestyle="--")
-        ax.axvline(x=-0.2, linewidth=2, color='r', linestyle="--")
-        ax.legend(loc="best")
-
+        sns.despine(left=True)
+        ax.set_ylabel("Relative error %")
+        ax.grid(True)
         return fig
