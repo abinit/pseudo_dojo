@@ -97,6 +97,8 @@ install_requires = [
     "periodic_table_plotter",
     "monty",
     "pymatgen",
+    "ipython",
+    "nbformat",
     #"abipy",
     #"matplotlib",
 ]

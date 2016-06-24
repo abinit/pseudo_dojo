@@ -382,7 +382,7 @@ class DojoTable(PseudoTable):
 
     @add_fig_kwargs
     def plot_scalar_vs_fully_relativistic(self, **kwargs):
-        #l Build pandas dataframe with results.
+        # Build pandas dataframe with results.
         rows = []
         for p in self:
             if not p.has_dojo_report:
@@ -478,15 +478,10 @@ class DojoTable(PseudoTable):
         Write an ipython notebook to nbpath
         If nbpath is None, a temporay file is created.
         Return path to the notebook.
-        """
-        # See http://nbviewer.ipython.org/gist/fperez/9716279
-        try:
-            # Here we have a deprecation warning but the API of v4 is different!
-            from nbformat import current as nbf
-            #import nbformat.v3 as nbf
-        except ImportError:
-            from IPython.nbformat import current as nbf
 
+        See also:
+            http://nbviewer.jupyter.org/github/maxalbert/auto-exec-notebook/blob/master/how-to-programmatically-generate-and-execute-an-ipython-notebook.ipynb
+        """
         # Get frame and write data in JSON format to tmp file so that we can reread in the notebook.
         frame, errors = self.get_dojo_dataframe()
 
@@ -494,10 +489,12 @@ class DojoTable(PseudoTable):
         _, json_path = tempfile.mkstemp(suffix='.json', text=True)
         frame.to_json(path_or_buf=json_path)
 
+        import nbformat
+        nbf = nbformat.v4
         nb = nbf.new_notebook()
 
-        cells = [
-            nbf.new_heading_cell("This is an auto-generated notebook"),
+        nb.cells.extend([
+            nbf.new_markdown_cell("# This is an auto-generated notebook"),
             nbf.new_code_cell("""\
 from __future__ import print_function, division, unicode_literals
 
@@ -505,7 +502,7 @@ from __future__ import print_function, division, unicode_literals
 import seaborn as sns
 from pseudo_dojo.core.dojoreport import DojoDataFrame"""),
 
-            nbf.new_heading_cell("Init table from filenames:"),
+            nbf.new_markdown_cell("## Init table from filenames:"),
             nbf.new_code_cell("dojo_frame = DojoDataFrame.from_json_file('%s')" % json_path),
 
             nbf.new_code_cell("""\
@@ -519,16 +516,14 @@ for family in dojo_frame.myfamilies():
     print("family:", family)
     family_frame = dojo_frame.select_family(family)
     family_frame.plot_hist()"""),
-        ]
-
-        # Now that we have the cells, we can make a worksheet with them and add it to the notebook:
-        nb['worksheets'].append(nbf.new_worksheet(cells=cells))
+        ])
 
         if nbpath is None:
             _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
 
-        with open(nbpath, 'wt') as f:
-            nbf.write(nb, f, 'ipynb')
+        import io
+        with io.open(nbpath, 'wt', encoding="utf8") as f:
+            nbformat.write(nb, f)
 
         return nbpath
 

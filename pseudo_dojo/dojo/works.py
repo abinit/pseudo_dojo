@@ -283,8 +283,6 @@ class GhostsWork(DojoWork):
 
                 # Restart.
                 task.set_vars(nband=int(nband), nbdbuf=int(nbdbuf))
-                #task.set_status(task.S_UNCONVERGED, "Setting status to UNCONVERGED to allow for restaring")
-                #task.reset_from_scratch()
                 task.restart()
                 self.finalized = False
 
@@ -692,64 +690,6 @@ class GbrvRelaxAndEosWork(DojoWork):
         dojo_entry, eos_fit = dojo_gbrv_results(self.dojo_pseudo, self.struct_type, num_sites, self.volumes, etotals)
         self.add_entry_to_dojoreport(dojo_entry)
 
-        """
-        results = self.get_results()
-        results.update(dict(
-            etotals=list(etotals),
-            volumes=list(self.volumes),
-            num_sites=len(self.relaxed_structure),
-        ))
-
-        try:
-            eos_fit = EOS.Quadratic().fit(self.volumes, etotals)
-        except EOS.Error as exc:
-            results.push_exceptions(exc)
-
-        # Function to compute cubic a0 from primitive v0 (depends on struct_type)
-        vol2a = {"fcc": lambda vol: (4 * vol) ** (1/3.),
-                 "bcc": lambda vol: (2 * vol) ** (1/3.),
-                 }[self.struct_type]
-
-        a0 = vol2a(eos_fit.v0)
-
-        results.update(dict(
-            v0=eos_fit.v0,
-            b0=eos_fit.b0,
-            b1=eos_fit.b1,
-            a0=a0,
-            struct_type=self.struct_type
-        ))
-
-        db = gbrv_database(xc)
-        entry = db.get_entry(self.dojo_pseudo.symbol, stype=self.struct_type)
-
-        pawabs_err = a0 - entry.gbrv_paw
-        pawrel_err = 100 * (a0 - entry.gbrv_paw) / entry.gbrv_paw
-
-        # AE results for P and Hg are missing.
-        if entry.ae is not None:
-            abs_err = a0 - entry.ae
-            rel_err = 100 * (a0 - entry.ae) / entry.ae
-        else:
-            # Use GBRV_PAW as reference.
-            abs_err = pawabs_err
-            rel_err = pawrel_err
-
-        print("for GBRV struct_type: ", self.struct_type, "a0= ", a0, "Angstrom")
-        print("AE - THIS: abs_err = %f, rel_err = %f %%" % (abs_err, rel_err))
-        print("GBRV-PAW - THIS: abs_err = %f, rel_err = %f %%" % (pawabs_err, pawrel_err))
-
-        d = {k: results[k] for k in ("a0", "etotals", "volumes")}
-        d["a0_abs_err"] = abs_err
-        d["a0_rel_err"] = rel_err
-        if results.exceptions:
-            d["_exceptions"] = str(results.exceptions)
-
-        self.add_entry_to_dojoreport(d)
-
-        return results
-        """
-
     @property
     def add_eos_done(self):
         """True if the EOS has been computed."""
@@ -947,7 +887,6 @@ class PhononDojoWork(PhononWork, DojoWork):
         # Call anaddb with/without ASR.
         asr2_phbands = ddb.anaget_phmodes_at_qpoint(qpoint=self.dojo_qpt, asr=2, chneut=1, dipdip=1, verbose=1)
         noasr_phbands = ddb.anaget_phmodes_at_qpoint(qpoint=self.dojo_qpt, asr=0, chneut=1, dipdip=1, verbose=1)
-        #print("asr", asr2_phbands.phfreqs); print("noasr", noasr_phbands.phfreqs)
 
         # Convert to JSON and add results to the dojo report.
         # Convert phfreqs[nq, 3* natom] to 1d vector because nq == 1 in this case.

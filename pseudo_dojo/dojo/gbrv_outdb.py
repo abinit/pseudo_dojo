@@ -337,45 +337,12 @@ class GbrvOutdb(dict):
                 count += 1
 
         # Update the database.
-        if count: self.json_write()
+        if count and write: self.json_write()
         return count
 
     #############################
     ### Post-processing tools ###
     #############################
-
-    @add_fig_kwargs
-    def plot_errors(self, reference="ae", accuracy="normal", ax=None, **kwargs):
-        """
-        Plot the error wrt the reference values.
-
-        Args:
-            ax: matplotlib :class:`Axes` or None if a new figure should be created.
-
-        Returns:
-            `matplotlib` figure
-        """
-        ax, fig, plt = get_ax_fig_plt(ax)
-        ax.grid(True)
-        #ax.set_xlabel('r [Bohr]')
-
-        xs, ys_abs, ys_rel = [], [], []
-
-        for formula, records in self.items():
-            for rec in records:
-                e = rec.compute_err(reference=reference, accuracy=accuracy)
-                if e is None: continue
-                xs.append(rec.formula)
-                ys_abs.append(e.abs_err)
-                ys_rel.append(e.rel_err)
-
-        if not xs:
-            print("No entry available for plotting")
-            return None
-
-        ax.scatter(range(len(ys_rel)), ys_rel, s=20) #, c='b', marker='o', cmap=None, norm=None)
-        #ax.scatter(xs, ys_rel, s=20) #, c='b', marker='o', cmap=None, norm=None)
-        return fig
 
     def get_pdframe(self, reference="ae", pptable=None, **kwargs):
         """
@@ -461,59 +428,54 @@ class GbrvOutdb(dict):
         Returns:
             The path to the ipython notebook.
 
+    See also:
+        http://nbviewer.jupyter.org/github/maxalbert/auto-exec-notebook/blob/master/how-to-programmatically-generate-and-execute-an-ipython-notebook.ipynb
         """
-        try:
-            # Here we have a deprecation warning but the API of v4 is different!
-            from nbformat import current as nbf
-            #import nbformat.v3 as nbf
-        except ImportError:
-            from IPython.nbformat import current as nbf
-
         frame = self.get_pdframe()
-        nb = nbf.new_notebook()
 
-        cells = [
-            nbf.new_heading_cell("This is an auto-generated notebook"),
-            nbf.new_code_cell("""\
+        import nbformat
+        nbv = nbformat.v4
+
+        nb = nbv.new_notebook()
+        nb.cells.extend([
+            nbv.new_markdown_cell("# This is an auto-generated notebook"),
+            nbv.new_code_cell("""\
 from __future__ import print_function, division, unicode_literals
 from IPython.display import display
 import seaborn
 %matplotlib notebook"""),
 
-            nbf.new_code_cell("""\
+            nbv.new_code_cell("""\
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
 outdb = GbrvOutdb.from_file('%s')
 frame = outdb.get_pdframe()
 frame.print_summary()""" % as_dojo_path(self.path)),
 
-            nbf.new_code_cell("display(frame)"),
-        ]
+            nbv.new_code_cell("display(frame)"),
+        ])
 
         for struct_type in frame.struct_types():
-            cells += [
-                nbf.new_heading_cell("GBRV results for structure %s:" % struct_type),
-                nbf.new_code_cell("fig = frame.plot_errors_for_structure('%s')" % struct_type),
-                nbf.new_code_cell("fig = frame.plot_hist('%s')" % struct_type),
+            nb.cells += [
+                nbv.new_markdown_cell("## GBRV results for structure %s:" % struct_type),
+                nbv.new_code_cell("fig = frame.plot_errors_for_structure('%s')" % struct_type),
+                nbv.new_code_cell("fig = frame.plot_hist('%s')" % struct_type),
         ]
 
-        cells += [
-            nbf.new_heading_cell("GBRV Compounds: relative errors as function of chemical element"),
-            nbf.new_code_cell("fig = frame.plot_errors_for_elements()"),
-            nbf.new_heading_cell("Bad guys:"),
-            nbf.new_code_cell("bad, count = frame.select_bad_guys(reltol=0.4)"),
-            nbf.new_code_cell("display(bad)"),
-            nbf.new_code_cell("print(count)"),
+        nb.cells += [
+            nbv.new_markdown_cell("## GBRV Compounds: relative errors as function of chemical element"),
+            nbv.new_code_cell("fig = frame.plot_errors_for_elements()"),
+            nbv.new_markdown_cell("## Bad guys:"),
+            nbv.new_code_cell("bad, count = frame.select_bad_guys(reltol=0.4)"),
+            nbv.new_code_cell("display(bad)"),
+            nbv.new_code_cell("print(count)"),
         ]
 
-        # Now that we have the cells, we can make a worksheet with them and add it to the notebook:
-        nb['worksheets'].append(nbf.new_worksheet(cells=cells))
-
+        import io, tempfile
         if nbpath is None:
-            import tempfile
             _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
 
-        with open(nbpath, 'wt') as f:
-            nbf.write(nb, f, 'ipynb')
+        with io.open(nbpath, 'wt', encoding="utf8") as f:
+            nbformat.write(nb, f)
 
         return nbpath
 

@@ -214,9 +214,13 @@ class GbrvCompoundRelaxAndEosWork(Work):
         db = gbrv_database(xc=self.xc)
         entry = db.get_entry(self.formula, stype=self.struct_type)
 
-        ref_a0 = entry.gbrv_paw
-        pawabs_err = a0 - entry.gbrv_paw
-        pawrel_err = 100 * (a0 - entry.gbrv_paw) / entry.gbrv_paw
+        try:
+            pawabs_err = a0 - entry.gbrv_paw
+            pawrel_err = 100 * (a0 - entry.gbrv_paw) / entry.gbrv_paw
+        except:
+            # Some paw_abinit entries are not available.
+            pawabs_err = np.inf
+            pawrel_err = np.inf
 
         # If AE results are missing we use GBRV_PAW as reference.
         if entry.ae is not None:
@@ -224,6 +228,9 @@ class GbrvCompoundRelaxAndEosWork(Work):
             abs_err = a0 - entry.ae
             rel_err = 100 * (a0 - entry.ae) / entry.ae
         else:
+            assert pawabs_err is not None
+            assert pawrel_err is not None
+            ref_a0 = entry.gbrv_paw
             abs_err = pawabs_err
             rel_err = pawrel_err
 
