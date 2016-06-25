@@ -32,8 +32,7 @@ def ecut_from_pseudos(pseudos):
 
     assert ecut != 0.0
     if use_ppgen_hints:
-        cprint("Hints are not available. Using ppgen_hints + 10", "yellow")
-        ecut += 10
+        cprint("Hints are not available. Using ppgen_hints['high']", "yellow")
 
     return ecut
 
