@@ -113,7 +113,7 @@ Usage example:
     a_guess = jth_afcc[pseudo.symbol]
 
     from pseudo_dojo.dojo.works import RelaxWithGbrvParamsWork
-    ecut_list = [10, 20, 30]
+    ecut_list = [55, 65, 75]
 
     work = RelaxWithGbrvParamsWork(
                  a_guess, "fcc", pseudo, ecut_list=ecut_list, pawecutdg=None, ngkpt=(8, 8, 8))
@@ -121,9 +121,9 @@ Usage example:
                  #ecutsm=0.05, chksymbreak=0)
     flow.register_work(work)
 
-    flow.build_and_pickle_dump(abivalidate=True)
-    return 0
-    #return flow.make_scheduler().start()
+    #flow.build_and_pickle_dump(abivalidate=True)
+    #return 0
+    return flow.make_scheduler().start()
 
     # Dispatch.
     #return globals()["gbrv_" + options.command](options)
