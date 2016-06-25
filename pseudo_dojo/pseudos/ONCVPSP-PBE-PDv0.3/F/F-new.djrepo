@@ -15,19 +15,19 @@
 53.0, 
 55.0
 ], 
-"md5": "d03fd716dc7369a70430e7da2c2583f3", 
+"md5": "55057e532b18d33238a70777ca87725c", 
 "ppgen_hints": {
 "high": {
 "ecut": 35.0, 
 "pawecutdg": 35.0
 }, 
 "low": {
-"ecut": 31.0, 
-"pawecutdg": 31.0
+"ecut": 30.0, 
+"pawecutdg": 30.0
 }, 
 "normal": {
-"ecut": 33.0, 
-"pawecutdg": 33.0
+"ecut": 32.0, 
+"pawecutdg": 32.0
 }
 }, 
 "pseudo_type": "NC", 
