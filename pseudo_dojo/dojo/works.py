@@ -897,3 +897,88 @@ class PhononDojoWork(PhononWork, DojoWork):
 
         self.add_entry_to_dojoreport(entry)
         return results
+
+
+class RelaxWithGbrvParamsWork(Work):
+
+    def __init__(self, a_guess, struct_type, pseudo, ecut_list=None, pawecutdg=None, ngkpt=(8, 8, 8),
+                 spin_mode="unpolarized", include_soc=False, tolvrs=1.e-10, smearing="fermi_dirac:0.001 Ha",
+                 ecutsm=0.05, chksymbreak=0, workdir=None, manager=None):
+        """
+        Build a :class:`Work` for the computation of the relaxed lattice parameter.
+
+        Args:
+            structure_type: fcc, bcc
+            pseudo: :class:`Pseudo` object.
+            ecut_list: Cutoff energy in Hartree
+            ngkpt: MP divisions.
+            spin_mode: Spin polarization mode.
+            toldfe: Tolerance on the energy (Ha)
+            smearing: Smearing technique.
+            workdir: String specifing the working directory.
+            manager: :class:`TaskManager` responsible for the submission of the tasks.
+        """
+        super(RelaxWithGbrvParamsWork, self).__init__(workdir=workdir, manager=manager)
+        self_pseudo = pseudo
+        self.include_soc = include_soc
+        self.struct_type = struct_type
+
+        if struct_type == "bcc":
+            structure = Structure.bcc(a_guess, species=[pseudo.symbol])
+        elif struct_type == "fcc":
+            structure = Structure.fcc(a_guess, species=[pseudo.symbol])
+
+        # Set extra_abivars.
+        extra_abivars = dict(
+            pawecutdg=pawecutdg,
+            tolvrs=tolvrs,
+            prtwf=-1,
+            fband=2.0,
+            nstep=100,
+            ntime=50,
+            ecutsm=ecutsm,
+            dilatmx=1.1,
+        )
+
+        self.ecut_list = ecut_list
+        smearing = Smearing.as_smearing(smearing)
+
+        # Kpoint sampling: shiftk depends on struct_type
+        shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
+        spin_mode = SpinMode.as_spinmode(spin_mode)
+        ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk,
+                                        use_time_reversal=spin_mode.nspinor==1)
+        relax_algo = RelaxationMethod.atoms_and_cell()
+
+        inp = abilab.AbinitInput(structure, pseudo)
+        inp.add_abiobjects(ksampling, relax_algo, spin_mode, smearing)
+        inp.set_vars(extra_abivars)
+
+        # Register structure relaxation task.
+        for ecut in self.ecut_list:
+            self.relax_task = self.register_relax_task(inp.new_with_vars(ecut=ecut))
+
+    def on_all_ok(self):
+        """
+        This method is called when self reaches S_OK. It reads the optimized structure
+        from the netcdf file and builds a new work for the computation of the EOS
+        with the GBRV parameters.
+        """
+        # Function to compute cubic a0 from primitive v0 (depends on struct_type)
+        vol2a = {"fcc": lambda vol: (4 * vol) ** (1/3.),
+                 "bcc": lambda vol: (2 * vol) ** (1/3.),
+                 "rocksalt": lambda vol: (4 * vol) ** (1/3.),
+                 "ABO3": lambda vol: vol ** (1/3.),
+                 "hH": lambda vol: (4 * vol) ** (1/3.),
+                 }[self.struct_type]
+
+        results = []
+        for task, ecut in zip(self, self.ecut_list):
+            structure = task.get_final_structure()
+            a0 = vol2a(structure.volume)
+            results.append(dict(ecut=ecut, a0=a0))
+
+        with open(self.outdir.path_in("a0.json"), "wt") as fh:
+            json.dump(results, fh, indent=4) #, sort_keys=True, cls=MontyEncoder)
+
+        return super(RelaxWithGbrvParamsWork, self).on_all_ok()

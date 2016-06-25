@@ -9,6 +9,7 @@ import logging
 
 from monty.termcolor import cprint
 from monty.functools import prof_main
+from abipy import abilab
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 
 logger = logging.getLogger(__name__)
@@ -80,7 +81,7 @@ Usage example:
         raise ValueError('Invalid log level: %s' % options.loglevel)
     logging.basicConfig(level=numeric_level)
 
-    pseudo = options.pseudo = dojo_pseudo_from_file(options.pseudo)
+    pseudo = options.pseudo = dojopseudo_from_file(options.pseudo)
     ecut = ecut_from_pseudo(pseudo)
 
     workdir = pseudo.basename + "_DOJO_RELAX"
@@ -91,20 +92,38 @@ Usage example:
     flow = abilab.Flow(workdir=workdir)
     pawecutdg = 2 * ecut if pseudo.ispaw else None
 
-    #if stype == "bcc":
-    #    structure = Structure.bcc(a, species=[self.symbol])
-    #elif stype == "fcc":
-    #    structure = Structure.fcc(a, species=[self.symbol])
+    jth_afcc = dict(
+        La=5.272,
+        Ce=4.769,
+        Pr=4.608,
+        Nd=4.531,
+        Pm=4.499,
+        Sm=4.516,
+        Eu=4.630,
+        Gd=4.723,
+        Tb=4.835,
+        Dy=4.918,
+        Ho=5.012,
+        Er=5.073,
+        Tm=5.120,
+        Yb=5.163,
+        Lu=5.589,
+    )
 
-    #multi = ion_ioncell_relax_input(structure, pseudos,
-    #                        kppa=None, nband=None,
-    #                        ecut=None, pawecutdg=None, accuracy="normal", spin_mode="polarized",
-    #                        smearing="fermi_dirac:0.1 eV", charge=0.0, scf_algorithm=None):
+    a_guess = jth_afcc[pseudo.symbol]
 
-    #work = DojoRelaxWork(pseudo, ecut, pawecutdg)
-    #flow.register_task(task)
+    from pseudo_dojo.dojo.works import RelaxWithGbrvParamsWork
+    ecut_list = [10, 20, 30]
 
-    return flow.make_scheduler().start()
+    work = RelaxWithGbrvParamsWork(
+                 a_guess, "fcc", pseudo, ecut_list=ecut_list, pawecutdg=None, ngkpt=(8, 8, 8))
+                 #spin_mode="unpolarized", include_soc=False, tolvrs=1.e-10, smearing="fermi_dirac:0.001 Ha",
+                 #ecutsm=0.05, chksymbreak=0)
+    flow.register_work(work)
+
+    flow.build_and_pickle_dump(abivalidate=True)
+    return 0
+    #return flow.make_scheduler().start()
 
     # Dispatch.
     #return globals()["gbrv_" + options.command](options)
