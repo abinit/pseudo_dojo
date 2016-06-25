@@ -933,7 +933,7 @@ class RelaxWithGbrvParamsWork(Work):
             pawecutdg=pawecutdg,
             tolvrs=tolvrs,
             prtwf=-1,
-            fband=2.0,
+            fband=3.0,
             nstep=100,
             ntime=50,
             ecutsm=ecutsm,
@@ -976,8 +976,10 @@ class RelaxWithGbrvParamsWork(Work):
         for task, ecut in zip(self, self.ecut_list):
             structure = task.get_final_structure()
             a0 = vol2a(structure.volume)
+            print("ecut:", ecut, "a0:", a0)
             results.append(dict(ecut=ecut, a0=a0))
 
+        import json
         with open(self.outdir.path_in("a0.json"), "wt") as fh:
             json.dump(results, fh, indent=4) #, sort_keys=True, cls=MontyEncoder)
 

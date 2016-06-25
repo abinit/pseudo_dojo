@@ -27,8 +27,8 @@ def ecut_from_pseudo(pseudo):
 
     assert ecut != 0.0
     if use_ppgen_hints:
-        cprint("Hints are not available. Using ppgen_hints + 10", "yellow")
-        ecut += 10
+        cprint("Hints are not available. Using ppgen_hints['high']", "yellow")
+        #ecut += 10
 
     return ecut
 
@@ -113,10 +113,12 @@ Usage example:
     a_guess = jth_afcc[pseudo.symbol]
 
     from pseudo_dojo.dojo.works import RelaxWithGbrvParamsWork
-    ecut_list = [55, 65, 75]
+    ecut_list = [ecut, ecut+10, ecut+20]
 
     work = RelaxWithGbrvParamsWork(
-                 a_guess, "fcc", pseudo, ecut_list=ecut_list, pawecutdg=None, ngkpt=(8, 8, 8))
+                 a_guess, "fcc", pseudo, ecut_list=ecut_list, pawecutdg=None, 
+                 ngkpt=(8, 8, 8))
+                 #ngkpt=(12, 12, 12))
                  #spin_mode="unpolarized", include_soc=False, tolvrs=1.e-10, smearing="fermi_dirac:0.001 Ha",
                  #ecutsm=0.05, chksymbreak=0)
     flow.register_work(work)
