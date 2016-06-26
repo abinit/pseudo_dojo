@@ -100,8 +100,8 @@ install_requires = [
     "ipython",
     "nbformat",
     "python-daemon",
-    #"abipy",
-    #"matplotlib",
+    "matplotlib",
+    "abipy",
 ]
 
 #---------------------------------------------------------------------------

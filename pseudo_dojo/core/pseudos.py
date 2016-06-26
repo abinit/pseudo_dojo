@@ -556,13 +556,15 @@ from __future__ import print_function, division, unicode_literals
 
 %matplotlib notebook
 import seaborn as sns
-from IPython import display
+from tabulate import tabulate
+from IPython.display import display
 from pseudo_dojo.core.dojoreport import DojoDataFrame"""),
 
             nbf.new_markdown_cell("## Init table from filenames:"),
             nbf.new_code_cell("dojo_frame = DojoDataFrame.from_json_file('%s')" % json_path),
+            nbf.new_code_cell("#display(best_frame)"),
 
-            nbf.new_code_cell("best_frame = data.select_best()"),
+            nbf.new_code_cell("best_frame = dojo_frame.select_best()"),
             nbf.new_code_cell("display(best_frame)"),
             nbf.new_code_cell("tabulate(best_frame.describe(), headers='keys')"),
 

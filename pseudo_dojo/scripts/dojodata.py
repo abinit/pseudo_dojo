@@ -7,6 +7,7 @@ import os
 import glob
 import argparse
 import numpy as np
+import daemon
 
 from time import gmtime, strftime
 from warnings import warn
@@ -349,7 +350,8 @@ def dojo_nbtable(options):
     """
     Generate an ipython notebook for a pseudopotential table and open it in the browser.
     """
-    return options.pseudos.make_open_notebook()
+    with daemon.DaemonContext(detach_process=True):
+        return options.pseudos.make_open_notebook()
 
 
 def dojo_notebook(options):
@@ -357,12 +359,14 @@ def dojo_notebook(options):
     Generate an ipython notebook for each pseudopotential and open it in the browser.
     """
     from pseudo_dojo.util.notebook import make_open_notebook
-    retcode = 0
-    for p in options.pseudos:
-        retcode += make_open_notebook(p.filepath, with_validation=True, with_eos=True)
-        if retcode != 0: break
 
-    return retcode
+    with daemon.DaemonContext(detach_process=True):
+        retcode = 0
+        for p in options.pseudos:
+            retcode += make_open_notebook(p.filepath, with_validation=True, with_eos=True)
+            if retcode != 0: break
+
+        return retcode
 
 
 def dojo_compare(options):
@@ -419,7 +423,6 @@ def dojo_table(options):
 
     #data.plot_hist()
     #data.plot_trials()
-
     #data.tabulate()
     #print(data.columns)
     #frame = data[["high_dfact_meV", "high_dfactprime_meV", "high_gbrv_bcc_a0_rel_err", "high_gbrv_fcc_a0_rel_err"]]
@@ -434,25 +437,20 @@ def dojo_table(options):
     #g.map(plt.scatter, "Z", "high_gbrv_fcc_a0_rel_err"); g.add_legend(); plt.show()
     #return
 
-    pseudos.plot_hints()
-    return 0
+    #pseudos.plot_hints()
+    #return 0
 
-    if False:
-    #if True:
-        """Select best entries"""
+    if options.best:
+        print("Selecting best pseudos according to deltafactor")
         best_frame = data.select_best()
+        if options.json: best_frame.to_json('table.json')
 
         print(tabulate(best_frame, headers="keys"))
         print(tabulate(best_frame.describe(), headers="keys"))
-
-        best_frame["high_dfact_meV"].hist(bins=100)
-        import matplotlib.pyplot as plt
-        plt.show()
+        #best_frame["high_dfact_meV"].hist(bins=100)
+        #import matplotlib.pyplot as plt
+        #plt.show()
         return 0
-
-    if errors:
-        cprint("ERRORS:", "red")
-        pprint(errors)
 
     #accuracies = ["normal", "high"]
     accuracies = ["low", "normal", "high"]
@@ -490,8 +488,7 @@ def dojo_table(options):
         cprint("WRONG".center(80, "*"), "red")
         print(wrong)
 
-    if options.json:
-        data.to_json('table.json')
+    if options.json: data.to_json('table.json')
 
     try:
         data = data[
@@ -799,6 +796,8 @@ Usage example:
     p_table = subparsers.add_parser('table', parents=[copts_parser], help=dojo_table.__doc__)
     p_table.add_argument("-j", '--json', default=False, action="store_true",
                          help="Dump table in json format to file table.json")
+    p_table.add_argument("-b", '--best', default=False, action="store_true",
+                         help="Select best pseudos according to deltafactor")
 
     p_nbtable = subparsers.add_parser('nbtable', parents=[copts_parser], help=dojo_nbtable.__doc__)
 

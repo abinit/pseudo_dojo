@@ -78,13 +78,13 @@ plotter = onc_parser.make_plotter()"""),
         #nbf.new_markdown_cell("## 2-nd order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
         #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=2, show=False)"""),
 
-        nbf.new_markdown_cell("## Ghosts Test"),
-        nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False)"),
-
         nbf.new_markdown_cell("## Model core charge and form factors computed by ABINIT"),
         nbf.new_code_cell("""\
 with pseudo.open_pspsfile() as psps:
     psps.plot()"""),
+
+        nbf.new_markdown_cell("## Ghosts Test"),
+        nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False)"),
 
         nbf.new_markdown_cell("## Convergence of the total energy:"),
         nbf.new_code_cell("""\
@@ -99,7 +99,7 @@ fig = report.plot_etotal_vs_ecut(show=False)"""),
 # Here we plot the difference wrt Wien2k results.
 fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-dfactprime_meV"), show=False)"""),
 
-        nbf.new_markdown_cell("## deltafactor EOS for the different cutoff energies:"),
+        nbf.new_markdown_cell("## Deltafactor EOS for the different cutoff energies:"),
         nbf.new_code_cell("fig = report.plot_deltafactor_eos(show=False)"),
 
         nbf.new_markdown_cell("## Convergence of the GBRV lattice parameters:"),
@@ -107,13 +107,6 @@ fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-df
 
         nbf.new_markdown_cell("## Convergence of phonon frequencies at $\Gamma$:"),
         nbf.new_code_cell("fig = report.plot_phonon_convergence(show=False)"),
-
-        #nbf.new_markdown_cell("## Comparison with the other pseudos in this table"),
-        #nbf.new_code_cell("""\
-        #from pseudo_dojo import get_pseudos
-        #pseudos = get_pseudos(".")
-        #if len(pseudos) > 1:
-        #    pseudos.dojo_compare()"""),
     ])
 
     if with_eos:
@@ -159,5 +152,3 @@ def make_open_notebook(pseudopath, with_validation=False, with_eos=True):
     if which("jupyter") is None:
         raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
     return os.system("jupyter notebook %s" % path)
-
-
