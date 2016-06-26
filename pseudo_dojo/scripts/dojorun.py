@@ -100,6 +100,7 @@ def build_flow(pseudo, options):
     if "df" in options.trials or "deltafactor" in options.trials:
         factory = DeltaFactory(xc=pseudo.xc)
         dojo_trial = "deltafactor" if not options.soc else "deltafactor_soc"
+        #ecut_list = [75]
 
         for ecut in ecut_list:
             if report.has_trial(dojo_trial, ecut=ecut):
