@@ -1,6 +1,7 @@
 {
 "basename": "F-new.psp8", 
 "ecuts": [
+24.0, 
 26.0, 
 28.0, 
 30.0, 
@@ -11,23 +12,22 @@
 40.0, 
 42.0, 
 44.0, 
-46.0, 
-54.0, 
-56.0
+52.0, 
+54.0
 ], 
-"md5": "2e9ec5ad8a4dea6ccc739e31c600ed60", 
+"md5": "83c4571a5f69f1eb74229f0d92448a57", 
 "ppgen_hints": {
 "high": {
-"ecut": 36.0, 
-"pawecutdg": 36.0
-}, 
-"low": {
-"ecut": 32.0, 
-"pawecutdg": 32.0
-}, 
-"normal": {
 "ecut": 34.0, 
 "pawecutdg": 34.0
+}, 
+"low": {
+"ecut": 31.0, 
+"pawecutdg": 31.0
+}, 
+"normal": {
+"ecut": 33.0, 
+"pawecutdg": 33.0
 }
 }, 
 "pseudo_type": "NC", 
