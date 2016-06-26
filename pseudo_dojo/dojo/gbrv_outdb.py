@@ -553,12 +553,6 @@ class GbrvCompoundDataFrame(DataFrame):
         rows = []
         for idx, row in self.iterrows():
             if symbol not in species_from_formula(row.formula): continue
-            #meta = row.pseudos_meta[symbol]
-            #pseudo_basename = meta["basename"]
-            #dfact_meV, df_prime = meta["dfact_meV"], meta["df_prime"]
-            #row = row.set_value("dfact_meV", dfact_meV)
-            #row = row.set_value("dfactprime_meV", df_prime)
-            #row = row.set_value("pseudo_basename", pseudo_basename)
             rows.append(row)
 
         return self.__class__(rows)

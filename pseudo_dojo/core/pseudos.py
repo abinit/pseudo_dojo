@@ -15,7 +15,7 @@ from monty.fnmatch import WildCard
 from monty.termcolor import cprint
 from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
-from pymatgen.util.plotting_utils import add_fig_kwargs
+from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
 from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
 from pseudo_dojo.core.dojoreport import DojoReport
 
@@ -381,7 +381,7 @@ class DojoTable(PseudoTable):
         return frame.plot_dfgbrv_dist(**kwargs)
 
     @add_fig_kwargs
-    def plot_scalar_vs_fully_relativistic(self, **kwargs):
+    def plot_scalar_vs_fully_relativistic(self, what="df", **kwargs):
         # Build pandas dataframe with results.
         rows = []
         for p in self:
@@ -397,7 +397,7 @@ class DojoTable(PseudoTable):
             row.update(sr_dict)
             row.update(soc_dict)
 
-            # TODO
+            # Get GBRV results for bcc and fcc.
             for struct_type in ("bcc", "fcc"):
                 soc_dict = p.dojo_report.get_last_gbrv_results(struct_type, with_soc=True)
                 sr_dict = p.dojo_report.get_last_gbrv_results(struct_type, with_soc=False)
@@ -416,40 +416,100 @@ class DojoTable(PseudoTable):
 
         # Create axes
         import matplotlib.pyplot as plt
-        #fig, ax_list = plt.subplots(nrows=4, ncols=2, sharex=True, squeeze=False)
-        #ax_list = ax_list.ravel()
 
-        # Compute absolute differences SOC - SR
-        #for i, vname in enumerate(["dfact_meV", "v0", "b0_GPa", "b1"]): # "dfactprime_meV",
-        #    newcol = "dsoc_" + vname
-        #    frame[newcol] = frame[vname + "_soc"] - frame[vname]
-        #    frame.plot(x="Z", y=newcol, ax=ax_list[i], kind="scatter", grid=True)
-        #    #frame.plot.scatter(x="Z", y=newcol, s=20*(frame["dfact_meV"] + 1), ax=ax_list[i], grid=True)
+        if what == "df":
+            fig, ax_list = plt.subplots(nrows=2, ncols=2, sharex=True, squeeze=False)
+            ax_list = ax_list.ravel()
 
-        #print_frame("entries without V0")
-        #print_frame(frame[frame["v0"].isnull()])
-        #print_frame("entries without V0_soc")
-        #print_frame(frame[frame["v0_soc"].isnull()])
+            # Compute absolute differences SOC - SR
+            for i, vname in enumerate(["dfact_meV", "v0", "b0_GPa", "b1"]): # "dfactprime_meV",
+                newcol = "dsoc_" + vname
+                frame[newcol] = frame[vname + "_soc"] - frame[vname]
+                frame.plot(x="Z", y=newcol, ax=ax_list[i], kind="scatter", grid=True)
+                #frame.plot.scatter(x="Z", y=newcol, s=20*(frame["dfact_meV"] + 1), ax=ax_list[i], grid=True)
 
-        # Plot GBRV results with/without SOC
-        fig, ax_list = plt.subplots(nrows=2, ncols=1, sharex=True, squeeze=False)
-        ax_list = ax_list.ravel()
-        for i, stype in enumerate(("bcc", "fcc")):
-            #"gbrv_fcc_soc_a0_rel_err"
-            for soc, color in zip(("", "_soc"), ("blue", "red")):
-                col = "gbrv_" + stype + soc + "_a0_rel_err"
-                frame.plot(x="Z", y=col, ax=ax_list[i], kind="scatter", grid=True, color=color)
+            #print("entries without V0")
+            #print_frame(frame[frame["v0"].isnull()])
+            #print("entries without V0_soc")
+            #print_frame(frame[frame["v0_soc"].isnull()])
 
-        # Plot GBRV diff between SR and FR with SOC
-        #frame["dsoc_bcc"] = frame["gbrv_bcc_soc_a0_rel_err"] - frame["gbrv_bcc_a0_rel_err"]
-        #frame.plot(x="Z", y="dsoc_bcc", ax=ax_list[0], kind="scatter", grid=True)
-        #frame["dsoc_fcc"] = frame["gbrv_fcc_soc_a0_rel_err"] - frame["gbrv_fcc_a0_rel_err"]
-        #frame.plot(x="Z", y="dsoc_fcc", ax=ax_list[1], kind="scatter", grid=True)
+        elif what == "gbrv":
+            # Plot GBRV results with/without SOC
+            fig, ax_list = plt.subplots(nrows=2, ncols=1, sharex=True, squeeze=False)
+            ax_list = ax_list.ravel()
+            for i, stype in enumerate(("bcc", "fcc")):
+                # "gbrv_fcc_soc_a0_rel_err"
+                for soc, color in zip(("", "_soc"), ("blue", "red")):
+                    col = "gbrv_" + stype + soc + "_a0_rel_err"
+                    frame.plot(x="Z", y=col, ax=ax_list[i], kind="scatter", grid=True, color=color)
 
-        #print_frame(frame[frame["gbrv_fcc_soc_a0_rel_err"].isnull()])
-        #print_frame(frame[frame["gbrv_fcc_a0_rel_err"].isnull()])
-        #print_frame(frame[["basename", "Z", "Z_val", "dsoc_bcc", "dsoc_fcc"]])
-        #print_frame(frame)
+            # Plot GBRV diff between SR and FR with SOC
+            #frame["dsoc_bcc"] = frame["gbrv_bcc_soc_a0_rel_err"] - frame["gbrv_bcc_a0_rel_err"]
+            #frame.plot(x="Z", y="dsoc_bcc", ax=ax_list[0], kind="scatter", grid=True)
+            #frame["dsoc_fcc"] = frame["gbrv_fcc_soc_a0_rel_err"] - frame["gbrv_fcc_a0_rel_err"]
+            #frame.plot(x="Z", y="dsoc_fcc", ax=ax_list[1], kind="scatter", grid=True)
+
+            #print_frame(frame[frame["gbrv_fcc_soc_a0_rel_err"].isnull()])
+            #print_frame(frame[frame["gbrv_fcc_a0_rel_err"].isnull()])
+            #print_frame(frame[["basename", "Z", "Z_val", "dsoc_bcc", "dsoc_fcc"]])
+            #print_frame(frame)
+        else:
+            raise ValueError("Unsupported option %s" % what)
+
+        #return fig
+
+    @add_fig_kwargs
+    def plot_hints(self, with_soc=False, **kwargs):
+        # Build pandas dataframe with results.
+        rows = []
+        for p in self:
+            if not p.has_dojo_report:
+                cprint("Cannot find dojo_report in %s" % p.basename, "magenta")
+                continue
+            report = p.dojo_report
+            row = {att: getattr(p, att) for att in ("basename", "symbol", "Z", "Z_val", "l_max")}
+
+            # Get deltafactor data with/without SOC
+            df_dict = report.get_last_df_results(with_soc=with_soc)
+            row.update(df_dict)
+            for struct_type in ["fcc", "bcc"]:
+                gbrv_dict = report.get_last_gbrv_results(struct_type, with_soc=with_soc)
+            row.update(gbrv_dict)
+
+            # Get the hints
+            hint = p.hint_for_accuracy(accuracy="normal")
+            row.update(dict(ecut=hint.ecut, pawecutdg=hint.pawecutdg))
+
+            rows.append(row)
+
+        import pandas as pd
+        frame = pd.DataFrame(rows)
+
+        def print_frame(x):
+            import pandas as pd
+            with pd.option_context('display.max_rows', len(x),
+                                   'display.max_columns', len(list(x.keys()))):
+                print(x)
+
+        print_frame(frame)
+        # Create axes
+        #import matplotlib.pyplot as plt
+
+        import seaborn as sns
+        ax, fig, plt = get_ax_fig_plt(ax=None)
+
+        #order = sort_symbols_by_Z(set(frame["element"]))
+
+        # Box plot
+        ax = sns.boxplot(x="symbol", y="ecut", data=frame, ax=ax, #order=order,
+                         whis=np.inf, color="c")
+        # Add in points to show each observation
+        sns.stripplot(x="symbol", y="ecut", data=frame, ax=ax, #order=order,
+                      jitter=True, size=5, color=".3", linewidth=0)
+
+        sns.despine(left=True)
+        ax.set_ylabel("Relative error %")
+        ax.grid(True)
 
         return fig
 
@@ -496,10 +556,17 @@ from __future__ import print_function, division, unicode_literals
 
 %matplotlib notebook
 import seaborn as sns
+from IPython import display
 from pseudo_dojo.core.dojoreport import DojoDataFrame"""),
 
             nbf.new_markdown_cell("## Init table from filenames:"),
             nbf.new_code_cell("dojo_frame = DojoDataFrame.from_json_file('%s')" % json_path),
+
+            nbf.new_code_cell("best_frame = data.select_best()"),
+            nbf.new_code_cell("display(best_frame)"),
+            nbf.new_code_cell("tabulate(best_frame.describe(), headers='keys')"),
+
+            nbf.new_code_cell("fig = options.pseudos.plot_dfgbrv_dist()"),
 
             nbf.new_code_cell("""\
 for row in dojo_frame.myrows():

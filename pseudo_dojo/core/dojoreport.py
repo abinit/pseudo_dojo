@@ -1249,7 +1249,7 @@ class DojoDataFrame(pd.DataFrame):
         for p in pseudos:
             names.append(p.basename)
             d = {"symbol": p.symbol, "Z": p.Z, "Z_val": p.Z_val, "l_max": p.l_max,
-                 "filepath": p.filepath}
+                 "nlcc": p.has_nlcc} #"filepath": p.filepath}
 
             if not p.has_dojo_report:
                 eapp("Cannot find dojo_report in %s" % p.basename)
@@ -1326,7 +1326,6 @@ class DojoDataFrame(pd.DataFrame):
         """
         Return list of families available in the dataframe.
         """
-        # TODO: Move this list to pymatgen periodic table.
         pd_families = [
            "noble_gas", "transition_metal", "rare_earth_metal", "metalloid",
            "alkali", "alkaline", "halogen", "lanthanoid", "actinoid",
@@ -1382,6 +1381,32 @@ class DojoDataFrame(pd.DataFrame):
 
         stream.write(tabulate(self[columns], headers="keys", tablefmt="grid", floatfmt=".2f"))
         #return self[columns].to_html()
+
+    def select_best(self):
+        """
+        Return dataframe with the best entries selected according to the deltafactor.
+        """
+        sortby, ascending = "high_dfact_meV", True
+        rows, names = [], []
+        for name, group in self.groupby("symbol"):
+            # Sort group and select best pseudo depending on sortby and ascending.
+            best = group.sort_values(sortby, ascending=ascending).iloc[0]
+            names.append(name)
+            #print(best.name, best.keys())
+            l = {k: getattr(best, k) for k in ("name", "Z", "Z_val",
+                                               "high_dfact_meV", "high_ecut_deltafactor",
+                                               "high_gbrv_bcc_a0_rel_err", "high_gbrv_fcc_a0_rel_err"
+                                              )}
+
+            rows.append(l)
+
+        best_frame = pd.DataFrame(rows, index=names)
+        best_frame = best_frame.sort_values("Z")
+        return best_frame
+
+    ##################
+    # Plotting tools #
+    ##################
 
     @add_fig_kwargs
     def plot_hist(self, what="dfact_meV", bins=400, **kwargs):

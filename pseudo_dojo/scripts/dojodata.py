@@ -408,7 +408,8 @@ def dojo_table(options):
     data, errors = pseudos.get_dojo_dataframe()
 
     # Compare FR with SR pseudos.
-    #pseudos.plot_scalar_vs_fully_relativistic()
+    #pseudos.plot_scalar_vs_fully_relativistic(what="df")
+    #pseudos.plot_scalar_vs_fully_relativistic(what="gbrv")
     #return 0
 
     if errors:
@@ -433,33 +434,19 @@ def dojo_table(options):
     #g.map(plt.scatter, "Z", "high_gbrv_fcc_a0_rel_err"); g.add_legend(); plt.show()
     #return
 
+    pseudos.plot_hints()
+    return 0
+
     if False:
+    #if True:
         """Select best entries"""
-        #best = {}
-        #symbols = set(data["symbol"])
-        #for sym in symbols:
-        grouped = data.groupby("symbol")
-        #print(grouped.groups)
+        best_frame = data.select_best()
 
-        rows, names = [], []
-        for name, group in grouped:
-            #print(name, group["high_dfact_meV"])
-            best = group.sort_values("high_dfact_meV").iloc[0]
-            names.append(name)
-            #print(best.keys())
-            #print(best.name)
-            l = {k: getattr(best, k) for k in ("name", "Z", 'high_b0_GPa', 'high_b1', 'high_v0',
-                                               'high_dfact_meV', 'high_ecut_deltafactor')}
-            rows.append(l)
-
-        import pandas
-        best_frame = pandas.DataFrame(rows, index=names)
-        best_frame = best_frame.sort_values("Z")
         print(tabulate(best_frame, headers="keys"))
         print(tabulate(best_frame.describe(), headers="keys"))
 
-        import matplotlib.pyplot as plt
         best_frame["high_dfact_meV"].hist(bins=100)
+        import matplotlib.pyplot as plt
         plt.show()
         return 0
 
@@ -504,7 +491,6 @@ def dojo_table(options):
         print(wrong)
 
     if options.json:
-        #data = calc_errors(data)
         data.to_json('table.json')
 
     try:
