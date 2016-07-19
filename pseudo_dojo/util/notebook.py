@@ -141,11 +141,11 @@ fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-df
 
 def make_open_notebook(pseudopath, with_validation=False, with_eos=True):
     """
-    Generate an ipython notebook from the pseudopotential path and
+    Generate a jupyter notebook from the pseudopotential path and
     open it in the browser. Return system exit code.
 
     Raise:
-        RuntimeError if jupyther or ipython are not in $PATH
+        RuntimeError if jupyther is not in $PATH
     """
     path = write_notebook(pseudopath, with_validation=with_validation, with_eos=with_eos, tmpfile=True)
 

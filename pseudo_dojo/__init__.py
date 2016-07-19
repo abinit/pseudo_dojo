@@ -69,7 +69,8 @@ class OfficialTables(Mapping):
     def __init__(self):
         self._tables = tables = OrderedDict()
 
-        tables["ONCVPSP-PBE-PDv0.2-accuracy"] = TableMetadata("ONCVPSP-PBE-PDv0.2", "test_accuracy.djson")
+        #tables["ONCVPSP-PBE-PDv0.2-accuracy"] = TableMetadata("ONCVPSP-PBE-PDv0.2", "test_accuracy.djson")
+        tables["ONCVPSP-PBE-PDv0.2-accuracy"] = TableMetadata("ONCVPSP-PBE-PDv0.3", "standard.djson")
         #tables["ONCV-GYGYv0.2-PBE"] = TableMetadata("ONC-PBE-GYGYv0.2", "htc.djson")
         #tables["PAW-JTHv0.2-PBE"] = TableMetadata("PAW-PBE-JTHv0.2", "standard.djson")
         #tables["PAW-PBE-GBRVv0.2"] = TableMetadata("PAW-PBE-GBRVv0.2", "efficiency.djson")

@@ -16,8 +16,6 @@ from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formul
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
 from pseudo_dojo.dojo.gbrv_compounds import GbrvCompoundsFactory
 
-logger = logging.getLogger(__name__)
-
 
 def ecut_from_pseudos(pseudos):
     """Compute ecut either from hints or from ppgen hints."""

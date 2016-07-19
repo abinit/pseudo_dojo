@@ -446,7 +446,7 @@ import seaborn
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
 outdb = GbrvOutdb.from_file('%s')
 frame = outdb.get_pdframe()
-frame.print_summary()""" % as_dojo_path(self.path)),
+display(frame.code_errors())""" % as_dojo_path(self.path)),
 
             nbv.new_code_cell("display(frame)"),
         ])
@@ -456,15 +456,16 @@ frame.print_summary()""" % as_dojo_path(self.path)),
                 nbv.new_markdown_cell("## GBRV results for structure %s:" % struct_type),
                 nbv.new_code_cell("fig = frame.plot_errors_for_structure('%s')" % struct_type),
                 nbv.new_code_cell("fig = frame.plot_hist('%s')" % struct_type),
+                nbv.new_code_cell("display(frame.select_bad_guys(reltol=0.35, struct_type='%s'))" % struct_type),
         ]
 
         nb.cells += [
             nbv.new_markdown_cell("## GBRV Compounds: relative errors as function of chemical element"),
             nbv.new_code_cell("fig = frame.plot_errors_for_elements()"),
             nbv.new_markdown_cell("## Bad guys:"),
-            nbv.new_code_cell("bad, count = frame.select_bad_guys(reltol=0.4)"),
+            nbv.new_code_cell("bad = frame.select_bad_guys(reltol=0.35)"),
             nbv.new_code_cell("display(bad)"),
-            nbv.new_code_cell("print(count)"),
+            nbv.new_code_cell("print(bad.symbol_counter)"),
         ]
 
         import io, tempfile
@@ -506,8 +507,8 @@ class GbrvCompoundDataFrame(DataFrame):
         # Add this
         return ["this"] + codes
 
-    def print_summary(self, choice="rms", **kwargs):
-        """Print table with the rms of the different codes."""
+    def code_errors(self, choice="rms", **kwargs):
+        """Return frame with the rms of the different codes."""
         index, rows = [], []
         ref_code = "ae"
         for struct_type in self.struct_types():
@@ -526,18 +527,22 @@ class GbrvCompoundDataFrame(DataFrame):
             rows.append(row)
 
         frame = DataFrame(rows, index=index)
-        print(frame)
+        return frame
 
-    def select_bad_guys(self, reltol=0.4):
+    def select_bad_guys(self, reltol=0.4, struct_type=None):
         new = self[abs(100 * (self["this"] - self["ae"]) / self["ae"]) > reltol].copy()
         new["rel_err"] = 100 * (self["this"] - self["ae"]) / self["ae"]
+        if struct_type is not None:
+            new = new[new.struct_type == struct_type]
+
         new.__class__ = self.__class__
         count = Counter()
         for idx, row in new.iterrows():
             for symbol in set(species_from_formula(row.formula)):
                 count[symbol] += 1
+        new.symbol_counter = count
 
-        return new, count
+        return new
 
     def remove_bad_guys(self, reltol=0.4):
         new = self[abs(100 * (self["this"] - self["ae"]) / self["ae"]) <= reltol].copy()
@@ -583,7 +588,7 @@ class GbrvCompoundDataFrame(DataFrame):
         return fig
 
     @add_fig_kwargs
-    def plot_hist(self, struct_type, ax=None, **kwargs):
+    def plot_hist(self, struct_type, ax=None, errtxt=True, **kwargs):
         """
         Histogram plot.
         """
@@ -593,16 +598,18 @@ class GbrvCompoundDataFrame(DataFrame):
 
         codes = ["this", "gbrv_paw"] #, "gbrv_uspp", "pslib", "vasp"]
         new = self[self["struct_type"] == struct_type].copy()
-        for code in codes:
+        ypos = 0.8
+        for i, code in enumerate(codes):
             values = (100 * (new[code] - new["ae"]) / new["ae"]).dropna()
             sns.distplot(values, ax=ax, rug=True, hist=False, label=code)
 
-            if code == "this":
-                # Add text with Mean or (MARE/RMSRE)
+            # Add text with Mean or (MARE/RMSRE)
+            if errtxt:
                 text = []; app = text.append
-                app("MARE = %.2f" % values.abs().mean())
-                app("RMSRE = %.2f" % np.sqrt((values**2).mean()))
-                ax.text(0.8, 0.8, "\n".join(text), transform=ax.transAxes)
+                #app("%s MARE = %.2f" % (code, values.abs().mean()))
+                app("%s RMSRE = %.2f" % (code, np.sqrt((values**2).mean())))
+                ax.text(0.6, ypos, "\n".join(text), transform=ax.transAxes)
+                ypos -= 0.1
 
         ax.grid(True)
         ax.set_xlabel("relative error %")

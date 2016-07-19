@@ -21,6 +21,7 @@ class DojoReportTest(PseudoDojoTest):
     def test_dojo_report_base_api(self):
         """Testing dojo report low-level API."""
         report = DojoReport.from_hints(10, "Si")
+        #report = DojoReport.empty_from_pseudo(cls, pseudo, hints, devel=False)
         #print(report)
         assert report.symbol == "Si"
         assert report.element.symbol == "Si"

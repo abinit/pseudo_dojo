@@ -347,7 +347,6 @@ class DojoTable(PseudoTable):
             figs.append(fig_deltafactor)
 
             for ax_list, pseudo in zip(ax_grid.T, self):
-                #print("pseudo.xc:", pseudo.xc)
                 pseudo.dojo_report.plot_deltafactor_convergence(xc=pseudo.xc, ax_list=ax_list, show=False)
 
             fig_deltafactor.suptitle(" vs ".join(p.basename for p in self))
@@ -421,12 +420,16 @@ class DojoTable(PseudoTable):
             fig, ax_list = plt.subplots(nrows=2, ncols=2, sharex=True, squeeze=False)
             ax_list = ax_list.ravel()
 
+
             # Compute absolute differences SOC - SR
-            for i, vname in enumerate(["dfact_meV", "v0", "b0_GPa", "b1"]): # "dfactprime_meV",
+            for i, vname in enumerate(["dfact_meV", "dfactprime_meV",
+                                      "v0", "b0_GPa"]):
                 newcol = "dsoc_" + vname
                 frame[newcol] = frame[vname + "_soc"] - frame[vname]
+                print_frame(frame[["basename", "Z", newcol]])
                 frame.plot(x="Z", y=newcol, ax=ax_list[i], kind="scatter", grid=True)
-                #frame.plot.scatter(x="Z", y=newcol, s=20*(frame["dfact_meV"] + 1), ax=ax_list[i], grid=True)
+                #frame.plot.scatter(x="Z", y=newcol, s=20*(frame["dfact_meV"] + 1),
+                #                    ax=ax_list[i], grid=True)
 
             #print("entries without V0")
             #print_frame(frame[frame["v0"].isnull()])
@@ -437,17 +440,28 @@ class DojoTable(PseudoTable):
             # Plot GBRV results with/without SOC
             fig, ax_list = plt.subplots(nrows=2, ncols=1, sharex=True, squeeze=False)
             ax_list = ax_list.ravel()
+
+            """
             for i, stype in enumerate(("bcc", "fcc")):
                 # "gbrv_fcc_soc_a0_rel_err"
                 for soc, color in zip(("", "_soc"), ("blue", "red")):
                     col = "gbrv_" + stype + soc + "_a0_rel_err"
+                    #print_frame(frame)
                     frame.plot(x="Z", y=col, ax=ax_list[i], kind="scatter", grid=True, color=color)
+            """
 
             # Plot GBRV diff between SR and FR with SOC
             #frame["dsoc_bcc"] = frame["gbrv_bcc_soc_a0_rel_err"] - frame["gbrv_bcc_a0_rel_err"]
             #frame.plot(x="Z", y="dsoc_bcc", ax=ax_list[0], kind="scatter", grid=True)
             #frame["dsoc_fcc"] = frame["gbrv_fcc_soc_a0_rel_err"] - frame["gbrv_fcc_a0_rel_err"]
             #frame.plot(x="Z", y="dsoc_fcc", ax=ax_list[1], kind="scatter", grid=True)
+
+            frame["dsoc_bcc"] = \
+                100 * (frame["gbrv_bcc_soc_a0"] - frame["gbrv_bcc_a0"]) / frame["gbrv_bcc_a0"]
+            frame.plot(x="Z", y="dsoc_bcc", ax=ax_list[0], kind="scatter", grid=True)
+            frame["dsoc_fcc"] = \
+                100 * (frame["gbrv_fcc_soc_a0"] - frame["gbrv_fcc_a0"]) / frame["gbrv_fcc_a0"]
+            frame.plot(x="Z", y="dsoc_fcc", ax=ax_list[1], kind="scatter", grid=True)
 
             #print_frame(frame[frame["gbrv_fcc_soc_a0_rel_err"].isnull()])
             #print_frame(frame[frame["gbrv_fcc_a0_rel_err"].isnull()])
@@ -456,7 +470,9 @@ class DojoTable(PseudoTable):
         else:
             raise ValueError("Unsupported option %s" % what)
 
-        #return fig
+        for ax in ax_list: ax.set_xlim(0)
+
+        return fig
 
     @add_fig_kwargs
     def plot_hints(self, with_soc=False, **kwargs):

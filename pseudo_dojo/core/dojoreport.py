@@ -955,16 +955,18 @@ class DojoReport(dict):
             ax.set_ylabel("$\Delta$" + key)
             if i == len(keys) - 1: ax.set_xlabel("Ecut [Ha]")
 
+            xmin, xmax = min(ecuts), max(ecuts)
             if key == "dfactprime_meV":
                 # Add horizontal lines (used to find hints for ecut).
                 last = values[-1]
-                xmin, xmax = min(ecuts), max(ecuts)
                 for pad, color in zip(self.ATOLS, ("blue", "red", "violet")):
                     ax.hlines(y=last + pad, xmin=xmin, xmax=xmax, colors=color, linewidth=1, linestyles='dashed')
                     ax.hlines(y=last - pad, xmin=xmin, xmax=xmax, colors=color, linewidth=1, linestyles='dashed')
 
                 # Set proper limits so that we focus on the relevant region.
-                ax.set_ylim(last - 1.1*self.ATOLS[0], last + 1.1*self.ATOLS[0])
+                #ax.set_ylim(last - 1.1*self.ATOLS[0], last + 1.1*self.ATOLS[0])
+            else:
+                ax.hlines(y=0., xmin=xmin, xmax=xmax, colors="black", linewidth=2, linestyles='dashed')
 
         return fig
 
@@ -1061,7 +1063,7 @@ class DojoReport(dict):
 
             # Plot difference pseudo - ref.
             ax.plot(ecuts, values, "bo-")
-            #ax.hlines(y=0.0, xmin=min(ecuts), xmax=max(ecuts), color="red")
+            ax.hlines(y=0., xmin=min(ecuts), xmax=max(ecuts), colors="black", linewidth=2, linestyles='dashed')
             if i == len(ax_list) - 1: ax.set_xlabel("Ecut [Ha]")
 
         return fig

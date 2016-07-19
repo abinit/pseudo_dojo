@@ -435,8 +435,6 @@ def dojo_table(options):
     #g.map(plt.scatter, "Z", "high_dfact_meV"); g.add_legend(); plt.show()
     #g.map(plt.scatter, "Z", "high_gbrv_bcc_a0_rel_err"); g.add_legend(); plt.show()
     #g.map(plt.scatter, "Z", "high_gbrv_fcc_a0_rel_err"); g.add_legend(); plt.show()
-    #return
-
     #pseudos.plot_hints()
     #return 0
 
