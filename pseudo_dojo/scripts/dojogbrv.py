@@ -239,8 +239,9 @@ def gbrv_runform(options):
                                                ecut=ecut, pawecutdg=None)
         flow.register_work(work)
 
-    flow.build_and_pickle_dump(abivalidate=options.dry_run)
-    if options.dry_run: return 0
+    if options.dry_run:
+        flow.build_and_pickle_dump()
+        return 0
 
     # Run the flow with the scheduler (enable smart_io)
     flow.use_smartio()
