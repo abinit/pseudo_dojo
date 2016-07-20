@@ -1,0 +1,50 @@
+{
+"basename": "Ir-sp-test.psp8", 
+"ecuts": [
+22.0, 
+24.0, 
+26.0, 
+28.0, 
+30.0, 
+32.0, 
+34.0, 
+36.0, 
+38.0, 
+40.0, 
+42.0, 
+50.0, 
+52.0
+], 
+"md5": "50d387b3addc937fa665f21b2853c3ad", 
+"ppgen_hints": {
+"high": {
+"ecut": 32.0, 
+"pawecutdg": 32.0
+}, 
+"low": {
+"ecut": 28.0, 
+"pawecutdg": 28.0
+}, 
+"normal": {
+"ecut": 30.0, 
+"pawecutdg": 30.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Ir", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_C_PBE"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_X_PBE"
+}
+}
+}
