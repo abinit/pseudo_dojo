@@ -4,6 +4,7 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 import json
+import tempfile
 import logging
 import numpy as np
 
@@ -13,6 +14,7 @@ from monty.functools import lazy_property
 from monty.string import list_strings
 from monty.fnmatch import WildCard
 from monty.termcolor import cprint
+from monty.os.path import which
 from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
@@ -322,14 +324,16 @@ class DojoTable(PseudoTable):
         return DfGbrvDataFrame.from_pseudos(self, raise_if_none_dojoreport=raise_if_none_dojoreport)
 
     def dojo_compare(self, what="all", **kwargs):
-        """Compare ecut convergence and Deltafactor, GBRV results"""
+        """
+        Compare ecut convergence and Deltafactor, GBRV results
+        """
         import matplotlib.pyplot as plt
         show = kwargs.pop("show", True)
         what = list_strings(what)
         figs = []
 
         if all(p.dojo_report.has_trial("deltafactor") for p in self) and \
-               any(k in what for k in ("all", "ecut")):
+           any(k in what for k in ("all", "ecut")):
 
             fig_etotal, ax_list = plt.subplots(nrows=len(self), ncols=1, sharex=True, squeeze=True)
             figs.append(fig_etotal)
@@ -339,7 +343,7 @@ class DojoTable(PseudoTable):
             if show: plt.show()
 
         if all(p.dojo_report.has_trial("deltafactor") for p in self) and \
-               any(k in what for k in ("all", "df", "deltafactor")):
+           any(k in what for k in ("all", "df", "deltafactor")):
 
             fig_deltafactor, ax_grid = plt.subplots(nrows=5, ncols=len(self), sharex=True, sharey="row", squeeze=False)
             figs.append(fig_deltafactor)
@@ -364,6 +368,37 @@ class DojoTable(PseudoTable):
             if show: plt.show()
 
         return figs
+
+    def dojo_nbcompare(self, what="all", **kwargs):
+        """
+        Generate an ipython notebook to compare the results in the dojoreport (calls dojo_compare).
+        """
+        paths = [p.path for p in self]
+        import nbformat
+        nbf = nbformat.v4
+        nb = nbf.new_notebook()
+
+        nb.cells.extend([
+            #nbf.new_markdown_cell("# This is an auto-generated notebook for %s" % os.path.basename(pseudopath)),
+            nbf.new_code_cell("""\
+from __future__ import print_function, division, unicode_literals
+%matplotlib notebook"""),
+
+            nbf.new_code_cell("""\
+from pseudo_dojo.core.pseudos import DojoTable
+pseudos = DojoTable(%s)""" % str(paths)),
+            nbf.new_code_cell("pseudos.dojo_compare(what="%s")" % what),
+        ])
+
+        _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
+
+        import io
+        with io.open(nbpath, 'wt', encoding="utf8") as f:
+            nbformat.write(nb, f)
+
+        if which("jupyter") is None:
+            raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
+        return os.system("jupyter notebook %s" % nbpath)
 
     @add_fig_kwargs
     def plot_dfgbrv_dist(self, **kwargs):
@@ -537,7 +572,6 @@ class DojoTable(PseudoTable):
         """
         nbpath = self.write_notebook(nbpath=nbpath)
 
-        from monty.os.path import which
         if which("jupyter") is None:
             raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
         return os.system("jupyter notebook %s" % nbpath)
@@ -554,7 +588,6 @@ class DojoTable(PseudoTable):
         # Get frame and write data in JSON format to tmp file so that we can reread in the notebook.
         frame, errors = self.get_dojo_dataframe()
 
-        import tempfile
         _, json_path = tempfile.mkstemp(suffix='.json', text=True)
         frame.to_json(path_or_buf=json_path)
 
