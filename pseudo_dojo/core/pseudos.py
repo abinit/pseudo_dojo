@@ -332,7 +332,6 @@ class DojoTable(PseudoTable):
                any(k in what for k in ("all", "ecut")):
 
             fig_etotal, ax_list = plt.subplots(nrows=len(self), ncols=1, sharex=True, squeeze=True)
-            #ax_list, fig, plt = get_axarray_fig_plt(ax_list, nrows=len(self), ncols=1, sharex=True, squeeze=True)
             figs.append(fig_etotal)
 
             for ax, pseudo in zip(ax_list, self):
@@ -343,7 +342,6 @@ class DojoTable(PseudoTable):
                any(k in what for k in ("all", "df", "deltafactor")):
 
             fig_deltafactor, ax_grid = plt.subplots(nrows=5, ncols=len(self), sharex=True, sharey="row", squeeze=False)
-            #ax_list, fig, plt = get_axarray_fig_plt(ax_list, nrows=5, ncols=len(self), sharex=True, sharey="row", squeeze=False))
             figs.append(fig_deltafactor)
 
             for ax_list, pseudo in zip(ax_grid.T, self):
@@ -358,7 +356,6 @@ class DojoTable(PseudoTable):
 
             fig_gbrv, ax_grid = plt.subplots(nrows=2, ncols=len(self), sharex=True, sharey="row", squeeze=False)
             figs.append(fig_gbrv)
-            #ax_list, fig, plt = get_axarray_fig_plt(ax_list, ncols=len(self), sharex=True, sharey="row", squeeze=False))
 
             for ax_list, pseudo in zip(ax_grid.T, self):
                 pseudo.dojo_report.plot_gbrv_convergence(ax_list=ax_list, show=False)
