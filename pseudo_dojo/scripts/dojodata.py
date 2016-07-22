@@ -382,6 +382,20 @@ def dojo_compare(options):
     return 0
 
 
+def dojo_nbcompare(options):
+    """Generate ipython notebbok to compare DOJO results for multiple pseudos."""
+    pseudos = options.pseudos
+    with daemon.DaemonContext(detach_process=True):
+        for z in pseudos.zlist:
+            pseudos_z = pseudos[z]
+            if len(pseudos_z) > 1:
+                pseudos_z.dojo_nbcompare(what=options.what_plot)
+            else:
+                print("Found only one pseudo for Z=%s" % z)
+
+        return 0
+
+
 def dojo_trials(options):
     """Visualize the results of the different tests."""
     pseudos = options.pseudos
@@ -787,6 +801,11 @@ Usage example:
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[copts_parser, plot_options_parser],
                                       help=dojo_compare.__doc__)
+
+    # Subparser for nbcompare.
+    p_nbcompare = subparsers.add_parser('nbcompare', parents=[copts_parser, plot_options_parser],
+                                        help=dojo_nbcompare.__doc__)
+
     # Subparser for figures
     p_figures = subparsers.add_parser('figures', parents=[copts_parser], help=dojo_figures.__doc__)
 
