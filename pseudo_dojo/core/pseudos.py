@@ -387,7 +387,7 @@ from __future__ import print_function, division, unicode_literals
             nbf.new_code_cell("""\
 from pseudo_dojo.core.pseudos import DojoTable
 pseudos = DojoTable(%s)""" % str(paths)),
-            nbf.new_code_cell("pseudos.dojo_compare(what="%s")" % what),
+            nbf.new_code_cell("pseudos.dojo_compare(what='%s')" % what),
         ])
 
         _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
