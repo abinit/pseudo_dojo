@@ -14,7 +14,7 @@ from abipy import abilab
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formula
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
-from pseudo_dojo.dojo.gbrv_compounds import GbrvCompoundsFactory
+from pseudo_dojo.dojo.gbrv_compounds import GbrvCompoundsFactory, GbrvCompoundsFlow
 
 
 def ecut_from_pseudos(pseudos):
@@ -82,7 +82,7 @@ def gbrv_rundb(options):
     gbrv_factory = GbrvCompoundsFactory(xc=outdb["xc_name"])
 
     workdir = os.path.join(os.getcwd(), "GBRV_OUTDB_" + "-".join(job.formula for job in jobs))
-    flow = abilab.Flow(workdir=workdir)
+    flow = GbrvCompoundsFlow(workdir=workdir)
 
     for job in jobs:
         #for accuracy in ("normal", "high"):
@@ -180,7 +180,7 @@ def gbrv_runps(options):
 
     workdir = "GBRVCOMP_" + "_".join(p.basename for p in pseudos)
     print("Working in:", workdir)
-    flow = abilab.Flow(workdir=workdir)
+    flow = GbrvCompoundsFlow(workdir=workdir)
 
     ecut = ecut_from_pseudos(pseudos)
     print("Adding work for formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
@@ -226,7 +226,7 @@ def gbrv_runform(options):
 
     workdir = "GBRVCOMP_" + formula
     print("Working in:", workdir)
-    flow = abilab.Flow(workdir=workdir)
+    flow = GbrvCompoundsFlow(workdir=workdir)
 
     for pseudos in pseudo_list:
         if any(xc != p.xc for p in pseudos):

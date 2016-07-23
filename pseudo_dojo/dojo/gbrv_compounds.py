@@ -6,9 +6,11 @@ import numpy as np
 import json
 from abipy import abilab
 
+from tabulate import tabulate
 from pymatgen.analysis.eos import EOS
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
 from pymatgen.io.abinit.works import Work
+from pymatgen.io.abinit.flows import Flow
 from abipy.core.structure import Structure
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.refdata.gbrv import gbrv_database
@@ -172,7 +174,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         self.flow.build_and_pickle_dump()
 
     def compute_eos(self):
-        """Compute the EOS as describedin the GBRV paper."""
+        """Compute the EOS as described in the GBRV paper."""
         self.history.info("Computing EOS")
 
         # Read etotals and fit E(V) with a parabola to find the minimum
@@ -234,8 +236,9 @@ class GbrvCompoundRelaxAndEosWork(Work):
             abs_err = pawabs_err
             rel_err = pawrel_err
 
-        results["a0_abs_err"] = abs_err
         results["a0_rel_err"] = rel_err
+        results["a0_abs_err"] = abs_err
+        results["pseudos"] = {p.basename: p.md5 for p in self.pseudos}
 
         print(80 * "=")
         print("pseudos:", list(p.basename for p in self.pseudos))
@@ -246,7 +249,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
         # Write results in outdir in JSON format.
         with open(self.outdir.path_in("gbrv_results.json"), "wt") as fh:
-             json.dump(results, fh, indent=-1, sort_keys=True) #, cls=MontyEncoder)
+             json.dump(results, fh, indent=-1, sort_keys=True)
 
         # Update the database.
         if self.outdb_path is not None:
@@ -289,3 +292,34 @@ class GbrvCompoundRelaxAndEosWork(Work):
             return self._outdb_path
         except AttributeError:
             return None
+
+
+class GbrvCompoundsFlow(Flow):
+    """
+    A Flow made of :class:`GbrvCompoundRelaxAndEosWork` works.
+    Provides a finalize method that merges the work results and save
+    them in "all_results.json".
+    """
+    def finalize(self):
+        """
+        This method is called when the flow is completed.
+        Return 0 if success
+        """
+        # Read work results form JSON files and build list.
+        data, table = [], []
+        for work in self:
+            with open(work.outdir.path_in("gbrv_results.json"), "rt") as fh:
+                results = json.load(fh)
+                data.append(results)
+                pseudos = ", ".join(p.basename for p in work.pseudos)
+                abs_err = results["a0_abs_err"]
+                rel_err = results["a0_rel_err"]
+                data.append(pseudos, rel_err, abs_err)
+
+        # print table to stdout
+        print(tabulate(table, headers=["Pseudos", "a0_rel_err", "a0_abs_err"]))
+
+        with open(self.outdir.path_in("all_results.json"), "wt") as fh:
+            json.dump(data, fh, indent=-1, sort_keys=True)
+
+        return super(self, GbrvCompoundFlow).finalize()
