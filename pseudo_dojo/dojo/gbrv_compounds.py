@@ -314,7 +314,7 @@ class GbrvCompoundsFlow(Flow):
                 pseudos = ", ".join(p.basename for p in work.pseudos)
                 abs_err = results["a0_abs_err"]
                 rel_err = results["a0_rel_err"]
-                data.append(pseudos, rel_err, abs_err)
+                table.append([pseudos, rel_err, abs_err])
 
         # print table to stdout
         print(tabulate(table, headers=["Pseudos", "a0_rel_err", "a0_abs_err"]))
@@ -322,4 +322,4 @@ class GbrvCompoundsFlow(Flow):
         with open(self.outdir.path_in("all_results.json"), "wt") as fh:
             json.dump(data, fh, indent=-1, sort_keys=True)
 
-        return super(self, GbrvCompoundFlow).finalize()
+        return super(self, GbrvCompoundsFlow).finalize()
