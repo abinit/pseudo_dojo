@@ -3,6 +3,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import numpy as np
+import pandas as pd
 import json
 from abipy import abilab
 
@@ -306,20 +307,27 @@ class GbrvCompoundsFlow(Flow):
         Return 0 if success
         """
         # Read work results form JSON files and build list.
-        data, table = [], []
+        all_results, dict_list = [], []
         for work in self:
             with open(work.outdir.path_in("gbrv_results.json"), "rt") as fh:
                 results = json.load(fh)
-                data.append(results)
-                pseudos = ", ".join(p.basename for p in work.pseudos)
-                abs_err = results["a0_abs_err"]
-                rel_err = results["a0_rel_err"]
-                table.append([pseudos, rel_err, abs_err])
+                #pseudos = ", ".join(p.basename for p in work.pseudos)
+		row = dict(
+		    a0_abs_err=results["a0_abs_err"],
+		    a0_rel_err=results["a0_rel_err"],
+		)
+		row.update({"pseudo_%d" % i: p.basename for i, p in enumerate(work.pseudos)})
+		dict_list.append(row)
+                all_results.append(results)
+                #table.append([pseudos, rel_err, abs_err])
 
-        # print table to stdout
-        print(tabulate(table, headers=["Pseudos", "a0_rel_err", "a0_abs_err"]))
+	# Build pandas DataFrame and print it
+	frame = pd.DataFrame(dict_list)
+	print(tabulate(frame))
+        #print(tabulate(table, headers=["Pseudos", "a0_rel_err", "a0_abs_err"]))
+	data = {"all_results": all_results, "frame": frame.to_json()}
 
         with open(self.outdir.path_in("all_results.json"), "wt") as fh:
-            json.dump(data, fh, indent=-1, sort_keys=True)
+            json.dump(data, fh) #, indent=-1, sort_keys=True)
 
         return super(self, GbrvCompoundsFlow).finalize()
