@@ -1,9 +1,6 @@
 {
 "basename": "Ba-sp-new.psp8", 
 "ecuts": [
-9.0, 
-11.0, 
-13.0, 
 15.0, 
 17.0, 
 19.0, 
@@ -12,22 +9,25 @@
 25.0, 
 27.0, 
 29.0, 
-37.0, 
-39.0
+31.0, 
+33.0, 
+35.0, 
+43.0, 
+45.0
 ], 
-"md5": "7183409014ad9b5d48a8f61a6d62f72d", 
+"md5": "c4832f932640c83a6701b7f503a6c4ae", 
 "ppgen_hints": {
 "high": {
-"ecut": 19.0, 
-"pawecutdg": 19.0
+"ecut": 25.0, 
+"pawecutdg": 25.0
 }, 
 "low": {
-"ecut": 17.0, 
-"pawecutdg": 17.0
+"ecut": 23.0, 
+"pawecutdg": 23.0
 }, 
 "normal": {
-"ecut": 18.0, 
-"pawecutdg": 18.0
+"ecut": 24.0, 
+"pawecutdg": 24.0
 }
 }, 
 "pseudo_type": "NC", 
