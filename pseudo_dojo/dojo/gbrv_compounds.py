@@ -5,9 +5,8 @@ from __future__ import division, print_function, unicode_literals
 import numpy as np
 import pandas as pd
 import json
-from abipy import abilab
 
-from tabulate import tabulate
+from abipy import abilab
 from pymatgen.analysis.eos import EOS
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
 from pymatgen.io.abinit.works import Work
@@ -311,23 +310,22 @@ class GbrvCompoundsFlow(Flow):
         for work in self:
             with open(work.outdir.path_in("gbrv_results.json"), "rt") as fh:
                 results = json.load(fh)
-                #pseudos = ", ".join(p.basename for p in work.pseudos)
 		row = dict(
 		    a0_abs_err=results["a0_abs_err"],
 		    a0_rel_err=results["a0_rel_err"],
 		)
-		row.update({"pseudo_%d" % i: p.basename for i, p in enumerate(work.pseudos)})
+		row.update({p.symbol: p.basename for p in work.pseudos})
 		dict_list.append(row)
                 all_results.append(results)
-                #table.append([pseudos, rel_err, abs_err])
 
 	# Build pandas DataFrame and print it
 	frame = pd.DataFrame(dict_list)
-	print(tabulate(frame))
+	print(frame)
+        #from tabulate import tabulate
         #print(tabulate(table, headers=["Pseudos", "a0_rel_err", "a0_abs_err"]))
 	data = {"all_results": all_results, "frame": frame.to_json()}
 
         with open(self.outdir.path_in("all_results.json"), "wt") as fh:
             json.dump(data, fh) #, indent=-1, sort_keys=True)
 
-        return super(self, GbrvCompoundsFlow).finalize()
+        return super(GbrvCompoundsFlow, self).finalize()
