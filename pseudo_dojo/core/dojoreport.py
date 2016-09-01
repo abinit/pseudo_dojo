@@ -235,7 +235,8 @@ class DojoReport(dict):
     ALL_ACCURACIES = ("low", "normal", "high")
 
     # Tolerances on the deltafactor prime (in eV) used for the hints.
-    ATOLS = (0.5, 0.1, 0.02)
+    #ATOLS = (0.5, 0.1, 0.02)
+    ATOLS = (0.5, 0.3, 0.1)
     # For noble gasses:
     #ATOLS = (1.0, 0.2, 0.04)
 
@@ -576,12 +577,13 @@ class DojoReport(dict):
             }
 
             # Add hints
-            #hints = {}
-            #hints["low"]["ecut"] = low_ecut.value
-            #hints["normal"]["ecut"] = normal_ecut.value
-            #hints["high"]["ecut"] = high_ecut.value
-
-            #self.json_write()
+            hints = {"low": {}, "normal": {}, "high": {}}
+            hints["low"]["ecut"] = low_ecut.value
+            hints["normal"]["ecut"] = normal_ecut.value
+            hints["high"]["ecut"] = high_ecut.value
+            self["hints"] = hints
+            print(hints)
+            self.json_write()
 
         ok_button.on_click(on_button_clicked)
         return ipw.Box(children=[low_ecut, normal_ecut, high_ecut, validated_by, ok_button])
@@ -959,7 +961,7 @@ class DojoReport(dict):
             if key == "dfactprime_meV":
                 # Add horizontal lines (used to find hints for ecut).
                 last = values[-1]
-                for pad, color in zip(self.ATOLS, ("blue", "red", "violet")):
+                for pad, color in zip(self.ATOLS, ("blue", "green", "red")):
                     ax.hlines(y=last + pad, xmin=xmin, xmax=xmax, colors=color, linewidth=1, linestyles='dashed')
                     ax.hlines(y=last - pad, xmin=xmin, xmax=xmax, colors=color, linewidth=1, linestyles='dashed')
 
