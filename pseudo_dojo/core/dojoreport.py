@@ -562,8 +562,8 @@ class DojoReport(dict):
                 raise ValueError("not low_ecut.value <= normal_ecut.value <= high_ecut.value")
             if not validated_by.value:
                 raise ValueError("validated_by field must be filled")
-            if self.isvalidated: # and not force_new_validation:
-                raise ValueError("DojoReport is already validated. Use force_new_validation")
+            #if self.isvalidated: # and not force_new_validation:
+            #    raise ValueError("DojoReport is already validated. Use force_new_validation")
 
             # TODO: Print convergence of df, gbrv ...
             #df_last_ecut = sorted((self["deltafactor"].keys())[-1]

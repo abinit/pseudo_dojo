@@ -1076,13 +1076,13 @@
 }, 
 "hints": {
 "high": {
-"ecut": 65.0
+"ecut": 55.0
 }, 
 "low": {
-"ecut": 49.0
+"ecut": 43.0
 }, 
 "normal": {
-"ecut": 55.0
+"ecut": 47.0
 }
 }, 
 "md5": "7998e89a7926d574ff6b5053f50edeeb", 
@@ -1377,5 +1377,9 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Fe", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-01 13:30:38"
+}, 
 "version": "1.0"
 }

@@ -93217,13 +93217,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 26.0
+"ecut": 12.0
 }, 
 "low": {
-"ecut": 10.0
+"ecut": 9.0
 }, 
 "normal": {
-"ecut": 20.0
+"ecut": 10.0
 }
 }, 
 "md5": "2e845227c3046094c74ec9ebf0f63d6c", 
@@ -93518,5 +93518,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Si", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-01 13:13:21"
+}, 
 "version": "1.0"
 }

@@ -124200,13 +124200,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 57.0
+"ecut": 47.0
 }, 
 "low": {
-"ecut": 39.0
+"ecut": 38.0
 }, 
 "normal": {
-"ecut": 47.0
+"ecut": 45.0
 }
 }, 
 "md5": "6140c9837789c3f0acec5dd428650124", 
@@ -124502,8 +124502,8 @@ null
 "pseudo_type": "NC", 
 "symbol": "He", 
 "validation": {
-"validated_by": "Michiel van Setten", 
-"validated_on": "2016-01-20 14:54:41"
+"validated_by": "authors", 
+"validated_on": "2016-09-01 13:00:54"
 }, 
 "version": "1.0"
 }
