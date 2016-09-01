@@ -915,8 +915,8 @@ Usage example:
 
     if options.seaborn:
         import seaborn as sns
-        #sns.set(style='ticks', palette='Set2')
         sns.set(style="dark", palette="Set2")
+        #sns.set(style='ticks', palette='Set2')
         #And to remove "chartjunk", do:
         #sns.despine()
         #plt.tight_layout()

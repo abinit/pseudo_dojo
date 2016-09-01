@@ -568,7 +568,7 @@ pseudos = DojoTable(%s)""" % str(paths)),
         Return system exit code.
 
         Raise:
-            RuntimeError if jupyther or ipython are not in $PATH
+            RuntimeError if jupyter is not in $PATH
         """
         nbpath = self.write_notebook(nbpath=nbpath)
 
