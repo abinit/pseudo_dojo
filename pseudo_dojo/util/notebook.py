@@ -31,7 +31,7 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=No
     nb = nbf.new_notebook()
 
     nb.cells.extend([
-        nbf.new_markdown_cell("# This is an auto-generated notebook for %s" % os.path.basename(pseudopath)),
+        nbf.new_markdown_cell("# PseudoDojo notebook for %s" % os.path.basename(pseudopath)),
         nbf.new_code_cell("""\
 from __future__ import print_function, division, unicode_literals
 %matplotlib notebook"""),
@@ -81,7 +81,9 @@ plotter = onc_parser.make_plotter()"""),
         nbf.new_markdown_cell("## Model core charge and form factors computed by ABINIT"),
         nbf.new_code_cell("""\
 with pseudo.open_pspsfile() as psps:
-    psps.plot()"""),
+    fig = psps.plot()
+fig\
+"""),
 
         nbf.new_markdown_cell("## Ghosts Test"),
         nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False)"),
@@ -147,8 +149,10 @@ def make_open_notebook(pseudopath, with_validation=False, with_eos=True):
     Raise:
         RuntimeError if jupyther is not in $PATH
     """
-    path = write_notebook(pseudopath, with_validation=with_validation, with_eos=with_eos, tmpfile=True)
+    path = write_notebook(pseudopath, with_validation=with_validation,
+                          with_eos=with_eos, tmpfile=True)
 
     if which("jupyter") is None:
         raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
+
     return os.system("jupyter notebook %s" % path)

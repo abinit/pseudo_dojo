@@ -132296,6 +132296,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 36.0
+}, 
+"low": {
+"ecut": 32.0
+}, 
+"normal": {
+"ecut": 34.0
+}
+}, 
 "md5": "21f79d8002c6233125ff171d7966354b", 
 "phgamma": {
 "30.0": {
@@ -132588,5 +132599,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ti", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-01 14:35:36"
+}, 
 "version": "1.0"
 }

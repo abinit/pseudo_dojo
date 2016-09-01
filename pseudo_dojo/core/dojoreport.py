@@ -233,6 +233,7 @@ class DojoReport(dict):
 
     # We use three different level of accuracy.
     ALL_ACCURACIES = ("low", "normal", "high")
+    ACC2COLOR = {"low": "yellow", "normal": "green", "high": "red"}
 
     # Tolerances on the deltafactor prime (in eV) used for the hints.
     #ATOLS = (0.5, 0.1, 0.02)
@@ -552,8 +553,14 @@ class DojoReport(dict):
         low_ecut = ipw.FloatText(description='Low ecut:')
         normal_ecut = ipw.FloatText(description='Normal ecut:')
         high_ecut = ipw.FloatText(description='High ecut:')
+        new_validation = ipw.Checkbox(description="New validation", value=False)
         validated_by = ipw.Text(description="Validated by:")
+        validated_by.value = "authors"
         ok_button = ipw.Button(description="Validate")
+        if self.has_hints:
+            low_ecut.value = self["hints"]["low"]["ecut"]
+            normal_ecut.value = self["hints"]["normal"]["ecut"]
+            high_ecut.value = self["hints"]["high"]["ecut"]
 
         def on_button_clicked(b):
             """Callback called to validate the dojo report."""
@@ -562,13 +569,8 @@ class DojoReport(dict):
                 raise ValueError("not low_ecut.value <= normal_ecut.value <= high_ecut.value")
             if not validated_by.value:
                 raise ValueError("validated_by field must be filled")
-            #if self.isvalidated: # and not force_new_validation:
-            #    raise ValueError("DojoReport is already validated. Use force_new_validation")
-
-            # TODO: Print convergence of df, gbrv ...
-            #df_last_ecut = sorted((self["deltafactor"].keys())[-1]
-            #df_last = self["delfactor"][df_last_ecut]["dfact_meV"]
-            #dfprime_last = self["delfactor"][df_last_ecut]["dfactprime_meV"]
+            if self.isvalidated and not new_validation.value:
+                raise ValueError("DojoReport is already validated. Use new_validation")
 
             from time import gmtime, strftime
             self['validation'] = {
@@ -586,7 +588,8 @@ class DojoReport(dict):
             self.json_write()
 
         ok_button.on_click(on_button_clicked)
-        return ipw.Box(children=[low_ecut, normal_ecut, high_ecut, validated_by, ok_button])
+        return ipw.Box(children=[low_ecut, normal_ecut, high_ecut,
+                       new_validation, validated_by, ok_button])
 
     @staticmethod
     def _ecut2key(ecut):
@@ -948,10 +951,17 @@ class DojoReport(dict):
         for i, (ax, key) in enumerate(zip(ax_list, keys)):
             values = np.array(frame[key])
             refval = getattr(reference, key)
-
             # Plot difference pseudo - ref.
             #print("ecuts", ecuts, "values", values)
-            ax.plot(ecuts, values - refval, "o-")
+            psmae_diff = values - refval
+            ax.plot(ecuts, psmae_diff, "o-")
+
+            # Add vertical lines at hints.
+            if self.has_hints:
+                vmin, vmax = psmae_diff.min(), psmae_diff.max()
+                for acc in self.ALL_ACCURACIES:
+                    ax.vlines(self["hints"][acc]["ecut"], vmin, vmax,
+                              colors=self.ACC2COLOR[acc], linestyles="dashed")
 
             ax.grid(True)
             ax.set_ylabel("$\Delta$" + key)
@@ -961,10 +971,10 @@ class DojoReport(dict):
             if key == "dfactprime_meV":
                 # Add horizontal lines (used to find hints for ecut).
                 last = values[-1]
-                for pad, color in zip(self.ATOLS, ("blue", "green", "red")):
-                    ax.hlines(y=last + pad, xmin=xmin, xmax=xmax, colors=color, linewidth=1, linestyles='dashed')
-                    ax.hlines(y=last - pad, xmin=xmin, xmax=xmax, colors=color, linewidth=1, linestyles='dashed')
-
+                for pad, acc in zip(self.ATOLS, self.ALL_ACCURACIES):
+                    color = self.ACC2COLOR[acc]
+                    ax.hlines(y=last + pad, xmin=xmin, xmax=xmax, colors=color, linewidth=1.5, linestyles='dashed')
+                    ax.hlines(y=last - pad, xmin=xmin, xmax=xmax, colors=color, linewidth=1.5, linestyles='dashed')
                 # Set proper limits so that we focus on the relevant region.
                 #ax.set_ylim(last - 1.1*self.ATOLS[0], last + 1.1*self.ATOLS[0])
             else:
@@ -1068,6 +1078,13 @@ class DojoReport(dict):
             ax.hlines(y=0., xmin=min(ecuts), xmax=max(ecuts), colors="black", linewidth=2, linestyles='dashed')
             if i == len(ax_list) - 1: ax.set_xlabel("Ecut [Ha]")
 
+            # Add vertical lines at hints.
+            if self.has_hints:
+                vmin, vmax = values.min(), values.max()
+                for acc in self.ALL_ACCURACIES:
+                    ax.vlines(self["hints"][acc]["ecut"], vmin, vmax,
+                              colors=self.ACC2COLOR[acc], linestyles="dashed")
+
         return fig
 
     @add_fig_kwargs
@@ -1116,8 +1133,16 @@ class DojoReport(dict):
             phecut = asr2_phfreqs[mu]
             ax_list[0].plot(ecuts, phecut, "o-")
             ax_list[0].set_ylabel("$\omega$ (asr=2)")
-            ax_list[1].plot(ecuts, phecut - phecut[-1], "o-")
+            values = phecut - phecut[-1]
+            ax_list[1].plot(ecuts, values, "o-")
             ax_list[1].set_ylabel("$\omega-\omega_{max}$")
+
+            # Add vertical lines at hints.
+            if self.has_hints:
+                vmin, vmax = values.min(), values.max()
+                for acc in self.ALL_ACCURACIES:
+                    ax_list[1].vlines(self["hints"][acc]["ecut"], vmin, vmax,
+                                      colors=self.ACC2COLOR[acc], linestyles="dashed")
 
             phecut = noasr_phfreqs[mu]
             ax_list[2].plot(ecuts, phecut, "o-")
@@ -1208,10 +1233,12 @@ class DojoDataFrame(pd.DataFrame):
     ALL_ACCURACIES = DojoReport.ALL_ACCURACIES
 
     ACC2PLTOPTS = dict(
-        low=dict(color="red"),
-        normal=dict(color="blue"),
-        high=dict(color="green"),
+        low=dict(color="orange"),
+        normal=dict(color="green"),
+        high=dict(color="red"),
     )
+
+    #ACC2COLOR = {k: ACC2PLTOPTS[k]["color"] for k in ACC2PLTOPTS}
 
     for v in ACC2PLTOPTS.values():
         v.update(linewidth=2, linestyle='dashed', marker='o', markersize=8)

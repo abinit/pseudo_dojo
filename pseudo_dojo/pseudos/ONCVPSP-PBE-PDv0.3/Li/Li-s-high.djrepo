@@ -104813,13 +104813,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 48.0
+"ecut": 42.0
 }, 
 "low": {
 "ecut": 34.0
 }, 
 "normal": {
-"ecut": 42.0
+"ecut": 36.0
 }
 }, 
 "md5": "2daf35a5da5b7dd01636481fe8bb8a85", 
@@ -105247,8 +105247,8 @@ null
 "pseudo_type": "NC", 
 "symbol": "Li", 
 "validation": {
-"validated_by": "Michiel van Setten", 
-"validated_on": "2016-01-20 15:58:42"
+"validated_by": "authors", 
+"validated_on": "2016-09-01 14:44:33"
 }, 
 "version": "1.0"
 }
