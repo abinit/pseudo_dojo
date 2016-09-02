@@ -702,10 +702,10 @@ class DojoReport(dict):
         gbrv results. Empty dictionary if results are not available
 
         Args:
-	    struct_type: "bcc" or "fcc".
+            struct_type: "bcc" or "fcc".
             with_soc: If True, the results obtained with SOC are returned (if available).
         """
-	trial = "gbrv_" + struct_type
+        trial = "gbrv_" + struct_type
         if with_soc: trial += "_soc"
         try:
             data = self[trial]
@@ -734,8 +734,8 @@ class DojoReport(dict):
         """
         check_trials = self.ALL_TRIALS if check_trials is None else list_strings(check_trials)
 	# Relativistic pseudos (_r.psp8) must have trials done with/without SOC
-	if not "_r" in self["basename"]:
-	    check_trials = [t for t in check_trials if not t.endswith("_soc")]
+        if not "_r" in self["basename"]:
+            check_trials = [t for t in check_trials if not t.endswith("_soc")]
 
         errors = []
         app = errors.append
@@ -754,8 +754,8 @@ class DojoReport(dict):
                                     self.element.is_actinoid or
                                     self.symbol in ("Hg", "Po")): continue
 
-	    if "deltafactor" in trial and self.symbol != "Lu" and \
-		(self.element.is_lanthanoid or self.element.is_actinoid): continue
+            if "deltafactor" in trial and self.symbol != "Lu" and \
+                (self.element.is_lanthanoid or self.element.is_actinoid): continue
 
             if trial not in self:
                 missing[trial].append(0)
@@ -1158,11 +1158,11 @@ class DojoReport(dict):
             ax_list[3].set_ylabel("$\omega-\omega_{max}$")
 
         # Adjust limits.
-	fact = 0.05
-	phmin, phmax = asr2_phfreqs.min(), asr2_phfreqs.max()
+        fact = 0.05
+        phmin, phmax = asr2_phfreqs.min(), asr2_phfreqs.max()
         if phmin == 0.0: phmin = -1
         ax_list[0].set_ylim(phmin - fact * abs(phmin), phmax + fact * abs(phmax))
-	phmin, phmax = noasr_phfreqs.min(), noasr_phfreqs.max()
+        phmin, phmax = noasr_phfreqs.min(), noasr_phfreqs.max()
         if phmin == 0.0: phmin = -1
         ax_list[2].set_ylim(phmin - fact * abs(phmin), phmax + fact * abs(phmax))
         ax_list[-1].set_xlabel("Ecut [Ha]")
@@ -1540,13 +1540,13 @@ class DfGbrvDataFrame(pd.DataFrame):
         rows = []
         for p in pseudos:
             # Extract the dojo_report
-	    if not p.has_dojo_report:
-		msg = "%s does not have the dojo_report" % p.filepath
-		if not raise_if_none_dojoreport:
-		    cprint(msg, "magenta")
+            if not p.has_dojo_report:
+                msg = "%s does not have the dojo_report" % p.filepath
+                if not raise_if_none_dojoreport:
+                    cprint(msg, "magenta")
                     continue
-		else:
-		    raise ValueError(msg)
+                else:
+                    raise ValueError(msg)
 
             report = p.dojo_report
             row = dict(basename=p.basename, symbol=p.symbol, md5=p.md5)

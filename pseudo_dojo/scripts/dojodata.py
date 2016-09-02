@@ -58,29 +58,29 @@ def dojo_figures(options):
                     data_dict['high_gbrv_fcc_a0_rel_err'] = float(data[7])
                 rows.append(data_dict)
     else:
-	# Get data from dojoreport
-	data_dojo, errors = pseudos.get_dojo_dataframe()
+        # Get data from dojoreport
+        data_dojo, errors = pseudos.get_dojo_dataframe()
 
-	if errors:
-	    cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
-	    if not options.verbose:
+        if errors:
+            cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
+            if not options.verbose:
                 print("Use --verbose for details.")
             else:
-		for i, e in enumerate(errors):
+                for i, e in enumerate(errors):
                     print("[%s]" % i, e)
 
 	# add data that is not part of the dojo report
-	data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
-	for index, p in data_dojo.iterrows():
-	    outfile = p.filepath.replace('.psp8', '.out')
-	    parser = OncvOutputParser(outfile)
-	    parser.scan()
-	    if not parser.run_completed:
-		raise RuntimeError("[%s] Corrupted outfile")
+        data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
+        for index, p in data_dojo.iterrows():
+            outfile = p.filepath.replace('.psp8', '.out')
+            parser = OncvOutputParser(outfile)
+            parser.scan()
+            if not parser.run_completed:
+                raise RuntimeError("[%s] Corrupted outfile")
 
-	    data_pseudo.loc[index] = [parser.nv, parser.valence, parser.rc_min, parser.rc_max]
+            data_pseudo.loc[index] = [parser.nv, parser.valence, parser.rc_min, parser.rc_max]
 
-	data = concat([data_dojo, data_pseudo], axis=1)
+        data = concat([data_dojo, data_pseudo], axis=1)
 
     # Select "best" entries per element.
     rows, names = [], []
@@ -294,15 +294,15 @@ def dojo_plot(options):
 
         if options.verbose:
             print(pseudo)
-	    try:
-		error = report.check(check_trias=None)
-		if error:
-		    cprint("[%s] Validation error" % pseudo.basename, "red")
+            try:
+                error = report.check(check_trias=None)
+                if error:
+                    cprint("[%s] Validation error" % pseudo.basename, "red")
                     print(error)
                     print("")
-	    except Exception as exc:
-		cprint("[%s] Python exception in report_check" % pseudo.basename, "red")
-		print(exc)
+            except Exception as exc:
+                cprint("[%s] Python exception in report_check" % pseudo.basename, "red")
+                print(exc)
 
         # ghosts
         if any(k in options.what_plot for k in ("all", "ghosts")):
@@ -360,6 +360,7 @@ def dojo_notebook(options):
     """
     from pseudo_dojo.util.notebook import make_open_notebook
 
+    #if True:
     with daemon.DaemonContext(detach_process=True):
         retcode = 0
         for p in options.pseudos:
@@ -661,8 +662,8 @@ def dojo_validate(options):
             if 'validation' in report:
                 cprint('this pseudo was validated by %s on %s.' % (
                        report['validation']['validated_by'], report['validation']['validated_on']), "red")
-		if not ask_yesno('Would you like to validate it again? [Y/n]'):
-		    continue
+                if not ask_yesno('Would you like to validate it again? [Y/n]'):
+                    continue
 
             # test for ghosts
             print('\n= GHOSTS TEST ===========================================\n')
@@ -798,6 +799,8 @@ Usage example:
     # Subparser for notebook command.
     p_notebook = subparsers.add_parser('notebook', parents=[copts_parser],
                                        help=dojo_notebook.__doc__)
+    p_notebook.add_argument('--no-daemon', action='store_true', default=False,
+                             help="Don't start jupyter notebook with daemon process")
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[copts_parser, plot_options_parser],
                                       help=dojo_compare.__doc__)
@@ -909,8 +912,8 @@ Usage example:
     # Build DojoTable from the paths specified by the user.
     options.pseudos = get_pseudos(options)
     if not options.pseudos:
-	cprint("Empty pseudopotential list. Returning", "magenta")
-	return 1
+        cprint("Empty pseudopotential list. Returning", "magenta")
+        return 1
     if options.verbose: print(options.pseudos)
 
     if options.seaborn:

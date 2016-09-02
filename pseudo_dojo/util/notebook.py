@@ -64,7 +64,6 @@ plotter = onc_parser.make_plotter()"""),
         nbf.new_markdown_cell("## Convergence in $G$-space estimated by ONCVPSP:"),
         nbf.new_code_cell("fig = plotter.plot_ene_vs_ecut(show=False)"),
 
-
         nbf.new_markdown_cell("## Projectors:"),
         nbf.new_code_cell("fig = plotter.plot_projectors(show=False)"),
 
