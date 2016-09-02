@@ -270,7 +270,7 @@ class DeltaFactorDatabase(object):
         if isinstance(codename_or_data, str):
             data = self._data[codename_or_data]
 
-        entries = ref_data.values()
+        entries = list(ref_data.values())
 
         # Build grid of plots.
         fig, ax_list = plt.subplots(nrows=len(values), ncols=1, sharex=True, squeeze=False)
@@ -279,7 +279,6 @@ class DeltaFactorDatabase(object):
         for aname, ax in zip(values, ax_list):
             # Sort entries according to the value of the attribute aname.
             entries.sort(key=lambda t: getattr(t, aname))
-            #print(entries)
 
             ord_symbols = [r.symbol for r in entries]
             xticks = []
@@ -287,9 +286,7 @@ class DeltaFactorDatabase(object):
             for i, osym in enumerate(ord_symbols):
                 ref_value = getattr(ref_data[osym], aname)
                 value = getattr(data[osym], aname)
-
                 err = 100 * (value - ref_value) / ref_value
-
                 ax.plot(i, err, "ro")
                 xticks.append(i)
 

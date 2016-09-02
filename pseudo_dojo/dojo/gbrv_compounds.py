@@ -310,20 +310,20 @@ class GbrvCompoundsFlow(Flow):
         for work in self:
             with open(work.outdir.path_in("gbrv_results.json"), "rt") as fh:
                 results = json.load(fh)
-		row = dict(
-		    a0_abs_err=results["a0_abs_err"],
-		    a0_rel_err=results["a0_rel_err"],
-		)
-		row.update({p.symbol: p.basename for p in work.pseudos})
-		dict_list.append(row)
+                row = dict(
+                    a0_abs_err=results["a0_abs_err"],
+                    a0_rel_err=results["a0_rel_err"],
+                )
+                row.update({p.symbol: p.basename for p in work.pseudos})
+                dict_list.append(row)
                 all_results.append(results)
 
 	# Build pandas DataFrame and print it
-	frame = pd.DataFrame(dict_list)
-	print(frame)
+        frame = pd.DataFrame(dict_list)
+        print(frame)
         #from tabulate import tabulate
         #print(tabulate(table, headers=["Pseudos", "a0_rel_err", "a0_abs_err"]))
-	data = {"all_results": all_results, "frame": frame.to_json()}
+        data = {"all_results": all_results, "frame": frame.to_json()}
 
         with open(self.outdir.path_in("all_results.json"), "wt") as fh:
             json.dump(data, fh) #, indent=-1, sort_keys=True)
