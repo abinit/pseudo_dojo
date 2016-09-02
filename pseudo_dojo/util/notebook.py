@@ -64,6 +64,7 @@ plotter = onc_parser.make_plotter()"""),
         nbf.new_markdown_cell("## Convergence in $G$-space estimated by ONCVPSP:"),
         nbf.new_code_cell("fig = plotter.plot_ene_vs_ecut(show=False)"),
 
+
         nbf.new_markdown_cell("## Projectors:"),
         nbf.new_code_cell("fig = plotter.plot_projectors(show=False)"),
 
@@ -81,9 +82,8 @@ plotter = onc_parser.make_plotter()"""),
         nbf.new_markdown_cell("## Model core charge and form factors computed by ABINIT"),
         nbf.new_code_cell("""\
 with pseudo.open_pspsfile() as psps:
-    fig = psps.plot()
-fig\
-"""),
+    fig = psps.plot(show=False);
+fig"""),
 
         nbf.new_markdown_cell("## Ghosts Test"),
         nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False)"),
@@ -93,9 +93,20 @@ fig\
 # Convergence of the total energy (computed from the deltafactor runs with Wien2K equilibrium volume)
 fig = report.plot_etotal_vs_ecut(show=False)"""),
 
+        nbf.new_code_cell("fig = report.plot_etotal_vs_ecut(inv_ecut=True, show=False)"),
+
         nbf.new_markdown_cell("## Convergence of the deltafactor results:"),
         nbf.new_code_cell("""fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("dfact_meV", "dfactprime_meV"), show=False)"""),
+    ])
 
+    # Add validation widget.
+    if with_validation:
+        nb.cells.extend([
+            nbf.new_markdown_cell("## PseudoDojo validation:"),
+            nbf.new_code_cell("report.ipw_validate()"),
+       ])
+
+    nb.cells.extend([
         nbf.new_markdown_cell("## Convergence of $\Delta v_0$, $\Delta b_0$, and $\Delta b_1$ (deltafactor tests)"),
         nbf.new_code_cell("""\
 # Here we plot the difference wrt Wien2k results.
@@ -116,16 +127,8 @@ fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-df
         nb.cells.extend([
             nbf.new_markdown_cell("## GBRV EOS for the FCC structure:"),
             nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="fcc", show=False)"""),
-
             nbf.new_markdown_cell("## GBRV EOS for the BCC structure:"),
             nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="bcc", show=False)"""),
-        ])
-
-    if with_validation:
-        # Add validation widget.
-        nb.cells.extend([
-            nbf.new_markdown_cell("## PseudoDojo validation:"),
-            nbf.new_code_cell("report.ipw_validate()"),
         ])
 
     if tmpfile is None:

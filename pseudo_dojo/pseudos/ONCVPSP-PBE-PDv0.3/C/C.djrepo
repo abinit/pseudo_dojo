@@ -79608,13 +79608,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 41.0
+"ecut": 43.0
 }, 
 "low": {
-"ecut": 33.0
+"ecut": 35.0
 }, 
 "normal": {
-"ecut": 35.0
+"ecut": 41.0
 }
 }, 
 "md5": "cd078858c6ac6fadb14ef2edba24ac95", 
@@ -80065,5 +80065,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "C", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-02 14:59:21"
+}, 
 "version": "1.0"
 }

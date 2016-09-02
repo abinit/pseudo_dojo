@@ -104813,13 +104813,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 42.0
+"ecut": 48.0
 }, 
 "low": {
 "ecut": 34.0
 }, 
 "normal": {
-"ecut": 36.0
+"ecut": 45.0
 }
 }, 
 "md5": "2daf35a5da5b7dd01636481fe8bb8a85", 
@@ -105248,7 +105248,7 @@ null
 "symbol": "Li", 
 "validation": {
 "validated_by": "authors", 
-"validated_on": "2016-09-01 14:44:33"
+"validated_on": "2016-09-02 12:10:30"
 }, 
 "version": "1.0"
 }

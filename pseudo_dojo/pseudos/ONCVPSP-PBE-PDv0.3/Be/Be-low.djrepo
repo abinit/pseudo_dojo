@@ -124906,13 +124906,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 28.0
+"ecut": 20.0
 }, 
 "low": {
 "ecut": 18.0
 }, 
 "normal": {
-"ecut": 20.0
+"ecut": 18.0
 }
 }, 
 "md5": "2066634df3db119c9e5187ca171c8eea", 
@@ -125207,5 +125207,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Be", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-02 10:30:28"
+}, 
 "version": "1.0"
 }

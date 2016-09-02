@@ -827,26 +827,33 @@ class DojoReport(dict):
         line, = ax.plot(xs, ys, "-o", color="blue") #, linewidth=3.0, markersize=15)
         lines.append(line)
 
-        if label is not None: ax.legend(lines, [label], loc='best', shadow=True)
+        # Add vertical lines at hints.
+        if self.has_hints:
+            vmin, vmax = ys.min(), ys.max()
+            for acc in self.ALL_ACCURACIES:
+                x0 = self["hints"][acc]["ecut"]
+                if inv_ecut: x0 = 1/x0
+                ax.vlines(x0, vmin, vmax,
+                          colors=self.ACC2COLOR[acc], linestyles="dashed")
 
-        high_hint = self["ppgen_hints"]["high"]["ecut"]
-        #ax.vlines(high_hint, min(ediffs), max(ediffs))
-        #ax.vlines(high_hint, 0.5, 1.5)
-        #ax.scatter([high_hint], [1.0], s=20) #, c='b', marker='o', cmap=None, norm=None)
-        #ax.arrow(high_hint, 1, 0, 0.2, head_width=0.05, head_length=0.1, fc='k', ec='k',head_starts_at_zero=False)
-        #ax.hlines(5, ecut_min, ecut_max, label="5.0")
-        #ax.hlines(1, ecut_min, ecut_max, label="1.0")
-        #ax.hlines(0.5, ecut_min, ecut_max, label="0.2")
+        if label is not None: ax.legend(lines, [label], loc='best', shadow=True)
 
         # Set xticks and labels.
         ax.grid(True)
-        ax.set_xlabel("Ecut [Ha]")
         ax.set_xticks(xs)
-        ax.set_ylabel("Delta Etotal/natom [meV]")
-        #ax.set_xlim(0, max(xs))
+        if not inv_ecut:
+            ax.set_xlabel("Ecut [Ha]")
+            ax.set_ylabel("Delta Etotal/natom [meV]")
+        else:
+            ax.set_xlabel("1/Ecut [Ha]")
+            ax.set_ylabel("Etotal/natom [meV]")
+            ax.set_ylim(ys.min() - 0.5, ys.min() + 2.5)
+            if self.has_hints:
+                x0 = self["hints"]["low"]["ecut"] - 4
+                ax.set_xlim(0, 1/x0)
 
         # Use logscale if possible.
-        if all(ediffs[:-1] > 0):
+        if not inv_ecut and all(ediffs[:-1] > 0):
             ax.set_yscale("log")
             ax.set_xlim(xs[0]-1, xs[-2]+1)
 

@@ -104655,7 +104655,7 @@ null
 "ecut": 33.0
 }, 
 "normal": {
-"ecut": 35.0
+"ecut": 37.0
 }
 }, 
 "md5": "779ecfd3158dda1f93449db71d98262f", 
@@ -105030,7 +105030,7 @@ null
 "symbol": "Li", 
 "validation": {
 "validated_by": "authors", 
-"validated_on": "2016-09-01 14:41:21"
+"validated_on": "2016-09-02 12:09:59"
 }, 
 "version": "1.0"
 }
