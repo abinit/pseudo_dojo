@@ -1103,7 +1103,7 @@ def oncv_make_open_notebook(outpath):
         RuntimeError if jupyther or ipython are not in $PATH
     """
     nbpath = oncv_write_notebook(outpath, nbpath=None)
-    cmd = "jupyter notebook %s" % path
+    cmd = "jupyter notebook %s" % nbpath
     if which("jupyter") is not None:
         return os.system("jupyter notebook %s" % nbpath)
 
@@ -1122,7 +1122,7 @@ def oncv_write_notebook(outpath, nbpath=None):
     nbf = nbformat.v4
     nb = nbf.new_notebook()
 
-    nb.cells.update([
+    nb.cells.extend([
         nbf.new_markdown_cell("## This is an auto-generated notebook for %s" % os.path.basename(outpath)),
         nbf.new_code_cell("""\
 from __future__ import print_function, division, unicode_literals
