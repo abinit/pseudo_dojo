@@ -1,33 +1,33 @@
 {
 "basename": "Ge-sp.psp8", 
 "ecuts": [
-39.0, 
-41.0, 
-43.0, 
-45.0, 
-47.0, 
-49.0, 
-51.0, 
-53.0, 
-55.0, 
-57.0, 
-59.0, 
-67.0, 
-69.0
+48.0, 
+50.0, 
+52.0, 
+54.0, 
+56.0, 
+58.0, 
+60.0, 
+62.0, 
+64.0, 
+66.0, 
+68.0, 
+76.0, 
+78.0
 ], 
-"md5": "c47b95b0ba6452fe622fbddb12fd0134", 
+"md5": "fba6ae428d2c84eddb66d73200e050eb", 
 "ppgen_hints": {
 "high": {
-"ecut": 49.0, 
-"pawecutdg": 49.0
+"ecut": 58.0, 
+"pawecutdg": 58.0
 }, 
 "low": {
-"ecut": 45.0, 
-"pawecutdg": 45.0
+"ecut": 54.0, 
+"pawecutdg": 54.0
 }, 
 "normal": {
-"ecut": 47.0, 
-"pawecutdg": 47.0
+"ecut": 56.0, 
+"pawecutdg": 56.0
 }
 }, 
 "pseudo_type": "NC", 

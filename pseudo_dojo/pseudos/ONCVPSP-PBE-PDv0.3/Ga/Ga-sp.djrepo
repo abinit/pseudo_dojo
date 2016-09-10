@@ -1,9 +1,6 @@
 {
 "basename": "Ga-sp.psp8", 
 "ecuts": [
-39.0, 
-41.0, 
-43.0, 
 45.0, 
 47.0, 
 49.0, 
@@ -12,22 +9,25 @@
 55.0, 
 57.0, 
 59.0, 
-67.0, 
-69.0
+61.0, 
+63.0, 
+65.0, 
+73.0, 
+75.0
 ], 
-"md5": "657b1edc36e7c5acbaf91447b555b012", 
+"md5": "081f5ed81096d4ebe387272611dbd104", 
 "ppgen_hints": {
 "high": {
-"ecut": 49.0, 
-"pawecutdg": 49.0
+"ecut": 55.0, 
+"pawecutdg": 55.0
 }, 
 "low": {
-"ecut": 45.0, 
-"pawecutdg": 45.0
+"ecut": 51.0, 
+"pawecutdg": 51.0
 }, 
 "normal": {
-"ecut": 47.0, 
-"pawecutdg": 47.0
+"ecut": 53.0, 
+"pawecutdg": 53.0
 }
 }, 
 "pseudo_type": "NC", 
