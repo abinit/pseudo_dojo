@@ -29005,10 +29005,10 @@ null
 "ecut": 42.0
 }, 
 "low": {
-"ecut": 26.0
+"ecut": 34.0
 }, 
 "normal": {
-"ecut": 34.0
+"ecut": 38.0
 }
 }, 
 "md5": "4cc1b26e1ce25866bfc1e5f8d2e2693f", 
@@ -29345,5 +29345,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "W", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 19:31:56"
+}, 
 "version": "1.0"
 }

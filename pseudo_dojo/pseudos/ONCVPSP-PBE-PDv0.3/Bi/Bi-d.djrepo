@@ -103020,6 +103020,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 37.0
+}, 
+"low": {
+"ecut": 29.0
+}, 
+"normal": {
+"ecut": 33.0
+}
+}, 
 "md5": "e931a941df7ae29971df7e057aa09d8b", 
 "phgamma": {
 "21.0": {
@@ -103624,5 +103635,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Bi", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 18:33:22"
+}, 
 "version": "1.0"
 }

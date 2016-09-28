@@ -64697,13 +64697,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 28.0
+"ecut": 36.0
 }, 
 "low": {
-"ecut": 22.0
+"ecut": 30.0
 }, 
 "normal": {
-"ecut": 24.0
+"ecut": 32.0
 }
 }, 
 "md5": "f9c0676e18823bcdd1d5a72ff23de06e", 
@@ -64920,5 +64920,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Po", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 18:35:38"
+}, 
 "version": "1.0"
 }

@@ -200170,13 +200170,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 29.0
+"ecut": 33.0
 }, 
 "low": {
-"ecut": 23.0
+"ecut": 25.0
 }, 
 "normal": {
-"ecut": 27.0
+"ecut": 29.0
 }
 }, 
 "md5": "f23c73a13b2cd4175f83ff8fb063d6a7", 
@@ -200471,5 +200471,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Tl", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 18:28:04"
+}, 
 "version": "1.0"
 }

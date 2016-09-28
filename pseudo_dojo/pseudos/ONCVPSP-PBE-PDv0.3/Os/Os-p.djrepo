@@ -133642,13 +133642,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 22.0
+"ecut": 26.0
 }, 
 "low": {
-"ecut": 16.0
+"ecut": 20.0
 }, 
 "normal": {
-"ecut": 20.0
+"ecut": 22.0
 }
 }, 
 "md5": "57e40cf9cd90cf445cab1012c05ac18f", 
@@ -133943,5 +133943,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Os", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 19:48:19"
+}, 
 "version": "1.0"
 }
