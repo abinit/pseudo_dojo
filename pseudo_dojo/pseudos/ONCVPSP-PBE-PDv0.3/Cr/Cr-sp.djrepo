@@ -28844,7 +28844,7 @@ null
 "ecut": 43.0
 }, 
 "normal": {
-"ecut": 45.0
+"ecut": 47.0
 }
 }, 
 "md5": "3fb3bd742a834b16c05ef684af918a16", 
@@ -29139,5 +29139,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Cr", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 00:30:32"
+}, 
 "version": "1.0"
 }

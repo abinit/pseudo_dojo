@@ -93217,13 +93217,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 12.0
+"ecut": 24.0
 }, 
 "low": {
-"ecut": 9.0
+"ecut": 14.0
 }, 
 "normal": {
-"ecut": 10.0
+"ecut": 18.0
 }
 }, 
 "md5": "2e845227c3046094c74ec9ebf0f63d6c", 
@@ -93520,7 +93520,7 @@ null
 "symbol": "Si", 
 "validation": {
 "validated_by": "authors", 
-"validated_on": "2016-09-01 13:13:21"
+"validated_on": "2016-09-27 23:47:34"
 }, 
 "version": "1.0"
 }

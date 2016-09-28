@@ -1119,20 +1119,15 @@ class DojoReport(dict):
         asr2_phfreqs = np.empty((num_modes, len(ecuts)))
         noasr_phfreqs = np.empty((num_modes, len(ecuts)))
 
+        mev2cmm1 = 8.065
         for ie, ecut in enumerate(ecuts):
             # Subframe with this value of ecut.
             ecut_frame = frame.loc[frame["ecut"] == ecut]
-            asr2_phfreqs[:, ie] = np.array(list(ecut_frame["asr2_phfreqs_mev"].values))
-            noasr_phfreqs[:, ie] = np.array(list(ecut_frame["noasr_phfreqs_mev"].values))
+            asr2_phfreqs[:, ie] = mev2cmm1 * np.array(list(ecut_frame["asr2_phfreqs_mev"].values))
+            noasr_phfreqs[:, ie] = mev2cmm1 * np.array(list(ecut_frame["noasr_phfreqs_mev"].values))
 
         import matplotlib.pyplot as plt
         fig, ax_list = plt.subplots(nrows=4, sharex=True)
-        #ax_list, fig, plt = get_axarray_fig_plt(ax_list, nrows=len(keys), ncols=1, sharex=True, squeeze=False)
-        #if ax_list is None:
-        #    fig, ax_list = plt.subplots(nrows=len(stypes), ncols=1, sharex=True, squeeze=False)
-        #    ax_list = ax_list.ravel()
-        #else:
-        #    fig = plt.gcf()
 
         for ax in ax_list: ax.grid(True)
 
@@ -1167,7 +1162,9 @@ class DojoReport(dict):
         ax_list[2].set_ylim(phmin - fact * abs(phmin), phmax + fact * abs(phmax))
         ax_list[-1].set_xlabel("Ecut [Ha]")
 
+        fig.suptitle("Phonons in cm-1")
         return fig
+
 
     @add_fig_kwargs
     def plot_ebands(self, ecut=None, with_soc=False, **kwargs):

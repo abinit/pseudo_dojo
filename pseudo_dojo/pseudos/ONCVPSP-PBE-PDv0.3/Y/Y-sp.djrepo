@@ -240818,13 +240818,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 36.0
+"ecut": 42.0
 }, 
 "low": {
-"ecut": 20.0
+"ecut": 30.0
 }, 
 "normal": {
-"ecut": 30.0
+"ecut": 36.0
 }
 }, 
 "md5": "be26a6910d87637a56646dbe25885ce6", 
@@ -241203,5 +241203,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Y", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 15:34:30"
+}, 
 "version": "1.0"
 }

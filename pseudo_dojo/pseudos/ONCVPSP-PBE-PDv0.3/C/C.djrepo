@@ -79608,10 +79608,10 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 43.0
+"ecut": 45.0
 }, 
 "low": {
-"ecut": 35.0
+"ecut": 37.0
 }, 
 "normal": {
 "ecut": 41.0
@@ -80067,7 +80067,7 @@ null
 "symbol": "C", 
 "validation": {
 "validated_by": "authors", 
-"validated_on": "2016-09-02 14:59:21"
+"validated_on": "2016-09-27 23:04:54"
 }, 
 "version": "1.0"
 }

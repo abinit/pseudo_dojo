@@ -126256,7 +126256,7 @@ null
 "ecut": 34.0
 }, 
 "normal": {
-"ecut": 46.0
+"ecut": 44.0
 }
 }, 
 "md5": "03b955e95eb95cf0dbc24805ed78e4c5", 
@@ -126553,7 +126553,7 @@ null
 "symbol": "Be", 
 "validation": {
 "validated_by": "authors", 
-"validated_on": "2016-09-02 13:14:30"
+"validated_on": "2016-09-27 22:49:04"
 }, 
 "version": "1.0"
 }

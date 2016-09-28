@@ -69120,6 +69120,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 27.0
+}, 
+"low": {
+"ecut": 19.0
+}, 
+"normal": {
+"ecut": 23.0
+}
+}, 
 "md5": "c4832f932640c83a6701b7f503a6c4ae", 
 "ppgen_hints": {
 "high": {
@@ -69137,6 +69148,10 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ba", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 18:17:33"
+}, 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

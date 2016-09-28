@@ -67618,10 +67618,10 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 20.0
+"ecut": 24.0
 }, 
 "low": {
-"ecut": 16.0
+"ecut": 18.0
 }, 
 "normal": {
 "ecut": 20.0
@@ -67919,5 +67919,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ba", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 18:13:04"
+}, 
 "version": "1.0"
 }

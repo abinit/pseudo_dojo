@@ -134560,13 +134560,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 40.0
+"ecut": 50.0
 }, 
 "low": {
-"ecut": 30.0
+"ecut": 40.0
 }, 
 "normal": {
-"ecut": 34.0
+"ecut": 45.0
 }
 }, 
 "md5": "70ec7cac1525c4715767da813f084bfc", 
@@ -134924,5 +134924,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Tc", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 15:46:40"
+}, 
 "version": "1.0"
 }

@@ -138346,13 +138346,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 49.0
+"ecut": 59.0
 }, 
 "low": {
-"ecut": 39.0
+"ecut": 47.0
 }, 
 "normal": {
-"ecut": 45.0
+"ecut": 51.0
 }
 }, 
 "md5": "1856051005cd64a507dd07a6aaddd858", 
@@ -138416,5 +138416,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Cd", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 17:35:33"
+}, 
 "version": "1.0"
 }

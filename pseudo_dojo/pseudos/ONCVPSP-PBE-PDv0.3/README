@@ -12,3 +12,33 @@ TO BE INVESTIGATED:
 Pt-sp
 Sr.psp8 (model core-charge!)
 Te-d (Sr-sp.psp8_Te-d.psp8)
+
+COULD BE IMPROVED
+H
+He
+B-gw
+N
+O *
+F *** (model core charge)
+Ne (no model core charge!)
+Na (no model core charge)
+Mg (ghost at +80 eV) --> fast
+Al requirese GW version
+Si requires GW version
+Ca-sp icmod 2
+Cu-sp high
+Ga (model core charge)
+Sr-sp (bad model? high v_s) ***
+Tc-sp (high v_s)
+Rh (high vs)
+Pd.psp8   (ghosts!!!!!!)
+Ag (no GW)
+Cd.psp (no GW)
+In.psp8 (no GW)
+Cd-sp ***
+In-d (no GW!)
+Sn (no GW)
+Sn-d (no GW)
+Sb-d (no GW, ghost) *
+Te-d (ghosts is missing?)
+Xe

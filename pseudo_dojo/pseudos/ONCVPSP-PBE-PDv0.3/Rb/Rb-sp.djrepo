@@ -28141,7 +28141,7 @@ null
 "ecut": 30.0
 }, 
 "low": {
-"ecut": 16.0
+"ecut": 20.0
 }, 
 "normal": {
 "ecut": 24.0
@@ -28439,5 +28439,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Rb", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 15:26:24"
+}, 
 "version": "1.0"
 }

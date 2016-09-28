@@ -132298,13 +132298,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 37.0
+"ecut": 43.0
 }, 
 "low": {
-"ecut": 33.0
+"ecut": 35.0
 }, 
 "normal": {
-"ecut": 35.0
+"ecut": 37.0
 }
 }, 
 "md5": "5d7ad0716b51ec723a17ca909af8b34d", 
@@ -132599,5 +132599,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Zn", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 01:09:19"
+}, 
 "version": "1.0"
 }

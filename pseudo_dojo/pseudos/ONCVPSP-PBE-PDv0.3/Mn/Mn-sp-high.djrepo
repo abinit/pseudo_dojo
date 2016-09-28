@@ -23316,7 +23316,7 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 65.0
+"ecut": 67.0
 }, 
 "low": {
 "ecut": 61.0
@@ -23707,5 +23707,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Mn", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 00:37:39"
+}, 
 "version": "1.0"
 }

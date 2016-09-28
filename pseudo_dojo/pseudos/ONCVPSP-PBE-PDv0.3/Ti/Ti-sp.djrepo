@@ -132298,13 +132298,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 36.0
+"ecut": 48.0
 }, 
 "low": {
-"ecut": 32.0
+"ecut": 38.0
 }, 
 "normal": {
-"ecut": 34.0
+"ecut": 42.0
 }
 }, 
 "md5": "21f79d8002c6233125ff171d7966354b", 
@@ -132601,7 +132601,7 @@ null
 "symbol": "Ti", 
 "validation": {
 "validated_by": "authors", 
-"validated_on": "2016-09-01 14:35:36"
+"validated_on": "2016-09-28 00:25:54"
 }, 
 "version": "1.0"
 }

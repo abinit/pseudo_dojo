@@ -17640,10 +17640,10 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 36.0
+"ecut": 42.0
 }, 
 "low": {
-"ecut": 34.0
+"ecut": 32.0
 }, 
 "normal": {
 "ecut": 36.0
@@ -18099,7 +18099,7 @@ null
 "symbol": "Ca", 
 "validation": {
 "validated_by": "authors", 
-"validated_on": "2016-09-02 13:45:10"
+"validated_on": "2016-09-28 00:07:57"
 }, 
 "version": "1.0"
 }

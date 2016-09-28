@@ -39784,13 +39784,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 30.0
+"ecut": 28.0
 }, 
 "low": {
-"ecut": 16.0
+"ecut": 18.0
 }, 
 "normal": {
-"ecut": 18.0
+"ecut": 22.0
 }
 }, 
 "md5": "86702f9de3f4ff931645a86da5c6a752", 
@@ -40553,5 +40553,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Br", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 15:22:19"
+}, 
 "version": "1.0"
 }

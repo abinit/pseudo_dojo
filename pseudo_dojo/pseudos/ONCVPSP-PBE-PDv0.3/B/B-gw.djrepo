@@ -1240,13 +1240,13 @@
 }, 
 "hints": {
 "high": {
-"ecut": 40.0
+"ecut": 44.0
 }, 
 "low": {
 "ecut": 27.0
 }, 
 "normal": {
-"ecut": 30.0
+"ecut": 38.0
 }
 }, 
 "md5": "242bade5d4b711c992fabe0bc188da83", 
@@ -2485,7 +2485,7 @@
 "symbol": "B", 
 "validation": {
 "validated_by": "authors", 
-"validated_on": "2016-09-02 11:00:02"
+"validated_on": "2016-09-27 22:55:09"
 }, 
 "version": "1.0"
 }

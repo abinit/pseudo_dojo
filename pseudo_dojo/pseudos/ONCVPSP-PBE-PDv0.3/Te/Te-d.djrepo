@@ -1076,13 +1076,13 @@
 }, 
 "hints": {
 "high": {
-"ecut": 38.0
+"ecut": 42.0
 }, 
 "low": {
-"ecut": 26.0
+"ecut": 34.0
 }, 
 "normal": {
-"ecut": 32.0
+"ecut": 38.0
 }
 }, 
 "md5": "e825013e5ed601d2c98dfca74f7a5de1", 
@@ -1320,5 +1320,9 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Te", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 17:57:40"
+}, 
 "version": "1.0"
 }

@@ -994,13 +994,13 @@
 }, 
 "hints": {
 "high": {
-"ecut": 60.0
+"ecut": 64.0
 }, 
 "low": {
-"ecut": 54.0
+"ecut": 56.0
 }, 
 "normal": {
-"ecut": 56.0
+"ecut": 60.0
 }
 }, 
 "md5": "2c99561a47dd92fc29aee2f43afbb454", 
@@ -1274,5 +1274,9 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Cr", 
+"validation": {
+"validated_by": "authors", 
+"validated_on": "2016-09-28 00:32:50"
+}, 
 "version": "1.0"
 }
