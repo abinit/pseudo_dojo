@@ -126250,10 +126250,10 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 46.0
+"ecut": 50.0
 }, 
 "low": {
-"ecut": 34.0
+"ecut": 38.0
 }, 
 "normal": {
 "ecut": 44.0
@@ -126553,7 +126553,7 @@ null
 "symbol": "Be", 
 "validation": {
 "validated_by": "authors", 
-"validated_on": "2016-09-27 22:49:04"
+"validated_on": "2016-09-28 20:47:15"
 }, 
 "version": "1.0"
 }

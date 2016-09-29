@@ -17640,13 +17640,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 42.0
+"ecut": 40.0
 }, 
 "low": {
-"ecut": 32.0
+"ecut": 28.0
 }, 
 "normal": {
-"ecut": 36.0
+"ecut": 34.0
 }
 }, 
 "md5": "4c22760d6ac36e35c46407bf1e1b7c5f", 
@@ -18099,7 +18099,7 @@ null
 "symbol": "Ca", 
 "validation": {
 "validated_by": "authors", 
-"validated_on": "2016-09-28 00:07:57"
+"validated_on": "2016-09-28 20:53:04"
 }, 
 "version": "1.0"
 }

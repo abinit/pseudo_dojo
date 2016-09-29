@@ -19,7 +19,7 @@ Si requires GW version
 Ca-sp icmod 2
 Cu-sp high
 Ga (model core charge)
-Sr-sp (bad model? high v_s) ***
+Sr-sp (bad model? high v_s) ***  Replace it with Sr-sp-new
 Tc-sp (high v_s)
 Rh (high vs)
 Pd.psp8   (ghosts!!!!!!)
@@ -41,4 +41,3 @@ W-p (ghost at 25 eV, interesting example)
 Re-sp-new (f oscillates)
 Pt-fsp with modcore 1 ***
 Pt-sp with modcore 1
-   

@@ -403,8 +403,6 @@ def dojo_trials(options):
 
     # Build pandas DataFrame
     data, errors = pseudos.get_dojo_dataframe()
-    #print(data)
-
     if errors:
         cprint("ERRORS:", "red")
         pprint(errors)
@@ -426,15 +424,15 @@ def dojo_table(options):
     pseudos = options.pseudos
     data, errors = pseudos.get_dojo_dataframe()
 
-    # Compare FR with SR pseudos.
-    #pseudos.plot_scalar_vs_fully_relativistic(what="df")
-    #pseudos.plot_scalar_vs_fully_relativistic(what="gbrv")
-    #return 0
-
     if errors:
         cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
         if options.verbose:
             for i, e in enumerate(errors): print("[%s]" % i, e)
+
+    # Compare FR with SR pseudos.
+    #pseudos.plot_scalar_vs_fully_relativistic(what="df")
+    #pseudos.plot_scalar_vs_fully_relativistic(what="gbrv")
+    #return 0
 
     #data.plot_hist()
     #data.plot_trials()
@@ -465,11 +463,10 @@ def dojo_table(options):
         #plt.show()
         return 0
 
-    #accuracies = ["normal", "high"]
-    accuracies = ["low", "normal", "high"]
+    accuracies = ["normal", "high"]
+    #accuracies = ["low", "normal", "high"]
     keys = ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1", "ecut_deltafactor", "ecut_hint"]
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
-    #print(columns)
 
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]
     #data = data[data["high_dfact_meV"] <= 9]
@@ -490,7 +487,7 @@ def dojo_table(options):
         if options.verbose: print(exc)
 
     try:
-        for acc in ['low', 'normal', 'high']:
+        for acc in accuracies:
             data[acc + "_abs_fcc"] = abs(data[acc + "_gbrv_fcc_a0_rel_err"])
             data[acc + "_abs_bcc"] = abs(data[acc + "_gbrv_bcc_a0_rel_err"])
     except KeyError:
@@ -522,11 +519,10 @@ def dojo_table(options):
                + [acc + "_ecut_hint" for acc in accuracies]
                    ]
 
-    print("\nONCVPSP TABLE:\n") #.center(80, "="))
+    print("\nONCVPSP TABLE:\n")
     tablefmt = "grid"
-    floatfmt = ".3f"
+    floatfmt = ".2f"
 
-    accuracies = ['low', 'high']
     columns = [acc + "_dfact_meV" for acc in accuracies]
     columns += [acc + "_ecut_deltafactor" for acc in accuracies]
 
@@ -534,10 +530,9 @@ def dojo_table(options):
     if len(data) > 5:
         print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
 
-    accuracies = ['low', 'high']
+    """
     columns = [acc + "_dfactprime_meV" for acc in accuracies]
     columns += [acc + "_ecut_deltafactor" for acc in accuracies]
-
     print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
     if len(data) > 5:
         print(tabulate(data[columns].describe(), headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
@@ -553,8 +548,8 @@ def dojo_table(options):
     except KeyError as exc:
         cprint('No GBRV data', "red")
         if options.verbose: print("Python exception:\n", str(exc))
+    """
 
-    accuracies = ['low', 'normal', 'high']
     columns = [acc + "_ecut_hint" for acc in accuracies]
     print(tabulate(data[columns], headers="keys", tablefmt=tablefmt, floatfmt=floatfmt))
     if len(data) > 5:

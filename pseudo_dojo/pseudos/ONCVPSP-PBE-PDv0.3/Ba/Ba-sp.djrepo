@@ -67618,13 +67618,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 24.0
+"ecut": 26.0
 }, 
 "low": {
 "ecut": 18.0
 }, 
 "normal": {
-"ecut": 20.0
+"ecut": 22.0
 }
 }, 
 "md5": "8e0be156f59a411547365433640493b8", 
@@ -67921,7 +67921,7 @@ null
 "symbol": "Ba", 
 "validation": {
 "validated_by": "authors", 
-"validated_on": "2016-09-28 18:13:04"
+"validated_on": "2016-09-28 21:00:20"
 }, 
 "version": "1.0"
 }
