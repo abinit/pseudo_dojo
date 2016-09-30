@@ -132520,13 +132520,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 40.0
+"ecut": 43.0
 }, 
 "low": {
-"ecut": 33.0
+"ecut": 31.0
 }, 
 "normal": {
-"ecut": 35.0
+"ecut": 37.0
 }
 }, 
 "md5": "c6253702b5b63ec0f70183c7aa68caab", 
@@ -132977,9 +132977,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "H", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-02 18:41:50"
+"validated_on": "2016-09-30 17:55:36"
 }, 
 "version": "1.0"
 }

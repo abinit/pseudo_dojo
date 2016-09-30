@@ -170684,7 +170684,7 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 43.0
+"ecut": 45.0
 }, 
 "low": {
 "ecut": 35.0
@@ -171006,9 +171006,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Sc", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 00:15:37"
+"validated_on": "2016-09-30 19:33:06"
 }, 
 "version": "1.0"
 }

@@ -29139,9 +29139,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Cr", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 00:30:32"
+"validated_on": "2016-09-30 19:36:28"
 }, 
 "version": "1.0"
 }

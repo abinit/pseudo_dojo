@@ -28954,13 +28954,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 71.0
+"ecut": 73.0
 }, 
 "low": {
-"ecut": 63.0
+"ecut": 65.0
 }, 
 "normal": {
-"ecut": 67.0
+"ecut": 69.0
 }
 }, 
 "md5": "ee310dad67a973e433085d2e36e4fb00", 
@@ -29213,9 +29213,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Fe", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 00:43:32"
+"validated_on": "2016-09-30 19:45:28"
 }, 
 "version": "1.0"
 }

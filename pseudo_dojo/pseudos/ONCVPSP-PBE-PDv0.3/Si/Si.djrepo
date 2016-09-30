@@ -93518,9 +93518,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Si", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-27 23:47:34"
+"validated_on": "2016-09-30 19:00:20"
 }, 
 "version": "1.0"
 }

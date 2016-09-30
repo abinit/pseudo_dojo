@@ -126250,10 +126250,10 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 57.0
+"ecut": 59.0
 }, 
 "low": {
-"ecut": 43.0
+"ecut": 49.0
 }, 
 "normal": {
 "ecut": 53.0
@@ -126551,9 +126551,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Be", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-27 22:53:13"
+"validated_on": "2016-09-30 18:13:02"
 }, 
 "version": "1.0"
 }

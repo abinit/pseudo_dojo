@@ -30337,9 +30337,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Al", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-27 23:44:35"
+"validated_on": "2016-09-30 18:59:00"
 }, 
 "version": "1.0"
 }

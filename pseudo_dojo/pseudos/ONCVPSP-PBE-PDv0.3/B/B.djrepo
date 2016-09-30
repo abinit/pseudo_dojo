@@ -2700,9 +2700,11 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "B", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-27 22:59:18"
+"validated_on": "2016-09-30 18:17:54"
 }, 
 "version": "1.0"
 }

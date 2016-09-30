@@ -24360,13 +24360,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 52.0
+"ecut": 54.0
 }, 
 "low": {
-"ecut": 42.0
+"ecut": 44.0
 }, 
 "normal": {
-"ecut": 46.0
+"ecut": 48.0
 }
 }, 
 "md5": "8ab52a1336fcc6632c5da1d14a187422", 
@@ -24817,9 +24817,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Cu", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 01:01:59"
+"validated_on": "2016-09-30 20:11:24"
 }, 
 "version": "1.0"
 }

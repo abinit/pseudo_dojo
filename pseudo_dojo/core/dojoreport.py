@@ -554,8 +554,11 @@ class DojoReport(dict):
         normal_ecut = ipw.FloatText(description='Normal ecut:')
         high_ecut = ipw.FloatText(description='High ecut:')
         new_validation = ipw.Checkbox(description="New validation", value=False)
-        validated_by = ipw.Text(description="Validated by:")
-        validated_by.value = "authors"
+        s = "GW"
+        if "tags" in self: s = ",".join(self["tags"])
+        tags = ipw.Text(description='Tags:', value=s)
+        #validated_by = ipw.Text(description="Validated by:")
+        #validated_by.value = "authors"
         ok_button = ipw.Button(description="Validate")
         if self.has_hints:
             low_ecut.value = self["hints"]["low"]["ecut"]
@@ -567,14 +570,14 @@ class DojoReport(dict):
             print(low_ecut.value, normal_ecut.value, high_ecut.value)
             if not low_ecut.value <= normal_ecut.value <= high_ecut.value:
                 raise ValueError("not low_ecut.value <= normal_ecut.value <= high_ecut.value")
-            if not validated_by.value:
-                raise ValueError("validated_by field must be filled")
+            #if not validated_by.value:
+            #    raise ValueError("validated_by field must be filled")
             if self.isvalidated and not new_validation.value:
                 raise ValueError("DojoReport is already validated. Use new_validation")
 
             from time import gmtime, strftime
             self['validation'] = {
-                'validated_by': validated_by.value,
+                #'validated_by': validated_by.value,
                 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime())
             }
 
@@ -584,12 +587,12 @@ class DojoReport(dict):
             hints["normal"]["ecut"] = normal_ecut.value
             hints["high"]["ecut"] = high_ecut.value
             self["hints"] = hints
-            print(hints)
+            self["tags"] = tags.value.split(",")
+            print(hints, tags.value.split(","))
             self.json_write()
 
         ok_button.on_click(on_button_clicked)
-        return ipw.Box(children=[low_ecut, normal_ecut, high_ecut,
-                       new_validation, validated_by, ok_button])
+        return ipw.Box(children=[low_ecut, normal_ecut, high_ecut, new_validation, tags, ok_button])
 
     @staticmethod
     def _ecut2key(ecut):

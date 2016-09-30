@@ -101245,7 +101245,7 @@ null
 "ecut": 54.0
 }, 
 "low": {
-"ecut": 38.0
+"ecut": 40.0
 }, 
 "normal": {
 "ecut": 48.0
@@ -101732,9 +101732,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "O", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-27 23:16:23"
+"validated_on": "2016-09-30 18:32:58"
 }, 
 "version": "1.0"
 }

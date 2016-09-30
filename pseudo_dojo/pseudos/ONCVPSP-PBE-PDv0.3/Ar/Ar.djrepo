@@ -16509,7 +16509,7 @@ null
 "ecut": 37.0
 }, 
 "low": {
-"ecut": 31.0
+"ecut": 29.0
 }, 
 "normal": {
 "ecut": 33.0
@@ -16930,5 +16930,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ar", 
+"tags": [
+"GW"
+], 
+"validation": {
+"validated_on": "2016-09-30 19:13:04"
+}, 
 "version": "1.0"
 }

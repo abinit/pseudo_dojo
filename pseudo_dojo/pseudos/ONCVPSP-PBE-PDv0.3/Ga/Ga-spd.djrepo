@@ -36660,9 +36660,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ga", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 15:05:07"
+"validated_on": "2016-09-30 20:26:37"
 }, 
 "version": "1.0", 
 "xc": {

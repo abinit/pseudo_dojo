@@ -1377,9 +1377,11 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Fe", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-01 13:30:38"
+"validated_on": "2016-09-30 19:44:24"
 }, 
 "version": "1.0"
 }

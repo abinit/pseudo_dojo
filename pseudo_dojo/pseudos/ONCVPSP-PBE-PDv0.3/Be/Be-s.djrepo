@@ -126551,9 +126551,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Be", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 20:47:15"
+"validated_on": "2016-09-30 18:11:50"
 }, 
 "version": "1.0"
 }

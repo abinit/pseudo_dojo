@@ -994,7 +994,7 @@
 }, 
 "hints": {
 "high": {
-"ecut": 64.0
+"ecut": 66.0
 }, 
 "low": {
 "ecut": 56.0
@@ -1274,9 +1274,11 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Cr", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 00:32:50"
+"validated_on": "2016-09-30 19:38:53"
 }, 
 "version": "1.0"
 }

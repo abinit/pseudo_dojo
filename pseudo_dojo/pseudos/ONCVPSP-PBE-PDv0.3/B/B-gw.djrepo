@@ -1243,7 +1243,7 @@
 "ecut": 44.0
 }, 
 "low": {
-"ecut": 27.0
+"ecut": 34.0
 }, 
 "normal": {
 "ecut": 38.0
@@ -2483,9 +2483,11 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "B", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-27 22:55:09"
+"validated_on": "2016-09-30 18:18:47"
 }, 
 "version": "1.0"
 }

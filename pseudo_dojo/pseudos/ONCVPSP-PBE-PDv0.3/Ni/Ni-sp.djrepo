@@ -23000,13 +23000,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 55.0
+"ecut": 57.0
 }, 
 "low": {
-"ecut": 43.0
+"ecut": 47.0
 }, 
 "normal": {
-"ecut": 47.0
+"ecut": 49.0
 }
 }, 
 "md5": "3267df16e4f1eaa719ff81fe66f7a5ab", 
@@ -23457,9 +23457,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ni", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 00:54:17"
+"validated_on": "2016-09-30 20:01:41"
 }, 
 "version": "1.0"
 }

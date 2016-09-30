@@ -17640,13 +17640,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 40.0
+"ecut": 42.0
 }, 
 "low": {
 "ecut": 30.0
 }, 
 "normal": {
-"ecut": 34.0
+"ecut": 36.0
 }
 }, 
 "md5": "6ec0d558e894571061c3eb3d51d312b3", 
@@ -18097,9 +18097,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ca", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 00:10:20"
+"validated_on": "2016-09-30 19:20:16"
 }, 
 "version": "1.0"
 }

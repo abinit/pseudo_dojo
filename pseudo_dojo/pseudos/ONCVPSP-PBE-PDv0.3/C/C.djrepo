@@ -80065,9 +80065,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "C", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-27 23:04:54"
+"validated_on": "2016-09-30 18:21:58"
 }, 
 "version": "1.0"
 }
