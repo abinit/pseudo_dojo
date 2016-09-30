@@ -92070,13 +92070,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 66.0
+"ecut": 68.0
 }, 
 "low": {
 "ecut": 56.0
 }, 
 "normal": {
-"ecut": 60.0
+"ecut": 62.0
 }
 }, 
 "md5": "0c1d14c5377a98253a86d552918304f2", 
@@ -92371,9 +92371,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ge", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 15:10:57"
+"validated_on": "2016-09-30 20:36:57"
 }, 
 "version": "1.0", 
 "xc": {

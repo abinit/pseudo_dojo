@@ -27297,9 +27297,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Rh", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 16:05:50"
+"validated_on": "2016-09-30 21:28:43"
 }, 
 "version": "1.0"
 }

@@ -135287,9 +135287,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ru", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 15:49:01"
+"validated_on": "2016-09-30 21:27:24"
 }, 
 "version": "1.0"
 }

@@ -17052,5 +17052,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Kr", 
+"tags": [
+""
+], 
+"validation": {
+"validated_on": "2016-09-30 20:55:28"
+}, 
 "version": "1.0"
 }

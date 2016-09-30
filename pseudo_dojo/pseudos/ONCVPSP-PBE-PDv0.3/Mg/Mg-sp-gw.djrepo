@@ -157837,7 +157837,7 @@ null
 "ecut": 48.0
 }, 
 "low": {
-"ecut": 36.0
+"ecut": 38.0
 }, 
 "normal": {
 "ecut": 42.0
@@ -158135,9 +158135,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Mg", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-27 23:37:47"
+"validated_on": "2016-09-30 22:16:49"
 }, 
 "version": "1.0"
 }

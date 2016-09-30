@@ -103022,13 +103022,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 37.0
+"ecut": 41.0
 }, 
 "low": {
-"ecut": 29.0
+"ecut": 31.0
 }, 
 "normal": {
-"ecut": 33.0
+"ecut": 35.0
 }
 }, 
 "md5": "e931a941df7ae29971df7e057aa09d8b", 
@@ -103635,9 +103635,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Bi", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 18:33:22"
+"validated_on": "2016-09-30 22:07:08"
 }, 
 "version": "1.0"
 }

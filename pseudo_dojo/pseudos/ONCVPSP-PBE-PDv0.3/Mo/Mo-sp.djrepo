@@ -28783,13 +28783,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 44.0
+"ecut": 46.0
 }, 
 "low": {
-"ecut": 34.0
+"ecut": 36.0
 }, 
 "normal": {
-"ecut": 38.0
+"ecut": 40.0
 }
 }, 
 "md5": "82a6a28913fc9b287ef1f97ae1baddcc", 
@@ -29063,9 +29063,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Mo", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 15:44:43"
+"validated_on": "2016-09-30 21:15:33"
 }, 
 "version": "1.0"
 }

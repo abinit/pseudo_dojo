@@ -110790,13 +110790,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 43.0
+"ecut": 47.0
 }, 
 "low": {
 "ecut": 35.0
 }, 
 "normal": {
-"ecut": 39.0
+"ecut": 41.0
 }
 }, 
 "md5": "c05c2edabc191c4dd015e078b6973160", 
@@ -111070,9 +111070,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ge", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 15:08:40"
+"validated_on": "2016-09-30 20:39:25"
 }, 
 "version": "1.0"
 }

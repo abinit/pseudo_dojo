@@ -29205,9 +29205,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Nb", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 15:41:27"
+"validated_on": "2016-09-30 21:12:40"
 }, 
 "version": "1.0"
 }

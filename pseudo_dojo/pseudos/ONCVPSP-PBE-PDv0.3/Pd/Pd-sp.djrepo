@@ -28417,9 +28417,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Pd", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 17:23:27"
+"validated_on": "2016-09-30 21:32:11"
 }, 
 "version": "1.0"
 }

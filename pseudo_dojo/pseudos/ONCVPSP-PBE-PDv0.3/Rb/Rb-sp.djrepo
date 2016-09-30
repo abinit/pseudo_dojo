@@ -28144,7 +28144,7 @@ null
 "ecut": 20.0
 }, 
 "normal": {
-"ecut": 24.0
+"ecut": 26.0
 }
 }, 
 "md5": "3ee451c8d91406b76fc38bde54f2c7e1", 
@@ -28439,9 +28439,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Rb", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 15:26:24"
+"validated_on": "2016-09-30 20:58:15"
 }, 
 "version": "1.0"
 }

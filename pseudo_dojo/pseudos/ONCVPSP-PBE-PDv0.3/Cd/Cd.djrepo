@@ -166654,9 +166654,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Cd", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 17:32:34"
+"validated_on": "2016-09-30 21:44:19"
 }, 
 "version": "1.0"
 }

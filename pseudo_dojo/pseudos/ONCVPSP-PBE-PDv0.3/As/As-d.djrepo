@@ -1126,7 +1126,7 @@
 }, 
 "hints": {
 "high": {
-"ecut": 46.0
+"ecut": 48.0
 }, 
 "low": {
 "ecut": 38.0
@@ -1152,9 +1152,11 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "As", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 15:17:15"
+"validated_on": "2016-09-30 20:46:49"
 }, 
 "version": "1.0", 
 "xc": {

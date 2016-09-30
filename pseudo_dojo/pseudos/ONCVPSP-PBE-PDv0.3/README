@@ -1,64 +1,66 @@
 H: is a ploc version
 He: is the ploc version just as accurate as the standard but cheaper
-O**: is dmax  (could smooth v(d))
-F***: could be improved (too hard)
-Ne*: Hard to converge (brw: no model core charge) 
+O:** is dmax  (could smooth v(d))
+F:***: could be improved (too hard)
+Ne:* Hard to converge (brw: no model core charge) 
      Try: fcfact 1.0 rcfact 1.15-1.25
 
 COULD BE IMPROVED
-Na (no model core charge)
-Na/Na-sp-gw.in:# icmod fcfact
-Na/Na-sp-gw.in-0 0.04
-Mg (ghost at +80 eV) --> fast
-Mg/Mg-sp-gw.in 
-# icmod fcfact 0 4 1.5
+Na and Na/Na-sp-gw.in: (no model, chose one)
+Mg.psp8 (ghost at +80 eV, it's the  fast version)
+Mg/Mg-sp-gw.in  # no model could try: icmod fcfact 0 4 1.5
 
-Al**: oscillations in ffactors, requires GW version
-Si**: oscillations in ffactors, requires GW version
-P**: requires GW version (bad mcore, dloc version --> no FR)
-S*: requires GW version
-Cl**: (vloc(d), slow convergence)
-Ti-sp*: mc look ok but ask Michiel about mc params
-V-sp*: mc maybe a bit too hard
-
-Mn****
-Co** ask michiel about mc in particular albeit I don't think we can improve it
+Al:** oscillations in ffactors, requires GW version
+Si:** oscillations in ffactors, requires GW version
+P:** requires GW version (bad mcore, dloc version --> no FR)
+S:* requires GW version
+Cl:** (vloc(d), slow convergence)
+Ti-sp:* mc look ok but ask Michiel about mc params
+V-sp:* mc maybe a bit too hard
+Mn:****
+Co:** ask michiel about mc in particular although I don't think we can improve it
 
 Fe: the Fe potentials uses ncon 3 the standard is 4
-Fe-sp**: model core charge too hard, try the one from Fe-sp-high.
-Zn-sp*: I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
+Fe-sp:** model core charge too hard, try the one from Fe-sp-high.
+Zn-sp:* I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
         Ask about mc params
-Ga-d*: Require GW version
-    
+Ge-d*: Reequire GW version (Ge-spd I've recently generated looks good but it's hard)
+As:** No convergence (v(d)?)
+As-d:* Require GW version (maybe As-spd?)
+Se-d:* Require GW version (maybe Se-spd?)
+Nb:* (large v(s))
+Rh:** (high vs)
+Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
+         Ask michiel about Pd-sp and model core.
+Ag.psp8: It seems it's difficult to get good logders without semicore
+Cd-sp: Ask michiel about model core 
+Cd.psp8 Has ghost at +73 Ha (should work on Pd/Ag/Cd)
+In-d: GHOST_In-20eV
+*******TEST PSEUDOS FROM PD TO XE (sp in valence?) *****************
+
+Cs-sp:*** Should be regenerated (qcut optimization, improve logders)
+Pb-d (high s, ghost at +70)
+Bi-d (high p, ghost at +70)
+Po (ghost at +58)
+
+
 
 TO BE INVESTIGATED:
 Pt-sp
-Sr.psp8 (model core-charge!)
-Te-d (Sr-sp.psp8_Te-d.psp8)
+Te-d 
 Cu-sp high
-Sr-sp (bad model? high v_s) ***  Replace it with Sr-sp-new
 Tc-sp (high v_s)
-Rh (high vs)
-Pd.psp8 (ghosts!!!!!!)
-Ag (no GW)
-Cd.psp (no GW)
-In.psp8 (no GW)
-Cd-sp ***
-In-d (no GW!)
 Sn (no GW)
 Sn-d (no GW)
 Sb-d (no GW, ghost) *
 Te-d (ghosts is missing?)
 Xe
 Hg (no GW)
-Pb-d (high s)
-Bi-d (high p)
-Rn (no minimum in EOS??)
+Rn*** (no minimum in EOS??)
 W-p (ghost at 25 eV, interesting example)
 Re-sp-new (f oscillates)
 Pt-fsp with modcore 1 ***
 Pt-sp with modcore 1
 Try: Pt-sp and Pt-ex-sp
 La/La-sp.in:# icmod fcfact 1 0.25
-
 Test that there's no fr pseudo with local part taken from v(L)

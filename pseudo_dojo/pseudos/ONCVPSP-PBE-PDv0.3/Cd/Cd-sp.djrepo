@@ -138416,9 +138416,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Cd", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 17:35:33"
+"validated_on": "2016-09-30 21:42:56"
 }, 
 "version": "1.0"
 }
