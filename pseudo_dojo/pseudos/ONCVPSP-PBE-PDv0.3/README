@@ -10,19 +10,36 @@ He
 B-gw
 N
 O *
-F *** (model core charge)
-Ne (no model core charge!)
+
+F or F-new *** (model core charge)
+Use F-new: 
+
+Ne (no model core charge!) 
+Try: fcfact 1.0 rcfact 1.15-1.25
+
 Na (no model core charge)
+Na/Na-sp-gw.in:# icmod fcfact
+Na/Na-sp-gw.in-0 0.04
+
 Mg (ghost at +80 eV) --> fast
+Mg/Mg-sp-gw.in 
+# icmod fcfact 0 4 1.5
+
 Al requirese GW version
 Si requires GW version
+
 Ca-sp icmod 2
+
 Cu-sp high
-Ga (model core charge)
+
+Ga-d (model core charge icmod 1)
+5-8 1.2-1.45
+
 Sr-sp (bad model? high v_s) ***  Replace it with Sr-sp-new
+
 Tc-sp (high v_s)
 Rh (high vs)
-Pd.psp8   (ghosts!!!!!!)
+Pd.psp8 (ghosts!!!!!!)
 Ag (no GW)
 Cd.psp (no GW)
 In.psp8 (no GW)
@@ -39,5 +56,9 @@ Bi-d (high p)
 Rn (no minimum in EOS??)
 W-p (ghost at 25 eV, interesting example)
 Re-sp-new (f oscillates)
+
 Pt-fsp with modcore 1 ***
 Pt-sp with modcore 1
+Try: Pt-sp and Pt-ex-sp
+
+La/La-sp.in:# icmod fcfact 1 0.25
