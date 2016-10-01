@@ -35,8 +35,6 @@ Cl:** (vloc(d), slow convergence)
 
 Ti-sp:* mc look ok but ask Michiel about mc params
 
-V-sp:* mc maybe a bit too hard
-
 Mn:****
 
 Co:** ask michiel about mc in particular although I don't think we can improve it
@@ -51,6 +49,7 @@ Zn-sp:*
 
 Ge-d: Require GW version (Ge-spd I've recently generated looks good but it's hard)
 
+[DONE, TO BE TESTED]
 As:** No convergence (v(d)?)
 
 As-d:* Require GW version (maybe As-spd?)
@@ -80,8 +79,10 @@ Bi-d:* (high p, ghost at +70)
 
 Po-d (ghost at +58, should try Po-spd for GW)
 
+[DONE, TO BE TESTED]
 Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
 
+[DONE, TO BE TESTED]
 Sb-d:** (ghost at +20 eV, Should try Sb-spd for GW) 
 
 Sn-d: (ghost at +60, use Sn-spd for GW)

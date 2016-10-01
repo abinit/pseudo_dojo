@@ -1,5 +1,5 @@
 {
-"basename": "Sb-spd.psp8", 
+"basename": "Te-spd.psp8", 
 "ecuts": [
 39.0, 
 41.0, 
@@ -15,23 +15,23 @@
 67.0, 
 69.0
 ], 
-"md5": "6aa7c7fef38a64db516a8f31ad6dbf57", 
+"md5": "f3870d63dee2afa5284eff4671259db2", 
 "ppgen_hints": {
 "high": {
 "ecut": 49.0, 
 "pawecutdg": 49.0
 }, 
 "low": {
-"ecut": 44.0, 
-"pawecutdg": 44.0
+"ecut": 45.0, 
+"pawecutdg": 45.0
 }, 
 "normal": {
-"ecut": 46.0, 
-"pawecutdg": 46.0
+"ecut": 47.0, 
+"pawecutdg": 47.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "Sb", 
+"symbol": "Te", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

@@ -1,37 +1,37 @@
 {
-"basename": "Sb-spd.psp8", 
+"basename": "As-new.psp8", 
 "ecuts": [
-39.0, 
-41.0, 
-43.0, 
-45.0, 
-47.0, 
-49.0, 
-51.0, 
-53.0, 
-55.0, 
-57.0, 
-59.0, 
-67.0, 
-69.0
+8.0, 
+10.0, 
+12.0, 
+14.0, 
+16.0, 
+18.0, 
+20.0, 
+22.0, 
+24.0, 
+26.0, 
+28.0, 
+36.0, 
+38.0
 ], 
-"md5": "6aa7c7fef38a64db516a8f31ad6dbf57", 
+"md5": "4e4bbc77abb458c0e7fb5ae1f334d22c", 
 "ppgen_hints": {
 "high": {
-"ecut": 49.0, 
-"pawecutdg": 49.0
+"ecut": 18.0, 
+"pawecutdg": 18.0
 }, 
 "low": {
-"ecut": 44.0, 
-"pawecutdg": 44.0
+"ecut": 13.0, 
+"pawecutdg": 13.0
 }, 
 "normal": {
-"ecut": 46.0, 
-"pawecutdg": 46.0
+"ecut": 14.0, 
+"pawecutdg": 14.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "Sb", 
+"symbol": "As", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 
