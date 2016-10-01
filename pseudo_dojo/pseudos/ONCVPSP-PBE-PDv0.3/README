@@ -89,10 +89,11 @@ Tc-sp:* (high v_s)
 
 Os-sp:* (no ghost test)
 
+DONE
 Pt-fsp:** with modcore 1, optimize f
-Pt-sp:**** with modcore 1  ask michiel
+Pt-sp:**** with modcore 1 ask michiel
            (Pt-p gives better deltafactor but has ghosts at +25 eV)
-           Pt-ex-sp does not improve)
+            Pt-ex-sp does not improve)
 
 TODO: Pd --> Cd
 TO BE INVESTIGATED:
