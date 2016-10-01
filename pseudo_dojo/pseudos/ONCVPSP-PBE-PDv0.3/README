@@ -66,11 +66,7 @@ Ag.psp8: It seems it's difficult to get good logders without semicore
 Cd.psp8 Has ghost at +73 Ha (should work on Pd/Ag/Cd)
 Cd-sp:*** Ask michiel about model core 
 
-[In-spd Running]
-In-d:** GHOST_In-20eV (try In-spd)
-
-[RUNNING]
-Cs-sp:*** Should be regenerated (qcut optimization, improve logders)
+In-d: GHOST_In-20eV (In-spd is much better for GW)
 
 Pb-d (high s, ghost at +70)
 
@@ -78,10 +74,7 @@ Bi-d (high p, ghost at +70)
 
 Po (ghost at +58)
 
-[RUNNING]
-Hg: Hg-sp is missing
-
-Te-d: ghost at +77 eV 
+Te-d: ghost at +77 eV  (Should try Te-spd)
 
 Sb-d:** (ghost at +20 eV, no GW) 
 
@@ -99,7 +92,5 @@ TO BE INVESTIGATED:
 Cu-sp high
 Test that there's no fr pseudo with local part taken from v(L)
 
-Fast-forward
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/In/In-spd.djrepo       |     33 +
- 7 files changed, 634159 insertions(+)
 
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Al/Al-new.djrepo    |  27256 ++++
