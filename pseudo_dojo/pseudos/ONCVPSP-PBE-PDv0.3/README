@@ -24,6 +24,7 @@ Mg:
 [RUNNING]
 Al:** oscillations in ffactors, requires GW version
 
+[DONE, TO BE TESTED]
 Si:** oscillations in ffactors, requires GW version
 
 P:** requires GW version (bad mcore, dloc version --> no FR)
@@ -33,8 +34,6 @@ S:* requires GW version
 Cl:** (vloc(d), slow convergence)
 
 Ti-sp:* mc look ok but ask Michiel about mc params
-
-V-sp:* mc maybe a bit too hard
 
 Mn:****
 
@@ -48,15 +47,19 @@ Zn-sp:*
     I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
     Ask about mc params
 
-Ge-d*: Require GW version (Ge-spd I've recently generated looks good but it's hard)
+Ge-d: Require GW version (Ge-spd I've recently generated looks good but it's hard)
 
+[DONE, TO BE TESTED]
 As:** No convergence (v(d)?)
+
 As-d:* Require GW version (maybe As-spd?)
 
 Se-d:* Require GW version (maybe Se-spd?)
 
+[DONE, TO BE TESTED]
 Nb:* (large v(s))
 
+[DONE, TO BE TESTED]
 Rh:** (high vs)
 
 Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
@@ -68,18 +71,23 @@ Cd-sp:*** Ask michiel about model core
 
 In-d: GHOST_In-20eV (In-spd is much better for GW)
 
-Pb-d (high s, ghost at +70)
+[DONE, TO BE TESTED]
+Pb-d:* (high s, ghost at +70)
 
-Bi-d (high p, ghost at +70)
+[DONE, TO BE TESTED]
+Bi-d:* (high p, ghost at +70)
 
-Po (ghost at +58)
+Po-d (ghost at +58, should try Po-spd for GW)
 
-Te-d: ghost at +77 eV  (Should try Te-spd)
+[DONE, TO BE TESTED]
+Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
 
-Sb-d:** (ghost at +20 eV, no GW) 
+[DONE, TO BE TESTED]
+Sb-d:** (ghost at +20 eV, Should try Sb-spd for GW) 
 
-Sn-d:** (ghost at +60, no GW, try Sn-spd)
+Sn-d: (ghost at +60, use Sn-spd for GW)
 
+[DONE, TO BE TESTED]
 Tc-sp:* (high v_s)
 
 [Running]
