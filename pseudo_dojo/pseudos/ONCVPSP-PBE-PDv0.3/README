@@ -1,63 +1,99 @@
-H: is a ploc version
-He: is the ploc version just as accurate as the standard but cheaper
-O:** is dmax  (could smooth v(d))
-F:***: could be improved (too hard)
-Ne:* Hard to converge (btw: no model core charge). Try: fcfact 1.0 rcfact 1.15-1.25
+H: 
+    H.psp8 uses p as local part
 
-Na and Na/Na-sp-gw.in: (no model, chose one)
-Mg.psp8 (ghost at +80 eV, it's the  fast version)
+He: 
+    He.psp8 uses p as local part, just as accurate as the standard but cheaper
+
+O:** 
+    O.psp8 has lmax=d (could smooth v(d))
+
+F:***   
+    F.psp8 can be improved (too hard)
+
+Ne:* 
+    Pseudos without nlcc.
+    Ne.psp8: Hard to converge (btw: no model core charge). Try: fcfact 1.0 rcfact 1.15-1.25
+
+Na:
+    Na/Na-sp-gw.in: (no model core charge)
+
+Mg.psp8 (ghost at +80 eV, it's the fast version)
 Mg/Mg-sp-gw.in  # no model could try: icmod fcfact 0 4 1.5
 
 Al:** oscillations in ffactors, requires GW version
+
 Si:** oscillations in ffactors, requires GW version
+
 P:** requires GW version (bad mcore, dloc version --> no FR)
+
 S:* requires GW version
+
 Cl:** (vloc(d), slow convergence)
+
 Ti-sp:* mc look ok but ask Michiel about mc params
+
 V-sp:* mc maybe a bit too hard
+
 Mn:****
+
 Co:** ask michiel about mc in particular although I don't think we can improve it
 
 Fe: the Fe potentials uses ncon 3 the standard is 4
 Fe-sp:** model core charge too hard, try the one from Fe-sp-high.
+
 Zn-sp:* I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
         Ask about mc params
+
 Ge-d*: Reequire GW version (Ge-spd I've recently generated looks good but it's hard)
+
 As:** No convergence (v(d)?)
 As-d:* Require GW version (maybe As-spd?)
+
 Se-d:* Require GW version (maybe Se-spd?)
+
 Nb:* (large v(s))
+
 Rh:** (high vs)
+
 Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
-         Ask michiel about Pd-sp and model core.
+
 Ag.psp8: It seems it's difficult to get good logders without semicore
-Cd-sp: Ask michiel about model core 
+
 Cd.psp8 Has ghost at +73 Ha (should work on Pd/Ag/Cd)
+Cd-sp:*** Ask michiel about model core 
+
 In-d:** GHOST_In-20eV (try In-spd)
+
 Ir-sp:* (ghost test is missing)
 
-
 Cs-sp:*** Should be regenerated (qcut optimization, improve logders)
+
 Pb-d (high s, ghost at +70)
+
 Bi-d (high p, ghost at +70)
+
 Po (ghost at +58)
+
 Hg: Hg-sp is missing
+
 La-sp.in: Uses old model # icmod fcfact 1 0.25
+
 Te-d:** (ghost test is missing?)
+
 Sb-d:** (ghost at +20 eV, no GW) 
+
 Sn-d:** (ghost at +60, no GW, try Sn-spd)
+
 Tc-sp:* (high v_s)
+
 Os-sp:* (no ghost test)
+
 Pt-fsp:** with modcore 1, optimize f
 Pt-sp:**** with modcore 1  ask michiel
            (Pt-p gives better deltafactor but has ghosts at +25 eV)
            Pt-ex-sp does not improve)
 
-*******TEST PSEUDOS FROM PD TO Cd (sp in valence?) *****************
-TODO: Pt  
-      Pd --> Cd
-
+TODO: Pd --> Cd
 TO BE INVESTIGATED:
 Cu-sp high
-
 Test that there's no fr pseudo with local part taken from v(L)

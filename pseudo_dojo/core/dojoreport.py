@@ -554,7 +554,7 @@ class DojoReport(dict):
         normal_ecut = ipw.FloatText(description='Normal ecut:')
         high_ecut = ipw.FloatText(description='High ecut:')
         new_validation = ipw.Checkbox(description="New validation", value=False)
-        s = "GW"
+        s = " "
         if "tags" in self: s = ",".join(self["tags"])
         tags = ipw.Text(description='Tags:', value=s)
         #validated_by = ipw.Text(description="Validated by:")
