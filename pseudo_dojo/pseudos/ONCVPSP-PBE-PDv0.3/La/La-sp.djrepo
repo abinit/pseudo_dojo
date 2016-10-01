@@ -15,7 +15,7 @@
 72.0, 
 74.0
 ], 
-"md5": "6a89b440219a80f2924c75acf32ad0b1", 
+"md5": "f985d5074868a37fc207c811a4931824", 
 "ppgen_hints": {
 "high": {
 "ecut": 54.0, 
@@ -32,5 +32,19 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "La", 
-"version": "1.0"
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_C_PBE"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_X_PBE"
+}
+}
 }
