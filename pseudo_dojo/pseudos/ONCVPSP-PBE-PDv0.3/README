@@ -67,8 +67,10 @@ Cd-sp:*** Ask michiel about model core
 
 In-d:** GHOST_In-20eV (try In-spd)
 
+[RUNNING]
 Ir-sp:* (ghost test is missing)
 
+[RUNNING]
 Cs-sp:*** Should be regenerated (qcut optimization, improve logders)
 
 Pb-d (high s, ghost at +70)
@@ -79,6 +81,7 @@ Po (ghost at +58)
 
 Hg: Hg-sp is missing
 
+[RUNNING]
 Te-d:** (ghost test is missing?)
 
 Sb-d:** (ghost at +20 eV, no GW) 
@@ -89,7 +92,7 @@ Tc-sp:* (high v_s)
 
 Os-sp:* (no ghost test)
 
-DONE
+DONE(Running)
 Pt-fsp:** with modcore 1, optimize f
 Pt-sp:**** with modcore 1 ask michiel
            (Pt-p gives better deltafactor but has ghosts at +25 eV)
