@@ -21,6 +21,7 @@ Mg:
     Mg.psp8 has ghost at +80 eV, it's the fast low-accuracy version
     Mg-sp-gw.psp8 does not have model core charge.
 
+[RUNNING]
 Al:** oscillations in ffactors, requires GW version
 
 Si:** oscillations in ffactors, requires GW version
@@ -69,9 +70,6 @@ Cd-sp:*** Ask michiel about model core
 In-d:** GHOST_In-20eV (try In-spd)
 
 [RUNNING]
-Ir-sp:* (ghost test is missing)
-
-[RUNNING]
 Cs-sp:*** Should be regenerated (qcut optimization, improve logders)
 
 Pb-d (high s, ghost at +70)
@@ -83,8 +81,7 @@ Po (ghost at +58)
 [RUNNING]
 Hg: Hg-sp is missing
 
-[RUNNING]
-Te-d:** (ghost test is missing?)
+Te-d: ghost at +77 eV 
 
 Sb-d:** (ghost at +20 eV, no GW) 
 
@@ -92,16 +89,17 @@ Sn-d:** (ghost at +60, no GW, try Sn-spd)
 
 Tc-sp:* (high v_s)
 
-[RUNNING]
-Os-sp:* (no ghost test)
-
-DONE(Running)
+[Running]
 Pt-fsp:** with modcore 1, optimize f
-Pt-sp:**** with modcore 1 ask michiel
-           (Pt-p gives better deltafactor but has ghosts at +25 eV)
-            Pt-ex-sp does not improve)
+Pt-sp: Regenerated with modcore 3
+           (Pt-p gives better deltafactor but has ghosts at +25 eV, Pt-ex-sp does not improve)
 
 TODO: Pd --> Cd
 TO BE INVESTIGATED:
 Cu-sp high
 Test that there's no fr pseudo with local part taken from v(L)
+
+Fast-forward
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/In/In-spd.djrepo       |     33 +
+ 7 files changed, 634159 insertions(+)
+
