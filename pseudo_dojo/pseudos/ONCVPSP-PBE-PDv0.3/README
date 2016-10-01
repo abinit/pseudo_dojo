@@ -48,17 +48,16 @@ Sb-d:** (ghost at +20 eV, no GW)
 Sn-d:** (ghost at +60, no GW, try Sn-spd)
 Tc-sp:* (high v_s)
 Os-sp:* (no ghost test)
-
+Pt-fsp:** with modcore 1, optimize f
+Pt-sp:**** with modcore 1  ask michiel
+           (Pt-p gives better deltafactor but has ghosts at +25 eV)
+           Pt-ex-sp does not improve)
 
 *******TEST PSEUDOS FROM PD TO Cd (sp in valence?) *****************
-TODO: Os --> Pt  
+TODO: Pt  
       Pd --> Cd
 
 TO BE INVESTIGATED:
-Pt-sp
-Pt-fsp with modcore 1 ***
-Pt-sp with modcore 1
 Cu-sp high
 
-Try: Pt-sp and Pt-ex-sp
 Test that there's no fr pseudo with local part taken from v(L)
