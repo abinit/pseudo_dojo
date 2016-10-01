@@ -21,10 +21,10 @@ Mg:
     Mg.psp8 has ghost at +80 eV, it's the fast low-accuracy version
     Mg-sp-gw.psp8 does not have model core charge.
 
-[RUNNING]
+[DONE: RUNNING]
 Al:** oscillations in ffactors, requires GW version
 
-[DONE, TO BE TESTED]
+[DONE, RUNNING]
 Si:** oscillations in ffactors, requires GW version
 
 P:** requires GW version (bad mcore, dloc version --> no FR)
@@ -49,17 +49,19 @@ Zn-sp:*
 
 Ge-d: Require GW version (Ge-spd I've recently generated looks good but it's hard)
 
-[DONE, TO BE TESTED]
+[DONE, RUNNING]
 As:** No convergence (v(d)?)
 
+[DONE, TO BE TESTED]
 As-d:* Require GW version (maybe As-spd?)
 
+[DONE, TO BE TESTED]
 Se-d:* Require GW version (maybe Se-spd?)
 
-[DONE, TO BE TESTED]
+[DONE, RUNNING]
 Nb:* (large v(s))
 
-[DONE, TO BE TESTED]
+[DONE, RUNNING]
 Rh:** (high vs)
 
 Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
