@@ -277674,13 +277674,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 18.0
+"ecut": 20.0
 }, 
 "low": {
 "ecut": 8.0
 }, 
 "normal": {
-"ecut": 12.0
+"ecut": 14.0
 }
 }, 
 "md5": "51619d7d7fed6d4f66a84a7bd0477310", 
@@ -278242,9 +278242,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Sb", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 17:51:20"
+"validated_on": "2016-10-01 11:47:57"
 }, 
 "version": "1.0"
 }

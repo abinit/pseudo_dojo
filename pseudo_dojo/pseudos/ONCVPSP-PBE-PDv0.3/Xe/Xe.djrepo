@@ -16534,7 +16534,7 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 41.0
+"ecut": 43.0
 }, 
 "low": {
 "ecut": 29.0
@@ -16991,9 +16991,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Xe", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 18:11:09"
+"validated_on": "2016-10-01 11:37:09"
 }, 
 "version": "1.0"
 }

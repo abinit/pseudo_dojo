@@ -31051,13 +31051,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 66.0
+"ecut": 68.0
 }, 
 "low": {
 "ecut": 58.0
 }, 
 "normal": {
-"ecut": 60.0
+"ecut": 62.0
 }
 }, 
 "md5": "32865e5b44a5f31f8193e246f5becb29", 
@@ -31352,9 +31352,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "W", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 19:30:54"
+"validated_on": "2016-10-01 00:21:31"
 }, 
 "version": "1.0"
 }

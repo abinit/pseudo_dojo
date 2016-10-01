@@ -151049,13 +151049,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 19.0
+"ecut": 23.0
 }, 
 "low": {
 "ecut": 11.0
 }, 
 "normal": {
-"ecut": 15.0
+"ecut": 17.0
 }
 }, 
 "md5": "b57b3be98702b526ed59b2ca6e92ee17", 
@@ -151401,9 +151401,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Te", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 17:56:16"
+"validated_on": "2016-10-01 11:43:54"
 }, 
 "version": "1.0"
 }

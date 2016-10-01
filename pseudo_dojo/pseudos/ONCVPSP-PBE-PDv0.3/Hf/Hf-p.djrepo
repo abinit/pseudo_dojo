@@ -155816,6 +155816,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 30.0
+}, 
+"low": {
+"ecut": 18.0
+}, 
+"normal": {
+"ecut": 24.0
+}
+}, 
 "md5": "28812a37c605a35257e37b9a88107750", 
 "phgamma": {
 "10.0": {
@@ -156108,5 +156119,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Hf", 
+"tags": [
+""
+], 
+"validation": {
+"validated_on": "2016-09-30 23:59:04"
+}, 
 "version": "1.0"
 }

@@ -39728,7 +39728,7 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 39.0
+"ecut": 41.0
 }, 
 "low": {
 "ecut": 31.0
@@ -39754,9 +39754,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "I", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 18:07:11"
+"validated_on": "2016-10-01 11:40:05"
 }, 
 "version": "1.0"
 }

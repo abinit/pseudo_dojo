@@ -2,10 +2,8 @@ H: is a ploc version
 He: is the ploc version just as accurate as the standard but cheaper
 O:** is dmax  (could smooth v(d))
 F:***: could be improved (too hard)
-Ne:* Hard to converge (brw: no model core charge) 
-     Try: fcfact 1.0 rcfact 1.15-1.25
+Ne:* Hard to converge (btw: no model core charge). Try: fcfact 1.0 rcfact 1.15-1.25
 
-COULD BE IMPROVED
 Na and Na/Na-sp-gw.in: (no model, chose one)
 Mg.psp8 (ghost at +80 eV, it's the  fast version)
 Mg/Mg-sp-gw.in  # no model could try: icmod fcfact 0 4 1.5
@@ -35,32 +33,32 @@ Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at
 Ag.psp8: It seems it's difficult to get good logders without semicore
 Cd-sp: Ask michiel about model core 
 Cd.psp8 Has ghost at +73 Ha (should work on Pd/Ag/Cd)
-In-d: GHOST_In-20eV
-*******TEST PSEUDOS FROM PD TO XE (sp in valence?) *****************
+In-d:** GHOST_In-20eV (try In-spd)
+Ir-sp:* (ghost test is missing)
+
 
 Cs-sp:*** Should be regenerated (qcut optimization, improve logders)
 Pb-d (high s, ghost at +70)
 Bi-d (high p, ghost at +70)
 Po (ghost at +58)
+Hg: Hg-sp is missing
+La-sp.in: Uses old model # icmod fcfact 1 0.25
+Te-d:** (ghost test is missing?)
+Sb-d:** (ghost at +20 eV, no GW) 
+Sn-d:** (ghost at +60, no GW, try Sn-spd)
+Tc-sp:* (high v_s)
+Os-sp:* (no ghost test)
 
 
+*******TEST PSEUDOS FROM PD TO Cd (sp in valence?) *****************
+TODO: Os --> Pt  
+      Pd --> Cd
 
 TO BE INVESTIGATED:
 Pt-sp
-Te-d 
-Cu-sp high
-Tc-sp (high v_s)
-Sn (no GW)
-Sn-d (no GW)
-Sb-d (no GW, ghost) *
-Te-d (ghosts is missing?)
-Xe
-Hg (no GW)
-Rn*** (no minimum in EOS??)
-W-p (ghost at 25 eV, interesting example)
-Re-sp-new (f oscillates)
 Pt-fsp with modcore 1 ***
 Pt-sp with modcore 1
+Cu-sp high
+
 Try: Pt-sp and Pt-ex-sp
-La/La-sp.in:# icmod fcfact 1 0.25
 Test that there's no fr pseudo with local part taken from v(L)

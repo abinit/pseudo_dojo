@@ -164012,9 +164012,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Hf", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 19:18:55"
+"validated_on": "2016-10-01 00:00:57"
 }, 
 "version": "1.0", 
 "xc": {

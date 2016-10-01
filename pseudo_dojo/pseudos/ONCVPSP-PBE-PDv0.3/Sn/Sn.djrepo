@@ -166261,7 +166261,7 @@ null
 "ecut": 28.0
 }, 
 "low": {
-"ecut": 18.0
+"ecut": 20.0
 }, 
 "normal": {
 "ecut": 24.0
@@ -166559,9 +166559,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Sn", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 17:41:34"
+"validated_on": "2016-10-01 11:53:21"
 }, 
 "version": "1.0"
 }

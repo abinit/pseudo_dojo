@@ -1206,9 +1206,11 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Os", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 19:46:46"
+"validated_on": "2016-10-01 12:10:03"
 }, 
 "version": "1.0", 
 "xc": {

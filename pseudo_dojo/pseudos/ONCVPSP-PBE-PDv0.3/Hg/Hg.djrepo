@@ -117493,9 +117493,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Hg", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 18:26:41"
+"validated_on": "2016-10-01 00:42:26"
 }, 
 "version": "1.0"
 }

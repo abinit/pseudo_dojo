@@ -30798,13 +30798,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 70.0
+"ecut": 72.0
 }, 
 "low": {
 "ecut": 62.0
 }, 
 "normal": {
-"ecut": 64.0
+"ecut": 66.0
 }
 }, 
 "md5": "6fe6487d2de5850356d0bf1f2663a7e8", 
@@ -31099,9 +31099,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ta", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 19:24:03"
+"validated_on": "2016-10-01 00:11:58"
 }, 
 "version": "1.0"
 }

@@ -1206,9 +1206,11 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ir", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 19:51:21"
+"validated_on": "2016-10-01 12:17:47"
 }, 
 "version": "1.0", 
 "xc": {

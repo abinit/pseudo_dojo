@@ -1206,9 +1206,11 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ta", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 19:27:27"
+"validated_on": "2016-10-01 00:14:11"
 }, 
 "version": "1.0", 
 "xc": {

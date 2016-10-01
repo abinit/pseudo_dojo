@@ -28940,6 +28940,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 41.0
+}, 
+"low": {
+"ecut": 29.0
+}, 
+"normal": {
+"ecut": 35.0
+}
+}, 
 "md5": "e4967352ef10d4fa47fca327703af153", 
 "ppgen_hints": {
 "high": {
@@ -28957,6 +28968,12 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "W", 
+"tags": [
+""
+], 
+"validation": {
+"validated_on": "2016-10-01 00:25:46"
+}, 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

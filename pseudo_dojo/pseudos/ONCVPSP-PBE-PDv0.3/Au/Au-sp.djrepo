@@ -35772,13 +35772,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 40.0
+"ecut": 42.0
 }, 
 "low": {
 "ecut": 32.0
 }, 
 "normal": {
-"ecut": 36.0
+"ecut": 38.0
 }
 }, 
 "md5": "47e920806e9c8c9706e7d0ab725d56d3", 
@@ -36196,9 +36196,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Au", 
+"tags": [
+"GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 18:44:32"
+"validated_on": "2016-10-01 00:48:48"
 }, 
 "version": "1.0"
 }

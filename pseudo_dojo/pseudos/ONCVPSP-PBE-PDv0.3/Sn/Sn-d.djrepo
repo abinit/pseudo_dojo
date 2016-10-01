@@ -172418,7 +172418,7 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 40.0
+"ecut": 42.0
 }, 
 "low": {
 "ecut": 32.0
@@ -172719,9 +172719,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Sn", 
+"tags": [
+""
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 17:43:21"
+"validated_on": "2016-10-01 11:55:07"
 }, 
 "version": "1.0"
 }
