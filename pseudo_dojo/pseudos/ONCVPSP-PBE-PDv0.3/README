@@ -79,6 +79,7 @@ Bi-d (high p, ghost at +70)
 
 Po (ghost at +58)
 
+[DONE]
 Hg: Hg-sp is missing
 
 [RUNNING]
@@ -90,6 +91,7 @@ Sn-d:** (ghost at +60, no GW, try Sn-spd)
 
 Tc-sp:* (high v_s)
 
+[RUNNING]
 Os-sp:* (no ghost test)
 
 DONE(Running)
