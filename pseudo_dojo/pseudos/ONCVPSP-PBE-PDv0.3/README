@@ -43,14 +43,11 @@ Zn-sp:*
 
 Ge-d: Require GW version (Ge-spd I've recently generated looks good but it's hard)
 
-[DONE, RUNNING]
+[DONE, RUNNING] phonons are missing
 As:** No convergence (v(d)?) Try As-new with modcore from As
+As-d:* Require GW version (As-spd has good logders but it's hard)
 
-[DONE, TO BE TESTED]
-As-d:* Require GW version (maybe As-spd?)
-
-[DONE, TO BE TESTED]
-Se-d:* Require GW version (maybe Se-spd but it's ultra-hard)
+Se-d: Require GW version (Se-spd has good logders but it's hard)
 
 Nb: Replaced by Nb-sp-new (better convergence and df)
 
