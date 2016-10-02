@@ -31,8 +31,8 @@ Al:** oscillations in ffactors, requires GW version
 [DONE, RUNNING]
 Si:** oscillations in ffactors, requires GW version
 
-[DONE, version without dloc and mc from P-dloc TO BE TESTED]
-P:** requires GW version (bad mcore, dloc version --> no FR)
+P: requires GW version (P-dloc replaced by P-new with 2 projectors for d
+   slightly better df, can be used for FR version)
 
 [DONE, TO BE TESTED]
 Cl:** (vloc(d), slow convergence)
@@ -56,7 +56,7 @@ As:** No convergence (v(d)?)
 As-d:* Require GW version (maybe As-spd?)
 
 [DONE, TO BE TESTED]
-Se-d:* Require GW version (maybe Se-spd?)
+Se-d:* Require GW version (maybe Se-spd but it's ultra-hard)
 
 Nb: Replaced by Nb-sp-new (better convergence and df)
 
@@ -74,16 +74,15 @@ In-d: GHOST_In-20eV (In-spd is much better for GW)
 Pb-d: (ghost at +70, Pb-d has been replaced by Pb-d-new)
        Use Pb-spd for GW)
 
-[OK: Use Bi-d-new, smoother]
-Bi-d:* (high p, ghost at +70)
+[OK: Use Bi-d-new, smoother but complete phgamma]
+Bi-d:* (ghost at +70, use Bi-spd for GW)
 
 Po-d (ghost at +58, should try Po-spd for GW)
 
 [DONE, TO BE TESTED]
 Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
 
-[DONE, TO BE TESTED]
-Sb-d:** (ghost at +20 eV, Should try Sb-spd for GW) 
+Sb-d: ghost at +20 eV, Use Sb-spd for GW (let's call it high)
 
 Sn-d: (ghost at +60, use Sn-spd for GW)
 
@@ -101,18 +100,9 @@ Cu-sp high
 Test that there's no fr pseudo with local part taken from v(L)
 
 
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/As/As-new.djrepo    | 174164 ++++++++++++++++++++++++++++++++++++++++++++++++++
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Nb/Nb-sp-new.djrepo |  29128 +++++++++
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Rh/Rh-sp-new.djrepo |  27346 ++++++++
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/As/As-new.djrepo | 232932 +++++++++++++++++----------
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/As/As-spd.djrepo |   1163 +
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Pb/Pb-spd.djrepo |  57360 +++++++
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Sb/Sb-spd.djrepo |   1163 +
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Se/Se-spd.djrepo | 294596 +++++++++++++++++++++++++++++++++-
-
- create mode 100644 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Cl/Cl-new.djrepo
- create mode 100644 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/P/P-new.djrepo
- create mode 100644 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/O/O-new.djrepo
- create mode 100644 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ne/Ne-new.in
- create mode 100644 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new.djrepo
+pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Cl/Cl-new.djrepo |  40112 +++++++++++++
+pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new.djrepo   |  65786 ++++++++++++++++++++++
+pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ne/Ne-new.djrepo |  38936 +++++++++++++
+pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/O/O-new.djrepo   | 168308 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/P/P-new.djrepo   | 119846 +++++++++++++++++++++++++++++++++++++++
 
