@@ -71,10 +71,10 @@ Cd-sp:*** Ask michiel about model core
 
 In-d: GHOST_In-20eV (In-spd is much better for GW)
 
-[DONE, TO BE TESTED]
-Pb-d:* (high s, ghost at +70)
+Pb-d: (ghost at +70, Pb-d has been replaced by Pb-d-new)
+       Use Pb-spd for GW)
 
-[DONE, TO BE TESTED]
+[OK: Use Bi-d-new, smoother]
 Bi-d:* (high p, ghost at +70)
 
 Po-d (ghost at +58, should try Po-spd for GW)
@@ -109,3 +109,10 @@ Test that there's no fr pseudo with local part taken from v(L)
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Pb/Pb-spd.djrepo |  57360 +++++++
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Sb/Sb-spd.djrepo |   1163 +
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Se/Se-spd.djrepo | 294596 +++++++++++++++++++++++++++++++++-
+
+ create mode 100644 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Cl/Cl-new.djrepo
+ create mode 100644 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/P/P-new.djrepo
+ create mode 100644 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/O/O-new.djrepo
+ create mode 100644 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ne/Ne-new.in
+ create mode 100644 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new.djrepo
+
