@@ -60,8 +60,7 @@ Se-d:* Require GW version (maybe Se-spd?)
 
 Nb: Replaced by Nb-sp-new (better convergence and df)
 
-[DONE, RUNNING]
-Rh:** (high vs)
+Rh: Replaced by Rh-sp-new (better convergence and df)
 
 Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
 
