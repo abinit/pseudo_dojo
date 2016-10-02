@@ -1,5 +1,5 @@
 {
-"basename": "Al-new.psp8", 
+"basename": "Si-new.psp8", 
 "ecuts": [
 9.0, 
 11.0, 
@@ -15,23 +15,23 @@
 37.0, 
 39.0
 ], 
-"md5": "e5a33581cb5009fe6fb7bd43f8fa98b0", 
+"md5": "4d38cb995b3f60ead6e041f63223c65b", 
 "ppgen_hints": {
 "high": {
 "ecut": 19.0, 
 "pawecutdg": 19.0
 }, 
 "low": {
-"ecut": 15.0, 
-"pawecutdg": 15.0
+"ecut": 11.0, 
+"pawecutdg": 11.0
 }, 
 "normal": {
-"ecut": 17.0, 
-"pawecutdg": 17.0
+"ecut": 15.0, 
+"pawecutdg": 15.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "Al", 
+"symbol": "Si", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

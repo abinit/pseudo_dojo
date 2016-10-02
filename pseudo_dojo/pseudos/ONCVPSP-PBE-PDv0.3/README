@@ -4,6 +4,7 @@ H:
 He: 
     He.psp8 uses p as local part, just as accurate as the standard but cheaper
 
+[DONE, TO BE TESTED]
 O:** 
     O.psp8 has lmax=d (could smooth v(d))
 
@@ -11,9 +12,11 @@ O:**
 F:***   
     F.psp8 can be improved (too hard)
 
-Ne:* 
+[DONE, TO BE TESTED]
+Ne*:
     Pseudos without nlcc.
-    Ne.psp8: Hard to converge (btw: no model core charge). Try: fcfact 1.0 rcfact 1.15-1.25
+    Ne.psp8: Hard to converge (btw: no model core charge)
+    Could try: fcfact 1.0 rcfact 1.15-1.25
 
 Na:
     Na/Na-sp-gw.in: (no model core charge)
@@ -28,10 +31,10 @@ Al:** oscillations in ffactors, requires GW version
 [DONE, RUNNING]
 Si:** oscillations in ffactors, requires GW version
 
+[DONE, version without dloc and mc from P-dloc TO BE TESTED]
 P:** requires GW version (bad mcore, dloc version --> no FR)
 
-S:* requires GW version
-
+[DONE, TO BE TESTED]
 Cl:** (vloc(d), slow convergence)
 
 Mn:****
@@ -98,13 +101,9 @@ Cu-sp high
 Test that there's no fr pseudo with local part taken from v(L)
 
 
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Al/Al-new.djrepo    |  27256 ++++
-
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/As/As-new.djrepo    | 174164 ++++++++++++++++++++++++++++++++++++++++++++++++++
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Nb/Nb-sp-new.djrepo |  29128 +++++++++
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Rh/Rh-sp-new.djrepo |  27346 ++++++++
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Si/Si-new.djrepo    |  95408 +++++++++++++++++++++++++++
-
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/As/As-new.djrepo | 232932 +++++++++++++++++----------
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/As/As-spd.djrepo |   1163 +
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Pb/Pb-spd.djrepo |  57360 +++++++
