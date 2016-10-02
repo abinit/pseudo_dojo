@@ -1,37 +1,37 @@
 {
-"basename": "Si-new.psp8", 
+"basename": "Ne-new.psp8", 
 "ecuts": [
-9.0, 
-11.0, 
-13.0, 
-15.0, 
-17.0, 
-19.0, 
-21.0, 
-23.0, 
-25.0, 
-27.0, 
-29.0, 
-37.0, 
-39.0
+22.0, 
+24.0, 
+26.0, 
+28.0, 
+30.0, 
+32.0, 
+34.0, 
+36.0, 
+38.0, 
+40.0, 
+42.0, 
+50.0, 
+52.0
 ], 
-"md5": "4d38cb995b3f60ead6e041f63223c65b", 
+"md5": "b77d767b03139c56de60446a53c49290", 
 "ppgen_hints": {
 "high": {
-"ecut": 19.0, 
-"pawecutdg": 19.0
+"ecut": 32.0, 
+"pawecutdg": 32.0
 }, 
 "low": {
-"ecut": 11.0, 
-"pawecutdg": 11.0
+"ecut": 29.0, 
+"pawecutdg": 29.0
 }, 
 "normal": {
-"ecut": 15.0, 
-"pawecutdg": 15.0
+"ecut": 30.0, 
+"pawecutdg": 30.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "Si", 
+"symbol": "Ne", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 
