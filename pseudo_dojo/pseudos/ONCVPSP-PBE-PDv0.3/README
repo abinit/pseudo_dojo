@@ -82,8 +82,7 @@ Sb-d: ghost at +20 eV, Use Sb-spd for GW (let's call it high)
 
 Sn-d: (ghost at +60, use Sn-spd for GW)
 
-[DONE, TO BE TESTED]
-Tc-sp:* (high v_s)
+Tc-sp: Tc-sp replaced by Tc-sp-new (better df, smoother)
 
 [Running]
 Pt-fsp:** with modcore 1, optimize f
