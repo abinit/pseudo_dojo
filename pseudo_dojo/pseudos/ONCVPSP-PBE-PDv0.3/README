@@ -5,12 +5,8 @@ He:
     He.psp8 uses p as local part, just as accurate as the standard but cheaper
 
 [DONE, TO BE TESTED]
-O:** 
-    O.psp8 has lmax=d (could smooth v(d))
-
-[DONE, TO BE TESTED]
 F:***   
-    F.psp8 can be improved (too hard)
+    F.psp8 can be improved (model core charge too hard, phonons don't converge, ask michiel)
 
 [DONE, TO BE TESTED]
 Ne*:
@@ -34,7 +30,7 @@ Si:** oscillations in ffactors, requires GW version
 P: requires GW version (P-dloc replaced by P-new with 2 projectors for d
    slightly better df, can be used for FR version)
 
-[DONE, TO BE TESTED]
+[DONE, TO BE TESTED Complete PHGAMMA]
 Cl:** (vloc(d), slow convergence)
 
 Mn:****
@@ -103,6 +99,3 @@ Test that there's no fr pseudo with local part taken from v(L)
 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Cl/Cl-new.djrepo |  40112 +++++++++++++
 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new.djrepo   |  65786 ++++++++++++++++++++++
 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ne/Ne-new.djrepo |  38936 +++++++++++++
-pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/O/O-new.djrepo   | 168308 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/P/P-new.djrepo   | 119846 +++++++++++++++++++++++++++++++++++++++
-
