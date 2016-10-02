@@ -60,8 +60,7 @@ Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at
 
 Ag.psp8: It seems it's difficult to get good logders without semicore
 
-Cd.psp8 Has ghost at +73 Ha (should work on Pd/Ag/Cd)
-Cd-sp:*** Phonons are missing. Ask michiel about model core 
+Cd.psp8:* Has ghost at +73 Ha:  Phonons are missing
 
 In-d: GHOST_In-20eV (In-spd is much better for GW)
 
@@ -85,7 +84,9 @@ Tc-sp: Tc-sp replaced by Tc-sp-new (better df, smoother)
 Pt-sp: Regenerated with modcore 3
        (Pt-p gives better deltafactor but has ghosts at +25 eV, Pt-ex-sp does not improve)
 
+
 TODO: Pd --> Cd
+(should work on Pd/Ag/Cd)
 TO BE INVESTIGATED:
 Cu-sp high
 Test that there's no fr pseudo with local part taken from v(L)
