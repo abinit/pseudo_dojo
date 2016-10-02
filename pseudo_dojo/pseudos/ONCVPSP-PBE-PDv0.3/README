@@ -33,8 +33,6 @@ P: requires GW version (P-dloc replaced by P-new with 2 projectors for d
 [DONE, TO BE TESTED Complete PHGAMMA]
 Cl:** (vloc(d), slow convergence)
 
-Mn:****
-
 Fe: 
     the potentials uses ncon 3, the standard is 4
     Fe-sp:** model core charge too hard, try the one from Fe-sp-high.
@@ -84,10 +82,8 @@ Sn-d: (ghost at +60, use Sn-spd for GW)
 
 Tc-sp: Tc-sp replaced by Tc-sp-new (better df, smoother)
 
-[Running]
-Pt-fsp:** with modcore 1, optimize f
 Pt-sp: Regenerated with modcore 3
-           (Pt-p gives better deltafactor but has ghosts at +25 eV, Pt-ex-sp does not improve)
+       (Pt-p gives better deltafactor but has ghosts at +25 eV, Pt-ex-sp does not improve)
 
 TODO: Pd --> Cd
 TO BE INVESTIGATED:
