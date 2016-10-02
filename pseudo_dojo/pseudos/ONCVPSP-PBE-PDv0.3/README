@@ -104,3 +104,8 @@ Test that there's no fr pseudo with local part taken from v(L)
 
 
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Al/Al-new.djrepo    |  27256 ++++
+
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/As/As-new.djrepo    | 174164 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Nb/Nb-sp-new.djrepo |  29128 +++++++++
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Rh/Rh-sp-new.djrepo |  27346 ++++++++
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Si/Si-new.djrepo    |  95408 +++++++++++++++++++++++++++
