@@ -7,6 +7,7 @@ He:
 O:** 
     O.psp8 has lmax=d (could smooth v(d))
 
+[DONE, TO BE TESTED]
 F:***   
     F.psp8 can be improved (too hard)
 
@@ -33,11 +34,7 @@ S:* requires GW version
 
 Cl:** (vloc(d), slow convergence)
 
-Ti-sp:* mc look ok but ask Michiel about mc params
-
 Mn:****
-
-Co:** ask michiel about mc in particular although I don't think we can improve it
 
 Fe: 
     the potentials uses ncon 3, the standard is 4
