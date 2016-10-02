@@ -46,7 +46,7 @@ Zn-sp:*
 Ge-d: Require GW version (Ge-spd I've recently generated looks good but it's hard)
 
 [DONE, RUNNING]
-As:** No convergence (v(d)?)
+As:** No convergence (v(d)?) Try As-new with modcore from As
 
 [DONE, TO BE TESTED]
 As-d:* Require GW version (maybe As-spd?)
@@ -63,7 +63,7 @@ Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at
 Ag.psp8: It seems it's difficult to get good logders without semicore
 
 Cd.psp8 Has ghost at +73 Ha (should work on Pd/Ag/Cd)
-Cd-sp:*** Ask michiel about model core 
+Cd-sp:*** Phonons are missing. Ask michiel about model core 
 
 In-d: GHOST_In-20eV (In-spd is much better for GW)
 
