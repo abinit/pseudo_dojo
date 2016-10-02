@@ -58,8 +58,7 @@ As-d:* Require GW version (maybe As-spd?)
 [DONE, TO BE TESTED]
 Se-d:* Require GW version (maybe Se-spd?)
 
-[DONE, RUNNING]
-Nb:* (large v(s))
+Nb: Replaced by Nb-sp-new (better convergence and df)
 
 [DONE, RUNNING]
 Rh:** (high vs)
@@ -109,3 +108,9 @@ Test that there's no fr pseudo with local part taken from v(L)
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Nb/Nb-sp-new.djrepo |  29128 +++++++++
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Rh/Rh-sp-new.djrepo |  27346 ++++++++
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Si/Si-new.djrepo    |  95408 +++++++++++++++++++++++++++
+
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/As/As-new.djrepo | 232932 +++++++++++++++++----------
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/As/As-spd.djrepo |   1163 +
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Pb/Pb-spd.djrepo |  57360 +++++++
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Sb/Sb-spd.djrepo |   1163 +
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Se/Se-spd.djrepo | 294596 +++++++++++++++++++++++++++++++++-
