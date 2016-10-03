@@ -63,7 +63,6 @@ In-d: GHOST_In-20eV (In-spd is much better for GW)
 Pb-d: (ghost at +70, Pb-d has been replaced by Pb-d-new)
        Use Pb-spd for GW)
 
-[OK: Use Bi-d-new, smoother but complete phgamma]
 Bi-d:* (ghost at +70, use Bi-spd for GW)
 
 Po-d (ghost at +58, use Po-spd for GW)
@@ -76,6 +75,9 @@ Sb-d: ghost at +20 eV, Use Sb-spd for GW (let's call it high)
 Sn-d: (ghost at +60, use Sn-spd for GW)
 
 Tc-sp: Tc-sp replaced by Tc-sp-new (better df, smoother)
+
+Ba:
+    Ba-sp-new adds two projectors for f. 
 
 Pt-sp: Regenerated with modcore 3
        (Pt-p gives much better deltafactor but has ghosts at +25 eV, 
