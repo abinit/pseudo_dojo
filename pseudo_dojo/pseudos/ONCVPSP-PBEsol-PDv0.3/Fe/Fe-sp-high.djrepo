@@ -1,0 +1,50 @@
+{
+"basename": "Fe-sp-high.psp8", 
+"ecuts": [
+64.0, 
+66.0, 
+68.0, 
+70.0, 
+72.0, 
+74.0, 
+76.0, 
+78.0, 
+80.0, 
+82.0, 
+84.0, 
+92.0, 
+94.0
+], 
+"md5": "6bdd0a091f3930563085962cc73a70bc", 
+"ppgen_hints": {
+"high": {
+"ecut": 74.0, 
+"pawecutdg": 74.0
+}, 
+"low": {
+"ecut": 67.0, 
+"pawecutdg": 67.0
+}, 
+"normal": {
+"ecut": 71.0, 
+"pawecutdg": 71.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Fe", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_C_PBE_SOL"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_X_PBE_SOL"
+}
+}
+}
