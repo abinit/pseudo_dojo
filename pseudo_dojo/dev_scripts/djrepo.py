@@ -69,7 +69,28 @@ def djrepo_fix(options):
 
 def djrepo_check(options):
     """Check djrepo files."""
-    return 0
+    retcode = 0
+    for path in options.paths:
+        pseudo = dojopseudo_from_file(path)
+        report = pseudo.dojo_report
+        validation = report.get("validation", None)
+        if validation is None:
+            retcode += 1
+            cprint("[%s]: no validation entry" % path)
+            continue
+        hints = report.get("hints", None)
+        if hints is None:
+            retcode += 1
+            cprint("[%s]: no hints entry" % path)
+            continue
+        for k in ("low", "normal", "high"):
+            if k not in hints:
+                retcode += 1
+                cprint("[hint=%s]: not present" % k)
+                continue
+
+    return retcode
+
 
 #def djrepo_regmd5(options):
 #    return 0
