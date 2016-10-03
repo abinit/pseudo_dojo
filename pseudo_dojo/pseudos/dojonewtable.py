@@ -60,7 +60,7 @@ def main():
     if "--help" in sys.argv or "-h" in sys.argv:
         print(usage)
         return 1
-    try
+    try:
         src, dest, xc = sys.argv[1:]
     except:
         print(usage)
@@ -73,11 +73,11 @@ def main():
     my_copytree(src, dest, symlinks=False, ignore=None)
 
     print("Setting iexc to" , xc)
-    for dirpath, dirnames, filenames in os.walk(dest)
+    for dirpath, dirnames, filenames in os.walk(dest):
         for f in filenames:
             if not f.endswith(".in"): continue
             path = os.path.join(dirpat, f)
-            with open("r", path): as fh:
+            with open("r", path) as fh:
                 lines = fh.readlines()
                 """
                 # atsym z nc nv iexc psfile
@@ -88,7 +88,7 @@ def main():
                 tokens[4] = xc
                 lines[1] = " ".join(tokens)
 
-            with open("w", path): as fh:
+            with open("w", path) as fh:
                 fh.writelines(lines)
 
     return 0

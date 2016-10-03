@@ -14,7 +14,7 @@ def main():
     if "--help" in sys.argv or "-h" in sys.argv:
         print(usage)
         return 1
-    try
+    try:
         old, new = sys.argv[1:]
     except:
         print(usage)
@@ -26,15 +26,15 @@ def main():
     new = os.path.abspath(new)
     new_root, new_ext = os.path.splitext(new)
 
-    assert old_ext == new_ext and old_ext = ".psp8"
+    assert old_ext == new_ext and old_ext == ".psp8"
     exts = ["djrepo", "out", "psp8", "in"]
     # Git-remove new files (if present)
     for ext in exts:
         path = os.path.join(new_root, "." + ext)
         if os.path.exists(path):
-	    cmd = "git rm %s" % path)
+	    cmd = "git rm %s" % path
 	    ret = os.system(cmd)
-            print(cmd, "[%s"] % ret)
+            print(cmd, "[%s]" % ret)
 
     # Git rename old files.
     for ext in exts:
@@ -43,12 +43,12 @@ def main():
         if os.path.exists(old_path):
 	    cmd = "git mv %s %s" % (old_path, new_path)
 	    ret = os.system(cmd)
-            print(cmd, "[%s"] % ret)
+            print(cmd, "[%s]" % ret)
         else:
             print("Warning: old_path %s does not exist" % old_path)
 
     # Change basename in djrepo file.
-    djrepo = os.path.join(new_root, ".djrepo",
+    djrepo = os.path.join(new_root, ".djrepo")
     with open(djrepo, "r") as fh:
         d = json.load(fh)
         d["basename"] = os.path.basename(os.path.join(new_root, ".psp8"))
