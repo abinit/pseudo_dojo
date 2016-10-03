@@ -7,6 +7,7 @@ from __future__ import unicode_literals, division, print_function, absolute_impo
 
 import sys
 import os
+import shutil
 
 
 def my_copytree(src, dst, symlinks=False, ignore=None):
@@ -23,20 +24,21 @@ def my_copytree(src, dst, symlinks=False, ignore=None):
         if name in ignored_names:
             continue
 
-        # Here we select only the input files.
-        if not name.endswith(".in"):
-            continue
-
         srcname = os.path.join(src, name)
         dstname = os.path.join(dst, name)
+
+        # Here we select only the input files.
+        if os.path.isfile(srcname) and not name.endswith(".in"):
+            continue
+
         try:
             if symlinks and os.path.islink(srcname):
                 linkto = os.readlink(srcname)
                 os.symlink(linkto, dstname)
             elif os.path.isdir(srcname):
-                copytree(srcname, dstname, symlinks, ignore)
+                my_copytree(srcname, dstname, symlinks, ignore)
             else:
-                copy2(srcname, dstname)
+                shutil.copy2(srcname, dstname)
             # XXX What about devices, sockets etc.?
         except (IOError, os.error) as why:
             errors.append((srcname, dstname, str(why)))
@@ -45,10 +47,10 @@ def my_copytree(src, dst, symlinks=False, ignore=None):
         except Error as err:
             errors.extend(err.args[0])
     try:
-        copystat(src, dst)
-    except WindowsError:
+        shutil.copystat(src, dst)
+    #except WindowsError:
         # can't copy file access times on Windows
-        pass
+        #pass
     except OSError as why:
         errors.extend((src, dst, str(why)))
     if errors:
@@ -76,8 +78,8 @@ def main():
     for dirpath, dirnames, filenames in os.walk(dest):
         for f in filenames:
             if not f.endswith(".in"): continue
-            path = os.path.join(dirpat, f)
-            with open("r", path) as fh:
+            path = os.path.join(dirpath, f)
+            with open(path ,"r") as fh:
                 lines = fh.readlines()
                 """
                 # atsym z nc nv iexc psfile
@@ -86,9 +88,9 @@ def main():
                 assert lines[0].strip() == "# atsym z nc nv iexc psfile"
                 tokens = lines[1].split()
                 tokens[4] = xc
-                lines[1] = " ".join(tokens)
+                lines[1] = " ".join(tokens) + "\n"
 
-            with open("w", path) as fh:
+            with open(path, "w") as fh:
                 fh.writelines(lines)
 
     return 0
