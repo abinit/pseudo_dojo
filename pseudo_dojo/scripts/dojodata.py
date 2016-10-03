@@ -384,7 +384,7 @@ def dojo_compare(options):
 
 
 def dojo_nbcompare(options):
-    """Generate ipython notebbok to compare DOJO results for multiple pseudos."""
+    """Generate ipython notebooks to compare DOJO results for multiple pseudos."""
     pseudos = options.pseudos
     with daemon.DaemonContext(detach_process=True):
         for z in pseudos.zlist:
@@ -735,6 +735,7 @@ def main():
 Usage example:
     dojodata.py plot H.psp8                ==> Plot dojo data for pseudo H.psp8
     dojodata.py compare H.psp8 H-low.psp8  ==> Plot and compare dojo data for pseudos H.psp8 and H-low.psp8
+    dojodata.py nbcompare H.psp8 H-low.psp8 ==> Plot and compare dojo data in ipython notebooks.
     dojodata.py trials H.psp8 -r 1
     dojodata.py table .                    ==> Build table (find all psp8 files within current directory)
     dojodata.py figures .                  ==> Plot periodic table figures
