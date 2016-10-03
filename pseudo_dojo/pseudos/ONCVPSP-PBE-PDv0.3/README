@@ -93,3 +93,6 @@ Test that there's no fr pseudo with local part taken from v(L)
 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Cl/Cl-new.djrepo |  40112 +++++++++++++
 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new.djrepo   |  65786 ++++++++++++++++++++++
 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ne/Ne-new.djrepo |  38936 +++++++++++++
+
+
+GGA_X_PBE_SOL = 116 GGA_C_PBE_SOL = 133
