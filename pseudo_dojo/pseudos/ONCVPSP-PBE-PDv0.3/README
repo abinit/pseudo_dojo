@@ -4,15 +4,14 @@ H:
 He: 
     He.psp8 uses p as local part, just as accurate as the standard but cheaper
 
-[DONE, TO BE TESTED]
+[Generated new pseudo, TO BE TESTED]
 F:***   
     F.psp8 can be improved (model core charge too hard, phonons don't converge, ask michiel)
 
-[DONE, TO BE TESTED]
+[Generated new pseudo, TO BE TESTED]
 Ne*:
     Pseudos without nlcc.
-    Ne.psp8: Hard to converge (btw: no model core charge)
-    Could try: fcfact 1.0 rcfact 1.15-1.25
+    Ne.psp8: Hard to converge 
 
 Na:
     Na/Na-sp-gw.in: (no model core charge)
@@ -21,16 +20,16 @@ Mg:
     Mg.psp8 has ghost at +80 eV, it's the fast low-accuracy version
     Mg-sp-gw.psp8 does not have model core charge.
 
-[DONE: RUNNING]
-Al:** oscillations in ffactors, requires GW version
+Al: oscillations in ffactors, requires GW version
 
-[DONE, RUNNING]
+[Generated new pseudo, TO BE TESTED]
 Si:** oscillations in ffactors, requires GW version
+      Si-new seems better
 
 P: requires GW version (P-dloc replaced by P-new with 2 projectors for d
    slightly better df, can be used for FR version)
 
-[DONE, TO BE TESTED Complete PHGAMMA]
+[new pseudo, TO BE TESTED Complete PHGAMMA]
 Cl:** (vloc(d), slow convergence)
 
 Fe: 
@@ -57,7 +56,7 @@ Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at
 
 Ag.psp8: It seems it's difficult to get good logders without semicore
 
-Cd.psp8:* Has ghost at +73 Ha:  Phonons are missing
+Cd.psp8:* Has ghost at +73 Ha
 
 In-d: GHOST_In-20eV (In-spd is much better for GW)
 
@@ -67,7 +66,7 @@ Pb-d: (ghost at +70, Pb-d has been replaced by Pb-d-new)
 [OK: Use Bi-d-new, smoother but complete phgamma]
 Bi-d:* (ghost at +70, use Bi-spd for GW)
 
-Po-d (ghost at +58, should try Po-spd for GW)
+Po-d (ghost at +58, use Po-spd for GW)
 
 [DONE, TO BE TESTED]
 Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
@@ -79,15 +78,15 @@ Sn-d: (ghost at +60, use Sn-spd for GW)
 Tc-sp: Tc-sp replaced by Tc-sp-new (better df, smoother)
 
 Pt-sp: Regenerated with modcore 3
-       (Pt-p gives better deltafactor but has ghosts at +25 eV, Pt-ex-sp does not improve)
+       (Pt-p gives much better deltafactor but has ghosts at +25 eV, 
+        Pt-ex-sp does not improve, new df with pt-sp-icmod3 is 4.8)
+        Ask michiel about MC
 
 
-TODO: Pd --> Cd
-(should work on Pd/Ag/Cd)
+TODO: Pd --> Cd (look at Pd/Ag/Cd carefully)
 TO BE INVESTIGATED:
 Cu-sp high
 Test that there's no fr pseudo with local part taken from v(L)
-
 
 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Cl/Cl-new.djrepo |  40112 +++++++++++++
 pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new.djrepo   |  65786 ++++++++++++++++++++++
