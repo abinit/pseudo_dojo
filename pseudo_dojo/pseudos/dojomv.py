@@ -38,8 +38,8 @@ def main():
 
     # Git rename old files.
     for ext in exts:
-        old_path = os.path.join(old_root, "." + ext)
-        new_path = os.path.join(new_root, "." + ext)
+        old_path = old_root + "." + ext
+        new_path = new_root + "." + ext
         if os.path.exists(old_path):
 	    cmd = "git mv %s %s" % (old_path, new_path)
 	    ret = os.system(cmd)
@@ -48,13 +48,13 @@ def main():
             print("Warning: old_path %s does not exist" % old_path)
 
     # Change basename in djrepo file.
-    djrepo = os.path.join(new_root, ".djrepo")
+    djrepo = new_root + ".djrepo"
     with open(djrepo, "r") as fh:
         d = json.load(fh)
-        d["basename"] = os.path.basename(os.path.join(new_root, ".psp8"))
+        d["basename"] = os.path.basename(new_root + ".psp8")
 
     with open(djrepo, "w") as fh:
-        json.dump(d, fh)
+        json.dump(d, fh, indent=-1, sort_keys=True) #, cls=MontyEncoder)
 
     return 0
 
