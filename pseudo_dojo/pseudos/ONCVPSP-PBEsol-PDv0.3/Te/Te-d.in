@@ -24,8 +24,8 @@ Te 52 8 3 -116133 psp8
 0 2 3.0
 1 2 3.5
 2 2 1.6
-# icmod fcfact
-3 5 1.43
+# icmod fcfact rcfact
+3 5.0 1.43
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl

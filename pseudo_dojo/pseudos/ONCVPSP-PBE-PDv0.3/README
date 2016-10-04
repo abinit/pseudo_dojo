@@ -96,3 +96,21 @@ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ne/Ne-new.djrepo |  38936 +++++++++++++
 
 
 GGA_X_PBE_SOL = 116 GGA_C_PBE_SOL = 133
+
+
+##################################
+Rb-sp (oscillations in vloc(q))
+There are other elements with dvloc0 /= 0
+##################################
+# lloc lpopt rc5 dvloc0
+4 5 1.7 4.0
+
+Hf/Hf-p.in:# lloc lpopt rc5 dvloc0
+Hf/Hf-p.in-4 5 1.85 8.0
+
+--
+La/La-sp.in:# lloc lpopt rc5 dvloc0
+La/La-sp.in-4 5 1.6 2.0
+
+Rb/Rb-sp.in:# lloc lpopt rc5 dvloc0
+Rb/Rb-sp.in-4 5 1.7 4.0
