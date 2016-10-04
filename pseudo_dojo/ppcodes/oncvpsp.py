@@ -169,10 +169,12 @@ class PseudoGenDataPlotter(object):
 
         lselect = kwargs.get("lselect", [])
 
+        linestyle = {1: "solid", 2: "dashed"}
         lines, legends = [], []
         for nlk, proj in self.projectors.items():
             if nlk.l in lselect: continue
             line, = ax.plot(proj.rmesh, proj.values,
+                            color=self.color_l[nlk.l], linestyle=linestyle[nlk.n],
                             linewidth=self.linewidth, markersize=self.markersize)
             lines.append(line); legends.append("Proj %s" % str(nlk))
 

@@ -1130,9 +1130,12 @@ class DojoReport(dict):
             noasr_phfreqs[:, ie] = mev2cmm1 * np.array(list(ecut_frame["noasr_phfreqs_mev"].values))
 
         import matplotlib.pyplot as plt
+        from cycler import cycler
         fig, ax_list = plt.subplots(nrows=4, sharex=True)
 
-        for ax in ax_list: ax.grid(True)
+        for ax in ax_list:
+            ax.grid(True)
+            ax.set_prop_cycle(cycler('color', ['r', 'g', 'b', 'y']) + cycler('linestyle', ['-', '--', ':', '-.']))
 
         for mu in range(num_modes):
             phecut = asr2_phfreqs[mu]
