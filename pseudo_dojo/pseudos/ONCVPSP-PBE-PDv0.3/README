@@ -110,9 +110,5 @@ There are other elements with dvloc0 /= 0
 Hf/Hf-p.in:# lloc lpopt rc5 dvloc0
 Hf/Hf-p.in-4 5 1.85 8.0
 
---
-La/La-sp.in:# lloc lpopt rc5 dvloc0
-La/La-sp.in-4 5 1.6 2.0
-
 Rb/Rb-sp.in:# lloc lpopt rc5 dvloc0
 Rb/Rb-sp.in-4 5 1.7 4.0
