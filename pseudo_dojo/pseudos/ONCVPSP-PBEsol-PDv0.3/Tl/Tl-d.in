@@ -28,7 +28,7 @@ Tl 81 12 3 -116133 psp8
 0 2 2.5
 1 2 2.8
 2 2 1.0
-# icmod fcfact
+# icmod fcfact rcfact
 3 7.0 1.3
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02

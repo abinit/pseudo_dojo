@@ -97,6 +97,8 @@ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ne/Ne-new.djrepo |  38936 +++++++++++++
 
 GGA_X_PBE_SOL = 116 GGA_C_PBE_SOL = 133
 
+W-sp, Re-sp (f channel could be improved)
+
 
 ##################################
 Rb-sp (oscillations in vloc(q))
