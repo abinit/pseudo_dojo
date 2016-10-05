@@ -25,10 +25,11 @@ def main():
     basename = os.path.basename(path)
 
     retcode = 0
-    for trial in ["gbrv", "df", "phgamma", "ghosts"]:
-        workdir, logfile = basename + "_df", basename + "_df.log"
-        cmd = "nohup dojorun.py %s -w %s --trials=df > %s &" % (workdir, logfile, basename)
-        print("Executing:", cmd, newline="")
+    #for trial in ["gbrv", "df", "phgamma", "ghosts"]:
+    for trial in ["phgamma", "ghosts"]:
+        workdir, logfile = "_" + basename + "_" + trial, basename + "_%s.log" % trial
+        cmd = "nohup dojorun.py %s -w %s --trials=%s > %s &" % (path, workdir, trial, logfile)
+        print("Executing:", cmd, end="")
         retcode += os.system(cmd)
         print("retcode", retcode)
 

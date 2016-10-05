@@ -162,6 +162,13 @@ class DeltaFactorDatabase(object):
     for xclda in ["PW_MOD",]:
         _FILES4XC[xclda] = _FILES4XC["PW"]
         _CIFDIR4XC[xclda] = _CIFDIR4XC["PW"]
+
+
+    # Hack needed to support PBEsol.
+    for xcgga in ["PBEsol",]:
+        _FILES4XC[xcgga] = _FILES4XC["PBE"]
+        _CIFDIR4XC[xcgga] = _CIFDIR4XC["PBE"]
+
     del xclda
 
     Error = DeltaFactorDatabaseError
