@@ -81,15 +81,15 @@ plotter = onc_parser.make_plotter()"""),
         nbf.new_markdown_cell("## Model core charge and form factors computed by ABINIT"),
         nbf.new_code_cell("""\
 with pseudo.open_pspsfile() as psps:
-    fig = psps.plot(show=False);
-fig"""),
+    fform_fig = psps.plot(show=False);
+fform_fig"""),
 
         nbf.new_markdown_cell("## Ghosts Test"),
         nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False)"),
 
         nbf.new_markdown_cell("## Convergence of the total energy:"),
         nbf.new_code_cell("""\
-# Convergence of the total energy (computed from the deltafactor runs with Wien2K equilibrium volume)
+# Convergence of the total energy (computed from the deltafactor runs at the Wien2K equilibrium volume)
 fig = report.plot_etotal_vs_ecut(show=False)"""),
 
         nbf.new_code_cell("fig = report.plot_etotal_vs_ecut(inv_ecut=True, show=False)"),
@@ -117,7 +117,7 @@ fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-df
         nbf.new_markdown_cell("## Convergence of the GBRV lattice parameters:"),
         nbf.new_code_cell("fig = report.plot_gbrv_convergence(show=False)"),
 
-        nbf.new_markdown_cell("## Convergence of phonon frequencies at $\Gamma$:"),
+        nbf.new_markdown_cell("## Convergence of the phonon frequencies at $\Gamma$:"),
         nbf.new_code_cell("fig = report.plot_phonon_convergence(show=False)"),
     ])
 
@@ -135,7 +135,8 @@ fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-df
         nbpath = root + '.ipynb'
     else:
         import tempfile
-        _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
+        prefix = os.path.basename(pseudopath)
+        _, nbpath = tempfile.mkstemp(prefix=prefix, suffix='.ipynb', text=True)
 
     with io.open(nbpath, 'wt', encoding="utf8") as f:
         nbformat.write(nb, f)
