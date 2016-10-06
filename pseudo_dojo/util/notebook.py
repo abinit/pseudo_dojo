@@ -85,7 +85,7 @@ with pseudo.open_pspsfile() as psps:
 fform_fig"""),
 
         nbf.new_markdown_cell("## Ghosts Test"),
-        nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False)"),
+        nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False); fig"),
 
         nbf.new_markdown_cell("## Convergence of the total energy:"),
         nbf.new_code_cell("""\

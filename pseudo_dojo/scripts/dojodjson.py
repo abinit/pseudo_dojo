@@ -7,7 +7,7 @@ import argparse
 import json
 
 from monty.functools import prof_main
-from monty.termcolor import cprint 
+from monty.termcolor import cprint
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 
 
@@ -33,7 +33,7 @@ def djson_validate(options):
         if not options.verbose:
             print("Use --verbose to show errors")
         else:
-            for i, e in enumerate(errors): 
+            for i, e in enumerate(errors):
                 print("[%s]" % i, e)
 
     return len(errors)
@@ -43,7 +43,7 @@ def djson_validate(options):
 def main():
     def str_examples():
         return """\
-Usage example: 
+Usage example:
     djson.py  new [DIR]        => Generate new djson file.
     djson.py  validate djson   => Validate djson file.
 """
@@ -70,7 +70,7 @@ Usage example:
 
     # Subparser for new command.
     p_new = subparsers.add_parser('new', parents=[copts_parser], help=djson_new.__doc__)
-    p_new.add_argument("--exclude", default=None, type=str, 
+    p_new.add_argument("--exclude", default=None, type=str,
                        help=("Exclude files mathing these pattern. Example"
                              "exclude=\"*_r.psp8|*.xml\" selects only those files that do not end with _r.psp8 or .xml"
                       ))
@@ -83,10 +83,10 @@ Usage example:
     # Parse command line.
     try:
         options = parser.parse_args()
-    except Exception as exc: 
+    except Exception as exc:
         show_examples_and_exit(error_code=1)
 
-    # loglevel is bound to the string value obtained from the command line argument. 
+    # loglevel is bound to the string value obtained from the command line argument.
     # Convert to upper case to allow the user to specify --loglevel=DEBUG or --loglevel=debug
     import logging
     numeric_level = getattr(logging, options.loglevel.upper(), None)
