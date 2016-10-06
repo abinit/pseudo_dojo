@@ -12,7 +12,7 @@ Mn 25 3 4 -001012 psp8
 2
 # l rc ep ncon nbas qcut
 0 1.1 0.0 4 7 11.0
-1 1.1 0.0 4 7 10.8
+1 1.1 0.0 4 7 10.4
 2 1.35 0.0 4 7 11.4
 # lloc lpopt rc5 dvloc0
 4 5 1.1 0.0
@@ -20,8 +20,8 @@ Mn 25 3 4 -001012 psp8
 0 2 1.0
 1 2 1.0
 2 2 1.0
-# icmod fcfact
-3 4 1.75
+# icmod fcfact rcfact
+3 4.0 1.75
 # epsh1 epsh2 depsh
 -50.0 12.0 0.02
 # rlmax drl
