@@ -1,0 +1,50 @@
+{
+"basename": "Mg.psp8", 
+"ecuts": [
+10.0, 
+12.0, 
+14.0, 
+16.0, 
+18.0, 
+20.0, 
+22.0, 
+24.0, 
+26.0, 
+28.0, 
+30.0, 
+38.0, 
+40.0
+], 
+"md5": "ac0c7b0efc1970d5772312daf1463f47", 
+"ppgen_hints": {
+"high": {
+"ecut": 20.0, 
+"pawecutdg": 20.0
+}, 
+"low": {
+"ecut": 11.0, 
+"pawecutdg": 11.0
+}, 
+"normal": {
+"ecut": 16.0, 
+"pawecutdg": 16.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Mg", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_C_PW"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_X"
+}
+}
+}

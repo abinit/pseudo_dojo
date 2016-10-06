@@ -14,8 +14,8 @@ N 7 1 2 -001012 psp8
 # l nproj debl
 0 2 1.0
 1 2 1.0
-# icmod fcfact
-3 4 1.5
+# icmod fcfact rcfact
+3 4.0 1.5
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl
