@@ -975,12 +975,11 @@ class OncvOutputParser(PseudoGenOutputParser):
             # oncvpsp 3.2.3
             i = self.find_string("<INPUT>")
             j = self.find_string("</INPUT>")
-            ins = "\n".join(self.lines[i+1:j]) + "\n"
+            return "\n".join(self.lines[i+1:j]) + "\n"
         except self.Error:
             #raise
             i = self.find_string("Reference configufation results")
-            ins = "\n".join(self.lines[:i])
-        return ins
+            return "\n".join(self.lines[:i])
 
     def get_pseudo_str(self):
         """Return string with the pseudopotential data."""
@@ -988,16 +987,19 @@ class OncvOutputParser(PseudoGenOutputParser):
         # Extract the pseudo in Abinit format.
         try:
             i = self.find_string('Begin PSPCODE8')
-        except IndexError:
+        except self.Error:
             try:
                 i = self.find_string('Begin PSP_UPF')
-            except IndexError:
+            except self.Error:
                 raise ValueError("Cannot find neither PSPCODE8 not PSP_UPF tag in output file")
 
         ps_data = "\n".join(self.lines[i+1:])
 
-        # Append the input to ps_data (note XML markers)
-        ps_data += "\n\n<INPUT>\n" + self.get_input_str() + "</INPUT>\n"
+        if "<INPUT>" not in ps_data:
+            # oncvpsp <= 3.2.2 --> Append the input to ps_data (note XML markers)
+            # oncvpsp >= 3.2.3 --> Input is already there
+            ps_data += "\n\n<INPUT>\n" + self.get_input_str() + "</INPUT>\n"
+
         return ps_data
 
     def make_plotter(self):
