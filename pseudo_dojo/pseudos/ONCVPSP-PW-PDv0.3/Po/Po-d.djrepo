@@ -1,0 +1,50 @@
+{
+"basename": "Po-d.psp8", 
+"ecuts": [
+20.0, 
+22.0, 
+24.0, 
+26.0, 
+28.0, 
+30.0, 
+32.0, 
+34.0, 
+36.0, 
+38.0, 
+40.0, 
+48.0, 
+50.0
+], 
+"md5": "f80d190618ee5dc8a655e87407966509", 
+"ppgen_hints": {
+"high": {
+"ecut": 30.0, 
+"pawecutdg": 30.0
+}, 
+"low": {
+"ecut": 28.0, 
+"pawecutdg": 28.0
+}, 
+"normal": {
+"ecut": 29.0, 
+"pawecutdg": 29.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Po", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_C_PW"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_X"
+}
+}
+}
