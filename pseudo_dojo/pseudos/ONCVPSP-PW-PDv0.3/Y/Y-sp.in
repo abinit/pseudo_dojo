@@ -23,8 +23,8 @@ Y 39 6 4 -001012 psp8
 0 2 1.0
 1 2 2.0
 2 2 3.2
-# icmod fcfact
-3 4 1.35
+# icmod fcfact rcfact
+3 4.0 1.35
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl

@@ -1,0 +1,50 @@
+{
+"basename": "Tc-sp.psp8", 
+"ecuts": [
+30.0, 
+32.0, 
+34.0, 
+36.0, 
+38.0, 
+40.0, 
+42.0, 
+44.0, 
+46.0, 
+48.0, 
+50.0, 
+58.0, 
+60.0
+], 
+"md5": "0495d98ccaaafea683c7d2786b04ff99", 
+"ppgen_hints": {
+"high": {
+"ecut": 40.0, 
+"pawecutdg": 40.0
+}, 
+"low": {
+"ecut": 35.0, 
+"pawecutdg": 35.0
+}, 
+"normal": {
+"ecut": 38.0, 
+"pawecutdg": 38.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Tc", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_C_PW"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_X"
+}
+}
+}
