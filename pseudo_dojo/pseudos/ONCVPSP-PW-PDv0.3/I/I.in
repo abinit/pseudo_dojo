@@ -17,15 +17,15 @@ I 53 9 2 -001012 psp8
 # l rc ep ncon nbas qcut
 0 2.0 0.0 4 7 3.7
 1 2.15 0.0 4 7 4.0
-2 2.25 0.1 4 8 4.6
+2 2.25 0.1 4 8 4.8
 # lloc lpopt rc5 dvloc0
 4 5 2.0 0.0
 # l nproj debl
 0 2 2.2
 1 2 2.5
 2 2 3.0
-# icmod fcfact
-3 4 1.34
+# icmod fcfact rcfact
+3 4.0 1.34
 # epsh1 epsh2 depsh
 -12.0 12.0 0.02
 # rlmax drl

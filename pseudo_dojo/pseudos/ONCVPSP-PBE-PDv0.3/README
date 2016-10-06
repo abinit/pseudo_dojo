@@ -103,6 +103,9 @@ LDA_C_PW = 12
 
 W-sp, Re-sp (f channel could be improved)
 
+In-d is very sensitive, changing XC (GGa-->LDA) gives a ghost very close to 0.
+The first s projectors presents oscillations I don't see in the other pseudos.
+
 
 ##################################
 Rb-sp (oscillations in vloc(q))
