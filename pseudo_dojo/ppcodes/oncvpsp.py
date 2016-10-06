@@ -971,8 +971,16 @@ class OncvOutputParser(PseudoGenOutputParser):
 
     def get_input_str(self):
         """String with the input file."""
-        i = self.find_string("Reference configufation results")
-        return "\n".join(self.lines[:i])
+        try:
+            # oncvpsp 3.2.3
+            i = self.find_string("<INPUT>")
+            j = self.find_string("</INPUT>")
+            ins = "\n".join(self.lines[i+1:j]) + "\n"
+        except self.Error:
+            #raise
+            i = self.find_string("Reference configufation results")
+            ins = "\n".join(self.lines[:i])
+        return ins
 
     def get_pseudo_str(self):
         """Return string with the pseudopotential data."""
