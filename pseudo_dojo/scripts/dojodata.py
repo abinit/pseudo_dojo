@@ -493,10 +493,13 @@ def dojo_table(options):
     except KeyError:
         cprint('no GBRV data', "magenta")
 
-    wrong = data[data["high_b1"] < 0]
-    if not wrong.empty:
-        cprint("WRONG".center(80, "*"), "red")
-        print(wrong)
+    try:
+        wrong = data[data["high_b1"] < 0]
+        if not wrong.empty:
+            cprint("WRONG".center(80, "*"), "red")
+            print(wrong)
+    except Exception as exc:
+        print(exc)
 
     if options.json: data.to_json('table.json')
 
@@ -600,44 +603,6 @@ def dojo_check(options):
         cprint("dojo_check [OK]", "green")
 
     return retcode
-
-
-def dojo_make_hints(options):
-    """Add hints for energy cutoffs"""
-    for pseudo in options.pseudos:
-
-        if not pseudo.has_dojo_report:
-            cprint("[%s] No DojoReport. Ignoring pseudo" % p.basename, "red")
-            continue
-
-        report = pseudo.dojo_report
-
-        try:
-            hints = report.compute_hints()
-            print("hints for %s computed from deltafactor prime: %s" % (pseudo.basename, hints))
-            report.plot_deltafactor_convergence(xc=pseudo.xc)
-
-            ans = ask_yesno("Do you accept the hints? [Y]")
-            if ans:
-                report.add_hints(hints)
-                print(report.has_hints)
-                report.json_write()
-            else:
-                print("The dojoreport contains ecuts :\n%s" % report.ecuts)
-                new_ecuts = prompt("Enter new ecuts to compute (comma-separated values or empty string to abort)")
-                if not new_ecuts:
-                    print("Exit requested by user")
-                    return
-                new_ecuts = np.array([float(k) for k in new_ecuts.strip().split(",")])
-                print("new_ecuts", new_ecuts)
-                report.add_ecuts(new_ecuts)
-                report.json_write()
-
-        except Exception as exc:
-            cprint("[%s]: python exception: %s" % (pseudo.basename, type(exc)), "red")
-            if options.verbose: print(straceback())
-
-    return 0
 
 
 def dojo_validate(options):
@@ -836,9 +801,6 @@ Usage example:
     # Subparser for validate command.
     p_validate = subparsers.add_parser('validate', parents=[copts_parser], help=dojo_validate.__doc__)
 
-    # Subparser for make_hints command.
-    p_make_hints = subparsers.add_parser('make_hints', parents=[copts_parser],
-                                         help=dojo_make_hints.__doc__)
 
     # Parse command line.
     try:

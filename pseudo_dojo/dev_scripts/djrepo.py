@@ -146,6 +146,55 @@ def djrepo_pop(options):
             pseudo.dojo_report.json_write()
 
 
+def djrepo_copyhints(options):
+    """
+    Copy hints from djrepo files.
+    """
+    if len(options.paths) != 2:
+        raise ValueError("Expecting two arguments with source and destination")
+
+    def copy_hints(from_djrepo, to_djrepo):
+        from_report = DojoReport.from_file(from_djrepo)
+        if "hints" not in from_report
+            print("hints are not present in source", to_djrepo)
+            return 1
+        to_report = DojoReport.from_file(to_djrepo)
+        if "hints" in to_report:
+            print("hints are already available in destination", to_djrepo)
+            return 2
+
+        # Add hints and write new json file.
+        to_report["hints"] = from_report["hints"]
+        to_report.json_write()
+        return 0
+
+    retcode = 0
+    src, dest = options.paths
+
+    if os.path.isfile(src):
+        # Copy hints from file
+        assert os.path.isfile(dest)
+        assert src.endswith(".djrepo") and dest.endswith(".djrepo")
+        return copy_hints(src, dest)
+
+    # Walk through directory src and copy all hints.
+    for dirpath, dirnames, filenames in os.walk(src):
+        for f in filenames:
+            src_path = os.path.join(dirpath, f)
+            if not src_path.endswith(".djrepo"): continue
+            relpath = os.path.relpath(path, src)
+            dest_path = os.path.join(dest, relpath)
+            if not os.path.exists(dest_path):
+                print("Ignoring non-existent target ", dest_path)
+                continue
+            rc = copy_hints(src_path, dest_path)
+            if rc != 0:
+                print("Non zero-exit status while copying hints", src_path, " --> ", dest_path)
+                retcode += rc
+
+    return retcode
+
+
 @prof_main
 def main():
     def str_examples():
@@ -154,7 +203,7 @@ Example usage:
     djrepo.py check     => Check djrepo files.
     djrepo.py convert   => Convert djrepo to new format.
     djrepo.py recalc    => Recalculate deltafactor in djrepo
-    djrepo.py md5reg    => Generate new md5 hash values.
+    djrepo.py copyhints => Copy hints from previous set of djrepo files.
 """
 
     def show_examples_and_exit(err_msg=None, error_code=0):
@@ -193,9 +242,6 @@ Example usage:
     # Subparser for check command.
     p_check = subparsers.add_parser('check', parents=[copts_parser], help=djrepo_check.__doc__)
 
-    # Subparser for regenerate command.
-    #p_md5reg = subparsers.add_parser('md5reg', parents=[copts_parser], help=djrepo_md5reg.__doc__)
-
     # Subparser for convert command.
     #p_convert = subparsers.add_parser('convert', parents=[copts_parser], help=djrepo_convert.__doc__)
 
@@ -205,8 +251,11 @@ Example usage:
     # Subparser for fix command.
     p_fix = subparsers.add_parser('fix', parents=[copts_parser], help=djrepo_fix.__doc__)
 
-    # Subparser for convert command.
+    # Subparser for recalc command.
     p_recalc = subparsers.add_parser('recalc', parents=[copts_parser], help=djrepo_recalc.__doc__)
+
+    # Subparser for copyhints command.
+    p_copyhints = subparsers.add_parser('copyhints', parents=[copts_parser], help=djrepo_copyhints.__doc__)
 
     # Parse command line.
     try:

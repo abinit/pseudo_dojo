@@ -10,7 +10,7 @@ import json
 
 
 def main():
-    usage = "Usage: dojomv.py old new"
+    usage = "Usage: dojomv.py old_pseudo new_pseudo"
     if "--help" in sys.argv or "-h" in sys.argv:
         print(usage)
         return 1

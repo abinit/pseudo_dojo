@@ -254,6 +254,7 @@ class DojoReport(dict):
             d = json.load(fh)
             new = cls(**d)
             new.path = filepath
+            # TODO
             #new.xc = XcFunc.from_dict(new["xc"])
             return new
 
@@ -341,6 +342,7 @@ class DojoReport(dict):
         if "version" not in self:
             self["version"] = self.LAST_VERSION
 
+        # TODO
         #new.xc = XcFunc.from_dict(new["xc"])
 
     # TODO Remove
@@ -406,7 +408,6 @@ class DojoReport(dict):
         filepath = self.path if filepath is None else filepath
         with open(filepath, "wt") as fh:
             #json.dump(self, fh, indent=-1, sort_keys=True)
-            #json.dump(self, fh, sort_keys=True, cls=MontyEncoder)
             json.dump(self, fh, indent=-1, sort_keys=True, cls=MontyEncoder)
 
     def has_trial(self, dojo_trial, ecut=None):
