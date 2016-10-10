@@ -1,1 +1,124 @@
-The pseudo potentials in this table use the extension switch = 1. Abinit versions < 7.11.10 will not be able to use this. The pseudos can be used without any problem by changing the corresonding line in the psp8 file. You can use the script in this folder to do this automatically. Note the Hash in the dojo report has been calculated with the extension switch 1. It will not be correct any more if the line has been changed. Hence automatic cheching using abipy will not work anymore in this case. 
+H: 
+    H.psp8 uses p as local part
+
+He: 
+    He.psp8 uses p as local part, just as accurate as the standard but cheaper
+
+[Generated new pseudo, TO BE TESTED]
+F:***   
+    F.psp8 can be improved (model core charge too hard, phonons don't converge, ask michiel)
+
+[Generated new pseudo, TO BE TESTED]
+Ne*:
+    Pseudos without nlcc.
+    Ne.psp8: Hard to converge 
+
+Na:
+    Na/Na-sp-gw.in: (no model core charge)
+
+Mg:
+    Mg.psp8 has ghost at +80 eV, it's the fast low-accuracy version
+    Mg-sp-gw.psp8 does not have model core charge.
+
+Al: oscillations in ffactors, requires GW version
+
+[Generated new pseudo, TO BE TESTED]
+Si:** oscillations in ffactors, requires GW version
+      Si-new seems better
+      $$ lets use new
+
+P: requires GW version (P-dloc replaced by P-new with 2 projectors for d
+   slightly better df, can be used for FR version)
+   $$ the model core charge should be improved
+   $$ the algorithm detects dispersionless states but inspection of the BS does not show any
+
+
+[new pseudo, TO BE TESTED Complete PHGAMMA]
+Cl:** (vloc(d), slow convergence)
+  $$ lets use new, some phonons are missing though
+
+K:  $ hints may be a bit lower
+
+Ca: $ hints may be reduced
+
+
+Fe: 
+    the potentials uses ncon 3, the standard is 4
+    Fe-sp:** model core charge too hard, try the one from Fe-sp-high.
+
+Zn-sp:* 
+    I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
+    Ask about mc params
+
+Ge-d: Require GW version (Ge-spd I've recently generated looks good but it's hard)
+
+[DONE, RUNNING] phonons are missing
+As:** No convergence (v(d)?) Try As-new with modcore from As
+As-d:* Require GW version (As-spd has good logders but it's hard)
+
+Se-d: Require GW version (Se-spd has good logders but it's hard)
+
+Nb: Replaced by Nb-sp-new (better convergence and df)
+
+Rh: Replaced by Rh-sp-new (better convergence and df)
+
+Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
+
+Ag.psp8: It seems it's difficult to get good logders without semicore
+
+Cd.psp8:* Has ghost at +73 Ha
+
+In-d: GHOST_In-20eV (In-spd is much better for GW)
+
+Pb-d: (ghost at +70, Pb-d has been replaced by Pb-d-new)
+       Use Pb-spd for GW)
+
+Bi-d:* (ghost at +70, use Bi-spd for GW)
+
+Po-d (ghost at +58, use Po-spd for GW)
+
+[DONE, TO BE TESTED]
+Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
+
+Sb-d: ghost at +20 eV, Use Sb-spd for GW (let's call it high)
+
+Sn-d: (ghost at +60, use Sn-spd for GW)
+
+Tc-sp: Tc-sp replaced by Tc-sp-new (better df, smoother)
+
+Ba:
+    Ba-sp-new adds two projectors for f. 
+
+Pt-sp: Regenerated with modcore 3
+       (Pt-p gives much better deltafactor but has ghosts at +25 eV, 
+        Pt-ex-sp does not improve, new df with pt-sp-icmod3 is 4.8)
+        Ask michiel about MC
+
+
+TODO: Pd --> Cd (look at Pd/Ag/Cd carefully)
+TO BE INVESTIGATED:
+Cu-sp high
+Test that there's no fr pseudo with local part taken from v(L)
+
+pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Cl/Cl-new.djrepo |  40112 +++++++++++++
+pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new.djrepo   |  65786 ++++++++++++++++++++++
+pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ne/Ne-new.djrepo |  38936 +++++++++++++
+
+
+GGA_X_PBE_SOL = 116 GGA_C_PBE_SOL = 133
+
+W-sp, Re-sp (f channel could be improved)
+
+
+##################################
+Rb-sp (oscillations in vloc(q))
+There are other elements with dvloc0 /= 0
+##################################
+# lloc lpopt rc5 dvloc0
+4 5 1.7 4.0
+
+Hf/Hf-p.in:# lloc lpopt rc5 dvloc0
+Hf/Hf-p.in-4 5 1.85 8.0
+
+Rb/Rb-sp.in:# lloc lpopt rc5 dvloc0
+Rb/Rb-sp.in-4 5 1.7 4.0
