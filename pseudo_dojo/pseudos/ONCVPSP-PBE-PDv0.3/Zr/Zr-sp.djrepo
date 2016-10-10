@@ -168216,10 +168216,10 @@ null
 "pseudo_type": "NC", 
 "symbol": "Zr", 
 "tags": [
-""
+"GW"
 ], 
 "validation": {
-"validated_on": "2016-09-30 21:10:13"
+"validated_on": "2016-10-10 21:06:52"
 }, 
 "version": "1.0"
 }

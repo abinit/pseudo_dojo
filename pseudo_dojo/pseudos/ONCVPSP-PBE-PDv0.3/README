@@ -26,7 +26,6 @@ Al: oscillations in ffactors, requires GW version
 [Generated new pseudo, TO BE TESTED]
 Si:** oscillations in ffactors, requires GW version
       Si-new seems better
-<<<<<<< HEAD
       $$ lets use new
 
 P: requires GW version (P-dloc replaced by P-new with 2 projectors for d
@@ -43,21 +42,38 @@ K:  $ hints may be a bit lower
 
 Ca: $ hints may be reduced
 
+Ti: $$$ add GW tag
+
+Cr: $$$ tag for non-magnetic / magnetic
+    $$ the mc for high is a bit questionable
+
+Mn: $$$ tag for non-magnetic / magnetic
+
 Fe: 
     the potentials uses ncon 3, the standard is 4
     Fe-sp:** model core charge too hard, try the one from Fe-sp-high.
+    $$$ tag for non-magnetic / magnetic
+
+Co: $ normal is good enough
+    $$ mc seems a bit too much fitted
 
 Zn-sp:* 
     I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
     Ask about mc params
+    $$ Michiel will look at this. the total energy convergence look a bit suspicious...
 
 Ge-d: Require GW version (Ge-spd I've recently generated looks good but it's hard)
+    $ spd is good for GW
 
 [DONE, RUNNING] phonons are missing
 As:** No convergence (v(d)?) Try As-new with modcore from As
 As-d:* Require GW version (As-spd has good logders but it's hard)
 
 Se-d: Require GW version (Se-spd has good logders but it's hard)
+
+Br : needs a GW version
+
+Kr : needs a GW version
 
 Nb: Replaced by Nb-sp-new (better convergence and df)
 
@@ -68,8 +84,20 @@ Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at
 Ag.psp8: It seems it's difficult to get good logders without semicore
 
 Cd.psp8:* Has ghost at +73 Ha
+    $$ to discuss
 
 In-d: GHOST_In-20eV (In-spd is much better for GW)
+
+
+Sn-d: (ghost at +60, use Sn-spd for GW)
+
+Sb-d: ghost at +20 eV, Use Sb-spd for GW (let's call it high)
+
+Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
+
+I
+
+Xe
 
 Pb-d: (ghost at +70, Pb-d has been replaced by Pb-d-new)
        Use Pb-spd for GW)
@@ -79,12 +107,6 @@ Bi-d:* (ghost at +70, use Bi-spd for GW)
 Po-d (ghost at +58, use Po-spd for GW)
 
 [DONE, TO BE TESTED]
-Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
-
-Sb-d: ghost at +20 eV, Use Sb-spd for GW (let's call it high)
-
-Sn-d: (ghost at +60, use Sn-spd for GW)
-
 Tc-sp: Tc-sp replaced by Tc-sp-new (better df, smoother)
 
 Ba:
