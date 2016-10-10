@@ -87,19 +87,21 @@ def cleanup():
 # List of external packages we rely on.
 # Note setup install will download them from Pypi if they are not available.
 install_requires = [
-    "periodictable",
     "six",
     "numpy",
     "scipy",
     "tabulate",
     "pandas",
-    "validictory",
+    "jsonschema",
     "atomicfile",
     "periodic_table_plotter",
     "monty",
-    #"pymatgen>=3.5.4",
-    #"abipy>=0.2",
-    #"matplotlib>=1.1",
+    "pymatgen",
+    "ipython",
+    "nbformat",
+    "python-daemon",
+    "matplotlib",
+    "abipy",
 ]
 
 #---------------------------------------------------------------------------

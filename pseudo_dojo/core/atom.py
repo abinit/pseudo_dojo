@@ -15,7 +15,7 @@ __author__ = "Matteo Giantomassi"
 __maintainer__ = "Matteo Giantomassi"
 
 __all__ = [
-    "NlState",
+    "NlkState",
     "QState",
     "AtomicConfiguration",
     "RadialFunction",
@@ -54,7 +54,7 @@ def states_from_string(confstr):
     if tokens[0].startswith("["):
         noble_gas = AtomicConfiguration.neutral_from_symbol(tokens.pop(0)[1:-1])
         states = noble_gas.states
-                                                                      
+
     states.extend(parse_orbtoken(t) for t in tokens)
     return states
 
@@ -68,14 +68,19 @@ def parse_orbtoken(orbtoken):
     raise ValueError("Don't know how to interpret %s" % str(orbtoken))
 
 
-class NlState(collections.namedtuple("NlState", "n, l")):
-    """Named tuple storing (n,l)"""
+class NlkState(collections.namedtuple("NlkState", "n, l, k")):
+    """
+    Named tuple storing (n,l) or (n,l,k) for relativistic pseudos.
+    """
     def __str__(self):
-        return "n=%i, l=%i" % self
+        if self.k is None:
+            return "n=%i, l=%i" % (self.n, self.l)
+        else:
+            return "n=%i, l=%i, k=%i" % self
 
     @property
     def to_dict(self):
-        return {"n": self.n, "l": self.l}
+        return {"n": self.n, "l": self.l, "k": self.k}
 
 
 class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
@@ -93,7 +98,7 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
         s: Spin polarization. None if spin is not taken into account.
     """
     # TODO
-    #Spin +1, -1 or 1,2 or 0,1?
+    # Spin +1, -1 or 1,2 or 0,1?
     def __new__(cls, n, l, occ, eig=None, j=None, s=None):
         """Intercepts super.__new__ adding type conversion and default values."""
         eig = float(eig) if eig is not None else eig
@@ -101,7 +106,7 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
         s = int(s) if s is not None else s
         return super(QState, cls).__new__(cls, int(n), _asl(l), float(occ), eig=eig, j=j, s=s)
 
-    # Rich comparison support. 
+    # Rich comparison support.
     # Note that the ordering is based on the quantum numbers and not on energies!
     #def __gt__(self, other):
     #    if self.has_j:
@@ -113,7 +118,6 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
     #        return False
     #    else:
     #        raise RuntimeError("Don't know how to compare %s with %s" % (self, other))
-
     #def __lt__(self, other):
 
     @property
@@ -153,7 +157,7 @@ class AtomicConfiguration(object):
 
     def __len__(self):
         return len(self.states)
-                                                
+
     def __iter__(self):
         return self.states.__iter__()
 
@@ -164,7 +168,7 @@ class AtomicConfiguration(object):
         return (self.Z == other.Z and
                 all(s1 == s2 for s1, s2 in zip(self.states, other.states)))
 
-    def __ne__(self, other): 
+    def __ne__(self, other):
         return not self == other
 
     @classmethod
@@ -236,10 +240,10 @@ class RadialFunction(object):
         """
         Args:
             name: Name of the function (string).
-            rmesh: Iterable with the points of the radial mesh. 
+            rmesh: Iterable with the points of the radial mesh.
             values: Iterable with the values of the function on the radial mesh.
         """
-        self.name = name 
+        self.name = name
         self.rmesh = np.ascontiguousarray(rmesh)
         self.values = np.ascontiguousarray(values)
         assert len(self.rmesh) == len(self.values)
@@ -287,7 +291,7 @@ class RadialFunction(object):
     @property
     def to_dict(self):
         return dict(
-            name=str(self.name), 
+            name=str(self.name),
             rmesh=list(self.rmesh),
             values=list(self.values),
         )
@@ -314,12 +318,12 @@ class RadialFunction(object):
         return len(self.rmesh)
 
     @property
-    def minmax_ridx(self): 
+    def minmax_ridx(self):
         """
         Returns the indices of the values in a list with the maximum and minimum value.
         """
-        minimum = min(enumerate(self.values), key=lambda s: s[1]) 
-        maximum = max(enumerate(self.values), key=lambda s: s[1]) 
+        minimum = min(enumerate(self.values), key=lambda s: s[1])
+        maximum = max(enumerate(self.values), key=lambda s: s[1])
         return minimum[0], maximum[0]
 
     @property
@@ -379,7 +383,7 @@ class RadialFunction(object):
     def ifromr(self, rpoint):
         """The index of the point."""
         for (i, r) in enumerate(self.rmesh):
-            if r > rpoint: 
+            if r > rpoint:
                 return i-1
 
         if rpoint == self.rmesh[-1]:
@@ -389,7 +393,7 @@ class RadialFunction(object):
 
     def ir_small(self, abs_tol=0.01):
         """
-        Returns the rightmost index where the abs value of the wf becomes greater than abs_tol 
+        Returns the rightmost index where the abs value of the wf becomes greater than abs_tol
 
         Args:
             abs_tol: Absolute tolerance.
@@ -468,7 +472,7 @@ class RadialWaveFunction(RadialFunction):
         return d
 
 
-def plot_aepp(ae_funcs, pp_funcs=None, **kwargs): 
+def plot_aepp(ae_funcs, pp_funcs=None, **kwargs):
     """
     Uses Matplotlib to plot the radial wavefunction (AE only or AE vs PP)
 
@@ -491,7 +495,6 @@ def plot_aepp(ae_funcs, pp_funcs=None, **kwargs):
     title = kwargs.pop("title", None)
     show = kwargs.pop("show", True)
     savefig = kwargs.pop("savefig", None)
-    multi_plot = kwargs.pop("multi_plot", True)
     multi_plot = kwargs.pop("multi_plot", False)
 
     import matplotlib.pyplot as plt
@@ -567,17 +570,17 @@ def plot_aepp(ae_funcs, pp_funcs=None, **kwargs):
 
     if show:
         plt.show()
-                             
+
     if savefig is not None:
         fig.savefig(savefig)
 
     return fig
 
 
-def plot_logders(ae_logders, pp_logders, **kwargs): 
+def plot_logders(ae_logders, pp_logders, **kwargs):
     """
     Uses matplotlib to plot the logarithmic derivatives.
-                                                                                         
+
     Args:
         ae_logders: AE logarithmic derivatives.
         pp_logders: PP logarithmic derivatives.
@@ -593,31 +596,31 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
     Returns:
         `matplotlib` figure.
     """
-    assert len(ae_logders) == len(pp_logders) 
+    assert len(ae_logders) == len(pp_logders)
     title = kwargs.pop("title", None)
     show = kwargs.pop("show", True)
     savefig = kwargs.pop("savefig", None)
 
     import matplotlib.pyplot as plt
     fig = plt.figure()
-                                                                                         
+
     num_logds, spl_idx = len(ae_logders), 0
 
     for state, pp_logd in pp_logders.items():
         spl_idx += 1
         ax = fig.add_subplot(num_logds, 1, spl_idx)
 
-        if spl_idx == 1 and title: 
+        if spl_idx == 1 and title:
             ax.set_title(title)
-                                                                                         
+
         lines, legends = [], []
-                                                                                         
+
         ae_logd = ae_logders[state]
 
         line, = ax.plot(ae_logd.rmesh, ae_logd.values, "-b", linewidth=2.0, markersize=1)
         lines.append(line)
         legends.append("AE logder %s" % state)
-                                                                                         
+
         line, = ax.plot(pp_logd.rmesh, pp_logd.values, "^r", linewidth=2.0, markersize=4)
         lines.append(line)
         legends.append("PP logder %s" % state)
@@ -631,7 +634,7 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
 
     if show:
         plt.show()
-                             
+
     if savefig is not None:
         fig.savefig(savefig)
 

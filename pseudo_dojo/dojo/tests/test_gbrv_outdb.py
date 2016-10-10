@@ -1,11 +1,11 @@
-from __future__ import print_function, division
+from __future__ import print_function, division, unicode_literals
 
 import sys
 import os
 
 from pseudo_dojo.core.testing import PseudoDojoTest
 from pseudo_dojo.core.pseudos import DojoTable
-from pseudo_dojo.dojo.gbrv_outdb import GbrvRecord, GbrvOutdb, RocksaltOutdb
+from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb #, RocksaltOutdb, GbrvRecord,
 from pseudo_dojo.pseudos import dojotable_absdir
 
 
@@ -27,7 +27,7 @@ class GbrvOutdbTest(PseudoDojoTest):
 
         # Dict protocol
         assert "LiF" in outdb and "LiF" in outdb.keys()
-        records = outdb["LiF"] 
+        records = outdb["LiF"]
 
         # Test records (dict-like objects) supporting __eq__ and __ne__
         for rec in records:
@@ -72,7 +72,7 @@ class GbrvOutdbTest(PseudoDojoTest):
         jobs = outdb.find_jobs_torun(max_njobs=3)
         assert len(jobs) == 3
 
-        # Retrieve the record from the job params and make sure 
+        # Retrieve the record from the job params and make sure
         # the entry is set to scheduled.
         for job in jobs:
             rec = outdb.find_record(job.formula, job.pseudos)
@@ -111,8 +111,3 @@ class GbrvOutdbTest(PseudoDojoTest):
         u = outdb.check_update()
         print(u)
         assert u.nrec_added == 0 and u.nrec_removed == 0
-
-
-if __name__ == "__main__":
-    import unittest
-    unittest.main()

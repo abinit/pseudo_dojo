@@ -2,25 +2,19 @@
 from __future__ import division, print_function, unicode_literals
 
 import os
-import pytest
-import tempfile
 
 from abipy import abilab
-from abipy import data as abidata
 from pseudo_dojo.core import PseudoDojoTest
+import pseudo_dojo.data as pdj_data
 from pseudo_dojo.dojo.works import *
-
-
-#DRY_RUN = False
-DRY_RUN = True
 
 
 class DeltaFactorTest(PseudoDojoTest):
 
     def test_nc_silicon_df(self):
         """Testing df factory for NC silicon."""
-        flow = abilab.Flow(workdir=tempfile.mkdtemp())
-        df_factory = DeltaFactory()
+        pseudo = pdj_data.pseudo("Si.psp8")
+        df_factory = DeltaFactory(xc=pseudo.xc)
 
         extra_abivars = {
             "mem_test": 0,
@@ -29,24 +23,12 @@ class DeltaFactorTest(PseudoDojoTest):
             "paral_kgb": 0,
         }
 
-        # Create a tmp pseudo because the flow will add the DOJO_REPORT 
-        pseudo = abidata.pseudo("14si.pspnc").as_tmpfile()
+        flow = abilab.Flow.temporary_flow()
         work = df_factory.work_for_pseudo(pseudo, kppa=1, ecut=2, pawecutdg=None, **extra_abivars)
         flow.register_work(work)
 
-        flow.build_and_pickle_dump()
-        print("Working in ", flow.workdir)
-        isok, results = flow.abivalidate_inputs()
-        if not isok:
-            print(results)
-            assert isok
-
-        if not DRY_RUN:
-            flow.make_scheduler().start()
-            assert flow.all_ok
-            assert all(work.finalized for work in flow)
-            assert pseudo.has_dojo_report
-
+        flow.build_and_pickle_dump(abivalidate=True)
+        flow.check_status(show=True)
         flow.rmtree()
 
 
@@ -54,42 +36,47 @@ class GbrvTest(PseudoDojoTest):
 
     def test_nc_silicon_gbrv_factory(self):
         """Testing GBRV work for NC silicon."""
-        flow = abilab.Flow(workdir=tempfile.mkdtemp())
-        gbrv_factory = GbrvFactory()
+        pseudo = pdj_data.pseudo("Si.psp8")
+        gbrv_factory = GbrvFactory(xc=pseudo.xc)
 
-        extra_abivars = {
-            "mem_test": 0,
-            "fband": 2,
-            "nstep": 100,
-            "paral_kgb": 0,
-        }
-
-        # Create a tmp pseudo because the flow will add the DOJO_REPORT 
-        pseudo = abidata.pseudo("14si.pspnc").as_tmpfile()
+        flow = abilab.Flow.temporary_flow()
         for struct_type in ("fcc", "bcc"):
-            work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=3, pawecutdg=None, **extra_abivars)
+            work = gbrv_factory.relax_and_eos_work(pseudo, struct_type, ecut=3, pawecutdg=None)
             flow.register_work(work)
 
-        flow.build_and_pickle_dump()
-        print("Working in ", flow.workdir)
-
-        isok, results = flow.abivalidate_inputs()
-        print(results)
-        if not isok:
-            print(results)
-            assert isok
+        flow.build_and_pickle_dump(abivalidate=True)
+        flow.check_status(show=True)
         assert len(flow[0]) == 1
-
-        if not DRY_RUN:
-            flow.make_scheduler().start()
-            assert flow.all_ok
-            assert len(flow[0]) == 1 + 9
-            assert all(work.finalized for work in flow)
-            assert pseudo.has_dojo_report
-
         flow.rmtree()
 
 
-if __name__ == "__main__":
-    import unittest
-    unittest.main()
+class GhostsTest(PseudoDojoTest):
+
+    def test_nc_silicon_ghosts_factory(self):
+        """Testing GhostsWork for NC silicon."""
+        pseudo = pdj_data.pseudo("Si.psp8")
+        factory = GhostsFactory(xc=pseudo.xc)
+
+        flow = abilab.Flow.temporary_flow()
+        work = factory.work_for_pseudo(pseudo, ecut=3, pawecutdg=None)
+        flow.register_work(work)
+
+        flow.build_and_pickle_dump(abivalidate=True)
+        flow.check_status(show=True)
+        flow.rmtree()
+
+
+class GammaPhononTest(PseudoDojoTest):
+
+    def test_nc_silicon_gammaphonon_factory(self):
+        """Testing GammaPhononFactory for NC silicon."""
+        pseudo = pdj_data.pseudo("Si.psp8")
+        phgamma_factory = GammaPhononFactory(xc=pseudo.xc)
+
+        flow = abilab.Flow.temporary_flow()
+        work = phgamma_factory.work_for_pseudo(pseudo, ecut=3, pawecutdg=None)
+        flow.register_work(work)
+
+        flow.build_and_pickle_dump(abivalidate=True)
+        flow.check_status(show=True)
+        flow.rmtree()

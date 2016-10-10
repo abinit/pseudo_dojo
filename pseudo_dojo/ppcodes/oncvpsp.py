@@ -2,16 +2,19 @@
 """Classes and functions for post-processing the results produced by ONCVPSP."""
 from __future__ import division, print_function, unicode_literals
 
+import io
 import os
 import abc
 import json
+import tempfile
 import numpy as np
 
 from collections import namedtuple, OrderedDict
+from monty.os.path import which
 from monty.functools import lazy_property
 from monty.collections import AttrDict
 from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
-from pseudo_dojo.core import NlState, RadialFunction, RadialWaveFunction
+from pseudo_dojo.core import NlkState, RadialFunction, RadialWaveFunction
 from abipy.tools.derivatives import finite_diff
 
 import logging
@@ -29,6 +32,7 @@ _l2char = {
 }
 
 def is_integer(s):
+    """True if s in an integer."""
     try:
         c = float(s)
         return int(c) == c
@@ -43,7 +47,6 @@ def decorate_ax(ax, xlabel, ylabel, title, lines, legends):
     ax.set_ylabel(ylabel)
     ax.grid(True)
     ax.legend(lines, legends, loc="best", shadow=True)
-
 
 
 class PseudoGenDataPlotter(object):
@@ -94,7 +97,8 @@ class PseudoGenDataPlotter(object):
     def _wf_pltopts(self, l, aeps):
         """Plot options for wavefunctions."""
         return dict(
-            color=self.color_l[l], linestyle=self.linestyle_aeps[aeps], #marker=self.markers_aeps[aeps],
+            color=self.color_l[l],
+            linestyle=self.linestyle_aeps[aeps], #marker=self.markers_aeps[aeps],
             linewidth=self.linewidth, markersize=self.markersize)
 
     @add_fig_kwargs
@@ -117,7 +121,7 @@ class PseudoGenDataPlotter(object):
             lines.extend([ae_line, ps_line])
             legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
 
-        decorate_ax(ax, xlabel="Energy [Ha]", ylabel="ATAN(LogDer)", title="ATAN(Log Derivative)", 
+        decorate_ax(ax, xlabel="Energy [Ha]", ylabel="ATAN(LogDer)", title="ATAN(Log Derivative)",
                     lines=lines, legends=legends)
 
         return fig
@@ -127,7 +131,7 @@ class PseudoGenDataPlotter(object):
         """
         Plot ae and ps radial wavefunctions on axis ax.
 
-        lselect: List to select l channels
+        lselect: List to select l channels.
         """
         ax, fig, plt = get_ax_fig_plt(ax)
 
@@ -135,17 +139,21 @@ class PseudoGenDataPlotter(object):
         lselect = kwargs.get("lselect", [])
 
         lines, legends = [], []
-        for nl, ae_wf in ae_wfs.items():
-            ps_wf, l = ps_wfs[nl], nl.l
+        for nlk, ae_wf in ae_wfs.items():
+            ps_wf, l, k = ps_wfs[nlk], nlk.l, nlk.k
             if l in lselect: continue
+            #print(nlk)
 
             ae_line, = ax.plot(ae_wf.rmesh, ae_wf.values, **self._wf_pltopts(l, "ae"))
             ps_line, = ax.plot(ps_wf.rmesh, ps_wf.values, **self._wf_pltopts(l, "ps"))
 
             lines.extend([ae_line, ps_line])
-            legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
+            if k is None:
+                legends.extend(["AE l=%s" % l, "PS l=%s" % l])
+            else:
+                legends.extend(["AE l=%s, k=%s" % (l, k), "PS l=%s, k=%s" % (l, k)])
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$\phi(r)$", title="Wave Functions", 
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$\phi(r)$", title="Wave Functions",
                     lines=lines, legends=legends)
 
         return fig
@@ -161,30 +169,34 @@ class PseudoGenDataPlotter(object):
 
         lselect = kwargs.get("lselect", [])
 
+        linestyle = {1: "solid", 2: "dashed"}
         lines, legends = [], []
-        for nl, proj in self.projectors.items():
-            if nl.l in lselect: continue
+        for nlk, proj in self.projectors.items():
+            if nlk.l in lselect: continue
             line, = ax.plot(proj.rmesh, proj.values,
+                            color=self.color_l[nlk.l], linestyle=linestyle[nlk.n],
                             linewidth=self.linewidth, markersize=self.markersize)
-            lines.append(line); legends.append("Proj %s" % str(nl))
+            lines.append(line); legends.append("Proj %s" % str(nlk))
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$p(r)$", title="Projector Wave Functions", 
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$p(r)$", title="Projector Wave Functions",
                     lines=lines, legends=legends)
         return fig
 
     @add_fig_kwargs
     def plot_densities(self, ax=None, timesr2=False, **kwargs):
-        """Plot ae, ps and model densities on axis ax."""
+        """
+        Plot ae, ps and model densities on axis ax.
+        """
         ax, fig, plt = get_ax_fig_plt(ax)
 
         lines, legends = [], []
         for name, rho in self.densities.items():
-            d = rho.values if not timesr2 else rho.values * rho.rmesh ** 2 
+            d = rho.values if not timesr2 else rho.values * rho.rmesh ** 2
             line, = ax.plot(rho.rmesh, d, linewidth=self.linewidth, markersize=self.markersize)
             lines.append(line); legends.append(name)
 
         ylabel = "$n(r)$" if not timesr2 else "$r^2 n(r)$"
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel=ylabel, title="Charge densities", 
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel=ylabel, title="Charge densities",
                     lines=lines, legends=legends)
 
         return fig
@@ -209,10 +221,10 @@ class PseudoGenDataPlotter(object):
             vder = finite_diff(lin_values, h, order=order, acc=4)
             line, = ax.plot(lin_rmesh, vder) #, **self._wf_pltopts(l, "ae"))
             lines.append(line)
-                                                                                             
+
             legends.append("%s-order derivative of %s" % (order, name))
-                                                                                             
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \n(r)$" % order, title="Derivative of the charge densities", 
+
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \n(r)$" % order, title="Derivative of the charge densities",
                     lines=lines, legends=legends)
         return fig
 
@@ -231,7 +243,7 @@ class PseudoGenDataPlotter(object):
             else:
                 legends.append("PS l=%s" % str(l))
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$v_l(r)$", title="Ion Pseudopotentials", 
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$v_l(r)$", title="Ion Pseudopotentials",
                     lines=lines, legends=legends)
         return fig
 
@@ -253,13 +265,14 @@ class PseudoGenDataPlotter(object):
             vder = finite_diff(lin_values, h, order=order, acc=4)
             line, = ax.plot(lin_rmesh, vder, **self._wf_pltopts(l, "ae"))
             lines.append(line)
-                                                                                             
+
             if l == -1:
                 legends.append("%s-order derivative Vloc" % order)
             else:
                 legends.append("$s-order derivative PS l=%s" % str(l))
-                                                                                             
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \phi(r)$" % order, title="Derivative of the ion Pseudopotentials", 
+
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \phi(r)$" % order,
+                    title="Derivative of the ion Pseudopotentials",
                     lines=lines, legends=legends)
         return fig
 
@@ -274,7 +287,7 @@ class PseudoGenDataPlotter(object):
             lines.append(line)
             legends.append("Conv l=%s" % str(l))
 
-        decorate_ax(ax, xlabel="Ecut [Ha]", ylabel="$\Delta E$", title="Energy error per electron [Ha]", 
+        decorate_ax(ax, xlabel="Ecut [Ha]", ylabel="$\Delta E$", title="Energy error per electron [Ha]",
                     lines=lines, legends=legends)
 
         ax.set_yscale("log")
@@ -305,7 +318,7 @@ class PseudoGenDataPlotter(object):
     @add_fig_kwargs
     def plot_waves_and_projs(self, **kwargs):
         """Plot ae-ps wavefunctions and projectors on the same figure. Returns matplotlib Figure"""
-        lmax = max(nl.l for nl in self.radial_wfs.ae.keys())
+        lmax = max(nlk.l for nlk in self.radial_wfs.ae.keys())
         fig, ax_list = self._mplt.subplots(nrows=lmax+1, ncols=2, sharex=True, squeeze=False)
 
         for l in range(lmax+1):
@@ -331,7 +344,7 @@ class PseudoGenDataPlotter(object):
 
             intg = rho.r2f_integral()[-1]
             print("r2 f integral: ", intg)
-            print("form_factor(0): ", name, form.values[0]) 
+            print("form_factor(0): ", name, form.values[0])
 
         # Plot vloc(q)
         #for l, pot in self.potentials.items():
@@ -523,7 +536,7 @@ class PseudoGenOutputParser(object):
     @abc.abstractmethod
     def get_input_str(self):
         """Returns a string with the input file."""
-    
+
     @abc.abstractmethod
     def get_pseudo_str(self):
         """Returns a string with the pseudopotential file."""
@@ -562,18 +575,19 @@ class OncvOutputParser(PseudoGenOutputParser):
     # Object storing the final results.
     Results = PseudoGenResults
 
-    # Class used to instanciate the plotter.
+    # Class used to instantiate the plotter.
     Plotter = PseudoGenDataPlotter
 
-    def scan(self):
+    def scan(self, verbose=0):
         """
-        Scan the output, set and set `run_completed` attribute.
+        Scan the output, set `run_completed` attribute.
 
         Raises:
             self.Error if invalid file.
         """
         if not os.path.exists(self.filepath):
             raise self.Error("File %s does not exist" % self.filepath)
+
         # Read data and store it in lines
         self.lines = []
         with open(self.filepath) as fh:
@@ -581,8 +595,7 @@ class OncvOutputParser(PseudoGenOutputParser):
                 line = line.strip()
                 self.lines.append(line)
 
-                if line.startswith("fcfact*="):
-                    print(line)
+                if verbose and line.startswith("fcfact*="): print(line)
 
                 if line.startswith("DATA FOR PLOTTING"):
                     self.run_completed = True
@@ -614,13 +627,9 @@ class OncvOutputParser(PseudoGenOutputParser):
         self.gendate = toks.pop(-1)
         self.calc_type, self.version = toks[0], toks[-1]
 
-        if self.calc_type not in ["scalar-relativistic", "non-relativistic"]:
-            # print("will raise %s because found %s" % (self.Error, self.calc_type))
-            # raise self.Error("Fully relativistic case is not supported")
-            # print("calctype :", self.calc_type)
-            fullr = True
-        else:
-            fullr = False
+        fullr = self.calc_type not in ["scalar-relativistic", "non-relativistic"]
+        if fullr:
+            logger.info("Parsing of wavefunctions and projectors is not yet coded for fully-relativisic pseudos")
 
         # Read configuration (not very robust because we assume the user didn't change the template but oh well)
         header = "# atsym  z    nc    nv    iexc   psfile"
@@ -644,23 +653,27 @@ class OncvOutputParser(PseudoGenOutputParser):
             2    1    6.00    -3.5117357D+00
             3    0    2.00    -3.9736459D-01
             3    1    2.00    -1.4998149D-01
-        
+
         full rel:
         #   n    l    f              energy (Ha)
-        #   n    l    f        l+1/2             l-1/2		     
-            1    0    2.00    -2.4703720D+03			   
-            2    0    2.00    -4.2419865D+02			   
+        #   n    l    f        l+1/2             l-1/2
+            1    0    2.00    -2.4703720D+03
+            2    0    2.00    -4.2419865D+02
 
         """
         #header = "#   n    l    f        energy (Ha)"
-        if fullr: 
-            header = "#   n    l    f        l+1/2             l-1/2" 
+        if fullr:
+            header = "#   n    l    f        l+1/2             l-1/2"
         else:
             header = "#   n    l    f        energy (Ha)"
-        nc, nv = int(self.nc), int(self.nv)
+
+        # Convert nc and nv to int.
+        self.nc, self.nv = int(self.nc), int(self.nv)
+        nc, nv = self.nc, self.nv
+
         for i, line in enumerate(self.lines):
             if line.startswith(header):
-                beg, core = i + 1, [], 
+                beg, core = i + 1, [],
                 for c in range(nc):
                     n, l, f = self.lines[beg+c].split()[:3]
                     if is_integer(f):
@@ -670,7 +683,7 @@ class OncvOutputParser(PseudoGenOutputParser):
                     core.append(n + _l2char[l] + "^%s" %f)
                 self.core = "$" + " ".join(core) + "$"
 
-                beg, valence = i + nc + 1, [] 
+                beg, valence = i + nc + 1, []
                 for v in range(nv):
                     n, l, f = self.lines[beg+v].split()[:3]
                     if is_integer(f):
@@ -680,8 +693,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
                     valence.append(n + _l2char[l] + "^{%s}" % f)
                 self.valence = "$" + " ".join(valence) + "$"
-                #print("core", self.core)
-                #print("valence",self.valence)
+                #print("core", self.core, "valence",self.valence)
                 break
         else:
             raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
@@ -694,7 +706,6 @@ class OncvOutputParser(PseudoGenOutputParser):
                 break
         else:
             raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
-        #print("lmax", self.lmax)
 
         # Compute the minimun rc(l)
         header = "#   l,   rc,     ep,   ncon, nbas, qcut"
@@ -751,7 +762,9 @@ class OncvOutputParser(PseudoGenOutputParser):
 
     @lazy_property
     def densities(self):
-        """Dictionary with charge densities on the radial mesh."""
+        """
+        Dictionary with charge densities on the radial mesh.
+        """
         # radii, charge, core charge, model core charge
         # !r   0.0100642   4.7238866  53.4149287   0.0000000
         rho_data = self._grep("!r").data
@@ -763,32 +776,52 @@ class OncvOutputParser(PseudoGenOutputParser):
 
     @lazy_property
     def radial_wfs(self):
-        """Read the radial wavefunctions."""
+        """
+        Read and set the radial wavefunctions.
+        """
+        # scalar-relativistic
         #n= 1,  l= 0, all-electron wave function, pseudo w-f
         #
         #&     0    0.009945   -0.092997    0.015273
+
+        # Fully-relativistic
+        #n= 1,  l= 0  kap=-1, all-electron wave function, pseudo w-f
+        #
+        #&     0    0.009955    0.066338    0.000979
+
         ae_waves, ps_waves = OrderedDict(), OrderedDict()
 
         beg = 0
         while True:
             g = self._grep("&", beg=beg)
-            if g.data is None:
-                break
+            if g.data is None: break
             beg = g.stop + 1
 
             header = self.lines[g.start-2]
-            n, l = header.split(",")[0:2]
-            n = int(n.split("=")[1])
-            l = int(l.split("=")[1])
-            nl = NlState(n=n, l=l)
-            logger.info("Got state: %s" % str(nl))
+            if not self.fully_relativistic:
+                #n= 1,  l= 0, all-electron wave function, pseudo w-f
+                n, l = header.split(",")[0:2]
+                n = int(n.split("=")[1])
+                l = int(l.split("=")[1])
+                k = None
+            else:
+                # n= 1,  l= 0  kap=-1, all-electron wave function, pseudo w-f
+                n, lk = header.split(",")[0:2]
+                n = int(n.split("=")[1])
+                toks = lk.split("=")
+                l = int(toks[1].split()[0])
+                k = int(toks[-1])
+
+            nlk = NlkState(n=n, l=l, k=k)
+            logger.info("Got state: %s" % str(nlk))
 
             rmesh = g.data[:, 1]
             ae_wf = g.data[:, 2]
             ps_wf = g.data[:, 3]
 
-            ae_waves[nl] = RadialWaveFunction(nl, str(nl), rmesh, ae_wf)
-            ps_waves[nl] = RadialWaveFunction(nl, str(nl), rmesh, ps_wf)
+            assert nlk not in ae_waves
+            ae_waves[nlk] = RadialWaveFunction(nlk, str(nlk), rmesh, ae_wf)
+            ps_waves[nlk] = RadialWaveFunction(nlk, str(nlk), rmesh, ps_wf)
 
         return self.AePsNamedTuple(ae=ae_waves, ps=ps_waves)
 
@@ -798,23 +831,25 @@ class OncvOutputParser(PseudoGenOutputParser):
         #n= 1 2  l= 0, projecctor pseudo wave functions, well or 2nd valence
         #
         #@     0    0.009945    0.015274   -0.009284
-        projectors_nl = OrderedDict()
+        projectors_nlk = OrderedDict()
         beg = 0
         while True:
             g = self._grep("@", beg=beg)
-            if g.data is None:
-                break
+            if g.data is None: break
             beg = g.stop + 1
+            # TODO: Get n, l, k from header.
+            header = self.lines[g.start-2]
 
             rmesh = g.data[:, 1]
             l = int(g.data[0, 0])
 
             for n in range(len(g.data[0]) - 2):
-                nl = NlState(n=n+1, l=l)
-                logger.info("Got projector with: %s" % str(nl))
-                projectors_nl[nl] = RadialWaveFunction(nl, str(nl), rmesh, g.data[:, n+2])
+                nlk = NlkState(n=n+1, l=l, k=None)
+                logger.info("Got projector with: %s" % str(nlk))
+                assert nlk not in projectors_nlk
+                projectors_nlk[nlk] = RadialWaveFunction(nlk, str(nlk), rmesh, g.data[:, n+2])
 
-        return projectors_nl
+        return projectors_nlk
 
     @lazy_property
     def atan_logders(self):
@@ -936,41 +971,34 @@ class OncvOutputParser(PseudoGenOutputParser):
 
     def get_input_str(self):
         """String with the input file."""
-        i = self.find_string("Reference configufation results")
-        return "\n".join(self.lines[:i])
+        try:
+            # oncvpsp 3.2.3
+            i = self.find_string("<INPUT>")
+            j = self.find_string("</INPUT>")
+            return "\n".join(self.lines[i+1:j]) + "\n"
+        except self.Error:
+            #raise
+            i = self.find_string("Reference configufation results")
+            return "\n".join(self.lines[:i])
 
-    def get_pseudo_str(self, devel=False):
-        """String with the pseudopotential data."""
-        # devel is for tuning the pseudo, only two cutoffs
+    def get_pseudo_str(self):
+        """Return string with the pseudopotential data."""
 
         # Extract the pseudo in Abinit format.
         try:
             i = self.find_string('Begin PSPCODE8')
-        except:
-            i = self.find_string('Begin PSP_UPF')
+        except self.Error:
+            try:
+                i = self.find_string('Begin PSP_UPF')
+            except self.Error:
+                raise ValueError("Cannot find neither PSPCODE8 not PSP_UPF tag in output file")
 
         ps_data = "\n".join(self.lines[i+1:])
 
-        # Append the input to ps_data (note XML markers)
-        ps_data += "\n\n<INPUT>\n" + self.get_input_str() + "</INPUT>\n"
-
-        # Add the initial DOJO_REPORT with the hints and the initial list of ecut values.
-        estart = self.hints["high"]["ecut"]
-        dense_right = np.linspace(estart - 10, estart + 10, num=11)
-
-        d = {
-            "version": "1.0",
-            "pseudo_type": "norm-conserving",
-            "ppgen_hints": self.hints, 
-            "ecuts": list(dense_right) + [dense_right[-1] + 8, dense_right[-1] + 10,],
-            "symbol": self.atsym,
-        }
-
-        if devel:
-            # devellopment run: few, relatively high ecut calculations
-            d["ecuts"] = [estart, estart + 2]
-
-        ps_data += "\n<DOJO_REPORT>\n" + json.dumps(d, indent=4) + "\n</DOJO_REPORT>\n"
+        if "<INPUT>" not in ps_data:
+            # oncvpsp <= 3.2.2 --> Append the input to ps_data (note XML markers)
+            # oncvpsp >= 3.2.3 --> Input is already there
+            ps_data += "\n\n<INPUT>\n" + self.get_input_str() + "</INPUT>\n"
 
         return ps_data
 
@@ -1027,7 +1055,7 @@ class OncvOutputParser(PseudoGenOutputParser):
         data, stop, intag = [], None, -1
 
         if beg >= len(self.lines):
-            raise ValueError()
+            raise ValueError("beg > len(lines)")
 
         for i, l in enumerate(self.lines[beg:]):
             l = l.lstrip()
@@ -1040,8 +1068,131 @@ class OncvOutputParser(PseudoGenOutputParser):
                 if intag != -1:
                     stop = beg + i
                     break
-
         if not data:
             return self.GrepResults(data=None, start=intag, stop=stop)
         else:
             return self.GrepResults(data=np.array(data), start=intag, stop=stop)
+
+    def gnuplot(self):
+        """
+        Plot the results with gnuplot.
+        Based on the `replot.sh` script provided by the oncvpsp code.
+        """
+        outfile = self.filepath
+        base = os.path.basename(outfile)
+        gnufile = base + ".scr"
+        plotfile = base + ".plot"
+        temp = base + ".tmp"
+
+        from monty.os import cd
+        from subprocess import check_call
+        workdir = tempfile.mkdtemp()
+        print("Working in %s" % workdir)
+
+        with cd(workdir):
+            check_call("awk 'BEGIN{out=0};/GNUSCRIPT/{out=0}; {if(out == 1) {print}}; \
+                                /DATA FOR PLOTTING/{out=1}' %s > %s" % (outfile, plotfile), shell=True)
+
+            check_call("awk 'BEGIN{out=0};/END_GNU/{out=0}; {if(out == 1) {print}}; \
+                                /GNUSCRIPT/{out=1}' %s > %s" % (outfile, temp), shell=True)
+
+            check_call('sed -e 1,1000s/t1/"%s"/ %s > %s' % (plotfile, temp, gnufile), shell=True)
+
+            try:
+                check_call(["gnuplot", gnufile])
+            except KeyboardInterrupt:
+                print("Received KeyboardInterrupt")
+
+        os.rmdir(workdir)
+
+
+def oncv_make_open_notebook(outpath):
+    """
+    Generate an ipython notebook from the oncvpsp outputh
+    and open it in the browser. Return system exit code.
+
+    Raise:
+        RuntimeError if jupyther or ipython are not in $PATH
+    """
+    nbpath = oncv_write_notebook(outpath, nbpath=None)
+    cmd = "jupyter notebook %s" % nbpath
+    if which("jupyter") is not None:
+        return os.system("jupyter notebook %s" % nbpath)
+
+    raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
+
+
+def oncv_write_notebook(outpath, nbpath=None):
+    """
+    Write an ipython notebook to nbpath
+    If nbpath is None, a temporay file is created.
+    Return path to the notebook.
+    """
+    outpath = os.path.abspath(outpath)
+
+    import nbformat
+    nbf = nbformat.v4
+    nb = nbf.new_notebook()
+
+    nb.cells.extend([
+        nbf.new_markdown_cell("## This is an auto-generated notebook for %s" % os.path.basename(outpath)),
+        nbf.new_code_cell("""\
+from __future__ import print_function, division, unicode_literals
+%matplotlib notebook"""),
+
+        nbf.new_code_cell("""\
+# Parse output file
+from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
+onc_parser = OncvOutputParser('%s')""" % outpath),
+
+        nbf.new_code_cell("""\
+# Parse the file and build the plotter
+onc_parser.scan()
+if not onc_parser.run_completed:
+    raise RuntimeError("Cannot parse output file")
+
+plotter = onc_parser.make_plotter()"""),
+
+        nbf.new_markdown_cell("# AE and PS radial wavefunctions $\phi(r)$:"),
+        nbf.new_code_cell("fig = plotter.plot_radial_wfs(show=False)"),
+
+        nbf.new_markdown_cell("# Arctan of the logarithmic derivatives:"),
+        nbf.new_code_cell("fig = plotter.plot_atan_logders(show=False)"),
+
+        nbf.new_markdown_cell("# Convergence in $G$-space estimated by ONCVPSP:"),
+        nbf.new_code_cell("fig = plotter.plot_ene_vs_ecut(show=False)"),
+
+        nbf.new_markdown_cell("# Projectors:"),
+        nbf.new_code_cell("fig = plotter.plot_projectors(show=False)"),
+
+        nbf.new_markdown_cell("# Core-Valence-Model charge densities:"),
+        nbf.new_code_cell("fig = plotter.plot_densities(show=False)"),
+
+        nbf.new_markdown_cell("# Local potential and $l$-dependent potentials:"),
+        nbf.new_code_cell("fig = plotter.plot_potentials(show=False)"),
+
+        #nbf.new_markdown_cell("# 1-st order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
+        #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=1, show=False)"""),
+        #nbf.new_markdown_cell("# 2-nd order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
+        #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=2, show=False)"""),
+
+        #nbf.new_markdown_cell("Model core charge and form factors computed by ABINIT"),
+        #nbf.new_code_cell("""\
+#with pseudo.open_pspsfile() as psps:
+#psps.plot()"""),
+    ])
+
+    # Plot data
+    #plotter.plot_der_potentials()
+    #for order in [1,2,3,4]:
+    #    plotter.plot_der_densities(order=order)
+    #plotter.plot_densities(timesr2=True)
+    #plotter.plot_den_formfact()
+
+    if nbpath is None:
+        _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
+
+    with io.open(nbpath, 'wt', encoding="utf8") as f:
+        nbformat.write(nb, f)
+
+    return nbpath

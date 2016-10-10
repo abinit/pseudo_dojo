@@ -1,0 +1,432 @@
+{
+"dojo_info": {
+"pp_type": "NC",
+"description": "foo",
+"references": ["PRLbar", "PRBfoo"],
+"authors": ["hello", "kitty"],
+"xc_name": "PBE",
+"dojo_dir": "ONCVPSP-PBE-PDv0.2"
+}, 
+"pseudos_metadata": {
+"Ni": {
+"basename": "Ni-sp-high.psp8", 
+"Z_val": 18.0, 
+"l_max": 2, 
+"md5": "62e8728421df7a816e99ee3ba60e7ea5"
+}, 
+"Pd": {
+"basename": "Pd-sp.psp8", 
+"Z_val": 18.0, 
+"l_max": 2, 
+"md5": "68ac5c369d8874ba251949ceb1dc39c2"
+}, 
+"Pt": {
+"basename": "Pt-p.psp8", 
+"Z_val": 16.0, 
+"l_max": 2, 
+"md5": "110d86c611fd6cdb00a39f1a83648315"
+}, 
+"Ru": {
+"basename": "Ru-sp.psp8", 
+"Z_val": 16.0, 
+"l_max": 2, 
+"md5": "afc1f746e9f9fae0d37458274cc5a442"
+}, 
+"Na": {
+"basename": "Na-sp-gw.psp8", 
+"Z_val": 9.0, 
+"l_max": 1, 
+"md5": "fbed1a323250808bd8ec401a5f0dc1e8"
+}, 
+"Nb": {
+"basename": "Nb-sp.psp8", 
+"Z_val": 13.0, 
+"l_max": 2, 
+"md5": "0746dda22d301ad297caae8c9b7e91a4"
+}, 
+"Mg": {
+"basename": "Mg-sp-gw.psp8", 
+"Z_val": 10.0, 
+"l_max": 1, 
+"md5": "9dc0a7f069185cf32c6adfe35a5b9950"
+}, 
+"Li": {
+"basename": "Li-s-high.psp8", 
+"Z_val": 3.0, 
+"l_max": 1, 
+"md5": "373994f094d29d413603328039cc1dc8"
+}, 
+"Pb": {
+"basename": "Pb-d.psp8", 
+"Z_val": 14.0, 
+"l_max": 2, 
+"md5": "78ea3477f285429f84a1293f8dfc84e7"
+}, 
+"Y": {
+"basename": "Y-sp.psp8", 
+"Z_val": 11.0, 
+"l_max": 2, 
+"md5": "be26a6910d87637a56646dbe25885ce6"
+}, 
+"Tl": {
+"basename": "Tl-d.psp8", 
+"Z_val": 13.0, 
+"l_max": 2, 
+"md5": "8dcd9d8fa1395f0b1d79adaf30989707"
+}, 
+"Rb": {
+"basename": "Rb-sp.psp8", 
+"Z_val": 9.0, 
+"l_max": 2, 
+"md5": "ae83b63454e9760261cd3506551f43de"
+}, 
+"Ti": {
+"basename": "Ti-sp.psp8", 
+"Z_val": 12.0, 
+"l_max": 2, 
+"md5": "c0cad9016dd7cdc6ac8caf2eccb8bec6"
+}, 
+"Rn": {
+"basename": "Rn.psp8", 
+"Z_val": 8.0, 
+"l_max": 2, 
+"md5": "de74bcc0481601816ee1e844ce08209e"
+}, 
+"Te": {
+"basename": "Te-d.psp8", 
+"Z_val": 16.0, 
+"l_max": 2, 
+"md5": "e4ea6b5e2ed140d454e60deb131290f7"
+}, 
+"Rh": {
+"basename": "Rh-sp.psp8", 
+"Z_val": 17.0, 
+"l_max": 2, 
+"md5": "0772b5835200e416c7dfe7336f0b8fbc"
+}, 
+"Tc": {
+"basename": "Tc-sp.psp8", 
+"Z_val": 15.0, 
+"l_max": 2, 
+"md5": "eef62717ff94dbb5d9cb7e15dffda1b6"
+}, 
+"Ta": {
+"basename": "Ta-p.psp8", 
+"Z_val": 11.0, 
+"l_max": 2, 
+"md5": "2cf2becab722f9d538b50bea1b16aa27"
+}, 
+"Be": {
+"basename": "Be-low.psp8", 
+"Z_val": 2.0, 
+"l_max": 1, 
+"md5": "03703d23daa7799c54eab22decbc9d02"
+}, 
+"Xe": {
+"basename": "Xe.psp8", 
+"Z_val": 8.0, 
+"l_max": 2, 
+"md5": "78490aafe5b68d35a1a40dd949b11d7e"
+}, 
+"Ba": {
+"basename": "Ba-sp.psp8", 
+"Z_val": 10.0, 
+"l_max": 2, 
+"md5": "8e0be156f59a411547365433640493b8"
+}, 
+"Bi": {
+"basename": "Bi-d.psp8", 
+"Z_val": 15.0, 
+"l_max": 2, 
+"md5": "d3472b18b8f9f9a9d71d2cbd022e032c"
+}, 
+"Si": {
+"basename": "Si.psp8", 
+"Z_val": 4.0, 
+"l_max": 2, 
+"md5": "2e845227c3046094c74ec9ebf0f63d6c"
+}, 
+"As": {
+"basename": "As.psp8", 
+"Z_val": 5.0, 
+"l_max": 2, 
+"md5": "16110ed8cc5c882e7314c7945c3b4ef0"
+}, 
+"Po": {
+"basename": "Po-d.psp8", 
+"Z_val": 16.0, 
+"l_max": 2, 
+"md5": "fbb63317436c31f41ee4dc05c7801455"
+}, 
+"Fe": {
+"basename": "Fe-sp-high.psp8", 
+"Z_val": 16.0, 
+"l_max": 2, 
+"md5": "ee310dad67a973e433085d2e36e4fb00"
+}, 
+"Br": {
+"basename": "Br.psp8", 
+"Z_val": 7.0, 
+"l_max": 2, 
+"md5": "8046fcef30ebe28103919afd669168d7"
+}, 
+"Sr": {
+"basename": "Sr-sp.psp8", 
+"Z_val": 10.0, 
+"l_max": 2, 
+"md5": "ba4f1d82846063e066ef425151b7e891"
+}, 
+"Hf": {
+"basename": "Hf-p.psp8", 
+"Z_val": 10.0, 
+"l_max": 2, 
+"md5": "43917f6da7be6cfc02c0ff06e7173911"
+}, 
+"Mo": {
+"basename": "Mo-sp.psp8", 
+"Z_val": 14.0, 
+"l_max": 2, 
+"md5": "8fc6ef4e56b29f9e2cd9e3315b00537c"
+}, 
+"He": {
+"basename": "He.psp8", 
+"Z_val": 2.0, 
+"l_max": 1, 
+"md5": "b641aa96f6adafae34cd5bed9dcf7862"
+}, 
+"C": {
+"basename": "C-gw.psp8", 
+"Z_val": 4.0, 
+"l_max": 1, 
+"md5": "8d976acfc3a998e7b4623c935a315d4b"
+}, 
+"B": {
+"basename": "B-gw.psp8", 
+"Z_val": 3.0, 
+"l_max": 1, 
+"md5": "8c43a62bbf69837cec871a7d2cb5b350"
+}, 
+"F": {
+"basename": "F-high.psp8", 
+"Z_val": 7.0, 
+"l_max": 2, 
+"md5": "c2e001117654eb23f37de9cca155599d"
+}, 
+"I": {
+"basename": "I.psp8", 
+"Z_val": 7.0, 
+"l_max": 2, 
+"md5": "bf0756ee029291885d153623eec65419"
+}, 
+"H": {
+"basename": "H.psp8", 
+"Z_val": 1.0, 
+"l_max": 1, 
+"md5": "15a6e46aca0afed09986939978e0ca9b"
+}, 
+"K": {
+"basename": "K-sp.psp8", 
+"Z_val": 9.0, 
+"l_max": 2, 
+"md5": "51cae20b8ffc404ea470e5ab641cee63"
+}, 
+"Mn": {
+"basename": "Mn-sp-high.psp8", 
+"Z_val": 15.0, 
+"l_max": 2, 
+"md5": "08c795216485ebbb1297b65ab10dac8c"
+}, 
+"O": {
+"basename": "O-high.psp8", 
+"Z_val": 6.0, 
+"l_max": 2, 
+"md5": "fb7dd005fbf4eb27da8d4e7ee66ccca1"
+}, 
+"Ne": {
+"basename": "Ne-high.psp8", 
+"Z_val": 8.0, 
+"l_max": 1, 
+"md5": "ba7b953facd578b4425fbc68cadd1368"
+}, 
+"P": {
+"basename": "P-dloc.psp8", 
+"Z_val": 5.0, 
+"l_max": 2, 
+"md5": "14202ec61bd1222d2dbc0027dbf67a99"
+}, 
+"S": {
+"basename": "S.psp8", 
+"Z_val": 6.0, 
+"l_max": 2, 
+"md5": "7b15c517d18c21b60b0dc7eaba544298"
+}, 
+"Re": {
+"basename": "Re-p.psp8", 
+"Z_val": 13.0, 
+"l_max": 2, 
+"md5": "475dcc61406cdfd8ac83f6a702c50219"
+}, 
+"Kr": {
+"basename": "Kr.psp8", 
+"Z_val": 8.0, 
+"l_max": 2, 
+"md5": "780b1f7fc07dc513fed5fec0ed16cef8"
+}, 
+"W": {
+"basename": "W-p.psp8", 
+"Z_val": 12.0, 
+"l_max": 2, 
+"md5": "d4a523ea05dc7cfa629ef4e1153b9b4a"
+}, 
+"V": {
+"basename": "V-sp.psp8", 
+"Z_val": 13.0, 
+"l_max": 2, 
+"md5": "8fd1105b6fbbf6bbb0f13a679d940c17"
+}, 
+"Sc": {
+"basename": "Sc-sp.psp8", 
+"Z_val": 11.0, 
+"l_max": 2, 
+"md5": "b9b39aa157676082bddccac8b9683fd1"
+}, 
+"Sb": {
+"basename": "Sb-d.psp8", 
+"Z_val": 15.0, 
+"l_max": 2, 
+"md5": "c5cc0da90fef0d799a2e1292f730cf47"
+}, 
+"N": {
+"basename": "N.psp8", 
+"Z_val": 5.0, 
+"l_max": 1, 
+"md5": "6402edae5c1195c223177855d76f155d"
+}, 
+"Os": {
+"basename": "Os-p.psp8", 
+"Z_val": 14.0, 
+"l_max": 2, 
+"md5": "79917f85466283f046cd4450982d36cb"
+}, 
+"Se": {
+"basename": "Se-d.psp8", 
+"Z_val": 16.0, 
+"l_max": 2, 
+"md5": "f8947e8403fe328b02d4af409e89cb4e"
+}, 
+"Hg": {
+"basename": "Hg.psp8", 
+"Z_val": 12.0, 
+"l_max": 2, 
+"md5": "66661f5fe478b140497e2c3f5450c914"
+}, 
+"Zn": {
+"basename": "Zn-sp.psp8", 
+"Z_val": 20.0, 
+"l_max": 2, 
+"md5": "9e844347c0203f1e8ae393cfdacb8291"
+}, 
+"Co": {
+"basename": "Co-sp-high.psp8", 
+"Z_val": 17.0, 
+"l_max": 2, 
+"md5": "3f83318d55baf3907f454cee29e0cac3"
+}, 
+"Ag": {
+"basename": "Ag-sp.psp8", 
+"Z_val": 19.0, 
+"l_max": 2, 
+"md5": "e2e2c9978f4b7e1417e924262cdaf621"
+}, 
+"Cl": {
+"basename": "Cl.psp8", 
+"Z_val": 7.0, 
+"l_max": 2, 
+"md5": "ac7e9789f5c0f98596eba47ac24e2122"
+}, 
+"Ca": {
+"basename": "Ca-sp.psp8", 
+"Z_val": 10.0, 
+"l_max": 2, 
+"md5": "4c22760d6ac36e35c46407bf1e1b7c5f"
+}, 
+"Ir": {
+"basename": "Ir-p.psp8", 
+"Z_val": 15.0, 
+"l_max": 2, 
+"md5": "692d150f222b69314eaacfd1e6bcb7c5"
+}, 
+"Al": {
+"basename": "Al.psp8", 
+"Z_val": 3.0, 
+"l_max": 2, 
+"md5": "237e4375946f6d98915c1fbfba136674"
+}, 
+"Cd": {
+"basename": "Cd-sp.psp8", 
+"Z_val": 20.0, 
+"l_max": 2, 
+"md5": "193af670b6e6db2bdc6ab42344c4941e"
+}, 
+"Ge": {
+"basename": "Ge-d.psp8", 
+"Z_val": 14.0, 
+"l_max": 2, 
+"md5": "424a9c0c962a935970fe432e5323e98a"
+}, 
+"Ar": {
+"basename": "Ar.psp8", 
+"Z_val": 8.0, 
+"l_max": 2, 
+"md5": "951c2d218a8cb87f80b81b3d91a51aa5"
+}, 
+"Au": {
+"basename": "Au-fsp.psp8", 
+"Z_val": 33.0, 
+"l_max": 3, 
+"md5": "415758ccd690158f5385d63e65e83761"
+}, 
+"Zr": {
+"basename": "Zr-sp.psp8", 
+"Z_val": 12.0, 
+"l_max": 2, 
+"md5": "60bae87d49016ee25416930f6b7a99c5"
+}, 
+"Ga": {
+"basename": "Ga-d.psp8", 
+"Z_val": 13.0, 
+"l_max": 2, 
+"md5": "ce3febd7acef295326b71320ebc41a0e"
+}, 
+"In": {
+"basename": "In-d.psp8", 
+"Z_val": 13.0, 
+"l_max": 2, 
+"md5": "7a158e89db6db73991d78ce00d901bec"
+}, 
+"Cs": {
+"basename": "Cs-sp.psp8", 
+"Z_val": 9.0, 
+"l_max": 3, 
+"md5": "d7fdf064c1b3bdf57ecd408c161999fe"
+}, 
+"Cr": {
+"basename": "Cr-sp-high.psp8", 
+"Z_val": 14.0, 
+"l_max": 2, 
+"md5": "2c99561a47dd92fc29aee2f43afbb454"
+}, 
+"Cu": {
+"basename": "Cu-sp-high.psp8", 
+"Z_val": 19.0, 
+"l_max": 2, 
+"md5": "166c5e82ded1ef87e58889b0efbbb021"
+}, 
+"Sn": {
+"basename": "Sn-d.psp8", 
+"Z_val": 14.0, 
+"l_max": 2, 
+"md5": "7f885df99e461e747aa4050372abcd45"
+}
+}
+}

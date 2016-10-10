@@ -43,9 +43,8 @@ def fwp(tmpdir, request):
     # Temporary working directory
     fwp.workdir = str(tmpdir)
 
-    # Create the TaskManager.
+    # Create the TaskManager and the scheduler.
     fwp.manager = abilab.TaskManager.from_string(request.param)
-
     fwp.scheduler = abilab.PyFlowScheduler.from_file(os.path.join(os.path.dirname(__file__), "scheduler.yml"))
 
     return fwp
@@ -54,7 +53,7 @@ def fwp(tmpdir, request):
 # Use tuples instead of dict because pytest require objects to be hashable.
 _tvars_list = [
     (("paral_kgb", 0),),
-    (("paral_kgb", 1),),
+    #(("paral_kgb", 1),),
 ]
 
 @pytest.fixture(params=_tvars_list)

@@ -21,7 +21,7 @@ Pt 78 9 5 4 psp8
 0 1.4 0.0 4 7 8.8
 1 1.45 0.0 4 8 9.0
 2 1.4 0.0 4 7 9.6
-3 1.2 0.0 4 7 17.0
+3 1.2 0.0 4 7 16.0
 # lloc lpopt rc5 dvloc0
 4 3 1.2 0.0
 # l nproj debl
@@ -29,8 +29,8 @@ Pt 78 9 5 4 psp8
 1 2 2.5
 2 2 1.0
 3 1 1.0
-# icmod fcfact
-1 0.15
+# icmod fcfact rcfact
+3 5.0 1.33
 # epsh1 epsh2 depsh
 -14.0 12.0 0.02
 # rlmax drl

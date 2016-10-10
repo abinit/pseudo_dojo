@@ -60,11 +60,10 @@ class PseudoGenerator(object):
     """
     This object receives a string with the input file and generates a pseudopotential.
     It calls the pp generator in a subprocess to produce the results in a temporary directory.
-    It also provides an interface to validate/analyze/plot the results 
+    It also provides an interface to validate/analyze/plot the results
     produced by the pseudopotential code. Concrete classes must:
 
         1) call super().__init__() in their constructor.
-
         2) the object should have the input file stored in self.input_str
 
     Attributes:
@@ -115,25 +114,32 @@ class PseudoGenerator(object):
             # Build a temporary directory
             self.workdir = tempfile.mkdtemp(prefix=self.__class__.__name__)
 
-    # paths for stdin, stdout, stderr
     @property
     def stdin_path(self):
+        """Absolute path of the standard input."""
         return os.path.join(self.workdir, self.stdin_basename)
 
     @property
     def stdout_path(self):
+        """Absolute path of the standard output."""
         return os.path.join(self.workdir, self.stdout_basename)
 
     @property
     def stderr_path(self):
+        """Absolute path of the standard error."""
         return os.path.join(self.workdir, self.stderr_basename)
 
     @property
     def status(self):
+        """The status of the job."""
         return self._status
 
     @property
     def retcode(self):
+        """
+        Return code of the subprocess. None if not available because e.g. the job
+        has not been started yet.
+        """
         try:
             return self._retcode
         except AttributeError:
@@ -141,6 +147,7 @@ class PseudoGenerator(object):
 
     @property
     def pseudo(self):
+        """:class:`Pseudo` object."""
         try:
             return self._pseudo
         except AttributeError:
@@ -148,10 +155,12 @@ class PseudoGenerator(object):
 
     @property
     def executable(self):
+        """Name of the executable."""
         return self._executable
 
     @property
     def input_str(self):
+        """String with the input file."""
         return self._input_str
 
     def __repr__(self):
@@ -279,9 +288,14 @@ class PseudoGenerator(object):
 
     @abc.abstractmethod
     def plot_results(self, **kwargs):
-        """Plot the results with matplotlib."""
+        """
+        Plot the results with matplotlib.
+        """
 
     def parse_output(self):
+        """
+        Uses OutputParser to parse the output file.the output file.the output file.the output file.
+        """
         parser = self.OutputParser(self.stdout_path)
         try:
             parser.scan()
@@ -298,6 +312,10 @@ class PseudoGenerator(object):
 
     @property
     def plotter(self):
+        """
+        Return a plotter object that knows how to plot the results
+        of the pseudopotential generator
+        """
         return getattr(self, "_plotter", None)
 
 
@@ -313,6 +331,13 @@ class OncvGenerator(PseudoGenerator):
         retcode: Retcode of oncvpsp
     """
     OutputParser = OncvOutputParser
+
+    @classmethod
+    def from_file(cls, path, calc_type, workdir=None):
+        """Build the object from a file containing input parameters."""
+        with open(path, "rt") as fh:
+            input_str = fh.read()
+            return cls(input_str, calc_type, workdir=workdir)
 
     def __init__(self, input_str, calc_type, workdir=None):
         super(OncvGenerator, self).__init__(workdir=workdir)
@@ -370,7 +395,7 @@ class OncvGenerator(PseudoGenerator):
 
             # Write Abinit pseudopotential.
             filepath = os.path.join(self.workdir, parser.atsym + ".psp8")
-            #if os.path.exists(filepath): 
+            #if os.path.exists(filepath):
             #    raise RuntimeError("File %s already exists" % filepath)
 
             # Initialize self.pseudo from file.
@@ -412,16 +437,16 @@ class OncvMultiGenerator(object):
     This object receives a template input file and generates multi
     pseudos by changing paricular parameters
     """
-    def __init__(self, filepath):
+    def __init__(self, filepath, calc_type="scalar-relativistic"):
         """
         Args:
             filepath: File with the input file
         """
-        self.calc_type="scalar-relativistic"
         self.filepath = os.path.abspath(filepath)
+        self.calc_type = calc_type
 
         with open(filepath, "r") as fh:
-           self.template_lines = fh.readlines()
+            self.template_lines = fh.readlines()
 
     def change_icmod3(self, fcfact_list=(3, 4, 5), rcfact_list=(1.3, 1.35, 1.4, 1.45, 1.5, 1.55)):
         """
@@ -429,10 +454,10 @@ class OncvMultiGenerator(object):
         and create new directories with the pseudopotentials in the current workding directory.
 
         Return:
-            List of `Pseudo` objects 
+            List of `Pseudo` objects
 
         Old version with icmod == 1.
-        
+
         # icmod fcfact
         1 0.085
 
@@ -467,7 +492,7 @@ class OncvMultiGenerator(object):
             input_str = "".join(new_input)
             #print(input_str)
             ppgen = OncvGenerator(input_str, calc_type=self.calc_type)
-            
+
             name = base_name + "_fcfact%3.2f_rcfact%3.2f" % (fcfact, rcfact)
             ppgen.name = name
             ppgen.stdin_basename = name + ".in"

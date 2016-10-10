@@ -5,21 +5,21 @@ from __future__ import division, print_function, unicode_literals
 import abc
 import sys
 import os
+import logging
 import numpy as np
-from abipy import abilab
 
-from monty.collections import AttrDict
-from monty.pprint import pprint_table
-from pymatgen.core.units import Ha_to_eV
-from pymatgen.io.abinit.eos import EOS
-from pymatgen.io.abinit.pseudos import Pseudo
+from monty.io import FileLock
+from pymatgen.core.xcfunc import XcFunc
+from pymatgen.analysis.eos import EOS
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
-from pymatgen.io.abinit.works import Work, build_oneshot_phononwork, OneShotPhononWork
+from pymatgen.io.abinit.works import Work, RelaxWork, PhononWork
 from abipy.core.structure import Structure
+from abipy.abio.factories import ion_ioncell_relax_input
+from abipy import abilab
+from pseudo_dojo.core.dojoreport import DojoReport, dojo_dfact_results, dojo_gbrv_results
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -27,289 +27,76 @@ class DojoWork(Work):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractproperty
-    def pseudo(self):
+    def dojo_pseudo(self):
         """:class:`Pseudo` object"""
 
     @abc.abstractproperty
     def dojo_trial(self):
         """String identifying the DOJO trial. Used to write results in the DOJO_REPORT."""
 
-    def write_dojo_report(self, report, overwrite_data=False):
-        """Write/update the DOJO_REPORT section of the pseudopotential."""
-        # Read old_report from pseudo.
-        old_report = self.pseudo.read_dojo_report()
-
-        dojo_trial = self.dojo_trial
-        if dojo_trial not in old_report:
-            # Create new entry
-            old_report[dojo_trial] = {}
-        
-        # Convert float to string with 1 decimal digit.
-        dojo_ecut = "%.1f" % self.ecut
-
-        # Check that we are not going to overwrite data.
-        if dojo_ecut in old_report[dojo_trial] and not overwrite_data:
-            raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
-
-        # Update old report card with the new one and write new report
-        old_report[dojo_trial][dojo_ecut] = report
-        try:
-            self.pseudo.write_dojo_report(old_report)
-        except (OSError, IOError, TypeError):
-            print("Something wrong in write_dojo_report")
-
-
-def check_conv(values, tol, min_numpts=1, mode="abs", vinf=None):
-    """
-    Given a list of values and a tolerance tol, returns the leftmost index for which
-
-        abs(value[i] - vinf) < tol if mode == "abs"
-    or
-        abs(value[i] - vinf) / vinf < tol if mode == "rel"
-
-    returns -1 if convergence is not achieved. By default, vinf = values[-1]
-
-    Args:
-        tol: Tolerance
-        min_numpts: Minimum number of points that must be converged.
-        mode: "abs" for absolute convergence, "rel" for relative convergence.
-        vinf: Used to specify an alternative value instead of values[-1].
-    """
-    vinf = values[-1] if vinf is None else vinf
-
-    if mode == "abs":
-        vdiff = [abs(v - vinf) for v in values]
-    elif mode == "rel":
-        vdiff = [abs(v - vinf) / vinf for v in values]
-    else:
-        raise ValueError("Wrong mode %s" % mode)
-
-    numpts, i = len(vdiff), -2
-    if numpts > min_numpts and vdiff[-2] < tol:
-        for i in range(numpts-1, -1, -1):
-            if vdiff[i] > tol:
-                break
-        if (numpts - i - 1) < min_numpts: i = -2
-
-    return i + 1
-
-
-def compute_hints(ecuts, etotals, atols_mev, min_numpts=1, stream=sys.stdout):
-    de_low, de_normal, de_high = [a / (1000 * Ha_to_eV) for a in atols_mev]
-
-    etotal_inf = etotals[-1]
-
-    ihigh = check_conv(etotals, de_high, min_numpts=min_numpts)
-    inormal = check_conv(etotals, de_normal)
-    ilow = check_conv(etotals, de_low)
-
-    accidx = {"H": ihigh, "N": inormal, "L": ilow}
-
-    table = []; app = table.append
-
-    app(["iter", "ecut", "etotal", "et-e_inf [meV]", "accuracy",])
-    for idx, (ec, et) in enumerate(zip(ecuts, etotals)):
-        line = "%d %.1f %.7f %.3f" % (idx, ec, et, (et-etotal_inf) * Ha_to_eV * 1.e+3)
-        row = line.split() + ["".join(c for c, v in accidx.items() if v == idx)]
-        app(row)
-
-    if stream is not None:
-        pprint_table(table, out=stream)
-
-    ecut_high, ecut_normal, ecut_low = 3 * (None,)
-    exit = (ihigh != -1)
-
-    if exit:
-        ecut_low = ecuts[ilow]
-        ecut_normal = ecuts[inormal]
-        ecut_high = ecuts[ihigh]
-
-    aug_ratios = [1, ]
-    aug_ratio_low, aug_ratio_normal, aug_ratio_high = 3 * (1,)
-
-    #if not monotonic(etotals, mode="<", atol=1.0e-5):
-    #    logger.warning("E(ecut) is not decreasing")
-    #    wf_results.push_exceptions("E(ecut) is not decreasing:\n" + str(etotals))
-
-    return AttrDict(
-        exit=ihigh != -1,
-        etotals=list(etotals),
-        ecuts=list(ecuts),
-        aug_ratios=aug_ratios,
-        low={"ecut": ecut_low, "aug_ratio": aug_ratio_low},
-        normal={"ecut": ecut_normal, "aug_ratio": aug_ratio_normal},
-        high={"ecut": ecut_high, "aug_ratio": aug_ratio_high})
-
-
-class PseudoConvergence(DojoWork):
-
-    def __init__(self, pseudo, ecut_slice, nlaunch, atols_mev,
-                 toldfe=1.e-8, spin_mode="polarized", acell=(8, 9, 10), 
-                 smearing="fermi_dirac:0.1 eV", max_niter=300, workdir=None, manager=None):
+    def add_entry_to_dojoreport(self, entry, overwrite_data=False, pop_trial=False):
         """
-        Args:
-            pseudo: string or :class:`Pseudo` instance
-            ecut_slice: List of cutoff energies or slice object (mainly used for infinite iterations).
-            nlaunch:
-            atols_mev: List of absolute tolerances in meV (3 entries corresponding to accuracy ["low", "normal", "high"]
-            spin_mode: Defined how the electronic spin will be treated.
-            acell: Lengths of the periodic box in Bohr.
-            smearing: :class:`Smearing` instance or string in the form "mode:tsmear". Default: FemiDirac with T=0.1 eV
-            max_niter:
-            workdir: Working directory.
-            manager: :class:`TaskManager` object.
-        """
-        super(PseudoConvergence, self).__init__(workdir=workdir, manager=manager)
-
-        self._pseudo = Pseudo.as_pseudo(pseudo)
-        self.nlaunch = nlaunch; assert nlaunch > 0
-        self.atols_mev = atols_mev
-        self.toldfe = toldfe
-        self.spin_mode = SpinMode.as_spinmode(spin_mode)
-        self.acell = acell
-        self.smearing = Smearing.as_smearing(smearing)
-        self.max_niter = max_niter; assert max_niter > 0
-        self.ecut_slice = ecut_slice; assert isinstance(ecut_slice, slice)
-
-        self.ecuts = []
-
-        if self.pseudo.ispaw:
-            raise NotImplementedError("PAW convergence tests are not supported yet")
-
-        for i in range(self.nlaunch):
-            ecut = ecut_slice.start + i * ecut_slice.step
-            #if self.ecut_slice.stop is not None and ecut > self.ecut_slice.stop: continue
-            self.add_task_with_ecut(ecut)
-
-    @property
-    def pseudo(self):
-        return self._pseudo
-                            
-    @property
-    def dojo_trial(self):
-        return "hints"
-
-    def add_task_with_ecut(self, ecut):
-        """Register a new task with cutoff energy ecut."""
-        # One atom in a box of lenghts acell.
-        inp = abilab.AbinitInput(structure=Structure.boxed_atom(self.pseudo, acell=self.acell), 
-                                 pseudos=self.pseudo)
-
-        # Gamma-only sampling.
-        inp.add_abiobjects(self.spin_mode, self.smearing, KSampling.gamma_only())
-
-        inp.set_vars(
-            ecut=ecut,
-            toldfe=self.toldfe,
-            prtwf=-1,
-        )
-
-        self.ecuts.append(ecut)
-        self.register_scf_task(inp)
-
-    def make_report(self):
-        """
-        "hints": {
-            "high": {"aug_ratio": 1, "ecut": 45},
-            "low": {...},
-            "normal": {...}
-        """
-        results = self.work.get_results()
-        d = {key: results[key] for key in ["low", "normal", "high"]}
-
-        d.update(dict(
-            ecuts=results["ecuts"],
-            etotals=results["etotals"]))
-        
-        if results.exceptions:
-            d["_exceptions"] = str(results.exceptions)
-
-        return {self.dojo_key: d}
-
-    def on_all_ok(self):
-        """
-        This method is called when self reaches S_OK.
-        It checks if Etotal(ecut) is converged withing atols_mev
-        If the condition is not fulfilled, the callback creates
-        nlaunch new tasks with larger values of ecut and we keep on running.
-        """
-        etotals = self.read_etotals()
-        data = compute_hints(self.ecuts, etotals, self.atols_mev)
-
-        if data.exit:
-            logger.info("Converged")
-            d = {key: data[key] for key in ["low", "normal", "high"]}
-                                                                         
-            d.update(dict(
-                ecuts=data["ecuts"],
-                etotals=data["etotals"]))
-
-            #if results.exceptions:
-            #    d["_exceptions"] = str(results.exceptions)
-
-            # Read old report from pseudo and add hints
-            report = self.pseudo.read_dojo_report()
-            report["hints"] = d
-
-            # Write new report
-            self.pseudo.write_dojo_report(report)
-
-        else:
-            logger.info("Building new tasks")
-
-            estart = self.ecuts[-1] 
-            for i in range(self.nlaunch):
-                ecut = estart + (i+1) * self.ecut_slice.step
-                #if self.ecut_slice.stop is not None and ecut > self.ecut_slice.stop: continue
-                self.add_task_with_ecut(ecut)
-
-            if len(self.ecuts) > self.max_niter:
-                raise self.Error("Cannot create more that %d tasks, aborting now" % self.max_niter)
-
-            self._finalized = False
-            self.flow.allocate()
-            self.flow.build_and_pickle_dump()
-
-        return super(PseudoConvergence, self).on_all_ok()
-
-
-class PPConvergenceFactory(object):
-    """
-    Factory object that constructs works for analyzing the converge of pseudopotentials.
-    """
-    def work_for_pseudo(self, pseudo, ecut_slice, nlaunch,
-                        toldfe=1.e-8, atols_mev=(10, 1, 0.1), spin_mode="polarized",
-                        acell=(8, 9, 10), smearing="fermi_dirac:0.1 eV", workdir=None, manager=None):
-        """
-        Return a `Work` object given the pseudopotential pseudo.
+        Write/update the DOJO_REPORT section of the pseudopotential.
+        Important paramenters such as the name of the dojo_trial and the energy cutoff
+        are provided by the sub-class.
+        Client code is responsible for preparing the dictionary with the data.
 
         Args:
-            pseudo: filepath or :class:`Pseudo` object.
-            ecut_slice: cutoff energies in Ha units (accepts lists or slice objects)
-            toldfe: Tolerance on the total energy (Ha).
-            atols_mev: Tolerances in meV for accuracy in ["low", "normal", "high"]
-            spin_mode: Spin polarization.
-            acell: Length of the real space lattice (Bohr units)
-            smearing: Smearing technique.
-            workdir: Working directory.
-            manager: :class:`TaskManager` object.
+            entry: Dictionary with results.
+            overwrite_data: If False, the routine raises an exception if this entry is
+                already filled.
+            pop_trial: True if the trial should be removed before adding the new entry.
         """
-        return PseudoConvergence(pseudo, ecut_slice, nlaunch, atols_mev,
-                                 toldfe=toldfe, spin_mode=spin_mode,
-                                 acell=acell, smearing=smearing, workdir=workdir, manager=manager)
+        root, ext = os.path.splitext(self.dojo_pseudo.filepath)
+        djrepo = root + ".djrepo"
+        self.history.info("Writing dojreport data to %s" % djrepo)
+
+        # Update file content with Filelock.
+        with FileLock(djrepo):
+            # Read report from file.
+            file_report = DojoReport.from_file(djrepo)
+
+            # Create new entry if not already there
+            dojo_trial = self.dojo_trial
+
+            if pop_trial:
+                file_report.pop(dojo_trial, None)
+
+            if dojo_trial not in file_report:
+                file_report[dojo_trial] = {}
+
+            # Convert float to string with 1 decimal digit.
+            dojo_ecut = "%.1f" % self.ecut
+
+            # Check that we are not going to overwrite data.
+            if dojo_ecut in file_report[dojo_trial]:
+                if not overwrite_data:
+                    raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
+                else:
+                    file_report[dojo_trial].pop(dojo_ecut)
+
+            # Update file_report by adding the new entry and write new file
+            file_report[dojo_trial][dojo_ecut] = entry
+
+            # Write new dojo report and update the pseudo attribute
+            file_report.json_write()
+            self._pseudo.dojo_report = file_report
 
 
-class EbandsFactoryError(Exception):
-    """Base Error class."""
+class FactoryError(Exception):
+    """Base Error class raised by Factory objects."""
 
 
-class EbandsFactory(object):
-    """Factroy class producing work objects for the calculation of ebands for testing for ghosts."""
-    Error = EbandsFactoryError
+class GhostsFactory(object):
+    """
+    Factory producing work objects for the calculation of ebands for testing for ghosts.
+    """
+    Error = FactoryError
 
-    def __init__(self, xc='PBE'):
+    def __init__(self, xc):
+        """xc is the exchange-correlation functional e.g. PBE, PW."""
         # Get a reference to the deltafactor database. Used to get a structure
-        self._dfdb = df_database(xc=xc)
+        self._dfdb = df_database(xc)
 
     def get_cif_path(self, symbol):
         """Returns the path to the CIF file associated to the given symbol."""
@@ -318,27 +105,31 @@ class EbandsFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, pseudo, accuracy="normal", kppa=3000, ecut=None, pawecutdg=None, spin_mode="unpolarized",
-                        toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
+    def work_for_pseudo(self, pseudo, kppa=3000, maxene=250, ecut=None, pawecutdg=None,
+                        spin_mode="unpolarized", include_soc=False,
+                        tolwfr=1.e-12, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
-            pseudo: filepath or :class:`Pseudo` object.
-            kppa: Number of k-points per atom.
+            pseudo: :class:`Pseudo` object.
+            kppa: Number of k-points per reciprocal atom.
             ecut: Cutoff energy in Hartree
             pawecutdg: Cutoff energy of the fine grid (PAW only)
             spin_mode: Spin polarization option
-            toldfe: Tolerance on the total energy (Ha).
+            tolwfr: Tolerance on the residuals.
             smearing: Smearing technique.
             workdir: Working directory.
             manager: :class:`TaskManager` object.
             kwargs: Extra variables passed to Abinit.
         """
-        pseudo = Pseudo.as_pseudo(pseudo)
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
+        if pseudo.xc != self._dfdb.xc:
+            raise ValueError(
+                "Pseudo xc differs from the XC used to instantiate the factory\n"
+                "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))
         try:
             cif_path = self.get_cif_path(pseudo.symbol)
         except Exception as exc:
@@ -347,47 +138,55 @@ class EbandsFactory(object):
         # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
         structure = Structure.from_file(cif_path, primitive=False)
 
-        return EbandsFactorWork(
-            structure, pseudo, kppa,
-            spin_mode=spin_mode, toldfe=toldfe, smearing=smearing,
-            accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
+        return GhostsWork(
+            structure, pseudo, kppa, maxene,
+            spin_mode=spin_mode, include_soc=include_soc, tolwfr=tolwfr, smearing=smearing,
+            ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
 
 
-class EbandsFactorWork(DojoWork):
+class GhostsWork(DojoWork):
     """Work for the calculation of the deltafactor."""
 
-    # THIS IS WRONG! toldfe for band structure, lot of bands computed with SCF!
-    def __init__(self, structure, pseudo, kppa,
-                 bands_factor=10, ecut=None, pawecutdg=None, ecutsm=0.5,
-                 spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
-                 accuracy="normal", chksymbreak=0, workdir=None, manager=None, **kwargs):
+    def __init__(self, structure, pseudo, kppa, maxene,
+                 ecut=None, pawecutdg=None, ecutsm=0.5,
+                 spin_mode="unpolarized", include_soc=False, tolwfr=1.e-15, smearing="fermi_dirac:0.1 eV",
+                 chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of a bandstructure to check for ghosts.
 
-        Args:   
+        Args:
             structure: :class:`Structure` object
             pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
-            kppa: Number of k-points per atom.
-            bands_factor: Number of bands computed is given by bands_factor * int(nval / spin_fact)
+            kppa: Number of k-points per reciprocal atom.
+            maxene: 250 eV
             spin_mode: Spin polarization mode.
-            toldfe: Tolerance on the energy (Ha)
+            include_soc=True of SOC should be included.
+            tolwfr: Stopping criterion.
             smearing: Smearing technique.
             workdir: String specifing the working directory.
             manager: :class:`TaskManager` responsible for the submission of the tasks.
         """
-        super(EbandsFactorWork, self).__init__(workdir=workdir, manager=manager)
-
-        self._pseudo = Pseudo.as_pseudo(pseudo)
+        super(GhostsWork, self).__init__(workdir=workdir, manager=manager)
+        self._pseudo = pseudo
+        self.include_soc = include_soc
 
         spin_mode = SpinMode.as_spinmode(spin_mode)
         smearing = Smearing.as_smearing(smearing)
 
-        # Compute the number of bands from the pseudo and the spin-polarization.
-        # Take 10 times the number of bands to sample the empty space.
-        nval = structure.num_valence_electrons(self.pseudo)
-        spin_fact = 2 if spin_mode.nsppol == 2 else 1
-        nband = bands_factor * int(nval / spin_fact)
+        # Here we find an initial guess for the number of bands
+        # The goal is to reach maxene eV above the fermi level.
+        # Assume ~ b4ev fact eV per band
+        # Add a buffer of nbdbuf states and enforce an even number of states
+        nval = structure.num_valence_electrons(self.dojo_pseudo)
+        self.maxene = maxene
+        b4ev = 1.3
+        nband = int(nval + int(b4ev * self.maxene))
+        #nband = nval // 2 + 10
+        if spin_mode.nsppol == 1: nband // 2
+        nbdbuf = max(int(0.1 * nband), 4)
+        nband += nbdbuf
+        nband += nband % 2
 
         # Set extra_abivars
         self.ecut, self.pawecutdg = ecut, pawecutdg
@@ -396,9 +195,10 @@ class EbandsFactorWork(DojoWork):
             ecut=ecut,
             pawecutdg=pawecutdg,
             ecutsm=ecutsm,
-            nband=nband,
-            toldfe=toldfe,
-            prtwf=-1,
+            nband=int(nband),
+            nbdbuf=int(nbdbuf),
+            tolwfr=tolwfr,
+            #prtwf=0,
             nstep=200,
             chkprim=0,
             mem_test=0
@@ -407,60 +207,105 @@ class EbandsFactorWork(DojoWork):
         extra_abivars.update(**kwargs)
 
         # Disable time-reversal if nspinor == 2
+        self.kppa = kppa
         ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=chksymbreak,
                                                 use_time_reversal=spin_mode.nspinor==1)
 
-        scf_input = abilab.AbinitInput(structure=structure, pseudos=self.pseudo)
+        scf_input = abilab.AbinitInput(structure=structure, pseudos=self.dojo_pseudo)
         scf_input.add_abiobjects(ksampling, smearing, spin_mode)
         scf_input.set_vars(extra_abivars)
         self.register_scf_task(scf_input)
 
+        self.dojo_status = 0
+
     @property
-    def pseudo(self):
+    def dojo_pseudo(self):
         return self._pseudo
 
     @property
     def dojo_trial(self):
-        return "ebands"
+        if not self.include_soc:
+            return "ghosts"
+        else:
+            return "ghosts_soc"
 
-    def get_results(self):
-        #results = super(EbandsFactorWork, self).get_results()
+    def on_ok(self, sender):
+        """
+        This callback is called when one task reaches status S_OK.
 
-        #store the path of the GSR nc file in the dojoreport
+        Here we extract the band structure from the GSR file and we save it in the JSON file.
+        If maxene is not reached, task is set to unconverged so that the launcher will restart it
+        and we can enter on_ok again.
+        """
+        task = self[0]
+        # If this is not my business!
+        if sender != task: return super(GhostsWork, self).on_ok(sender)
 
-        #during the validation the bandstrure is plotted and the validator is asked to give the energy up to which
-        #no sign of ghosts is visilbe
+        # Read ebands from the GSR file, get also the minimum number of planewaves
+        with task.open_gsr() as gsr:
+            ebands = gsr.ebands
+            min_npw = np.amin(gsr.reader.read_value("number_of_coefficients"))
+            gsr_maxene = np.amax(ebands.eigens[:,:,-1] - ebands.fermie)
+            gsr_nband = gsr.nband
 
-        #during plot the band structuur is plotted as long as a filename is present and the file can be found if the 
-        #if the energy is present the energy is given
- 
-        #TODO fix magic
-        path = str(self.workdir)
-        outfile = os.path.join(str(self[0].outdir), "out_GSR.nc")
-        results = {'workdir': path, 'GSR-nc': outfile}
-        
-        print(results)
+        # Increase nband if we haven't reached maxene and restart
+        # dojo_status:
+        #     0: if run completed
+        #    >0: convergence is not reached. Used when we save previous results before restarting.
+        #    -1: Cannot increase bands anymore because we are close to min_npw.
+        nband_sentinel = int(0.85 * min_npw)
+        nband_sentinel += nband_sentinel % 2
 
-        return results
+        if gsr_maxene >= self.maxene:
+            self.dojo_status = 0
+            task.history.info("Convergence reached: gsr_maxene %s >= self.maxene %s" % (gsr_maxene, self.maxene))
+        else:
+            task.history.info("Convergence not reached. Will test if it's possible to restart the task.")
+            task.history.info("gsr_maxene %s < self.maxene %s" % (gsr_maxene, self.maxene))
+            nband = nband_old = int(task.input["nband"])
 
-    def on_all_ok(self):
-        """Callback executed when all tasks in self have reached S_OK."""
-        report = self.get_results()
-        self.write_dojo_report(report)
-        return report
+            if nband >= nband_sentinel:
+               self.dojo_status = -1
+               task.history.info("Reached maximum number of bands. Setting dojo_status to -1 and exit")
+            else:
+                # Use previous run to compute better estimate of b4ev.
+                nval = task.input.num_valence_electrons
+                b4ev = (nband_old - nval // 2) / gsr_maxene
+                task.history.info("New b4ev: %s" % b4ev)
+                nband = int(nval + int(b4ev * self.maxene))
+                # Previous version.
+                #nband += (0.2 * nband_old)
+                nbdbuf = max(int(0.1 * nband), 4)
+                nband += nbdbuf
+                nband += nband % 2
+                if nband >= nband_sentinel: nband = nband_sentinel
+                self.dojo_status += 1
 
+                # Restart.
+                task.set_vars(nband=int(nband), nbdbuf=int(nbdbuf))
+                task.restart()
+                self.finalized = False
 
-class DeltaFactoryError(Exception):
-    """Base Error class."""
+        # Convert to JSON and add results to the dojo report.
+        entry = dict(ecut=self.ecut, pawecutdg=self.pawecutdg, min_npw=int(min_npw),
+                     maxene_wanted=self.maxene, maxene_gsr=float(gsr_maxene), nband=gsr_nband,
+                     dojo_status=self.dojo_status, kppa=self.kppa,
+                     ebands=ebands.as_dict())
+
+        # Use pop_trial to avoid multiple keys with the same value!
+        self.add_entry_to_dojoreport(entry, pop_trial=True)
+
+        return super(GhostsWork, self).on_ok(sender)
 
 
 class DeltaFactory(object):
     """Factory class producing work objects for the computation of the delta factor."""
-    Error = DeltaFactoryError
+    Error = FactoryError
 
-    def __init__(self, xc='PBE'):
+    def __init__(self, xc):
+        """xc is the exchange-correlation functional e.g. PBE, PW."""
         # Get a reference to the deltafactor database
-        self._dfdb = df_database(xc=xc)
+        self._dfdb = df_database(xc)
 
     def get_cif_path(self, symbol):
         """Returns the path to the CIF file associated to the given symbol."""
@@ -469,15 +314,15 @@ class DeltaFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    def work_for_pseudo(self, pseudo, accuracy="normal", kppa=6750, ecut=None, pawecutdg=None,
+    def work_for_pseudo(self, pseudo, kppa=6750, ecut=None, pawecutdg=None,
                         toldfe=1.e-9, smearing="fermi_dirac:0.1 eV", include_soc=False,
                         workdir=None, manager=None, **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
-        Args:   
-            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
-            kppa: kpoint per atom
+        Args:
+            pseudo: :class:`Pseudo` object.
+            kppa: kpoint per reciprocal atom
             ecut: Cutoff energy in Hartree
             pawecutdg: Cutoff energy of the fine grid (PAW only)
             toldfe: Tolerance on the energy (Ha)
@@ -491,54 +336,36 @@ class DeltaFactory(object):
 
             0.001 Rydberg is the value used with WIEN2K
         """
-        pseudo = Pseudo.as_pseudo(pseudo)
         symbol = pseudo.symbol
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
+
+        if pseudo.xc != self._dfdb.xc:
+            raise ValueError(
+                "Pseudo xc differs from the XC used to instantiate the factory\n"
+                "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))
 
         try:
             cif_path = self.get_cif_path(symbol)
         except Exception as exc:
             raise self.Error(str(exc))
 
-        # Include spin polarization for O, Cr and Mn (antiferromagnetic)
-        # and Fe, Co, and Ni (ferromagnetic).
-        # antiferromagnetic Cr, O, ferrimagnetic Mn
-        spin_mode = "unpolarized"
+        # WARNING: DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
+        structure = Structure.from_file(cif_path, primitive=False)
 
-        if symbol in ["Fe", "Co", "Ni"]:
-            spin_mode = "polarized"
-            if symbol == "Fe":
-                kwargs['spinat'] = 2 * [(0, 0, 2.3)]
-            if symbol == "Co":
-                kwargs['spinat'] = 2 * [(0, 0, 1.2)]
-            if symbol == "Ni":
-                kwargs['spinat'] = 4 * [(0, 0, 0.6)]
-
-        if symbol in ["O", "Cr", "Mn"]:
-            # Here we could have problems with include_so since we don't enforce "afm"
-            spin_mode = "afm"
-            if symbol == 'O':
-                kwargs['spinat'] = [(0, 0, 1.5), (0, 0, 1.5), (0, 0, -1.5), (0, 0, -1.5)]
-            elif symbol == 'Cr':
-                kwargs['spinat'] = [(0, 0, 1.5), (0, 0, -1.5)]
-            elif symbol == 'Mn':
-                kwargs['spinat'] = [(0, 0, 2.0), (0, 0, 1.9), (0, 0, -2.0), (0, 0, -1.9)]
-
+        # Include spin polarization and initial spinat for particular elements
+        # TODO: Not sure spinat is ok if LDA.
+        kwargs["spinat"], spin_mode = self._dfdb.spinat_spinmode_for_symbol(symbol)
         if include_soc: spin_mode = "spinor"
 
-        # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
-        structure = Structure.from_file(cif_path, primitive=False)
-        #print(structure)
-
         # Magnetic elements:
-        # Start from previous SCF run to avoid getting trapped in local minima 
+        # Start from previous SCF run to avoid getting trapped in local minima
         connect = symbol in ("Fe", "Co", "Ni", "Cr", "Mn", "O", "Zn", "Cu")
 
         return DeltaFactorWork(
             structure, pseudo, kppa, connect,
-            spin_mode=spin_mode, toldfe=toldfe, smearing=smearing,
-            accuracy=accuracy, ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
+            spin_mode=spin_mode, include_soc=include_soc, toldfe=toldfe, smearing=smearing,
+            ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
             workdir=workdir, manager=manager, **kwargs)
 
 
@@ -547,15 +374,15 @@ class DeltaFactorWork(DojoWork):
 
     def __init__(self, structure, pseudo, kppa, connect,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
-                 spin_mode="polarized", toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
-                 accuracy="normal", chksymbreak=0, workdir=None, manager=None, **kwargs):
+                 spin_mode="polarized", include_soc=False, toldfe=1.e-9, smearing="fermi_dirac:0.1 eV",
+                 chksymbreak=0, workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the deltafactor.
 
-        Args:   
+        Args:
             structure: :class:`Structure` object
-            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
-            kppa: Number of k-points per atom.
+            pseudo: :class:`Pseudo` object.
+            kppa: Number of k-points per reciprocal atom.
             connect: True if the SCF run should be initialized from the previous run.
             spin_mode: Spin polarization mode.
             toldfe: Tolerance on the energy (Ha)
@@ -564,8 +391,8 @@ class DeltaFactorWork(DojoWork):
             manager: :class:`TaskManager` responsible for the submission of the tasks.
         """
         super(DeltaFactorWork, self).__init__(workdir=workdir, manager=manager)
-
-        self._pseudo = Pseudo.as_pseudo(pseudo)
+        self._pseudo = pseudo
+        self.include_soc = include_soc
 
         spin_mode = SpinMode.as_spinmode(spin_mode)
         smearing = Smearing.as_smearing(smearing)
@@ -573,8 +400,7 @@ class DeltaFactorWork(DojoWork):
         # Compute the number of bands from the pseudo and the spin-polarization.
         # Add 6 bands to account for smearing.
         #nval = structure.num_valence_electrons(self.pseudo)
-        #spin_fact = 2 if spin_mode.nsppol == 2 else 1
-        #nband = int(nval / spin_fact) + 6
+        #nband = int(nval / spin_mode.nsppol) + 6
 
         # Set extra_abivars
         self.ecut, self.pawecutdg = ecut, pawecutdg
@@ -584,11 +410,12 @@ class DeltaFactorWork(DojoWork):
             pawecutdg=pawecutdg,
             ecutsm=ecutsm,
             toldfe=toldfe,
-            #nband=nband,
             prtwf=-1 if not connect else 1,
-            #paral_kgb=paral_kgb,
             chkprim=0,
             nstep=200,
+            fband=2.0,   # 0.5 is the default value but it's not large enough from some systems.
+            #paral_kgb=paral_kgb,
+            #nband=nband,
             #mem_test=0,
         )
 
@@ -600,18 +427,24 @@ class DeltaFactorWork(DojoWork):
         self.volumes = v0 * np.arange(94, 108, 2) / 100.
 
         for vol in self.volumes:
+            # Build new structure
             new_lattice = structure.lattice.scale(vol)
-
             new_structure = Structure(new_lattice, structure.species, structure.frac_coords)
 
             ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak,
                                                     use_time_reversal=spin_mode.nspinor==1)
 
-            scf_input = abilab.AbinitInput(structure=new_structure, pseudos=self.pseudo)
+            scf_input = abilab.AbinitInput(structure=new_structure, pseudos=self.dojo_pseudo)
             scf_input.add_abiobjects(ksampling, smearing, spin_mode)
             scf_input.set_vars(extra_abivars)
 
-            self.register_scf_task(scf_input)
+	    # Magnetic materials with nspinor = 2 requires connection
+            # and a double SCF run (nsppol = 2 first then nspinor = 2).
+            if connect and spin_mode.nspinor == 2:
+                print("Using collinear then noncollinear scf task")
+                self.register_collinear_then_noncollinear_scf_task(scf_input)
+            else:
+                self.register_scf_task(scf_input)
 
         if connect:
             logger.info("Connecting SCF tasks using previous WFK file")
@@ -624,96 +457,51 @@ class DeltaFactorWork(DojoWork):
                 task.add_deps({self[middle + i]: filetype})
 
     @property
-    def pseudo(self):
+    def dojo_pseudo(self):
         return self._pseudo
 
     @property
     def dojo_trial(self):
-        return "deltafactor"
+        if not self.include_soc:
+            return "deltafactor"
+        else:
+            return "deltafactor_soc"
 
-    def get_results(self):
-        results = super(DeltaFactorWork, self).get_results()
-
+    def on_all_ok(self):
+        """
+        This method is called once the `Work` is completed i.e. when all the tasks
+        have reached status S_OK. Here we gather the results of the different tasks,
+        the deltafactor is computed and the results are stored in the JSON file.
+        """
         num_sites = self._input_structure.num_sites
         etotals = self.read_etotals(unit="eV")
 
-        results.update(dict(
-            etotals=list(etotals),
-            volumes=list(self.volumes),
-            num_sites=num_sites))
+        d, eos_fit = dojo_dfact_results(self.dojo_pseudo, num_sites, self.volumes, etotals)
 
-        d = {}
-        try:
-            # Use same fit as the one employed for the deltafactor.
-            eos_fit = EOS.DeltaFactor().fit(self.volumes/num_sites, etotals/num_sites)
+        print("[%s]" % self.dojo_pseudo.symbol, "eos_fit:", eos_fit)
+        print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, d["dfact_meV"], d["dfactprime_meV"]))
 
-            # Get reference results (Wien2K).
-            wien2k = df_database().get_entry(self.pseudo.symbol)
+        self.add_entry_to_dojoreport(d)
 
-            # Compute deltafactor estimator.
-            dfact = df_compute(wien2k.v0, wien2k.b0_GPa, wien2k.b1,
-                               eos_fit.v0, eos_fit.b0_GPa, eos_fit.b1, b0_GPa=True)
-
-            dfactprime_meV = dfact * (30 * 100) / (eos_fit.v0 * eos_fit.b0_GPa)
-
-            print("delta", eos_fit)
-            print("Ecut %.1f, dfact = %.3f meV, dfactprime %.3f meV" % (self.ecut, dfact, dfactprime_meV))
-
-            res = {
-                "dfact_meV": dfact,
-                "v0": eos_fit.v0,
-                "b0": eos_fit.b0,
-                "b0_GPa": eos_fit.b0_GPa,
-                "b1": eos_fit.b1,
-                "dfactprime_meV": dfactprime_meV
-            }
-
-            for k, v in res.items():
-                v = v if not isinstance(v, complex) else float('NaN')
-                res[k] = v          
-  
-            results.update(res)
-
-            d = {k: results[k] for k in 
-                  ("dfact_meV", "v0", "b0", "b0_GPa", "b1", "etotals", "volumes",
-                   "num_sites", "dfactprime_meV")}
-
-            # Write data for the computation of the delta factor
-            with open(self.outdir.path_in("deltadata.txt"), "wt") as fh:
-                fh.write("# Deltafactor = %s meV\n" % dfact)
-                fh.write("# Volume/natom [Ang^3] Etotal/natom [eV]\n")
-                for v, e in zip(self.volumes, etotals):
-                    fh.write("%s %s\n" % (v/num_sites, e/num_sites))
-
-        except EOS.Error as exc:
-            results.push_exceptions(exc)
-
-        if results.exceptions:
-            d["_exceptions"] = str(results.exceptions)
-
-        self.write_dojo_report(d)
-
-        return results
-
-    def on_all_ok(self):
-        """Callback executed when all tasks in self have reached S_OK."""
-        return self.get_results()
+        return dict(returncode=0, message="Delta factor computed")
 
 
 class GbrvFactory(object):
     """Factory class producing :class:`Work` objects for GBRV calculations."""
-    def __init__(self):
-        self._db = gbrv_database()
+
+    def __init__(self, xc):
+        """xc: exchange-correlation functional e.g. PBE or PW."""
+        self.db = gbrv_database(xc)
 
     def make_ref_structure(self, symbol, struct_type, ref):
         """
-        Return the structure used in the GBRV tests given the chemical symbol, the structure type
-        and the reference code.
+        Return the structure used in the GBRV tests given the chemical symbol,
+        the structure type and the reference code.
         """
         # Get the entry in the database
-        entry = self._db.get_entry(symbol, struct_type)
+        entry = self.db.get_entry(symbol, struct_type)
 
-        if entry is None: 
+        if entry is None:
             logger.critical("Cannot find entry for %s, returning None!" % symbol)
             return None
 
@@ -723,62 +511,68 @@ class GbrvFactory(object):
         if structure is None:
             logger.warning("No AE structure for %s\n Will use gbrv_uspp data." % symbol)
             structure = entry.build_structure(ref="gbrv_uspp")
-        
-        if structure is None: 
+
+        if structure is None:
             logger.critical("Cannot initialize structure for %s, returning None!" % symbol)
 
         return structure
 
-    def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, ref="ae", **kwargs):
+    @property
+    def xc(self):
+        return self.db.xc
+
+    def relax_and_eos_work(self, pseudo, struct_type, ecut=None, pawecutdg=None, include_soc=False,
+                           ref="ae", **kwargs):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
+            include_soc: True if pseudo has SO contributions and calculation should be done with nspinor=2
             kwargs: Extra variables passed to Abinit.
 
         .. note::
 
             GBRV tests are done with the following parameteres:
 
-                - No spin polarization for structural relaxation 
+                - No spin polarization for structural relaxation
                   (only for magnetic moments for which spin-unpolarized structures are used)
                 - All calculations are done on an 8x8x8 k-point density and with 0.002 Ry Fermi-Dirac smearing
         """
-        pseudo = Pseudo.as_pseudo(pseudo)
-
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
 
+        if pseudo.xc != self.xc:
+            raise ValueError(
+                "Pseudo xc differs from the XC used to instantiate the factory\n"
+                "Pseudo: %s, Database: %s" % (pseudo.xc, self.xc))
+
+        # Select spin_mode from include_soc.
+        spin_mode = "unpolarized"
+        if include_soc:
+            spin_mode = "spinor"
+            if not pseudo.supports_soc:
+                raise ValueError("Pseudo %s does not support SOC calculation." % pseudo)
+
         structure = self.make_ref_structure(pseudo.symbol, struct_type=struct_type, ref=ref)
- 
+
         return GbrvRelaxAndEosWork(structure, struct_type, pseudo,
-                                   ecut=ecut, pawecutdg=pawecutdg, **kwargs)
-
-
-def gbrv_nband(pseudo):
-    # nband/fband are usually too small for the GBRV calculations.
-    # FIXME this is not optimal
-    nband = pseudo.Z_val
-    nband += 0.5 * nband
-    nband = int(nband)
-    nband = max(nband,  8)
-    #print("nband", nband)
-    return nband
+                                   ecut=ecut, pawecutdg=pawecutdg, spin_mode=spin_mode, include_soc=include_soc,
+                                   **kwargs)
 
 
 class GbrvRelaxAndEosWork(DojoWork):
 
     def __init__(self, structure, struct_type, pseudo, ecut=None, pawecutdg=None, ngkpt=(8, 8, 8),
-                 spin_mode="unpolarized", toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
-                 accuracy="normal", ecutsm=0.05, chksymbreak=0,
+                 spin_mode="unpolarized", include_soc=False, toldfe=1.e-9, smearing="fermi_dirac:0.001 Ha",
+                 ecutsm=0.05, chksymbreak=0,
                  workdir=None, manager=None, **kwargs):
         """
         Build a :class:`Work` for the computation of the relaxed lattice parameter.
 
-        Args:   
-            structure: :class:`Structure` object 
-            structure_type: fcc, bcc 
-            pseudo: String with the name of the pseudopotential file or :class:`Pseudo` object.
+        Args:
+            structure: :class:`Structure` object
+            structure_type: fcc, bcc
+            pseudo: :class:`Pseudo` object.
             ecut: Cutoff energy in Hartree
             ngkpt: MP divisions.
             spin_mode: Spin polarization mode.
@@ -789,12 +583,23 @@ class GbrvRelaxAndEosWork(DojoWork):
         """
         super(GbrvRelaxAndEosWork, self).__init__(workdir=workdir, manager=manager)
         self.struct_type = struct_type
-        self.accuracy = accuracy
 
         # nband must be large enough to accomodate fractional occupancies.
-        fband = kwargs.pop("fband", None)
-        self._pseudo = Pseudo.as_pseudo(pseudo)
-        nband = gbrv_nband(self.pseudo)
+        self._pseudo = pseudo
+        self.include_soc = include_soc
+
+        def gbrv_nband(pseudo):
+            # nband/fband are usually too small for the GBRV calculations.
+            # FIXME this is not optimal
+            nband = pseudo.Z_val
+            nband += 0.5 * nband
+            nband = int(nband)
+            nband = max(nband,  8)
+            # Use even numer of bands. Needed when nspinor == 2
+            if nband % 2 != 0: nband += 1
+            return nband
+
+        nband = gbrv_nband(self.dojo_pseudo)
 
         # Set extra_abivars.
         self.extra_abivars = dict(
@@ -802,20 +607,20 @@ class GbrvRelaxAndEosWork(DojoWork):
             pawecutdg=pawecutdg,
             toldfe=toldfe,
             prtwf=-1,
-            #ecutsm=0.5,
             nband=nband,
+            #ecutsm=0.5,
             #paral_kgb=paral_kgb
         )
-                                       
+
         self.extra_abivars.update(**kwargs)
         self.ecut = ecut
         self.smearing = Smearing.as_smearing(smearing)
 
         # Kpoint sampling: shiftk depends on struct_type
         shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
-        #ngkpt = (1,1,1)
-        self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk)
         self.spin_mode = SpinMode.as_spinmode(spin_mode)
+        self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk,
+                                            use_time_reversal=self.spin_mode.nspinor==1)
         relax_algo = RelaxationMethod.atoms_and_cell()
 
         inp = abilab.AbinitInput(structure, pseudo)
@@ -827,10 +632,13 @@ class GbrvRelaxAndEosWork(DojoWork):
 
     @property
     def dojo_trial(self):
-        return "gbrv_" + self.struct_type
+        if not self.include_soc:
+            return "gbrv_" + self.struct_type
+        else:
+            return "gbrv_" + self.struct_type + "_soc"
 
     @property
-    def pseudo(self):
+    def dojo_pseudo(self):
         return self._pseudo
 
     def add_eos_tasks(self):
@@ -852,10 +660,10 @@ class GbrvRelaxAndEosWork(DojoWork):
             new_structure = Structure(new_lattice, relaxed_structure.species, relaxed_structure.frac_coords)
 
             # Add ecutsm
-            extra = self.extra_abivars.copy() 
+            extra = self.extra_abivars.copy()
             extra["ecutsm"] = 0.5
 
-            scf_input = abilab.AbinitInput(new_structure, self.pseudo)
+            scf_input = abilab.AbinitInput(new_structure, self.dojo_pseudo)
             scf_input.add_abiobjects(self.ksampling, self.spin_mode, self.smearing)
             scf_input.set_vars(extra)
 
@@ -867,71 +675,24 @@ class GbrvRelaxAndEosWork(DojoWork):
         self.flow.build_and_pickle_dump()
 
     def compute_eos(self):
+        """
+        This method compute the equation of state following the approach described in the GBRV paper.
+        Build dictionary with results and insert in the DOJO REPORT.
+        Return: dictionary with results
+        """
         self.history.info("Computing EOS")
-
-        results = self.get_results()
 
         # Read etotals and fit E(V) with a parabola to find the minimum
         etotals = self.read_etotals(unit="eV")[1:]
         assert len(etotals) == len(self.volumes)
 
-        results.update(dict(
-            etotals=list(etotals),
-            volumes=list(self.volumes),
-            num_sites=len(self.relaxed_structure),
-        ))
-
-        try:
-            eos_fit = EOS.Quadratic().fit(self.volumes, etotals)
-        except EOS.Error as exc:
-            results.push_exceptions(exc)
-
-        # Function to compute cubic a0 from primitive v0 (depends on struct_type)
-        vol2a = {"fcc": lambda vol: (4 * vol) ** (1/3.),
-                 "bcc": lambda vol: (2 * vol) ** (1/3.),
-                 }[self.struct_type]
-
-        a0 = vol2a(eos_fit.v0)
-
-        results.update(dict(
-            v0=eos_fit.v0,
-            b0=eos_fit.b0,
-            b1=eos_fit.b1,
-            a0=a0,
-            struct_type=self.struct_type
-        ))
-
-        db = gbrv_database()
-        entry = db.get_entry(self.pseudo.symbol, stype=self.struct_type)
-
-        pawabs_err = a0 - entry.gbrv_paw
-        pawrel_err = 100 * (a0 - entry.gbrv_paw) / entry.gbrv_paw
-
-        # AE results for P and Hg are missing.
-        if entry.ae is not None:
-            abs_err = a0 - entry.ae
-            rel_err = 100 * (a0 - entry.ae) / entry.ae
-        else:
-            # Use GBRV_PAW as reference.
-            abs_err = pawabs_err
-            rel_err = pawrel_err
-
-        print("for GBRV struct_type: ", self.struct_type, "a0= ", a0, "Angstrom")
-        print("AE - THIS: abs_err = %f, rel_err = %f %%" % (abs_err, rel_err))
-        print("GBRV-PAW - THIS: abs_err = %f, rel_err = %f %%" % (pawabs_err, pawrel_err))
-
-        d = {k: results[k] for k in ("a0", "etotals", "volumes")}
-        d["a0_abs_err"] = abs_err
-        d["a0_rel_err"] = rel_err
-        if results.exceptions:
-            d["_exceptions"] = str(results.exceptions)
-
-        self.write_dojo_report(d)
-
-        return results
+        num_sites = len(self.relaxed_structure)
+        dojo_entry, eos_fit = dojo_gbrv_results(self.dojo_pseudo, self.struct_type, num_sites, self.volumes, etotals)
+        self.add_entry_to_dojoreport(dojo_entry)
 
     @property
     def add_eos_done(self):
+        """True if the EOS has been computed."""
         return len(self) > 1
 
     def on_all_ok(self):
@@ -941,33 +702,35 @@ class GbrvRelaxAndEosWork(DojoWork):
         with the GBRV parameters.
         """
         if not self.add_eos_done:
+            # Build SCF tasks for the EOS and tell the world we are not done!
             self.add_eos_tasks()
-            self._finalized = False
+            self.finalized = False
         else:
+            # Compute EOS, write data and enter in finalized mode.
             self.compute_eos()
 
         return super(GbrvRelaxAndEosWork, self).on_all_ok()
 
 
-class DFPTError(Exception):
-    """Base Error class."""
-
-
-class DFPTPhononFactory(object):
+class GammaPhononFactory(object):
     """
-    Factory class producing `Workflow` objects for DFPT Phonon calculations.
-    The work tests if the acoustic modes at Gamma are zero, or at least from which cuttoff
-    they can be made zero by imposing the accoustic sum rule.
+    Factory class producing a specialized `Workflow` for Relaxation + Phonon calculations at the Gamma point.
+    The initial structural parameters are taken from the deltafactor database.
+
+    The work returned by `work_for_pseudo` peforms a full structural relaxation: ions + ions_cell
+    Once the optimized structure is known, a new Workflow for GS + DFPT with the optimized parameters
+    is created and added to the flow. This second work merges the DDB files, calls anaddb to compute
+    the acoustic frequencies with asr in [0, 2] and save the results in the dojoreport.
+
+    Client code usually builds severals works with different values of ecut in order
+    to monitor the convergence of the frequencies and the fulfillment of the accoustic sum rule.
     """
+    Error = FactoryError
 
-    Error = DFPTError
-
-    def __init__(self, manager=None, workdir=None):
-        # reference to the deltafactor database
-        # use the elemental solid in the gs configuration
-        self._dfdb = df_database()
-        self.manager = manager
-        self.workdir = workdir
+    def __init__(self, xc):
+        """xc is the exchange-correlation functional e.g. PBE, PW."""
+        # Get reference to the deltafactor database
+        self._dfdb = df_database(xc)
 
     def get_cif_path(self, symbol):
         """Returns the path to the CIF file associated to the given symbol."""
@@ -976,153 +739,161 @@ class DFPTPhononFactory(object):
         except KeyError:
             raise self.Error("%s: cannot find CIF file for symbol" % symbol)
 
-    @staticmethod
-    def scf_ph_inputs(structure, pseudos, **kwargs):
+    def work_for_pseudo(self, pseudo, kppa=1000, ecut=None, pawecutdg=None,
+                        smearing="fermi_dirac:0.1 eV", include_soc=False,
+                        workdir=None, manager=None):
         """
-        This function constructs the input files for the phonon calculation:
-        GS input + the input files for the phonon calculation.
-        kwargs:
-        ecut: the ecut at which the input is generated
-        kppa: kpoint per atom
-        smearing: is removed
-        qpt: optional, list of qpoints. if not present gamma is added
-        the rest are passed as abinit input variables
+        Create and return a :class:`RelaxAndAddPhGammaWork` object.
+
+        Args:
+            pseudo: filepath or :class:`Pseudo` object.
+            kppa: Number of k-points per reciprocal atom.
+            ecut: Cutoff energy in Hartree
+            pawecutdg: Cutoff energy of the fine grid (PAW only)
+            smearing: Smearing technique.
+            include_soc=True of SOC should be included.
+            workdir: Working directory.
+            manager: :class:`TaskManager` object.
         """
+        symbol = pseudo.symbol
+        if pseudo.ispaw and pawecutdg is None:
+            raise ValueError("pawecutdg must be specified for PAW calculations.")
 
-        qpoints = kwargs.pop('qpt', [0.00000000E+00,  0.00000000E+00,  0.00000000E+00])
-        qpoints = np.reshape(qpoints, (-1, 3))
+        if pseudo.xc != self._dfdb.xc:
+            raise ValueError(
+                "Pseudo xc differs from the XC used to instantiate the factory\n"
+                "Pseudo: %s, Database: %s" % (pseudo.xc, self._dfdb.xc))
 
-        # Global variables used both for the GS and the DFPT run.
-        kppa = kwargs.pop('kppa')
-        ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=0)
-        try:
-            kwargs.pop('accuracy')
-        except KeyError:
-            pass
-
-        kwargs.pop('smearing')
-        # to be applicable to all systems we treat all as is they were metals
-        # some systems have a non primitive cell to allow for a anti ferromagnetic structure > chkprim = 0
-        global_vars = dict(ksampling.to_abivars(), tsmear=0.005, occopt=7, nstep=200, ecut=12.0, paral_kgb=0, chkprim=0)
-        global_vars.update(**kwargs)
-        # if not tolwfr is specified explicitly we remove any other tol and put tolwfr = 1e-16
-        tolwfr = 1e-20
-        for k in global_vars.keys():
-            if 'tol' in k:
-                if k == 'tolwfr':
-                    tolwfr = global_vars.pop(k)
-                else:
-                    global_vars.pop(k)
-
-        global_vars['tolwfr'] = tolwfr
-        #global_vars.pop('#comment')
-        electrons = structure.num_valence_electrons(pseudos)
-        global_vars.update(nband=electrons)
-        global_vars.update(nbdbuf=int(electrons/4))
-
-        multi = abilab.MultiDataset(structure=structure, pseudos=pseudos, ndtset=1+len(qpoints))
-        multi.set_vars(global_vars)
-
-        rfasr = kwargs.pop('rfasr', 2)
-
-        for i, qpt in enumerate(qpoints):
-            # Response-function calculation for phonons.
-            # rfatpol=[1, natom],  # Set of atoms to displace.
-            # rfdir=[1, 1, 1],     # Along this set of reduced coordinate axis
-            multi[i+1].set_vars(nstep=200, iscf=7, rfphon=1, nqpt=1, qpt=qpt, kptopt=2, rfasr=rfasr, 
-                                rfatpol=[1, len(structure)], rfdir=[1, 1, 1])
-
-            # rfasr = 1 is not correct
-            # response calculations can not be restarted > nstep = 200, a problem to solve here is that abinit continues
-            # happily even is NaN are produced ... TODO fix abinit
-
-        # Split input into gs_inp and ph_inputs
-        return multi.split_datasets()
-
-    def work_for_pseudo(self, pseudo, **kwargs):
-        """
-        Create a :class:`Flow` for phonon calculations:
-
-            1) One workflow for the GS run.
-
-            2) nqpt workflows for phonon calculations. Each workflow contains
-               nirred tasks where nirred is the number of irreducible phonon perturbations
-               for that particular q-point.
-
-            the kwargs are passed to scf_hp_inputs
-        """
-        try:
-            qpt = kwargs['qpt']
-        except IndexError:
-            raise ValueError('A phonon test needs to specify a qpoint.')
-
-        kwargs.pop('accuracy')
-
-        pseudo = Pseudo.as_pseudo(pseudo)
-
-        structure_or_cif = self.get_cif_path(pseudo.symbol)
-
-        if not isinstance(structure_or_cif, Structure):
-            # Assume CIF file
-            structure = Structure.from_file(structure_or_cif, primitive=False)
-        else:
-            structure = structure_or_cif
-
-        nat = len(structure)
-        report = pseudo.read_dojo_report()
-        ecut_str = '%.1f' % kwargs['ecut']
-        #print(ecut_str)
-        #print(report['deltafactor'][float(ecut_str)].keys())
+        qpt = np.zeros(3)
+        self.include_soc = include_soc
 
         try:
-            v0 = nat * report['deltafactor'][ecut_str]['v0']
-        except KeyError:
-            try:
-                v0 = nat * report['deltafactor'][float(ecut_str)]['v0']
-            except KeyError:
-                logger.info("The df calculation at this ecut is not done already so the phonon task can not be created")
-                logger.info("Returning None")
-                return None
+            cif_path = self.get_cif_path(pseudo.symbol)
+        except Exception as exc:
+            raise self.Error(str(exc))
 
-        structure.scale_lattice(v0)
-        
-        if 'rfasr' in kwargs:
-            trial_name = 'phwoa'
-        else:
-            trial_name = 'phonon'    
+        # DO NOT CHANGE THE STRUCTURE REPORTED IN THE CIF FILE.
+        structure = Structure.from_file(cif_path, primitive=False)
 
-        all_inps = self.scf_ph_inputs(pseudos=[pseudo], structure=structure, **kwargs)
-        scf_input, ph_inputs = all_inps[0], all_inps[1:]
+        # Get spinat and spin_mode from df database.
+        spinat, spin_mode = self._dfdb.spinat_spinmode_for_symbol(symbol)
 
-        work = build_oneshot_phononwork(scf_input=scf_input, ph_inputs=ph_inputs, work_class=PhononDojoWork)
-        #print('after build_oneshot_phonon')
-        #print(work)
-        work.set_dojo_trial(qpt, trial_name)
-        #print(scf_input.keys())
-        work.ecut = scf_input['ecut']
-        work._pseudo = pseudo
+        # DFPT with AFM is not supported. Could try AFM in Relax and then polarized
+        # in WFK + DFPT but this one is safer.
+        if spin_mode == "afm": spin_mode = "polarized"
+        if include_soc: spin_mode = "spinor"
+
+        # Build inputs for structural relaxation.
+        multi = ion_ioncell_relax_input(
+                            structure, pseudo,
+                            kppa=kppa, nband=None,
+                            ecut=ecut, pawecutdg=pawecutdg, accuracy="normal", spin_mode=spin_mode,
+                            smearing=smearing)
+
+        # Set spinat from internal database.
+        multi.set_vars(chkprim=0, mem_test=0, spinat=spinat)
+
+        # Construct a *specialized" work for structural relaxation
+        # This work will create a new workflow for phonon calculations
+        # with the final relaxed structure (see on_all_ok below).
+        work = RelaxAndAddPhGammaWork(ion_input=multi[0], ioncell_input=multi[1])
+
+        # Monkey patch work
+        work.dojo_kppa = kppa
+        work.dojo_qpt = qpt
+        work.ecut = ecut
+        work.dojo_pawecutdg = pawecutdg
+        work.dojo_include_soc = include_soc
+        work._dojo_trial = "phgamma" if not include_soc else "phgamma_soc"
+        work.dojo_pseudo = pseudo
+
         return work
 
 
-class PhononDojoWork(OneShotPhononWork, DojoWork):
+class RelaxAndAddPhGammaWork(RelaxWork):
+    """
+    Work for structural relaxations. The first task relaxes the atomic position
+    while keeping the unit cell parameters fixed. The second task uses the final
+    structure to perform a structural relaxation in which both the atomic positions
+    and the lattice parameters are optimized.
+    """
+
+    def on_all_ok(self):
+        """
+        Here I extend the implementation of super in order to create a new workflow
+        for phonons with the optimized structural parameters.
+        """
+        results = super(RelaxAndAddPhGammaWork, self).on_all_ok()
+
+        # Get the relaxed structure.
+        relax_task = self[1]
+        final_structure = relax_task.get_final_structure()
+
+        # Use new structure in GS + DFPT runs and change some values.
+        scf_input = relax_task.input.deepcopy()
+        scf_input.set_structure(final_structure)
+
+        # Remove input variables that can enter into conflict with DFPT.
+        scf_input.pop_tolerances()
+        scf_input.pop_par_vars()
+        scf_input.pop_irdvars()
+        scf_input.pop_vars(["ionmov", "optcell", "ntime", "dilatmx"])
+        scf_input.set_vars(tolwfr=1e-20, nstep=80, nbdbuf=4)
+        #nval = scf_input.num_valence_electrons
+
+        # Build GS work and Phonon Work
+        work = PhononDojoWork.from_scf_input(scf_input, self.dojo_qpt)
+        for task in work[1:]:
+            task.set_vars(prtwf=-1)
+
+        # Monkey patch work
+        work.dojo_kppa = self.dojo_kppa
+        work.dojo_qpt = self.dojo_qpt
+        work.ecut = self.ecut
+        work.dojo_pawecutdg = self.dojo_pawecutdg
+        work.dojo_include_soc = self.dojo_include_soc
+        work._dojo_trial = "phgamma" if not self.dojo_include_soc else "phgamma_soc"
+        work._pseudo = self.dojo_pseudo
+
+        self.flow.register_work(work)
+        # Allocate new tasks and update the pickle database.
+        self.flow.allocate()
+        self.flow.build_and_pickle_dump()
+
+        return results
+
+
+class PhononDojoWork(PhononWork, DojoWork):
     @property
     def dojo_trial(self):
-        return self._trial
-
-    def set_dojo_trial(self, qpt, trial_name):
-        if max(qpt) == 0:
-            self._trial = trial_name
-        elif max(qpt) == 0.5 and min(qpt) == 0.5:
-            self._trial = trial_name + '_hhh'
-        else:
-            raise ValueError('Only dojo phonon works of the Gamma and 0.5, 0.5, 0.5 qpoints have been implemented')
+        return self._dojo_trial
 
     @property
-    def pseudo(self):
+    def dojo_pseudo(self):
         return self._pseudo
 
     def on_all_ok(self):
-        d = self.get_results()
-        report = d['phonons'][0].freqs.tolist()
-        self.write_dojo_report(report)
-        return d
+        """
+        merge the DDB files, invoke anaddb to compute the phonon frequencies with/without ASR
+        Results are written to the dojoreport.
+        """
+        # Call super to merge the DDB files.
+        results = super(PhononDojoWork, self).on_all_ok()
+
+        # Read the final DDB produced in outdir.
+        out_ddb = self.outdir.path_in("out_DDB")
+        ddb = abilab.DdbFile(out_ddb)
+
+        # Call anaddb with/without ASR.
+        asr2_phbands = ddb.anaget_phmodes_at_qpoint(qpoint=self.dojo_qpt, asr=2, chneut=1, dipdip=1, verbose=1)
+        noasr_phbands = ddb.anaget_phmodes_at_qpoint(qpoint=self.dojo_qpt, asr=0, chneut=1, dipdip=1, verbose=1)
+
+        # Convert to JSON and add results to the dojo report.
+        # Convert phfreqs[nq, 3* natom] to 1d vector because nq == 1 in this case.
+        entry = dict(ecut=self.ecut, pawecutdg=self.dojo_pawecutdg, kppa=self.dojo_kppa,
+                     asr2_phfreqs_mev=(asr2_phbands.phfreqs * 1000).ravel().tolist(),
+                     noasr_phfreqs_mev=(noasr_phbands.phfreqs * 1000).ravel().tolist()
+                )
+
+        self.add_entry_to_dojoreport(entry)
+        return results

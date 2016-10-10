@@ -1,19 +1,20 @@
 """
-Functions providing access to file data.
-Mainly used to build the public APIs and write unit tests.
+Functions providing access to file data. Mainly used to build the public APIs and write unit tests.
 """
 from __future__ import print_function, division, unicode_literals
 
+from monty.termcolor import cprint
+from pseudo_dojo.core.pseudos import dojopseudo_from_file
+
 import os
 
-here = os.path.dirname(__file__)
-
 DOJOTABLE_BASEDIRS = [
-    "ONCVPSP-PBE-DEV",
-    "ONCVPSP-PBE-PDv0.3",
-    "ONCVPSP-PW-DEV"
     "ONCVPSP-PBE-PDv0.2",
+    "ONCVPSP-PBE-PDv0.3",
+    "ONCVPSP-PW-DEV",
 ]
+
+here = os.path.dirname(__file__)
 
 
 def dojotable_absdir(basedir):
@@ -21,159 +22,115 @@ def dojotable_absdir(basedir):
     Return the absolute dirpath of the table from its basename
     """
     if basedir not in DOJOTABLE_BASEDIRS:
-        raise RuntimeError("%s is not registered in DOJOTABLE_BASEDIRS, change pseudo_dojo/pseudos/__init__.py") 
+        raise RuntimeError(
+           "%s is not registered in DOJOTABLE_BASEDIRS\n"
+           "Change pseudo_dojo/pseudos/__init__.py" % basedir)
 
     return os.path.join(here, basedir)
 
 
-def write_notebook(pseudopath, with_eos=False, tmpfile=None):
+def all_dojotable_absdirs():
     """
-    Read a pseudopotential file and write an ipython notebook.
-    By default, the notebook is created in the same directory
-    as pseudopath but with the extension `ipynb` unless `tmpfile` is set to True.
-    In the later case, a temporay file is created.
-
-    Args:
-        pseudopath: Path to the pseudopotential file.
-        with_eos: True if EOS plots are wanted.
-
-    Returns:
-        The path to the ipython notebook.
-
-    See http://nbviewer.ipython.org/gist/fperez/9716279
+    List with the absolute path of the directories containing `stable` pseudos"
     """
-    from IPython.nbformat import current as nbf
-    #from IPython.nbformat import v3 as nbf
-    #import IPython.nbformat as nbf
-
-    nb = nbf.new_notebook()
-
-    cells = [
-
-        nbf.new_heading_cell("This is an auto-generated notebook for %s" % os.path.basename(pseudopath)),
-        nbf.new_code_cell("""\
-from __future__ import print_function
-%matplotlib inline
-import mpld3
-from mpld3 import plugins as plugs
-plugs.DEFAULT_PLUGINS = [plugs.Reset(), plugs.Zoom(), plugs.BoxZoom(), plugs.MousePosition()]
-mpld3.enable_notebook()
-import seaborn as sns
-#sns.set(style="dark", palette="Set2")
-sns.set(style='ticks', palette='Set2')"""),
-
-        nbf.new_code_cell("""\
-# Construct the pseudo object and get the DojoReport
-from pymatgen.io.abinit.pseudos import Pseudo
-pseudo = Pseudo.from_file('%s')
-report = pseudo.dojo_report""" % os.path.abspath(pseudopath)),
-
-        nbf.new_heading_cell("ONCVPSP Input File:"),
-        nbf.new_code_cell("""\
-input_file = pseudo.filepath.replace(".psp8", ".in")
-%cat $input_file"""),
-
-        nbf.new_code_cell("""\
-# Get data from the output file
-from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter
-onc_parser = OncvOutputParser(pseudo.filepath.replace(".psp8", ".out"))
-# Parse the file and build the plotter
-onc_parser.scan()
-plotter = onc_parser.make_plotter()"""),
-
-        nbf.new_heading_cell("AE and PS radial wavefunctions $\phi(r)$:"),
-        nbf.new_code_cell("fig = plotter.plot_radial_wfs(show=False)"),
-
-        nbf.new_heading_cell("Arctan of the logarithmic derivatives:"),
-        nbf.new_code_cell("fig = plotter.plot_atan_logders(show=False)"),
-
-        nbf.new_heading_cell("Convergence in $G$-space estimated by ONCVPSP:"),
-        nbf.new_code_cell("fig = plotter.plot_ene_vs_ecut(show=False)"),
-
-        nbf.new_heading_cell("Projectors:"),
-        nbf.new_code_cell("fig = plotter.plot_projectors(show=False)"),
-
-        nbf.new_heading_cell("Core-Valence-Model charge densities:"),
-        nbf.new_code_cell("fig = plotter.plot_densities(show=False)"),
-
-        nbf.new_heading_cell("Local potential and $l$-dependent potentials:"),
-        nbf.new_code_cell("fig = plotter.plot_potentials(show=False)"),
-
-        #nbf.new_heading_cell("1-st order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
-        #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=1, show=False)"""),
-        #nbf.new_heading_cell("2-nd order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
-        #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=2, show=False)"""),
-
-        nbf.new_heading_cell("Model core charge and form factors computed by ABINIT"),
-        nbf.new_code_cell("""\
-with pseudo.open_pspsfile() as psps:
-    psps.plot()"""),
-
-        nbf.new_heading_cell("Convergence of the total energy:"),
-        nbf.new_code_cell("""\
-# Convergence of the total energy (computed from the deltafactor runs with Wien2K equilibrium volume)
-fig = report.plot_etotal_vs_ecut(show=False)"""),
-
-        nbf.new_heading_cell("Convergence of the deltafactor results:"),
-        nbf.new_code_cell("""fig = report.plot_deltafactor_convergence(what=("dfact_meV", "dfactprime_meV"), show=False)"""),
-
-        nbf.new_heading_cell("Convergence of $\Delta v_0$, $\Delta b_0$, and $\Delta b_1$ (deltafactor tests)"),
-        nbf.new_code_cell("""\
-# Here we plot the difference wrt Wien2k results.
-fig = report.plot_deltafactor_convergence(what=("-dfact_meV", "-dfactprime_meV"), show=False)"""),
-
-        nbf.new_heading_cell("deltafactor EOS for the different cutoff energies:"),
-        nbf.new_code_cell("fig = report.plot_deltafactor_eos(show=False)"),
-
-        nbf.new_heading_cell("Convergence of the GBRV lattice parameters:"),
-        nbf.new_code_cell("fig = report.plot_gbrv_convergence(show=False)"),
-
-        nbf.new_heading_cell("Convergence of phonon frequencies at $\Gamma$:"),
-        nbf.new_code_cell("fig = report.plot_phonon_convergence(show=False)"),
-
-        #nbf.new_heading_cell("Comparison with the other pseudos in this table"),
-        #nbf.new_code_cell("""\
-        #from pseudo_dojo import get_pseudos
-        #pseudos = get_pseudos(".")
-        #if len(pseudos) > 1:
-        #    pseudos.dojo_compare()"""),
-
-    ]
-
-    if with_eos:
-        # Add EOS plots
-        cells.update([
-            nbf.new_heading_cell("GBRV EOS for the FCC structure:"),
-            nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="fcc", show=False)"""),
-
-            nbf.new_heading_cell("GBRV EOS for the BCC structure:"),
-            nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="bcc", show=False)"""),
-        ])
-
-    # Now that we have the cells, we can make a worksheet with them and add it to the notebook:
-    nb['worksheets'].append(nbf.new_worksheet(cells=cells))
-
-    # Next, we write it to a file on disk that we can then open as a new notebook.
-    # Note: This should be as easy as: nbf.write(nb, fname), but the current api is
-    # a little more verbose and needs a real file-like object.
-    if tmpfile is None:
-        root, ext = os.path.splitext(pseudopath)
-        nbpath = root + '.ipynb'
-    else:
-        import tempfile
-        _, nbpath = tempfile.mkstemp(suffix='.ipynb', text=True)
-
-    with open(nbpath, 'wt') as f:
-        nbf.write(nb, f, 'ipynb')
-
-    return nbpath
+    return [dojotable_absdir(bdir) for bdir in DOJOTABLE_BASEDIRS]
 
 
-def make_open_notebook(pseudopath, with_eos=True):
+def as_dojo_path(path):
     """
-    Generate an ipython notebook from the pseudopotential path and
-    open it in the browser.
-    """
-    path = write_notebook(pseudopath, tmpfile=True)
-    os.system("ipython notebook %s" % path)
+    Translate an absolute path into an official path inside the pseudo_dojo package.
 
+    This function is extremaly useful when we have absolute paths
+    produced on a different machine and we want to get the corresponding
+    path on the local host.
+    """
+    if os.path.exists(path): return path
+    # Use the final part of the path and change the root.
+    head, base = os.path.split(path)
+    _, dirname = os.path.split(head)
+    dojodir = dojotable_absdir(dirname)
+    path = os.path.join(dojodir, base)
+    if not os.path.exists(path):
+        raise RuntimeError("After filepath mangling. No such file: %s" % path)
+    return path
+
+
+def check_pseudo_path(path, verbose=0):
+    """
+    Check a pseudopotential given the filepath. Warnings are printed to stdout.
+    Return 0 if success.
+    """
+    pseudo = dojopseudo_from_file(path)
+    if pseudo is None:
+        cprint("[%s] Pseudo.from_file returned None. Something wrong in file!" % path, "red")
+        return 1
+
+    return check_pseudo(pseudo, verbose=verbose)
+
+
+def check_pseudo(pseudo, check_trials=None, verbose=0):
+    """
+    Check a pseudopotential object. Warnings are printed to stdout
+    Return 0 if success.
+    """
+    retcode = 0
+    try:
+        report = pseudo.dojo_report
+    except Exception as exc:
+        cprint("Connot find dojo_report associated to: [%s]" % os.path.relpath(pseudo.filepath), "red")
+        if verbose: print("Python Exception:\n%s", exc)
+        retcode += 1
+        return retcode
+
+    if "ppgen_hints" not in report:
+        cprint("[%s] old version without ppgen_hints" % os.path.relpath(pseudo.filepath), "red")
+        retcode += 1
+
+    if report["version"] != "1.0":
+        cprint("[%s] wrong version: %s" % (os.path.relpath(pseudo.filepath), report["version"]), "red")
+        retcode += 1
+
+    if report["md5"] != pseudo.compute_md5():
+        cprint("Incosistent md5 in [%s]" % os.path.relpath(pseudo.filepath), "red")
+        retcode += 1
+
+    if report["symbol"] != pseudo.symbol:
+        cprint("Inconsistent symbol in [%s]" % os.path.relpath(pseudo.filepath), "red")
+        retcode += 1
+
+    # This part is commented because we are gonna refactor the DojoReport
+    try:
+        error = report.check(check_trials=check_trials)
+        #error = report.check(check_trials=["deltafactor"])
+        #error = report.check(check_trials=["deltafactor", "gbrv_bcc", "gbrv_fcc"])
+        if error:
+            retcode += 1
+            cprint("Invalid DojoReport in [%s]" % os.path.relpath(pseudo.filepath), "red")
+            if verbose: print(error)
+
+    except Exception as exc:
+        retcode += 1
+        cprint("Python exception in [%s]" % os.path.relpath(pseudo.filepath), "red")
+        if verbose: print(str(exc))
+
+    if retcode != 0:
+        cprint("[%s] is not valid" % os.path.relpath(pseudo.filepath), "red")
+        if not verbose: cprint("Use --verbose for more info", "yellow")
+
+    return retcode
+
+
+#def check_djrepo(djrepo, verbose=0):
+#    """
+#    Check a pseudopotential given the filepath of the djrepo file.
+#    Warnings are printed to stdout.
+#    Return 0 if success.
+#    """
+#    # Get the path of the pseudo from djrepo
+#    import json
+#    djrepo = os.path.abspath(djrepo)
+#    with open(djrepo, "rt") as fh:
+#        d = json.load(fh)
+#        path = os.path.join(os.path.dirname(djrepo), d["basename"])
+#
+#    return check_pseudo_path(path, verbose=verbose)

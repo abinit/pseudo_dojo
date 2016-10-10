@@ -3,7 +3,7 @@ Ti    ONCVPSP  r_core=  1.36  1.31  1.66
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  2.50000000  0.00000000    rchrg fchrg qchrg
 2     2     2     0     0    nproj
-0                 extension_switch
+1                 extension_switch
 0                         1.0556722744687D+01  1.0945985971820D+00
 1  0.0000000000000D+00 -2.6041937495336D-09  9.6805805038791D-09
 2  1.0000000000000D-02  8.7334452320994D-02 -5.0631765433201D-02
@@ -3670,48 +3670,4 @@ Ti 22.00    3    4       4      psp8
 #   n    l    f
 
 </INPUT>
-
-<DOJO_REPORT>
-{
-    "ebands": {
-        "38.0": {
-            "GSR-nc": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ti/Ti-sp-2.psp8_DOJO/EbandsAt38/t0/outdata/out_GSR.nc", 
-            "workdir": "/home/acad/ucl-naps/setten/software/pseudo_dojo/pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ti/Ti-sp-2.psp8_DOJO/EbandsAt38"
-        }
-    }, 
-    "ecuts": [
-        30.0, 
-        32.0, 
-        34.0, 
-        36.0, 
-        38.0, 
-        40.0, 
-        42.0, 
-        44.0, 
-        46.0, 
-        48.0, 
-        50.0, 
-        58.0, 
-        60.0
-    ], 
-    "md5": "40e9d58d2c1f54f518106c22f02d6e1f", 
-    "ppgen_hints": {
-        "high": {
-            "ecut": 40.0, 
-            "pawecutdg": 40.0
-        }, 
-        "low": {
-            "ecut": 36.0, 
-            "pawecutdg": 36.0
-        }, 
-        "normal": {
-            "ecut": 38.0, 
-            "pawecutdg": 38.0
-        }
-    }, 
-    "pseudo_type": "norm-conserving", 
-    "symbol": "Ti", 
-    "version": "1.0"
-}
-</DOJO_REPORT>
 
