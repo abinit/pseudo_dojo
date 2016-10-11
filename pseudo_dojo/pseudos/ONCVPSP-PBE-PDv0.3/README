@@ -95,12 +95,33 @@ Sb-d: ghost at +20 eV, Use Sb-spd for GW (let's call it high)
 
 Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
 
-I
+I : needs a GW version
 
 Xe
 
+Cs-sp: logders are deviation from 2.5 H no ghosts to be seen however
+
+Ba-sp-new: seems to have a ghost around 6 eV
+
+Hf: Needs a GW version fsp is probably unavoidable but log ders are not optimal.
+    the p version is the only one that does not have an explicit f projector, did we never try?
+
+Ta: the missing f, only at 1 H below hte femilevel is probably to much to classifie the sp as GW
+
+W:
+
+Re: needs GW version
+
+Os: needs GW version
+
+Ir: removed the GW tag, 4f to close
+
+
+
 Pb-d: (ghost at +70, Pb-d has been replaced by Pb-d-new)
        Use Pb-spd for GW)
+
+
 
 Bi-d:* (ghost at +70, use Bi-spd for GW)
 

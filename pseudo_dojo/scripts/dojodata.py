@@ -69,7 +69,7 @@ def dojo_figures(options):
                 for i, e in enumerate(errors):
                     print("[%s]" % i, e)
 
-	# add data that is not part of the dojo report
+        # add data that is not part of the dojo report
         data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
         for index, p in data_dojo.iterrows():
             outfile = p.filepath.replace('.psp8', '.out')
