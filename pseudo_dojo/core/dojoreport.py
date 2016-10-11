@@ -289,7 +289,7 @@ class DojoReport(dict):
         elif pseudo.ispaw:
             pseudo_type = "PAW"
         else:
-            raise TypeValue("Neither NC nor PAW pseudo!")
+            raise TypeError("Neither NC nor PAW pseudo!")
 
         new.update(
             basename=pseudo.basename,
