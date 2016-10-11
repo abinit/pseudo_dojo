@@ -116,16 +116,33 @@ Os: needs GW version
 
 Ir: removed the GW tag, 4f to close
 
+Pt: fsp softer model core charge? the two highest energy points seem off...
+    add an f projector to sp?
+    $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
 
+Au: $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
+    $ we actually did the GW calcualtion on gold both SigmaX and SigmaC are seriously affected by unfreezing
+    $ the 4f electrons ~10% total effect. since they are les deep in the Hf-Pt series I don't trust the GW tag on any
+    $ of them on non f potentials
+
+Hg: $ ghost in Hg clear example of what kind of signature in the logder produces a real ghost
+
+Tl: $ -d has a ghost at ~ 60 similar signature as in Hg
+    $ the 4f may still be to high in energy (4.2H) for GW
 
 Pb-d: (ghost at +70, Pb-d has been replaced by Pb-d-new)
        Use Pb-spd for GW)
-
-
+       $ the 4f may still be to high in energy (4.8H) for GW
 
 Bi-d:* (ghost at +70, use Bi-spd for GW)
+    $ 4f at 5.6H
 
 Po-d (ghost at +58, use Po-spd for GW)
+    $ 4f at 6.4H
+
+Rn
+    d is only 1.7H below ef ...
+
 
 [DONE, TO BE TESTED]
 Tc-sp: Tc-sp replaced by Tc-sp-new (better df, smoother)
@@ -138,6 +155,7 @@ Pt-sp: Regenerated with modcore 3
         Pt-ex-sp does not improve, new df with pt-sp-icmod3 is 4.8)
         Ask michiel about MC
 
+TODO: $ test for the 6th row the addition of an explicit f projector
 
 TODO: Pd --> Cd (look at Pd/Ag/Cd carefully)
 TO BE INVESTIGATED:
