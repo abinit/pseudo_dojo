@@ -36,51 +36,65 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=No
 from __future__ import print_function, division, unicode_literals
 %matplotlib notebook"""),
 
-        nbf.new_markdown_cell("Construct the pseudo object and get the DojoReport"),
+        nbf.new_markdown_cell("## Construct the pseudo object and the DojoReport"),
 
         nbf.new_code_cell("""\
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 pseudo = dojopseudo_from_file('%s')
 report = pseudo.dojo_report""" % os.path.abspath(pseudopath)),
 
-        nbf.new_markdown_cell("## ONCVPSP Input File:"),
+        nbf.new_markdown_cell("## ONCVPSP Input File"),
         nbf.new_code_cell("""\
 input_file = pseudo.filepath.replace(".psp8", ".in")
 %cat $input_file"""),
 
         nbf.new_code_cell("""\
-# Get data from the output file
+# Get data from the oncvpsp output file
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter
 onc_parser = OncvOutputParser(pseudo.filepath.replace(".psp8", ".out"))
+
 # Parse the file and build the plotter
 onc_parser.scan()
 plotter = onc_parser.make_plotter()"""),
 
-        nbf.new_markdown_cell("## AE and PS radial wavefunctions $\phi(r)$:"),
+        nbf.new_markdown_cell("## AE and PS radial wavefunctions $\phi(r)$"),
         nbf.new_code_cell("fig = plotter.plot_radial_wfs(show=False)"),
 
-        nbf.new_markdown_cell("## Arctan of the logarithmic derivatives:\n "
-                              "for a pseudo to qualify for a GW tag in general no deviations should be presend up to 8H\n"
-                              "Real ghosts are mostly observed when two steps in a PS curve touch "),
+        nbf.new_markdown_cell("""## Arctan of the logarithmic derivatives
+
+From oncvpsp documentation:
+The plots show $\phi(E) = \\arctan(R * d \psi(r)/dr |_R)$ for some $R$
+greater than the core radius, where $\psi$ is the solution of the non-local
+radial equation regular at the origin (i.e., the outward-integrated solution).
+For a well-designed pseudopotential, $\phi(E)$ will closely track that of the all-electron potential
+over a wide range of energies from well-below to well-above the valence semi-core states of interest.
+The steps of $\pi$ indicate localized pseudo wave functions.
+Spurious steps of $\pi$ indicate "ghost" states, which are localized states than on investigation
+turn out to have more nodes than appropriate for their energies.
+
+For $GW$ pseudos, no significant deviation should be present up to 8 Hartree."""),
         nbf.new_code_cell("fig = plotter.plot_atan_logders(show=False)"),
 
-        nbf.new_markdown_cell("## Convergence in $G$-space estimated by ONCVPSP:\n"
-                              "calculated in the atomic configuration"),
+        nbf.new_markdown_cell("""## Convergence in $G$-space estimated by ONCVPSP
+These results are obtained in the atomic configuration and should give a reasonable estimate
+of the convergence behaviour wrt to `ecut` in crystalline systems."""),
         nbf.new_code_cell("fig = plotter.plot_ene_vs_ecut(show=False)"),
 
-        nbf.new_markdown_cell("## Projectors:\n"
-                              "In general the second projector in any channel shoudl have one node more that the first.\n"
-                              "Pushing the energy of hte second projector too high may cause an additional node.\n"
-                              "This will most likely introduce ghosts"),
+        nbf.new_markdown_cell("""## Projectors
+
+In general the second projector in any channel should have one node more that the first one.
+Pushing the energy of the second projector too high may cause an additional node.
+This will most likely introduce ghosts."""),
         nbf.new_code_cell("fig = plotter.plot_projectors(show=False)"),
 
-        nbf.new_markdown_cell("## Core-Valence-Model charge densities:\n"
-                              "Much better convergence propperties have been achieved using icmod 3"
-                              "fcfact mainly determines the hight of the model core charge"
-                              "rcfact mainly determines the width of the model core charge"),
+        nbf.new_markdown_cell("""## Core-Valence-Model charge densities
+
+Much better convergence properties can been achieved with `icmod 3`.
+In this case, `fcfact` mainly determines the height of the model core charge while
+`rcfact` mainly determines the width of the model core charge."""),
         nbf.new_code_cell("fig = plotter.plot_densities(show=False)"),
 
-        nbf.new_markdown_cell("## Local potential and $l$-dependent potentials:"),
+        nbf.new_markdown_cell("## Local potential and $l$-dependent potentials"),
         nbf.new_code_cell("fig = plotter.plot_potentials(show=False)"),
 
         #nbf.new_markdown_cell("## 1-st order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
@@ -94,53 +108,56 @@ with pseudo.open_pspsfile() as psps:
     fform_fig = psps.plot(show=False);
 fform_fig"""),
 
-        nbf.new_markdown_cell("## Ghosts Test\n"
-                              "self consistent band stucture calculation on a regular mesh\n"
-                              "The algorithem to detect ghosts is just an indication usually on the side of faslse positives.\n"
-                              "Zoom in on the band plot to see if an actual ghost is there."),
+        nbf.new_markdown_cell("""## Ghosts Test
+
+Self-consistent band structure calculation performed on a regular mesh.
+The algorithm to detect ghosts is just an indication usually on the side of false positives.
+Zoom in on the band plot to see if an actual ghost is there."""),
 
         nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False); fig"),
 
-        nbf.new_markdown_cell("## Convergence of the total energy:\n"
-                              "# Convergence of the total energy (computed from the deltafactor runs at the Wien2K equilibrium volume)"),
+        nbf.new_markdown_cell("""## Convergence of the total energy wrt ecut
+The energies are obtained from the deltafactor calculations performed at the Wien2K equilibrium volume)"""),
         nbf.new_code_cell("""\
 fig = report.plot_etotal_vs_ecut(show=False)"""),
 
         nbf.new_code_cell("fig = report.plot_etotal_vs_ecut(inv_ecut=True, show=False)"),
 
-        nbf.new_markdown_cell("## Convergence of the deltafactor results:"),
+        nbf.new_markdown_cell("## Convergence of the deltafactor results"),
         nbf.new_code_cell("""fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("dfact_meV", "dfactprime_meV"), show=False)"""),
     ])
 
     # Add validation widget.
     if with_validation:
         nb.cells.extend([
-            nbf.new_markdown_cell("## PseudoDojo validation:"),
+            nbf.new_markdown_cell("## PseudoDojo validation"),
             nbf.new_code_cell("report.ipw_validate()"),
        ])
 
     nb.cells.extend([
         nbf.new_markdown_cell("## Convergence of $\Delta v_0$, $\Delta b_0$, and $\Delta b_1$ (deltafactor tests)"),
         nbf.new_code_cell("""\
-# Here we plot the difference wrt Wien2k results.
+# Absolute difference with respect to Wien2k results.
 fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-dfactprime_meV"), show=False)"""),
 
-        nbf.new_markdown_cell("## Deltafactor EOS for the different cutoff energies:"),
+        nbf.new_markdown_cell("## Deltafactor EOS for the different cutoff energies"),
         nbf.new_code_cell("fig = report.plot_deltafactor_eos(show=False)"),
 
-        nbf.new_markdown_cell("## Convergence of the GBRV lattice parameters:"),
+        nbf.new_markdown_cell("## Convergence of the GBRV lattice parameters"),
         nbf.new_code_cell("fig = report.plot_gbrv_convergence(show=False)"),
 
-        nbf.new_markdown_cell("## Convergence of the phonon frequencies at $\Gamma$:"),
+        nbf.new_markdown_cell("""## Convergence of the phonon frequencies at $\Gamma$
+The calculation is performed with the Wien2k relaxed parameters obtained from the deltafactor CIF files.
+"""),
         nbf.new_code_cell("fig = report.plot_phonon_convergence(show=False)"),
     ])
 
     if with_eos:
         # Add EOS plots
         nb.cells.extend([
-            nbf.new_markdown_cell("## GBRV EOS for the FCC structure:"),
+            nbf.new_markdown_cell("## GBRV EOS for the FCC structure"),
             nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="fcc", show=False)"""),
-            nbf.new_markdown_cell("## GBRV EOS for the BCC structure:"),
+            nbf.new_markdown_cell("## GBRV EOS for the BCC structure"),
             nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="bcc", show=False)"""),
         ])
 
