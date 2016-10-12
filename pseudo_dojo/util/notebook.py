@@ -36,8 +36,9 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=No
 from __future__ import print_function, division, unicode_literals
 %matplotlib notebook"""),
 
+        nbf.new_markdown_cell("Construct the pseudo object and get the DojoReport"),
+
         nbf.new_code_cell("""\
-# Construct the pseudo object and get the DojoReport
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 pseudo = dojopseudo_from_file('%s')
 report = pseudo.dojo_report""" % os.path.abspath(pseudopath)),
@@ -58,16 +59,25 @@ plotter = onc_parser.make_plotter()"""),
         nbf.new_markdown_cell("## AE and PS radial wavefunctions $\phi(r)$:"),
         nbf.new_code_cell("fig = plotter.plot_radial_wfs(show=False)"),
 
-        nbf.new_markdown_cell("## Arctan of the logarithmic derivatives:"),
+        nbf.new_markdown_cell("## Arctan of the logarithmic derivatives:\n "
+                              "for a pseudo to qualify for a GW tag in general no deviations should be presend up to 8H\n"
+                              "Real ghosts are mostly observed when two steps in a PS curve touch "),
         nbf.new_code_cell("fig = plotter.plot_atan_logders(show=False)"),
 
-        nbf.new_markdown_cell("## Convergence in $G$-space estimated by ONCVPSP:"),
+        nbf.new_markdown_cell("## Convergence in $G$-space estimated by ONCVPSP:\n"
+                              "calculated in the atomic configuration"),
         nbf.new_code_cell("fig = plotter.plot_ene_vs_ecut(show=False)"),
 
-        nbf.new_markdown_cell("## Projectors:"),
+        nbf.new_markdown_cell("## Projectors:\n"
+                              "In general the second projector in any channel shoudl have one node more that the first.\n"
+                              "Pushing the energy of hte second projector too high may cause an additional node.\n"
+                              "This will most likely introduce ghosts"),
         nbf.new_code_cell("fig = plotter.plot_projectors(show=False)"),
 
-        nbf.new_markdown_cell("## Core-Valence-Model charge densities:"),
+        nbf.new_markdown_cell("## Core-Valence-Model charge densities:\n"
+                              "Much better convergence propperties have been achieved using icmod 3"
+                              "fcfact mainly determines the hight of the model core charge"
+                              "rcfact mainly determines the width of the model core charge"),
         nbf.new_code_cell("fig = plotter.plot_densities(show=False)"),
 
         nbf.new_markdown_cell("## Local potential and $l$-dependent potentials:"),
@@ -84,12 +94,16 @@ with pseudo.open_pspsfile() as psps:
     fform_fig = psps.plot(show=False);
 fform_fig"""),
 
-        nbf.new_markdown_cell("## Ghosts Test"),
+        nbf.new_markdown_cell("## Ghosts Test\n"
+                              "self consistent band stucture calculation on a regular mesh\n"
+                              "The algorithem to detect ghosts is just an indication usually on the side of faslse positives.\n"
+                              "Zoom in on the band plot to see if an actual ghost is there."),
+
         nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False); fig"),
 
-        nbf.new_markdown_cell("## Convergence of the total energy:"),
+        nbf.new_markdown_cell("## Convergence of the total energy:\n"
+                              "# Convergence of the total energy (computed from the deltafactor runs at the Wien2K equilibrium volume)"),
         nbf.new_code_cell("""\
-# Convergence of the total energy (computed from the deltafactor runs at the Wien2K equilibrium volume)
 fig = report.plot_etotal_vs_ecut(show=False)"""),
 
         nbf.new_code_cell("fig = report.plot_etotal_vs_ecut(inv_ecut=True, show=False)"),

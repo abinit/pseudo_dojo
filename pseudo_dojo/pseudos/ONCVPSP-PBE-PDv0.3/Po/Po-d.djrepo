@@ -64697,13 +64697,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 40.0
+"ecut": 38.0
 }, 
 "low": {
-"ecut": 30.0
+"ecut": 28.0
 }, 
 "normal": {
-"ecut": 34.0
+"ecut": 32.0
 }
 }, 
 "md5": "f9c0676e18823bcdd1d5a72ff23de06e", 
@@ -64924,7 +64924,7 @@ null
 ""
 ], 
 "validation": {
-"validated_on": "2016-09-30 22:10:18"
+"validated_on": "2016-10-11 09:59:14"
 }, 
 "version": "1.0"
 }

@@ -27599,10 +27599,10 @@ null
 "pseudo_type": "NC", 
 "symbol": "Ir", 
 "tags": [
-"GW"
+""
 ], 
 "validation": {
-"validated_on": "2016-10-01 12:17:47"
+"validated_on": "2016-10-11 08:57:14"
 }, 
 "version": "1.0", 
 "xc": {

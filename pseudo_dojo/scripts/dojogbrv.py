@@ -137,8 +137,8 @@ def gbrv_plot(options):
 
     import seaborn as sns
     for struct_type in frame.struct_types():
-	frame.plot_errors_for_structure(struct_type)
-	frame.plot_hist(struct_type)
+        frame.plot_errors_for_structure(struct_type)
+        frame.plot_hist(struct_type)
 
     return 0
 

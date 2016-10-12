@@ -36197,10 +36197,10 @@ null
 "pseudo_type": "NC", 
 "symbol": "Au", 
 "tags": [
-"GW"
+""
 ], 
 "validation": {
-"validated_on": "2016-10-01 00:48:48"
+"validated_on": "2016-10-11 09:17:43"
 }, 
 "version": "1.0"
 }

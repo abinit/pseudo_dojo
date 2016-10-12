@@ -14,6 +14,7 @@ Ne*:
     Ne.psp8: Hard to converge 
 
 Na:
+    Na/Na-sp-gw.in: (no model core charge)
     Na/Na-sp.psp8: (no model core charge)
 
 Mg:
@@ -25,28 +26,54 @@ Al: oscillations in ffactors, requires GW version
 [Generated new pseudo, TO BE TESTED]
 Si:** oscillations in ffactors, requires GW version
       Si-new seems better
+      $$ lets use new
 
 P: requires GW version (P-dloc replaced by P-new with 2 projectors for d
    slightly better df, can be used for FR version)
+   $$ the model core charge should be improved
+   $$ the algorithm detects dispersionless states but inspection of the BS does not show any
+
 
 [new pseudo, TO BE TESTED Complete PHGAMMA]
 Cl:** (vloc(d), slow convergence)
+  $$ lets use new, some phonons are missing though
+
+K:  $ hints may be a bit lower
+
+Ca: $ hints may be reduced
+
+Ti: $$$ add GW tag
+
+Cr: $$$ tag for non-magnetic / magnetic
+    $$ the mc for high is a bit questionable
+
+Mn: $$$ tag for non-magnetic / magnetic
 
 Fe: 
     the potentials uses ncon 3, the standard is 4
     Fe-sp:** model core charge too hard, try the one from Fe-sp-high.
+    $$$ tag for non-magnetic / magnetic
+
+Co: $ normal is good enough
+    $$ mc seems a bit too much fitted
 
 Zn-sp:* 
     I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
     Ask about mc params
+    $$ Michiel will look at this. the total energy convergence look a bit suspicious...
 
 Ge-d: Require GW version (Ge-spd I've recently generated looks good but it's hard)
+    $ spd is good for GW
 
 [DONE, RUNNING] phonons are missing
 As:** No convergence (v(d)?) Try As-new with modcore from As
 As-d:* Require GW version (As-spd has good logders but it's hard)
 
 Se-d: Require GW version (Se-spd has good logders but it's hard)
+
+Br : needs a GW version
+
+Kr : needs a GW version
 
 Nb: Replaced by Nb-sp-new (better convergence and df)
 
@@ -57,23 +84,67 @@ Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at
 Ag.psp8: It seems it's difficult to get good logders without semicore
 
 Cd.psp8:* Has ghost at +73 Ha
+    $$ to discuss
 
 In-d: GHOST_In-20eV (In-spd is much better for GW)
 
-Pb-d: (ghost at +70, Pb-d has been replaced by Pb-d-new)
-       Use Pb-spd for GW)
-
-Bi-d:* (ghost at +70, use Bi-spd for GW)
-
-Po-d (ghost at +58, use Po-spd for GW)
-
-[DONE, TO BE TESTED]
-Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
-
-Sb-d: ghost at +20 eV, Use Sb-spd for GW (let's call it high)
 
 Sn-d: (ghost at +60, use Sn-spd for GW)
 
+Sb-d: ghost at +20 eV, Use Sb-spd for GW (let's call it high)
+
+Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
+
+I : needs a GW version
+
+Xe
+
+Cs-sp: logders are deviation from 2.5 H no ghosts to be seen however
+
+Ba-sp-new: seems to have a ghost around 6 eV
+
+Hf: Needs a GW version fsp is probably unavoidable but log ders are not optimal.
+    the p version is the only one that does not have an explicit f projector, did we never try?
+
+Ta: the missing f, only at 1 H below hte femilevel is probably to much to classifie the sp as GW
+
+W:
+
+Re: needs GW version
+
+Os: needs GW version
+
+Ir: removed the GW tag, 4f to close
+
+Pt: fsp softer model core charge? the two highest energy points seem off...
+    add an f projector to sp?
+    $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
+
+Au: $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
+    $ we actually did the GW calcualtion on gold both SigmaX and SigmaC are seriously affected by unfreezing
+    $ the 4f electrons ~10% total effect. since they are les deep in the Hf-Pt series I don't trust the GW tag on any
+    $ of them on non f potentials
+
+Hg: $ ghost in Hg clear example of what kind of signature in the logder produces a real ghost
+
+Tl: $ -d has a ghost at ~ 60 similar signature as in Hg
+    $ the 4f may still be to high in energy (4.2H) for GW
+
+Pb-d: (ghost at +70, Pb-d has been replaced by Pb-d-new)
+       Use Pb-spd for GW)
+       $ the 4f may still be to high in energy (4.8H) for GW
+
+Bi-d:* (ghost at +70, use Bi-spd for GW)
+    $ 4f at 5.6H
+
+Po-d (ghost at +58, use Po-spd for GW)
+    $ 4f at 6.4H
+
+Rn
+    d is only 1.7H below ef ...
+
+
+[DONE, TO BE TESTED]
 Tc-sp: Tc-sp replaced by Tc-sp-new (better df, smoother)
 
 Ba:
@@ -84,6 +155,7 @@ Pt-sp: Regenerated with modcore 3
         Pt-ex-sp does not improve, new df with pt-sp-icmod3 is 4.8)
         Ask michiel about MC
 
+TODO: $ test for the 6th row the addition of an explicit f projector
 
 TODO: Pd --> Cd (look at Pd/Ag/Cd carefully)
 TO BE INVESTIGATED:
@@ -97,11 +169,11 @@ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ne/Ne-new.djrepo |  38936 +++++++++++++
 
 GGA_X_PBE_SOL = 116 GGA_C_PBE_SOL = 133
 
+W-sp, Re-sp (f channel could be improved)
+
 LDA_X = 1
 LDA_C_PW = 12
 7: dict(x=xcf.LDA_X, c=xcf.LDA_C_PW),          # PW 001012
-
-W-sp, Re-sp (f channel could be improved)
 
 In-d is very sensitive, changing XC (GGa-->LDA) gives a ghost very close to 0.
 The first s projectors presents oscillations I don't see in the other pseudos.

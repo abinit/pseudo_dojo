@@ -639,4 +639,3 @@ def plot_logders(ae_logders, pp_logders, **kwargs):
         fig.savefig(savefig)
 
     return fig
-

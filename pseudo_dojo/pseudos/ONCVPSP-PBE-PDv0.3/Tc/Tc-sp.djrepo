@@ -134788,10 +134788,10 @@ null
 "pseudo_type": "NC", 
 "symbol": "Tc", 
 "tags": [
-""
+"GW"
 ], 
 "validation": {
-"validated_on": "2016-10-02 17:31:00"
+"validated_on": "2016-10-10 21:12:33"
 }, 
 "version": "1.0", 
 "xc": {

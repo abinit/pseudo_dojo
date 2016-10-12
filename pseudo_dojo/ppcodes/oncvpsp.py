@@ -31,6 +31,7 @@ _l2char = {
     "6": "i",
 }
 
+
 def is_integer(s):
     """True if s in an integer."""
     try:
