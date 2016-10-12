@@ -153,15 +153,18 @@ def djrepo_copyhints(options):
     if len(options.paths) != 2:
         raise ValueError("Expecting two arguments with source and destination")
 
-    def copy_hints(from_djrepo, to_djrepo):
+    def copy_hints(from_djrepo, to_djrepo, verbose):
         from_report = DojoReport.from_file(from_djrepo)
-        if "hints" not in from_report
+        if "hints" not in from_report:
             print("hints are not present in source", to_djrepo)
             return 1
         to_report = DojoReport.from_file(to_djrepo)
         if "hints" in to_report:
             print("hints are already available in destination", to_djrepo)
             return 2
+
+        if verbose:
+            print("Copying hints %s --> %s" % (from_djrepo, to_djrepo))
 
         # Add hints and write new json file.
         to_report["hints"] = from_report["hints"]
@@ -175,19 +178,19 @@ def djrepo_copyhints(options):
         # Copy hints from file
         assert os.path.isfile(dest)
         assert src.endswith(".djrepo") and dest.endswith(".djrepo")
-        return copy_hints(src, dest)
+        return copy_hints(src, dest, options.verbose)
 
     # Walk through directory src and copy all hints.
     for dirpath, dirnames, filenames in os.walk(src):
         for f in filenames:
             src_path = os.path.join(dirpath, f)
             if not src_path.endswith(".djrepo"): continue
-            relpath = os.path.relpath(path, src)
+            relpath = os.path.relpath(src_path, src)
             dest_path = os.path.join(dest, relpath)
             if not os.path.exists(dest_path):
                 print("Ignoring non-existent target ", dest_path)
                 continue
-            rc = copy_hints(src_path, dest_path)
+            rc = copy_hints(src_path, dest_path, options.verbose)
             if rc != 0:
                 print("Non zero-exit status while copying hints", src_path, " --> ", dest_path)
                 retcode += rc
@@ -262,6 +265,9 @@ Example usage:
         options = parser.parse_args()
     except Exception as exc:
         show_examples_and_exit(error_code=1)
+
+    if options.command == "copyhints":
+        return djrepo_copyhints(options)
 
     # Get paths
     def get_djrepo_paths(options):

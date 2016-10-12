@@ -15,6 +15,17 @@
 33.0, 
 35.0
 ], 
+"hints": {
+"high": {
+"ecut": 29.0
+}, 
+"low": {
+"ecut": 15.0
+}, 
+"normal": {
+"ecut": 19.0
+}
+}, 
 "md5": "3f941cfa0153062bd950d5ce42828e61", 
 "ppgen_hints": {
 "high": {

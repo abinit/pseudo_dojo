@@ -52672,6 +52672,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 46.0
+}, 
+"low": {
+"ecut": 36.0
+}, 
+"normal": {
+"ecut": 40.0
+}
+}, 
 "md5": "a48fd23604a3e4c78cf695d779ff801c", 
 "ppgen_hints": {
 "high": {
