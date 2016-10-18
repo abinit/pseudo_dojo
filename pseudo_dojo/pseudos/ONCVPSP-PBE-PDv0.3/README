@@ -8,10 +8,7 @@ He:
 F:***   
     F.psp8 can be improved (model core charge too hard, phonons don't converge, ask michiel)
 
-[Generated new pseudo, TO BE TESTED]
-Ne*:
-    Pseudos without nlcc.
-    Ne.psp8: Hard to converge 
+Ne: Pseudos without nlcc.
 
 Na:
     Na/Na-sp.in: (no model core charge)
@@ -109,8 +106,7 @@ Hg: $ ghost in Hg clear example of what kind of signature in the logder produces
 Tl: $ -d has a ghost at ~ 60 similar signature as in Hg
     $ the 4f may still be to high in energy (4.2H) for GW
 
-Pb-d: (ghost at +70, Pb-d has been replaced by Pb-d-new)
-       Use Pb-spd for GW)
+Pb-d: (ghost at +70, use Pb-spd for GW)
        $ the 4f may still be to high in energy (4.8H) for GW
 
 Bi-d:* (ghost at +70, use Bi-spd for GW)
@@ -120,9 +116,6 @@ Po-d (ghost at +58, use Po-spd for GW)
     $ 4f at 6.4H
 
 Rn: d is only 1.7H below ef ...
-
-[DONE, TO BE TESTED]
-Tc-sp: Tc-sp replaced by Tc-sp-new (better df, smoother)
 
 Ba:
     Ba-sp-new adds two projectors for f. 
