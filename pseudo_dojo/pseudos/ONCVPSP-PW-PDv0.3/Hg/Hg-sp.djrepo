@@ -106066,6 +106066,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Hg", 
+"tags": [
+" GW"
+], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

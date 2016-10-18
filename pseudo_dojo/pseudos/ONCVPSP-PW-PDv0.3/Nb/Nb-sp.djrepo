@@ -28086,6 +28086,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Nb", 
+"tags": [
+" GW"
+], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

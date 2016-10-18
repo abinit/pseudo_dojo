@@ -43,6 +43,9 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "O", 
+"tags": [
+"GW"
+], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

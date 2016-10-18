@@ -90097,6 +90097,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Li", 
+"tags": [
+"GW"
+], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 
