@@ -125560,6 +125560,9 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Be", 
+"tags": [
+"GW"
+], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

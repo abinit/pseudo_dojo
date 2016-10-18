@@ -159,9 +159,9 @@ def djrepo_copyhints(options):
             print("hints are not present in source", to_djrepo)
             return 1
         to_report = DojoReport.from_file(to_djrepo)
-        if "hints" in to_report:
-            print("hints are already available in destination", to_djrepo)
-            return 2
+        #if "hints" in to_report:
+        #    print("hints are already available in destination", to_djrepo)
+        #    return 2
 
         if verbose:
             print("Copying hints %s --> %s" % (from_djrepo, to_djrepo))
