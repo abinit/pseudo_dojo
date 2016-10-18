@@ -1,8 +1,8 @@
 H: 
-    H.psp8 uses p as local part
+    H.psp8 uses one projector for p
 
 He: 
-    He.psp8 uses p as local part, just as accurate as the standard but cheaper
+    He.psp8 uses one projector for p
 
 [Generated new pseudo, TO BE TESTED]
 F:***   
@@ -82,7 +82,7 @@ Ba-sp-new: seems to have a ghost around 6 eV
 Hf: Needs a GW version fsp is probably unavoidable but log ders are not optimal.
     the p version is the only one that does not have an explicit f projector, did we never try?
 
-Ta: the missing f, only at 1 H below hte femilevel is probably to much to classifie the sp as GW
+Ta: the missing f, only at 1 H below the fermi level is probably too much to classify the sp as GW
 
 W:
 
