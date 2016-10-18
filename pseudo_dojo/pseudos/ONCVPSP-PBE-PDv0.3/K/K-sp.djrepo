@@ -28138,13 +28138,13 @@ null
 }, 
 "hints": {
 "high": {
-"ecut": 42.0
+"ecut": 44.0
 }, 
 "low": {
-"ecut": 32.0
+"ecut": 34.0
 }, 
 "normal": {
-"ecut": 36.0
+"ecut": 38.0
 }
 }, 
 "md5": "51cae20b8ffc404ea470e5ab641cee63", 
@@ -28443,7 +28443,7 @@ null
 "GW"
 ], 
 "validation": {
-"validated_on": "2016-09-30 19:15:24"
+"validated_on": "2016-10-18 21:09:23"
 }, 
 "version": "1.0"
 }

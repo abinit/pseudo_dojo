@@ -132599,9 +132599,11 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ti", 
+"tags": [
+" GW"
+], 
 "validation": {
-"validated_by": "authors", 
-"validated_on": "2016-09-28 00:25:54"
+"validated_on": "2016-10-18 21:13:37"
 }, 
 "version": "1.0"
 }

@@ -22,47 +22,32 @@ Mg:
 
 Al: oscillations in ffactors, requires GW version
 
-[Generated new pseudo, TO BE TESTED]
-Si:** oscillations in ffactors, requires GW version
-      Si-new seems better
-      $$ lets use new
+Si: requires GW version
 
-P: requires GW version (P-dloc replaced by P-new with 2 projectors for d
-   slightly better df, can be used for FR version)
+P: requires GW version 
    $$ the model core charge should be improved
    $$ the algorithm detects dispersionless states but inspection of the BS does not show any
-
 
 [new pseudo, TO BE TESTED Complete PHGAMMA]
 Cl:** (vloc(d), slow convergence)
   $$ lets use new, some phonons are missing though
 
-K:  $ hints may be a bit lower
-
-Ca: $ hints may be reduced
-
-Ti: $$$ add GW tag
-
-Cr: $$$ tag for non-magnetic / magnetic
-    $$ the mc for high is a bit questionable
-
-Mn: $$$ tag for non-magnetic / magnetic
+Cr: $$ the mc could be improved
 
 Fe: 
     the potentials uses ncon 3, the standard is 4
     Fe-sp:** model core charge too hard, try the one from Fe-sp-high.
-    $$$ tag for non-magnetic / magnetic
 
 Co: $ normal is good enough
-    $$ mc seems a bit too much fitted
+    $$ mc could be improved
 
 Zn-sp:* 
     I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
     Ask about mc params
     $$ Michiel will look at this. the total energy convergence look a bit suspicious...
 
-Ge-d: Require GW version (Ge-spd I've recently generated looks good but it's hard)
-    $ spd is good for GW
+Ge-d: Require GW version 
+    (Ge-spd I've recently generated is good for GW but it's hard)
 
 [DONE, RUNNING] phonons are missing
 As:** No convergence (v(d)?) Try As-new with modcore from As
@@ -70,23 +55,18 @@ As-d:* Require GW version (As-spd has good logders but it's hard)
 
 Se-d: Require GW version (Se-spd has good logders but it's hard)
 
-Br : needs a GW version
+Br : needs GW version
 
-Kr : needs a GW version
-
-Nb: Replaced by Nb-sp-new (better convergence and df)
-
-Rh: Replaced by Rh-sp-new (better convergence and df)
+Kr : needs GW version
 
 Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
 
-Ag.psp8: It seems it's difficult to get good logders without semicore
+Ag.psp8: It seems difficult to get good logders without semicore
 
 Cd.psp8:* Has ghost at +73 Ha
     $$ to discuss
 
 In-d: GHOST_In-20eV (In-spd is much better for GW)
-
 
 Sn-d: (ghost at +60, use Sn-spd for GW)
 
@@ -94,7 +74,7 @@ Sb-d: ghost at +20 eV, Use Sb-spd for GW (let's call it high)
 
 Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
 
-I : needs a GW version
+I: needs GW version
 
 Xe
 
@@ -139,9 +119,7 @@ Bi-d:* (ghost at +70, use Bi-spd for GW)
 Po-d (ghost at +58, use Po-spd for GW)
     $ 4f at 6.4H
 
-Rn
-    d is only 1.7H below ef ...
-
+Rn: d is only 1.7H below ef ...
 
 [DONE, TO BE TESTED]
 Tc-sp: Tc-sp replaced by Tc-sp-new (better df, smoother)
@@ -155,7 +133,6 @@ Pt-sp: Regenerated with modcore 3
         Ask michiel about MC
 
 TODO: $ test for the 6th row the addition of an explicit f projector
-
 TODO: Pd --> Cd (look at Pd/Ag/Cd carefully)
 TO BE INVESTIGATED:
 Cu-sp high
