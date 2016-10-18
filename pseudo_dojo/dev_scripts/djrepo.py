@@ -166,8 +166,9 @@ def djrepo_copyhints(options):
         if verbose:
             print("Copying hints %s --> %s" % (from_djrepo, to_djrepo))
 
-        # Add hints and write new json file.
+        # Add hints, and tags. Write new json file.
         to_report["hints"] = from_report["hints"]
+        to_report["tags"] = from_report.get("tags", [])
         to_report.json_write()
         return 0
 
