@@ -1,83 +1,202 @@
 H: 
-    H.psp8 uses one projector for p
+    H.in: Uses one projector for p to improve transferability
+        Using v_p as local part produces vloc(q) with high Fourier components at large q
 
 He: 
-    He.psp8 uses one projector for p
+    He.in: Uses one projector for p to improve transferability
+        Using v_p as local part produces vloc(q) with high Fourier components at large q
+
+Li:
+    Li-s.in: Default version with 1s in valence.
+    Li-s-high.in: Similar to Li-s but with smaller core radius.
+
+Be:
+    Be-s.in: Default version with 1s in valence.
+    Be-s-high.in: Similar to Li-s but with smaller core radius.
+
+B:
+    B.in: Default version with (2s, 2p) in valence.
+    B-gw.in: Version with improved logarithmic derivatives, recommended for GW.
+
+C:
+    C.in: Default version with (2s, 2p) in valence
+    C-gw.in: Version with improved logarithmic derivatives, recommended for GW.
+
+N:   
+    N.in: Default version with (2s, 2p) in valence
+
+O:
+    O.in: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
+    O-high.in: Similar to O.in, smaller core radii for high-accuracy applications.
 
 [Generated new pseudo, TO BE TESTED]
 F:***   
-    F.psp8 can be improved (model core charge too hard, phonons don't converge, ask michiel)
+    F.psp8 can be improved (model core a bit too hard, phonons don't converge)
 
-Ne: Pseudos without nlcc.
+Ne: Pseudo without nlcc since modeling 1s core density without spoiling convergence is not trivial
+    Ne.in: Default version with (2s, 2p) in valence.
+    Ne-high.in: Similar to Ne.in but with smaller core radii.
 
 Na:
-    Na/Na-sp.in: (no model core charge)
+    Na-sp.in: (2s, 2p) semicore in valence. No model core charge (ae core too localized).
 
 Mg:
-    Mg.psp8 has ghost at +80 eV, it's the fast low-accuracy version
-    Mg-sp.psp8 does not have model core charge.
+    Mg.in: has ghost at +80 eV, it's the fast low-accuracy version without semicore.
+    Mg-sp.in: (2s, 2p) semicore in valence. No model core charge (ae core too localized)
 
-Al: oscillations in ffactors, requires GW version
+Al: 
+    Al.in: Oscillations in from factors, Requires GW version.
+        Has 2 projectors in the d-channel to improve transferability.
 
-Si: requires GW version
+Si: 
+    Si.in: Requires GW version
+        Has 2 projectors in the d-channel to improve transferability.
 
-P: requires GW version 
-   $$ the model core charge should be improved
-   $$ the algorithm detects dispersionless states but inspection of the BS does not show any
+P: 
+    P.in: requires GW version 
+        Has 2 projectors in the d-channel to improve transferability.
+        $$ the model core charge should be improved
+        $$ the algorithm detects dispersionless states but inspection of the BS does not show any
 
 [new pseudo, TO BE TESTED Complete PHGAMMA]
 Cl:** (vloc(d), slow convergence)
   $$ lets use new, some phonons are missing though
 
+Ar:
+    Ar.in: (3s, 3p) in valence. Has 2 projectors in the d-channel to improve transferability.
+
+K:
+    K-sp.in: (3s, 3p) semicore states in valence. 
+        Has 2 projectors in the d-channel to improve transferability.
+
+Ca:
+    Ca-sp.in: (3s, 3p) semicore states in valence. 
+        Has 2 projectors in the d-channel to improve transferability.
+
+Sc:
+    Sc-sp.in: (3s, 3p) semicore states in valence. 
+
+Ti:
+    Ti-sp.in: (3s, 3p) semicore states in valence. 
+
+V:
+    V-sp.in: (3s, 3p) semicore states in valence. 
+
 Cr: $$ the mc could be improved
+    Cr-sp.in: Default version with (3s, 3p) semicore states in valence. 
+        deltafactor ~= 10 but ...
 
-Fe: 
-    the potentials uses ncon 3, the standard is 4
-    Fe-sp:** model core charge too hard, try the one from Fe-sp-high.
+    Cr-sp-high.in: Similar to Cr-sp.in but with smaller core radii (and larger cutoff)
+        for high-accuracy calculations.
 
-Co: $ normal is good enough
-    $$ mc could be improved
+Mn: 
+    Mn-sp.in: Default version with (3s, 3p) semicore states in valence. 
+        deltafactor ~= 18 but ...
+
+    Mn-sp-high.in: Similar to Mn-sp.in but with smaller core radii (and larger cutoff)
+        for high-accuracy calculations.
+
+Fe: ** model core charge too hard, try the one from Fe-sp-high.
+    Fe-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 8.1. 
+        Uses `ncon 3`, the standard is 4
+    Fe-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 2.0. 
+        Uses `ncon 3`, the standard is 4
+
+Co: $$ mc could be improved
+    Co-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 1.2.
+    Fe-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 0.7
+
+Ni:
+    Ni-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 1.2
+    Ni-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 1.2
+
+Cu:
+    Cu-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 0.3
+    Cu-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 0.3
 
 Zn-sp:* 
     I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
     Ask about mc params
     $$ Michiel will look at this. the total energy convergence look a bit suspicious...
 
-Ge-d: Require GW version 
-    (Ge-spd I've recently generated is good for GW but it's hard)
+Ga:
+    Ga-d.in: 3d in valence, default for GS applications.
+    Ga-spd-high.in: Include (3s, 3p, 3d) in valence. Recommended version for GW but it's hard
+
+Ge:
+    Ge-d: Require GW version 
+    Ge-spd-high: I've recently generated is good for GW but it's hard)
 
 [DONE, RUNNING] phonons are missing
-As:** No convergence (v(d)?) Try As-new with modcore from As
-As-d:* Require GW version (As-spd has good logders but it's hard)
+As:
+    As.in:** No convergence (v(d)?) Try As-new with modcore from As
+    As-d:* Require GW version 
+    As-spd-high has good logders but it's hard)
 
-Se-d: Require GW version (Se-spd has good logders but it's hard)
+Se: 
+    Se-d.in: Require GW version 
+    Se-spd.in: Se-spd-high has good logders but it's hard)
 
-Br : needs GW version
+Br: needs GW version
 
-Kr : needs GW version
+Kr: needs GW version
 
-Pd.psp8: Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
+##################################
+Rb-sp (oscillations in vloc(q))
+There are other elements with dvloc0 /= 0
+##################################
+# lloc lpopt rc5 dvloc0
+4 5 1.7 4.0
+Rb/Rb-sp.in:# lloc lpopt rc5 dvloc0
+Rb/Rb-sp.in-4 5 1.7 4.0
 
-Ag.psp8: It seems difficult to get good logders without semicore
+Sr:
 
-Cd.psp8:* Has ghost at +73 Ha
-    $$ to discuss
+Y:
+    Y-sp.in: 4s-4p semicore in valence
 
-In-d: GHOST_In-20eV (In-spd is much better for GW)
+Zr:
+    Zr-sp.in: 4s-4p semicore in valence.
 
-Sn-d: (ghost at +60, use Sn-spd for GW)
+Nb:
+    Nb-sp.in: 4s-4p semicore in valence.
 
-Sb-d: ghost at +20 eV, Use Sb-spd for GW (let's call it high)
+Mo:
+    Mo-sp.in: 4s-4p semicore in valence.
 
-Te-d:** ghost at +77 eV  (Should try Te-spd for GW)
+Tc:
+    Tc-sp.in: 4s-4p semicore in valence.
+
+Ru:
+    Ru-sp.in: 4s-4p semicore in valence.
+
+Rh:
+    Rh-sp.in: 4s-4p semicore in valence.
+
+Pd: Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
+
+Ag: It seems difficult to get good logders without semicore
+
+Cd:
+    Cd.in:* Has ghost at +73 Ha $$ to discuss
+
+In-d: GHOST_In-20eV (In-spd-high is much better for GW)
+
+Sn-d: (ghost at +60, use Sn-spd-high for GW)
+
+Sb-d: ghost at +20 eV, Use Sb-spd-high for GW
+
+Te-d:** ghost at +77 eV  (Should try Te-spd-high for GW)
 
 I: needs GW version
 
-Xe
+Xe:
+    Xe.in: 
 
 Cs-sp: logders are deviation from 2.5 H no ghosts to be seen however
 
 Ba-sp-new: seems to have a ghost around 6 eV
+    Ba-sp-new adds two projectors for f to improve deltafactor and GBRV tests. 
 
 Hf: Needs a GW version fsp is probably unavoidable but log ders are not optimal.
     the p version is the only one that does not have an explicit f projector, did we never try?
@@ -85,6 +204,8 @@ Hf: Needs a GW version fsp is probably unavoidable but log ders are not optimal.
 Ta: the missing f, only at 1 H below the fermi level is probably too much to classify the sp as GW
 
 W:
+    W-sp.in
+    W-fsp.in
 
 Re: needs GW version
 
@@ -103,22 +224,19 @@ Au: $ removed the GW tag from sp, its high in energy and the fsp shows a serious
 
 Hg: $ ghost in Hg clear example of what kind of signature in the logder produces a real ghost
 
-Tl: $ -d has a ghost at ~ 60 similar signature as in Hg
+Tl: $ -d has a ghost at ~ +60 eV similar signature as in Hg
     $ the 4f may still be to high in energy (4.2H) for GW
 
-Pb-d: (ghost at +70, use Pb-spd for GW)
+Pb-d: (ghost at +70, use Pb-spd-high for GW)
        $ the 4f may still be to high in energy (4.8H) for GW
 
-Bi-d:* (ghost at +70, use Bi-spd for GW)
+Bi-d:* (ghost at +70 eV, use Bi-spd-high for GW)
     $ 4f at 5.6H
 
-Po-d (ghost at +58, use Po-spd for GW)
+Po-d (ghost at +58 eV, use Po-spd-high for GW)
     $ 4f at 6.4H
 
 Rn: d is only 1.7H below ef ...
-
-Ba:
-    Ba-sp-new adds two projectors for f. 
 
 Pt-sp: Regenerated with modcore 3
        (Pt-p gives much better deltafactor but has ghosts at +25 eV, 
@@ -131,30 +249,14 @@ TO BE INVESTIGATED:
 Cu-sp high
 Test that there's no fr pseudo with local part taken from v(L)
 
-pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Cl/Cl-new.djrepo |  40112 +++++++++++++
-pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new.djrepo   |  65786 ++++++++++++++++++++++
-pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ne/Ne-new.djrepo |  38936 +++++++++++++
-
-
-GGA_X_PBE_SOL = 116 GGA_C_PBE_SOL = 133
-
 W-sp, Re-sp (f channel could be improved)
-
-LDA_X = 1 LDA_C_PW = 12
-7: dict(x=xcf.LDA_X, c=xcf.LDA_C_PW),          # PW 001012
 
 In-d is very sensitive, changing XC (GGa-->LDA) gives a ghost very close to 0.
 The first s projectors presents oscillations I don't see in the other pseudos.
 
-##################################
-Rb-sp (oscillations in vloc(q))
-There are other elements with dvloc0 /= 0
-##################################
-# lloc lpopt rc5 dvloc0
-4 5 1.7 4.0
-
 Hf/Hf-p.in:# lloc lpopt rc5 dvloc0
 Hf/Hf-p.in-4 5 1.85 8.0
 
-Rb/Rb-sp.in:# lloc lpopt rc5 dvloc0
-Rb/Rb-sp.in-4 5 1.7 4.0
+GGA_X_PBE_SOL = 116 GGA_C_PBE_SOL = 133
+LDA_X = 1 LDA_C_PW = 12
+7: dict(x=xcf.LDA_X, c=xcf.LDA_C_PW),          # PW 001012

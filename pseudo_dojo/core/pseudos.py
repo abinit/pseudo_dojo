@@ -217,8 +217,8 @@ class DojoTable(PseudoTable):
             res = p.dojo_report.get_last_df_results(with_soc=False)
             entry["dfact_meV"] = res.get("dfact_meV", None)
             entry["dfactprime_meV"] = res.get("dfactprime_meV", None)
-            entry["tags"] = res.get("tags", [])
-            entry["hints"] = res.get("hints", {})
+            entry["tags"] = p.dojo_report.get("tags", [])
+            entry["hints"] = p.dojo_report.get("hints", {})
 
             return entry
 

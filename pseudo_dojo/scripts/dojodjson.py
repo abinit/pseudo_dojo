@@ -16,7 +16,7 @@ def djson_new(options, stream=sys.stdout):
     # Build full table
     table = DojoTable.from_dojodir(options.top, exclude_wildcard=options.exclude)
     djson = table.to_djson(options.verbose, ignore_dup=False)
-    print(json.dumps(djson, indent=-1), file=stream)
+    print(json.dumps(djson, indent=1), file=stream)
     return 0
 
 
