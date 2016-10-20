@@ -226,7 +226,7 @@ In:
     In-spd-high: is much better for GW
 
 Sn: 
-    Sn-d: Default versionf for GS applications. ghost at +60 eV
+    Sn-d: Default version for GS applications. ghost at +60 eV
     Sn-spd: Sn-spd-high for GW)
 
 Sb: 
@@ -240,6 +240,8 @@ Te:
 
 I: needs GW version
     I.in:
+    I-d
+    I-spd-high
 
 Xe: Require GW version
     Xe.in: 5s-5p in valence. Two projectors for f to improve trasferability.
