@@ -131608,7 +131608,12 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ti", 
-"tags": [], 
+"tags": [
+"GW"
+], 
+"validation": {
+"validated_on": "2016-10-19 21:40:03"
+}, 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

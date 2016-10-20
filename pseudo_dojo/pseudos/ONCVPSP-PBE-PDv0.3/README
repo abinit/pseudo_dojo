@@ -1,18 +1,23 @@
+Otherwise explicitly noted, all pseudos have been generated using the neutral ground-state
+configuration as reference and non-linear core correction in included except for 
+pseudos in which the ae core is too localized or pseudos having 1s in valence.
+Pseudos with the `GW` tag have good logarithmic derivatives up to 
+
 H: 
-    H.in: Uses one projector for p to improve transferability
+    H.in: Uses one p-projector to improve transferability. Can be used for GW.
         Using v_p as local part produces vloc(q) with high Fourier components at large q
 
 He: 
-    He.in: Uses one projector for p to improve transferability
+    He.in: Uses one p-projector to improve transferability. Can be used for GW.
         Using v_p as local part produces vloc(q) with high Fourier components at large q
 
 Li:
-    Li-s.in: Default version with 1s in valence.
-    Li-s-high.in: Similar to Li-s but with smaller core radius.
+    Li-s.in: Default version with 1s in valence. Can be used for GW.
+    Li-s-high.in: Similar to Li-s but with smaller core radius. Can be used for GW
 
 Be:
-    Be-s.in: Default version with 1s in valence.
-    Be-s-high.in: Similar to Li-s but with smaller core radius.
+    Be-s.in: Default version with 1s in valence. Can be used for GW
+    Be-s-high.in: Similar to Be-s but with smaller core radius. Can be use for GW.
 
 B:
     B.in: Default version with (2s, 2p) in valence.
@@ -23,10 +28,11 @@ C:
     C-gw.in: Version with improved logarithmic derivatives, recommended for GW.
 
 N:   
-    N.in: Default version with (2s, 2p) in valence
+    N.in: Default version with (2s, 2p) in valence. Can be used for GW.
 
 O:
     O.in: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
+        Can be used for GW.
     O-high.in: Similar to O.in, smaller core radii for high-accuracy applications.
 
 [Generated new pseudo, TO BE TESTED]
@@ -34,27 +40,30 @@ F:***
     F.psp8 can be improved (model core a bit too hard, phonons don't converge)
 
 Ne: Pseudo without nlcc since modeling 1s core density without spoiling convergence is not trivial
-    Ne.in: Default version with (2s, 2p) in valence.
+    Ne.in: Default version with (2s, 2p) in valence. Can be used for GW.
     Ne-high.in: Similar to Ne.in but with smaller core radii.
 
 Na:
     Na-sp.in: (2s, 2p) semicore in valence. No model core charge (ae core too localized).
+        Can be used for GW.
 
 Mg:
-    Mg.in: has ghost at +80 eV, it's the fast low-accuracy version without semicore.
-    Mg-sp.in: (2s, 2p) semicore in valence. No model core charge (ae core too localized)
+    Mg.in: Fast low-accuracy version without semicore. Has ghost at +80 eV, not recommended for GW.
+    Mg-sp.in: (2s, 2p) semicore states in valence. No model core charge (ae core too localized).
+        Can be used for GW.
 
 Al: 
-    Al.in: Oscillations in from factors, Requires GW version.
-        Has 2 projectors in the d-channel to improve transferability.
+    Al.in: Oscillations in from factors, Has 2 projectors in the d-channel to improve transferability.
+        Requires GW version.
 
 Si: 
-    Si.in: Requires GW version
-        Has 2 projectors in the d-channel to improve transferability.
+    Si.in: Has 2 projectors in the d-channel to improve transferability.
+        Requires GW version
 
 P: 
-    P.in: requires GW version 
+    P.in: 
         Has 2 projectors in the d-channel to improve transferability.
+        Requires GW version 
         $$ the model core charge should be improved
         $$ the algorithm detects dispersionless states but inspection of the BS does not show any
 
@@ -64,47 +73,52 @@ Cl:** (vloc(d), slow convergence)
 
 Ar:
     Ar.in: (3s, 3p) in valence. Has 2 projectors in the d-channel to improve transferability.
+        Can be used for GW.
 
 K:
     K-sp.in: (3s, 3p) semicore states in valence. 
         Has 2 projectors in the d-channel to improve transferability.
+        Can be used for GW.
 
 Ca:
     Ca-sp.in: (3s, 3p) semicore states in valence. 
         Has 2 projectors in the d-channel to improve transferability.
+        Can be used for GW.
 
 Sc:
-    Sc-sp.in: (3s, 3p) semicore states in valence. 
+    Sc-sp.in: (3s, 3p) semicore states in valence. Can be used for GW.
 
 Ti:
-    Ti-sp.in: (3s, 3p) semicore states in valence. 
+    Ti-sp.in: (3s, 3p) semicore states in valence. Can be used for GW.
 
 V:
-    V-sp.in: (3s, 3p) semicore states in valence. 
+    V-sp.in: (3s, 3p) semicore states in valence. Can be used for GW.
 
 Cr: $$ the mc could be improved
-    Cr-sp.in: Default version with (3s, 3p) semicore states in valence. 
+    Cr-sp.in: Default version with (3s, 3p) semicore states in valence. Can be used for GW.
         deltafactor ~= 10 but ...
 
     Cr-sp-high.in: Similar to Cr-sp.in but with smaller core radii (and larger cutoff)
-        for high-accuracy calculations.
+        for high-accuracy calculations. Can be used for GW.
 
 Mn: 
-    Mn-sp.in: Default version with (3s, 3p) semicore states in valence. 
+    Mn-sp.in: Default version with (3s, 3p) semicore states in valence. Can be used for GW.
         deltafactor ~= 18 but ...
 
     Mn-sp-high.in: Similar to Mn-sp.in but with smaller core radii (and larger cutoff)
-        for high-accuracy calculations.
+        for high-accuracy calculations. Can be used for GW.
 
 Fe: ** model core charge too hard, try the one from Fe-sp-high.
     Fe-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 8.1. 
-        Uses `ncon 3`, the standard is 4
+        Uses `ncon 3`, the standard is 4. Can be used for GW.
     Fe-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 2.0. 
-        Uses `ncon 3`, the standard is 4
+        Uses `ncon 3`, the standard is 4. Can be used for GW.
 
 Co: $$ mc could be improved
     Co-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 1.2.
-    Fe-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 0.7
+        Can be used for GW.
+    Co-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 0.7
+        Can be used for GW.
 
 Ni:
     Ni-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 1.2
@@ -112,7 +126,9 @@ Ni:
 
 Cu:
     Cu-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 0.3
+        Can be used for GW.
     Cu-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 0.3
+        Can be used for GW.
 
 Zn-sp:* 
     I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
@@ -120,12 +136,14 @@ Zn-sp:*
     $$ Michiel will look at this. the total energy convergence look a bit suspicious...
 
 Ga:
-    Ga-d.in: 3d in valence, default for GS applications.
-    Ga-spd-high.in: Include (3s, 3p, 3d) in valence. Recommended version for GW but it's hard
+    Ga-d.in: 3d in valence, default for GS applications. NOT recommended for GW.
+    Ga-spd-high.in: Include full (3s, 3p, 3d) shell in valence. Recommended version for GW 
+        and high accuracy calculations but it's hard
 
 Ge:
-    Ge-d: Require GW version 
-    Ge-spd-high: I've recently generated is good for GW but it's hard)
+    Ge-d: 3d in valence, default for GS applications. NOT recommended for GW.
+    Ge-spd-high.in: Include full (3s, 3p, 3d) shell in valence. Recommended version for GW 
+        and high accuracy calculations but it's hard
 
 [DONE, RUNNING] phonons are missing
 As:

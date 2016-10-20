@@ -157147,6 +157147,9 @@ null
 "tags": [
 "GW"
 ], 
+"validation": {
+"validated_on": "2016-10-19 21:15:30"
+}, 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 
