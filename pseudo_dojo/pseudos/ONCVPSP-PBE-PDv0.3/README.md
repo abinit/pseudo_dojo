@@ -1,13 +1,15 @@
+## GGA-PBE table (oncvpsp NC pseudos) 
+
 Otherwise explicitly noted, all pseudos have been generated using the neutral ground-state
 configuration as reference and non-linear core correction in included except for 
-pseudos in which the ae core is too localized or pseudos having 1s in valence.
+pseudos in which the all-electron (AE) core is too localized or pseudos having 1s in valence.
 Pseudos with the `GW` tag have good logarithmic derivatives up to 
 
-H: 
+H 
     H.in: Uses one p-projector to improve transferability. Can be used for GW.
         Using v_p as local part produces vloc(q) with high Fourier components at large q
 
-He: 
+He 
     He.in: Uses one p-projector to improve transferability. Can be used for GW.
         Using v_p as local part produces vloc(q) with high Fourier components at large q
 
@@ -33,23 +35,27 @@ N:
 O:
     O.in: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
         Can be used for GW.
-    O-high.in: Similar to O.in, smaller core radii for high-accuracy applications.
+    O-high.in: Similar to O.in but with smaller core radii for high-accuracy applications.
+        Can be used for GW.
 
+<!--
 [Generated new pseudo, TO BE TESTED]
 F:***   
     F.psp8 can be improved (model core a bit too hard, phonons don't converge)
+-->
 
 Ne: Pseudo without nlcc since modeling 1s core density without spoiling convergence is not trivial
-    Ne.in: Default version with (2s, 2p) in valence. Can be used for GW.
+    Ne.in: Default version with (2s, 2p) in valence. 
     Ne-high.in: Similar to Ne.in but with smaller core radii.
+    Requires GW version.
 
 Na:
-    Na-sp.in: (2s, 2p) semicore in valence. No model core charge (ae core too localized).
+    Na-sp.in: (2s, 2p) semicore in valence. No model core charge (AE core too localized).
         Can be used for GW.
 
 Mg:
-    Mg.in: Fast low-accuracy version without semicore. Has ghost at +80 eV, not recommended for GW.
-    Mg-sp.in: (2s, 2p) semicore states in valence. No model core charge (ae core too localized).
+    Mg.in: Low-cutoff low-accuracy version without semicore. Has ghost at +80 eV, not recommended for GW.
+    Mg-sp.in: (2s, 2p) semicore states in valence. No model core charge (AE core too localized).
         Can be used for GW.
 
 Al: 
@@ -67,9 +73,11 @@ P:
         $$ the model core charge should be improved
         $$ the algorithm detects dispersionless states but inspection of the BS does not show any
 
+<!--
 [new pseudo, TO BE TESTED Complete PHGAMMA]
 Cl:** (vloc(d), slow convergence)
   $$ lets use new, some phonons are missing though
+-->
 
 Ar:
     Ar.in: (3s, 3p) in valence. Has 2 projectors in the d-channel to improve transferability.
@@ -135,12 +143,16 @@ Zn-sp:*
     Ask about mc params
     $$ Michiel will look at this. the total energy convergence look a bit suspicious...
 
+3 9.5 1.25
+
 Ga:
+    Ga-low.in
     Ga-d.in: 3d in valence, default for GS applications. NOT recommended for GW.
     Ga-spd-high.in: Include full (3s, 3p, 3d) shell in valence. Recommended version for GW 
         and high accuracy calculations but it's hard
 
 Ge:
+    Ge-low.in
     Ge-d: 3d in valence, default for GS applications. NOT recommended for GW.
     Ge-spd-high.in: Include full (3s, 3p, 3d) shell in valence. Recommended version for GW 
         and high accuracy calculations but it's hard
@@ -155,10 +167,14 @@ Se:
     Se-d.in: Require GW version 
     Se-spd.in: Se-spd-high has good logders but it's hard)
 
-Br: needs GW version
+Br: 
+    Br.in: needs GW version
+    Br-d.in
 
-Kr: needs GW version
+Kr: 
+    Kr.in: needs GW version
 
+<!--
 ##################################
 Rb-sp (oscillations in vloc(q))
 There are other elements with dvloc0 /= 0
@@ -168,48 +184,65 @@ There are other elements with dvloc0 /= 0
 Rb/Rb-sp.in:# lloc lpopt rc5 dvloc0
 Rb/Rb-sp.in-4 5 1.7 4.0
 
+Generated Rb-sp-new TO BE TESTED
+-->
+
 Sr:
+    Sr-sp.in
 
 Y:
-    Y-sp.in: 4s-4p semicore in valence
+    Y-sp.in: 4s-4p semicore in valence. Requires GW version?
 
 Zr:
-    Zr-sp.in: 4s-4p semicore in valence.
+    Zr-sp.in: 4s-4p semicore in valence. Can be used for GW.
 
 Nb:
-    Nb-sp.in: 4s-4p semicore in valence.
+    Nb-sp.in: 4s-4p semicore in valence. Can be used for GW
 
 Mo:
-    Mo-sp.in: 4s-4p semicore in valence.
+    Mo-sp.in: 4s-4p semicore in valence. Can be used for GW
 
 Tc:
-    Tc-sp.in: 4s-4p semicore in valence.
+    Tc-sp.in: 4s-4p semicore in valence. Can be used for GW
 
 Ru:
-    Ru-sp.in: 4s-4p semicore in valence.
+    Ru-sp.in: 4s-4p semicore in valence. Can be used for GW
 
 Rh:
     Rh-sp.in: 4s-4p semicore in valence.
 
 Pd: Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
+    Pd-sp.in: 4s-4p semicore in valence. Require GW version
 
 Ag: It seems difficult to get good logders without semicore
+    Ag-sp.in
 
 Cd:
-    Cd.in:* Has ghost at +73 Ha $$ to discuss
+    Cd.in:* Has ghost at +73 Ha $$ to discuss. Require GW version
 
-In-d: GHOST_In-20eV (In-spd-high is much better for GW)
+In: 
+    In-d: Default version for GS application with 4d in valence. 
+        GHOST_In-20eV. Not reccomended for GW.
+    In-spd-high: is much better for GW
 
-Sn-d: (ghost at +60, use Sn-spd-high for GW)
+Sn: 
+    Sn-d: Default versionf for GS applications. ghost at +60 eV
+    Sn-spd: Sn-spd-high for GW)
 
-Sb-d: ghost at +20 eV, Use Sb-spd-high for GW
+Sb: 
+    Sb-d: ghost at +20 eV, 
+    Sb-spd-high: for GW
 
-Te-d:** ghost at +77 eV  (Should try Te-spd-high for GW)
+Te:
+    Te:
+    Te-d: ghost at +77 eV  (Should try Te-spd-high for GW)
+    Te-spd-high: for GW)
 
 I: needs GW version
+    I.in:
 
-Xe:
-    Xe.in: 
+Xe: Require GW version
+    Xe.in: 5s-5p in valence. Two projectors for f to improve trasferability.
 
 Cs-sp: logders are deviation from 2.5 H no ghosts to be seen however
 
@@ -218,16 +251,23 @@ Ba-sp-new: seems to have a ghost around 6 eV
 
 Hf: Needs a GW version fsp is probably unavoidable but log ders are not optimal.
     the p version is the only one that does not have an explicit f projector, did we never try?
+    Hf-p.in  
+    Hf-sp.in
+    Hf-fsp.in 
 
 Ta: the missing f, only at 1 H below the fermi level is probably too much to classify the sp as GW
+    Ta/Ta-sp.in
+    Ta/Ta-fsp.in 
 
 W:
     W-sp.in
     W-fsp.in
 
 Re: needs GW version
+    Re-sp.in: 
 
 Os: needs GW version
+    Os-sp.in: 
 
 Ir: removed the GW tag, 4f to close
 

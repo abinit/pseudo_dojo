@@ -34,7 +34,7 @@ install:
  script: nosetests
  branches:
    only:
-     - master
+     - foobar
  notifications:
    email:
      recipients:
