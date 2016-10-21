@@ -302,29 +302,42 @@ There are other elements with dvloc0 /= 0
 ## In
 
   * In-d: Default version for GS application with 4d in valence.
-    GHOST_In-20eV. Not reccomended for GW.
+    GHOST_In-20eV. Not recommended for GW.
 
-  * In-spd-high.in: is much better for GW
+  * In-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
 
 ## Sn
 
-  * Sn-d.in: Default version for GS applications. ghost at +60 eV
+  * Sn.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
+   Not recommended for GW.
 
-  * Sn-spd.in: Sn-spd-high for GW
+  * Sn-d.in: Include 4d in valence. Default version for GS applications. 
+    Not recommended for GW. Ghost at +60 eV
+
+  * Sn-spd.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
 
 ## Sb
 
-  * Sb-d.in: ghost at +20 eV,
+  * Sb.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
+    Not recommended for GW.
 
-  * Sb-spd-high.in: for GW
+  * Sb-d.in: Include 4d in valence. Default version for GS applications. 
+    Not recommended for GW. Ghost at +20 eV,
+
+  * Sb-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
 
 ## Te
 
-  * Te.in
+  * Te.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
+    Not recommended for GW.
 
-  * Te-d.in: ghost at +77 eV  (Should try Te-spd-high for GW)
+  * Te-d.in: Include 4d in valence. 
+    Not recommended for GW. Ghost at +77 eV.
 
-  * Te-spd-high.in: for GW)
+  * Te-spd-high.in: TODO Complete tests
 
 ## I
 
@@ -332,7 +345,7 @@ There are other elements with dvloc0 /= 0
 
   * I-d.in: Include 4d in valence. Not recommended for GW
 
-  * I-spd-high: Include full (3s, 3p, 3d) shell in valence.
+  * I-spd-high: Include full (4s, 4p, 4d) shell in valence.
     Recommended version for GW and high accuracy calculations.
 
 ## Xe
