@@ -229,3 +229,140 @@ I: needs GW version
 
 Xe: Require GW version
     Xe.in: 5s-5p in valence. Two projectors for f to improve trasferability.
+
+<!--
+## Cs
+
+  * Cs-sp.in: (5s, 5p, 6s) in valence, 4f in core.
+    Use two f-projectors to improve transferability.
+    Require GW version.
+    PHGAMMA is missing
+
+## Ba
+
+  * Ba-sp-new.in: seems to have a ghost around 6 eV
+    Ba-sp-new adds two projectors for f to improve deltafactor and GBRV tests.
+
+## Hf
+
+  Needs a GW version fsp is probably unavoidable but log ders are not optimal.
+  the p version is the only one that does not have an explicit f projector, did we never try?
+
+  * Hf-p.in:
+    Use dvloc0 8.0
+
+  * Hf-sp.in:
+
+  * Hf-fsp.in:
+
+## Ta
+
+  * Ta-sp.in:
+  The missing f, only at 1 H below the fermi level is probably too much to classify the sp as GW
+
+  * Ta-fsp.in:
+
+## W
+
+  * W-sp.in:
+
+  * W-fsp.in:
+
+## Re:
+
+  * Re-sp.in: needs GW version
+
+## Os
+
+  * Os-sp.in: needs GW version
+
+## Ir
+
+  * Ir-sp: removed the GW tag, 4f to close
+
+## Pt
+  fsp softer model core charge? the two highest energy points seem off...
+  add an f projector to sp?
+  $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
+  Pt-sp: Regenerated with modcore 3
+  (Pt-p gives much better deltafactor but has ghosts at +25 eV,
+  Pt-ex-sp does not improve, new df with pt-sp-icmod3 is 4.8)
+  Ask michiel about MC
+
+  * Pt-sp.in:
+
+  * Pt-fsp.in:
+
+## Au
+  $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
+  $ we actually did the GW calcualtion on gold both SigmaX and SigmaC are seriously affected by unfreezing
+  $ the 4f electrons ~10% total effect. since they are les deep in the Hf-Pt series I don't trust the GW tag on any
+  $ of them on non f potentials
+
+  * Au-sp.in
+
+## Hg: ??
+
+  * Hg.in: (5d, 6s) in valence.
+    Not recommended for GW. Ghost at +66 eV 
+    PHGAMMA is missing
+
+  * Hg-sp.in: (5s, 5p, 5d, 6s) in valence.
+    Recommended version for GW.
+
+## Tl:
+  
+  * Tl-d.in: Default version for GS applications with 5d in valence. 
+    Not recommended for GW. Ghost at ~ +60 eV.
+
+  * Tl-spd-high.in: Include full (6s, 6p, 6d) shell in valence.
+    Recommended version for GW.
+    4f electrons in core may still be to high in energy (4.2H) for GW.
+
+## Pb:
+
+  * Pb-d.in: Default version for GS applications with 5d in valence. 
+    Not recommended for GW. Ghost at +70 eV.
+
+  * Pb-spd-high.in: Include full (6s, 6p, 6d) shell in valence.
+    Recommended version for GW.
+    the 4f may still be to high in energy (4.8H) for GW
+
+## Bi:
+
+  * Bi-d.in: Default version for GS applications with 5d in valence. 
+    Not recommended for GW. Ghost at +70 eV.
+    PHGAMMA Missing
+
+  * Bi-spd-high.in: Include full (6s, 6p, 6d) shell in valence.
+    Recommended version for GW. $ 4f at -5.6H
+
+## Po
+
+  * Po-d.in: Default version for GS applications with 5d in valence. 
+    Not recommended for GW. Ghost at +58 eV
+
+  * Po-spd-high.in: Include full (6s, 6p, 6d) shell in valence.
+    Recommended version for GW. $ 4f at 6.4H
+
+## Rn: 
+
+  * Rn.in: Default version for GS applications with (6s, 6p) in valence. 
+    Not recommended for GW. d is only 1.7H below ef
+
+  * Rn-d.in: (5d, 6s, 6p) in valence for high accuracy calculations. 
+    Not recommended for GW. 
+
+
+## TODO
+    * test for the 6th row the addition of an explicit f projector
+    * Pd --> Cd (look at Pd/Ag/Cd carefully)
+    
+    Cu-sp high: TO BE INVESTIGATED:
+    Test that there's no fr pseudo with local part taken from v(L)
+
+    W-sp, Re-sp (f channel could be improved)
+
+    In-d is very sensitive, changing XC (GGa-->LDA) gives a ghost very close to 0.
+    The first s projectors presents oscillations I don't see in the other pseudos.
+-->

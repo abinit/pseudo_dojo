@@ -284,18 +284,21 @@ Cl:** (vloc(d), slow convergence)
 
 ## Pd
 
-  * Pd-sp.in: 4s-4p semicore in valence. Require GW version
+  * Pd-sp.in: 4s-4p semicore in valence. 
+    Require GW version
     Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
 
 ## Ag
 
-  * Ag-sp.in. It seems difficult to get good logders without semicore
+  * Ag-sp.in. 
+    It seems difficult to get good logders without semicore
 
 ## Cd
 
-  * Cd.in:* Has ghost at +73 Ha $$ to discuss. Require GW version
+  * Cd.in: (4d, 5s) in valence. Has ghost at +73 Ha
 
-  * Cd-sp.in:
+  * Cd-sp.in. (4s, 4p, 4d, 5s) in valence
+    Can be used for GW.
 
 ## In
 
@@ -348,13 +351,14 @@ Cl:** (vloc(d), slow convergence)
 
 ## Xe
 
-  Require GW version
-
   * Xe.in: 5s-5p in valence. Two projectors for f to improve trasferability.
+    Require GW version
 
 ## Cs
 
-  * Cs-sp.in: logders are deviation from 2.5 H no ghosts to be seen however
+  * Cs-sp.in: (5s, 5p, 6s) in valence, 4f in core.
+    Use two f-projectors to improve transferability.
+    Require GW version.
 
 ## Ba
 
@@ -376,7 +380,7 @@ Cl:** (vloc(d), slow convergence)
 ## Ta
 
   * Ta-sp.in:
-  the missing f, only at 1 H below the fermi level is probably too much to classify the sp as GW
+  The missing f, only at 1 H below the fermi level is probably too much to classify the sp as GW
 
   * Ta-fsp.in:
 
@@ -392,8 +396,7 @@ Cl:** (vloc(d), slow convergence)
 
 ## Os
 
-  * Os-sp.in:
-    needs GW version
+  * Os-sp.in: needs GW version
 
 ## Ir
 
@@ -437,7 +440,7 @@ Cl:** (vloc(d), slow convergence)
     Recommended version for GW.
     4f electrons in core may still be to high in energy (4.2H) for GW.
 
-## Pb-d:
+## Pb:
 
   * Pb-d.in: Default version for GS applications with 5d in valence. 
     Not recommended for GW. Ghost at +70 eV.
@@ -471,16 +474,17 @@ Cl:** (vloc(d), slow convergence)
     Not recommended for GW. 
 
 
-TODO: $ test for the 6th row the addition of an explicit f projector
-TODO: Pd --> Cd (look at Pd/Ag/Cd carefully)
-TO BE INVESTIGATED:
-Cu-sp high
-Test that there's no fr pseudo with local part taken from v(L)
+## TODO
+    * test for the 6th row the addition of an explicit f projector
+    * Pd --> Cd (look at Pd/Ag/Cd carefully)
+    
+    Cu-sp high: TO BE INVESTIGATED:
+    Test that there's no fr pseudo with local part taken from v(L)
 
-W-sp, Re-sp (f channel could be improved)
+    W-sp, Re-sp (f channel could be improved)
 
-In-d is very sensitive, changing XC (GGa-->LDA) gives a ghost very close to 0.
-The first s projectors presents oscillations I don't see in the other pseudos.
+    In-d is very sensitive, changing XC (GGa-->LDA) gives a ghost very close to 0.
+    The first s projectors presents oscillations I don't see in the other pseudos.
 
 <!--
 GGA_X_PBE_SOL = 116 GGA_C_PBE_SOL = 133
@@ -489,7 +493,5 @@ LDA_X = 1 LDA_C_PW = 12
 -->
 
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new.djrepo        |      5 -
-
 La/La-sp.in:# lloc lpopt rc5 dvloc0
 La/La-sp.in-4 5 1.6 2.0
-
