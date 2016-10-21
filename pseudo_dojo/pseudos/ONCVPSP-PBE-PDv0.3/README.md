@@ -150,6 +150,7 @@ Cl:** (vloc(d), slow convergence)
     for high-accuracy calculations. Can be used for GW.
 
 ## Fe
+
   model core charge too hard, try the one from Fe-sp-high.
 
   * Fe-sp.in: Default version with (3s, 3p) semicore states in valence.
@@ -193,16 +194,18 @@ Cl:** (vloc(d), slow convergence)
 
 ## Ga
 
-  * Ga-low.in:
+  * Ga-low.in: Low-accuracy version with 3d in core, (4s,4p) in valence.
+    2 d-projectors for unbound states.
 
   * Ga-d.in: 3d in valence, default for GS applications. NOT recommended for GW.
 
   * Ga-spd-high.in: Include full (3s, 3p, 3d) shell in valence.
     Recommended version for GW and high accuracy calculations but it's hard
 
-## Ge:
+## Ge
 
-  * Ge-low.in:
+  * Ge-low.in: Low-accuracy version with 3d in core, (4s,4p) in valence.
+    2 d-projectors for unbound states.
 
   * Ge-d: 3d in valence, default for GS applications. NOT recommended for GW.
 
@@ -241,16 +244,8 @@ Cl:** (vloc(d), slow convergence)
 
   * Kr.in: needs GW version
 
-## Rb:
-
-    Use new
-  * Rb-sp-new.in:
-<!--
-##################################
-Rb-sp (oscillations in vloc(q))
-There are other elements with dvloc0 /= 0
-##################################
--->
+## Rb  
+    Rb-sp.in: use dvloc0 2.5 to improve scattering properties at high energy
 
 ## Sr
 
@@ -315,7 +310,7 @@ There are other elements with dvloc0 /= 0
   * Sn-d.in: Include 4d in valence. Default version for GS applications. 
     Not recommended for GW. Ghost at +60 eV
 
-  * Sn-spd.in: Include full (4s, 4p, 4d) shell in valence.
+  * Sn-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
     Recommended version for GW and high accuracy calculations.
 
 ## Sb
@@ -367,21 +362,19 @@ There are other elements with dvloc0 /= 0
   Needs a GW version fsp is probably unavoidable but log ders are not optimal.
   the p version is the only one that does not have an explicit f projector, did we never try?
 
-  * Hf-p.in  
+  * Hf-p.in:
 
-  * Hf-sp.in
+  * Hf-sp.in:
 
-  * Hf-fsp.in
+  * Hf-fsp.in:
 
 Hf/Hf-p.in:# lloc lpopt rc5 dvloc0
 Hf/Hf-p.in-4 5 1.85 8.0
 
-
 ## Ta
 
-  the missing f, only at 1 H below the fermi level is probably too much to classify the sp as GW
-
   * Ta-sp.in:
+  the missing f, only at 1 H below the fermi level is probably too much to classify the sp as GW
 
   * Ta-fsp.in:
 
@@ -397,9 +390,11 @@ Hf/Hf-p.in-4 5 1.85 8.0
 
 ## Os
   needs GW version
+
   * Os-sp.in:
 
 ## Ir
+
   Ir-sp: removed the GW tag, 4f to close
 
 ## Pt
@@ -423,48 +418,52 @@ Hf/Hf-p.in-4 5 1.85 8.0
 
   * Au-sp.in
 
-## Hg:
-  $ ghost in Hg clear example of what kind of signature in the logder produces a real ghost
+## Hg: ??
 
-  * Hg.in:
+  * Hg.in: (5d, 6s) in valence.
+    Not recommended for GW. Ghost at +66 eV 
 
-  * Hg-sp.in
+  * Hg-sp.in: (5s, 5p, 5d, 6s) in valence.
+    Recommended version for GW.
 
 ## Tl:
-
-  $ -d has a ghost at ~ +60 eV similar signature as in Hg
-  $ the 4f may still be to high in energy (4.2H) for GW
   
-  * Tl-d.in:
+  * Tl-d.in: Default version for GS applications with 5d in valence. 
+    Not recommended for GW. Ghost at ~ +60 eV.
 
-  * T-spd-high.in:
+  * Tl-spd-high.in: Include full (6s, 6p, 6d) shell in valence.
+    Recommended version for GW.
+    4f electrons in core may still be to high in energy (4.2H) for GW.
 
 ## Pb-d:
-  (ghost at +70, use Pb-spd-high for GW)
-  $ the 4f may still be to high in energy (4.8H) for GW
 
-  * Pb-d.in:
-  * Pb-spd-high.in:
+  * Pb-d.in: Default version for GS applications with 5d in valence. 
+    Not recommended for GW. Ghost at +70 eV.
+
+  * Pb-spd-high.in: Include full (6s, 6p, 6d) shell in valence.
+    Recommended version for GW.
+    the 4f may still be to high in energy (4.8H) for GW
 
 ## Bi:
 
-  (ghost at +70 eV, use Bi-spd-high for GW)
-  $ 4f at 5.6H
+  * Bi-d.in: Default version for GS applications with 5d in valence. 
+    Not recommended for GW. Ghost at +70 eV.
 
-  * Bi-d.in
-  * Bi-spd-high.in
-    
+  * Bi-spd-high.in: Include full (6s, 6p, 6d) shell in valence.
+    Recommended version for GW. $ 4f at -5.6H
 
 ## Po
 
-  * Po-d.in: (ghost at +58 eV, use Po-spd-high for GW) $ 4f at 6.4H
+  * Po-d.in: Default version for GS applications with 5d in valence. 
+    Not recommended for GW. Ghost at +58 eV
 
-  * Po-spd-high.in
+  * Po-spd-high.in: Include full (6s, 6p, 6d) shell in valence.
+    Recommended version for GW. $ 4f at 6.4H
 
 ## Rn: 
 
-  d is only 1.7H below ef ...
-  * Rn.in:
+  * Rn.in: Default version with (6s, 6p) in valence. 
+    Not recommended for GW. d is only 1.7H below ef...
 
 TODO: $ test for the 6th row the addition of an explicit f projector
 TODO: Pd --> Cd (look at Pd/Ag/Cd carefully)
