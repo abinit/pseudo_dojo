@@ -177,7 +177,8 @@ As:
    phonons are noisy but it could be due to the particular system
 
 ## Rb  
-    Rb-sp.in: use dvloc0=2.5 to improve scattering properties at high energy
+    Rb-sp.in: use two d-projectors for unbound d
+    use dvloc0=2.5 to improve scattering properties at high energy
 
 Sr:
 -->

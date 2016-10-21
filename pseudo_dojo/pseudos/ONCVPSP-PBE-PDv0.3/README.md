@@ -245,11 +245,14 @@ Cl:** (vloc(d), slow convergence)
   * Kr.in: needs GW version
 
 ## Rb  
-    Rb-sp.in: use dvloc0 2.5 to improve scattering properties at high energy
+    Rb-sp.in: use two d-projectors for unbound d
+    use dvloc0 2.5 to improve scattering properties at high energy
+    Can be used for GW.
 
 ## Sr
 
-  * Sr-sp.in
+  * Sr-sp.in: use two d-projectors for d (4d is bound in GGA-PBE)
+    Require GW version.
 
 ## Y
 
@@ -305,7 +308,7 @@ Cl:** (vloc(d), slow convergence)
 ## Sn
 
   * Sn.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
-   Not recommended for GW.
+    Not recommended for GW.
 
   * Sn-d.in: Include 4d in valence. Default version for GS applications. 
     Not recommended for GW. Ghost at +60 eV
@@ -344,6 +347,7 @@ Cl:** (vloc(d), slow convergence)
     Recommended version for GW and high accuracy calculations.
 
 ## Xe
+
   Require GW version
 
   * Xe.in: 5s-5p in valence. Two projectors for f to improve trasferability.
@@ -363,13 +367,11 @@ Cl:** (vloc(d), slow convergence)
   the p version is the only one that does not have an explicit f projector, did we never try?
 
   * Hf-p.in:
+    Use dvloc0 8.0
 
   * Hf-sp.in:
 
   * Hf-fsp.in:
-
-Hf/Hf-p.in:# lloc lpopt rc5 dvloc0
-Hf/Hf-p.in-4 5 1.85 8.0
 
 ## Ta
 
@@ -389,13 +391,13 @@ Hf/Hf-p.in-4 5 1.85 8.0
   * Re-sp.in: needs GW version
 
 ## Os
-  needs GW version
 
   * Os-sp.in:
+    needs GW version
 
 ## Ir
 
-  Ir-sp: removed the GW tag, 4f to close
+  * Ir-sp: removed the GW tag, 4f to close
 
 ## Pt
   fsp softer model core charge? the two highest energy points seem off...
@@ -462,8 +464,12 @@ Hf/Hf-p.in-4 5 1.85 8.0
 
 ## Rn: 
 
-  * Rn.in: Default version with (6s, 6p) in valence. 
-    Not recommended for GW. d is only 1.7H below ef...
+  * Rn.in: Default version for GS applications with (6s, 6p) in valence. 
+    Not recommended for GW. d is only 1.7H below ef
+
+  * Rn-d.in: (5d, 6s, 6p) in valence for high accuracy calculations. 
+    Not recommended for GW. 
+
 
 TODO: $ test for the 6th row the addition of an explicit f projector
 TODO: Pd --> Cd (look at Pd/Ag/Cd carefully)
