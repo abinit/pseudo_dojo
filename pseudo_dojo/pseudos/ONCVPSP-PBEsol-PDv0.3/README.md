@@ -150,6 +150,7 @@ Zn-sp:*
     I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
     Ask about mc params
     $$ Michiel will look at this. the total energy convergence look a bit suspicious...
+    phonons are noisy.
 -->
 
 ## Ga

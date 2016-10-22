@@ -605,92 +605,92 @@ def dojo_check(options):
     return retcode
 
 
-def dojo_validate(options):
-    """Validate the pseudo."""
-    pseudos = options.pseudos
-    data, errors = pseudos.get_dojo_dataframe()
-
-    for p in pseudos:
-        try:
-            # test if report is present
-            if not p.has_dojo_report:
-                cprint("[%s] No DojoReport. Ignoring pseudo" % p.basename, "red")
-                continue
-            report = p.dojo_report
-
-            # test if already validated
-            if 'validation' in report:
-                cprint('this pseudo was validated by %s on %s.' % (
-                       report['validation']['validated_by'], report['validation']['validated_on']), "red")
-                if not ask_yesno('Would you like to validate it again? [Y/n]'):
-                    continue
-
-            # test for ghosts
-            print('\n= GHOSTS TEST ===========================================\n')
-            if report.has_trial('ghosts'):
-                for ecut in report['ghosts']:
-                    if "ghost_free_upto_eV" in report["ghosts"][ecut]:
-                        print('%s: Pseudo is reported to be ghost free up to %s eV' % (
-                          ecut, report["ghosts"][ecut]["ghost_free_upto_eV"]))
-                    else:
-                        report.plot_ebands(ecut=ecut)
-                        ans = float(prompt('Please enter the energy (eV) up until there is no sign of ghosts:\n'))
-                        if ans > 0:
-                            report["ghosts"][ecut]["ghost_free_upto_eV"] = ans
-                            report.json_write()
-            else:
-                cprint('no ghosts trial present, pseudo cannot be validated', "red")
-                continue
-
-            # test trials
-            print('\n= TRIALS TEST ===========================================\n')
-            try:
-                error = report.check(check_trials=None)
-                if error:
-                    cprint("[%s] Validation problem" % p.basename, "red")
-                    if options.verbose:
-                        print(error)
-                        print()
-
-            except Exception as exc:
-                cprint("[%s] Python exception: %s" % (p.basename, type(exc)), "red")
-                if options.verbose:
-                    print(exc)
-                    print("")
-
-            accuracies = ["low", "normal", "high"]
-            keys = ['hint', 'deltafactor', 'gbrv_bcc', 'gbrv_fcc', 'phonon']
-
-            tablefmt = "grid"
-            floatfmt=".2f"
-
-            print('\n= ECUTS  TEST ===========================================\n')
-            for acc in accuracies:
-                columns = ["symbol"]
-                headers = ["symbol"]
-                for k in keys:
-                    entry = acc + "_ecut_" + k
-                    if entry in data:
-                        columns.append(entry)
-                        headers.append(k)
-                print('ECUTS for accuracy %s:' % acc)
-                print(tabulate(data[columns], headers=headers, tablefmt=tablefmt, floatfmt=floatfmt))
-
-            # TODO
-            # test hash
-            # plot the model core charge
-
-        except Exception as exc:
-            cprint("[%s] python exception" % p.basename, "red")
-            if options.verbose: print(straceback())
-
-        # ask the final question
-        if ask_yesno('Will you validate this pseudo? [n]'):
-            name = prompt("Please enter your name for later reference: ")
-            report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime())}
-            report.json_write()
-
-    return 0
+#def dojo_validate(options):
+#    """Validate the pseudo."""
+#    pseudos = options.pseudos
+#    data, errors = pseudos.get_dojo_dataframe()
+#
+#    for p in pseudos:
+#        try:
+#            # test if report is present
+#            if not p.has_dojo_report:
+#                cprint("[%s] No DojoReport. Ignoring pseudo" % p.basename, "red")
+#                continue
+#            report = p.dojo_report
+#
+#            # test if already validated
+#            if 'validation' in report:
+#                cprint('this pseudo was validated by %s on %s.' % (
+#                       report['validation']['validated_by'], report['validation']['validated_on']), "red")
+#                if not ask_yesno('Would you like to validate it again? [Y/n]'):
+#                    continue
+#
+#            # test for ghosts
+#            print('\n= GHOSTS TEST ===========================================\n')
+#            if report.has_trial('ghosts'):
+#                for ecut in report['ghosts']:
+#                    if "ghost_free_upto_eV" in report["ghosts"][ecut]:
+#                        print('%s: Pseudo is reported to be ghost free up to %s eV' % (
+#                          ecut, report["ghosts"][ecut]["ghost_free_upto_eV"]))
+#                    else:
+#                        report.plot_ebands(ecut=ecut)
+#                        ans = float(prompt('Please enter the energy (eV) up until there is no sign of ghosts:\n'))
+#                        if ans > 0:
+#                            report["ghosts"][ecut]["ghost_free_upto_eV"] = ans
+#                            report.json_write()
+#            else:
+#                cprint('no ghosts trial present, pseudo cannot be validated', "red")
+#                continue
+#
+#            # test trials
+#            print('\n= TRIALS TEST ===========================================\n')
+#            try:
+#                error = report.check(check_trials=None)
+#                if error:
+#                    cprint("[%s] Validation problem" % p.basename, "red")
+#                    if options.verbose:
+#                        print(error)
+#                        print()
+#
+#            except Exception as exc:
+#                cprint("[%s] Python exception: %s" % (p.basename, type(exc)), "red")
+#                if options.verbose:
+#                    print(exc)
+#                    print("")
+#
+#            accuracies = ["low", "normal", "high"]
+#            keys = ['hint', 'deltafactor', 'gbrv_bcc', 'gbrv_fcc', 'phonon']
+#
+#            tablefmt = "grid"
+#            floatfmt=".2f"
+#
+#            print('\n= ECUTS  TEST ===========================================\n')
+#            for acc in accuracies:
+#                columns = ["symbol"]
+#                headers = ["symbol"]
+#                for k in keys:
+#                    entry = acc + "_ecut_" + k
+#                    if entry in data:
+#                        columns.append(entry)
+#                        headers.append(k)
+#                print('ECUTS for accuracy %s:' % acc)
+#                print(tabulate(data[columns], headers=headers, tablefmt=tablefmt, floatfmt=floatfmt))
+#
+#            # TODO
+#            # test hash
+#            # plot the model core charge
+#
+#        except Exception as exc:
+#            cprint("[%s] python exception" % p.basename, "red")
+#            if options.verbose: print(straceback())
+#
+#        # ask the final question
+#        if ask_yesno('Will you validate this pseudo? [n]'):
+#            name = prompt("Please enter your name for later reference: ")
+#            report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime())}
+#            report.json_write()
+#
+#    return 0
 
 
 @prof_main
@@ -705,7 +705,7 @@ Usage example:
     dojodata.py table .                    ==> Build table (find all psp8 files within current directory)
     dojodata.py figures .                  ==> Plot periodic table figures
     dojodata.py notebook H.psp8            ==> Generate ipython notebook and open it in the browser
-    dojodata.py check table/*/*_r.psp8 -v --check-trials=gbrv_fcc,gbrv_bcc
+    dojodata.py check table/*/*.psp8 -v --check-trials=gbrv_fcc,gbrv_bcc
 """
 
     def show_examples_and_exit(err_msg=None, error_code=1):
@@ -762,6 +762,7 @@ Usage example:
                                        help=dojo_notebook.__doc__)
     p_notebook.add_argument('--no-daemon', action='store_true', default=False,
                              help="Don't start jupyter notebook with daemon process")
+
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[copts_parser, plot_options_parser],
                                       help=dojo_compare.__doc__)
@@ -799,8 +800,7 @@ Usage example:
     p_check.add_argument("--check-trials", type=parse_trials, default=None, help="List of trials to check")
 
     # Subparser for validate command.
-    p_validate = subparsers.add_parser('validate', parents=[copts_parser], help=dojo_validate.__doc__)
-
+    #p_validate = subparsers.add_parser('validate', parents=[copts_parser], help=dojo_validate.__doc__)
 
     # Parse command line.
     try:
