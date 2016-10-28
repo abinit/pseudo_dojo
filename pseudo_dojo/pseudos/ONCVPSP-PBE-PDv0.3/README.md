@@ -212,6 +212,7 @@ without spoiling convergence is not trivial
     and high accuracy calculations but it's hard
 
 ## As
+  Trying As-new-mc1.in
   [DONE, RUNNING] phonons are missing
 
   * As.in:** No convergence (v(d)?) 
@@ -375,42 +376,56 @@ without spoiling convergence is not trivial
     Use dvloc0 8.0
 
   * Hf-sp.in:
+    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
 
   * Hf-fsp.in:
 
-## Ta
+## Ta 
+  Needs GW version
 
   * Ta-sp.in:
-  The missing f, only at 1 H below the fermi level is probably too much to classify the sp as GW
+    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
+    The missing f, only at ~1 H below the fermi level is probably too much to classify the sp as GW
 
   * Ta-fsp.in:
 
 ## W
+  Needs GW version
 
   * W-sp.in:
+    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
+    The missing f, only at ~1 H below the fermi level is probably too much to classify the sp as GW
 
   * W-fsp.in:
 
 ## Re:
 
-  * Re-sp.in: needs GW version
+  * Re-sp.in
+    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
+    The missing f, only at ~1.5 H below the fermi level is probably too much to classify the sp as GW
 
 ## Os
 
   * Os-sp.in: needs GW version
+    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
 
 ## Ir
 
   * Ir-sp: removed the GW tag, 4f to close
+    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
 
 ## Pt
   fsp softer model core charge? the two highest energy points seem off...
   add an f projector to sp?
   $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
-  Pt-sp: Regenerated with modcore 3
   (Pt-p gives much better deltafactor but has ghosts at +25 eV,
-  Pt-ex-sp does not improve, new df with pt-sp-icmod3 is 4.8)
-  Ask michiel about MC
+   Pt-ex-sp does not improve, new df with pt-sp-icmod3 is 4.8)
 
   * Pt-sp.in:
 
@@ -423,6 +438,8 @@ without spoiling convergence is not trivial
   $ of them on non f potentials
 
   * Au-sp.in
+    4f frozen in core. Has 1 f-projectors to improve transferability.
+    Recommended for GS applications.
 
 ## Hg: ??
 
