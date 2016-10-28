@@ -214,11 +214,12 @@ without spoiling convergence is not trivial
 ## As
   [DONE, RUNNING] phonons are missing
 
-  * As.in:** No convergence (v(d)?) Try As-new with modcore from As
+  * As.in:** No convergence (v(d)?) 
+    Try As-new with modcore from As
 
-  * As-d:* Require GW version
+  * As-d: Require GW version
 
-  * As-spd-high has good logders but it's hard)
+  * As-spd-high has good logders but it's hard
 
 ## Se
 
