@@ -57,6 +57,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to
 [Generated new pseudo, TO BE TESTED]
 F:***   
     F.psp8 can be improved (model core a bit too hard, phonons don't converge)
+    PHONONS are not smooth
 -->
 
 ## Ne
@@ -98,11 +99,9 @@ without spoiling convergence is not trivial
     $$ the model core charge should be improved
     $$ the algorithm detects dispersionless states but inspection of the BS does not show any
 
-<!--
-[new pseudo, TO BE TESTED Complete PHGAMMA]
-Cl:** (vloc(d), slow convergence)
-  $$ lets use new, some phonons are missing though
--->
+##Cl
+    Cl-new
+    Has 2 d-projectors to improve transferability.
 
 ## Ar
 
@@ -364,6 +363,7 @@ Cl:** (vloc(d), slow convergence)
 
   * Ba-sp-new.in: seems to have a ghost around 6 eV
     Ba-sp-new adds two projectors for f to improve deltafactor and GBRV tests.
+    Uses excited configuration
 
 ## Hf
 
