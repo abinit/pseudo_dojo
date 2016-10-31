@@ -145,13 +145,11 @@ Cl:** (vloc(d), slow convergence)
   * Cu-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 0.3
   * Cu-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 0.3
 
-<!--
-Zn-sp:* 
+Zn-sp: 
     I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
     Ask about mc params
     $$ Michiel will look at this. the total energy convergence look a bit suspicious...
-    phonons are noisy.
--->
+    ** phonons are noisy.
 
 ## Ga
   * Ga-d.in: 3d in valence, default for GS applications.
@@ -306,7 +304,7 @@ Xe: Require GW version
 
   * Hg.in: (5d, 6s) in valence.
     Not recommended for GW. Ghost at +66 eV 
-    PHGAMMA is missing
+    PHGAMMA is missing (problems to converge)
 
   * Hg-sp.in: (5s, 5p, 5d, 6s) in valence.
     Recommended version for GW.
