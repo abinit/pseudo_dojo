@@ -49,6 +49,9 @@ PBEsol
 [Generated new pseudo, TO BE TESTED]
 F:***   
     F.psp8 can be improved (model core a bit too hard, phonons don't converge)
+    PHONONS are not smooth
+    Model core charge too peacked
+
 
 Ne: Pseudo without nlcc since modeling 1s core density without spoiling convergence is not trivial
     Ne.in: Default version with (2s, 2p) in valence.
@@ -365,3 +368,9 @@ Xe: Require GW version
     In-d is very sensitive, changing XC (GGa-->LDA) gives a ghost very close to 0.
     The first s projectors presents oscillations I don't see in the other pseudos.
 -->
+
+
+ pseudo_dojo/pseudos/ONCVPSP-PBEsol-PDv0.3/As/As-d.djrepo        |    137 +
+ pseudo_dojo/pseudos/ONCVPSP-PBEsol-PDv0.3/F/F-new.djrepo        | 158536 ++++++++++++++++++++++++++++++++++++++++++++++
+ pseudo_dojo/pseudos/ONCVPSP-PBEsol-PDv0.3/Lu/Lu-fsp-soft.djrepo |     84 +
+ pseudo_dojo/pseudos/ONCVPSP-PBEsol-PDv0.3/Lu/Lu-sp.djrepo       |     63 +

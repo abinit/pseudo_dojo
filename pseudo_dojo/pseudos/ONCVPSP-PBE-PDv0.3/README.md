@@ -58,6 +58,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to
 F:***   
     F.psp8 can be improved (model core a bit too hard, phonons don't converge)
     PHONONS are not smooth
+    Model core charge too peacked
 -->
 
 ## Ne
