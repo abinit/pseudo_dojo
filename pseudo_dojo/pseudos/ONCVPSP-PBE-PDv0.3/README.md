@@ -158,8 +158,6 @@ without spoiling convergence is not trivial
 
 ## Co:
 
-  mc could be improved
-
   * Co-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
 
@@ -174,10 +172,9 @@ without spoiling convergence is not trivial
 
 ## Cu
 
-  mc could be improved
-
   * Cu-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
+    TODO: mc could be improved
 
   * Cu-sp-high.in: Smaller core radii for high accuracy calculations.
     Can be used for GW.
@@ -190,7 +187,7 @@ without spoiling convergence is not trivial
     I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
     Ask about mc params
     $$ Michiel will look at this. the total energy convergence look a bit suspicious...
-    Replaced by Zn-sp-newmc
+    RUNNING: Replaced by Zn-sp-newmc
 
 ## Ga
 
