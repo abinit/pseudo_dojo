@@ -97,8 +97,7 @@ without spoiling convergence is not trivial
 
   * P.in: Has 2 d-projectors to improve transferability.
     Requires GW version
-    $$ the model core charge should be improved
-    $$ the algorithm detects dispersionless states but inspection of the BS does not show any
+    TODO: the model core charge should be improved
 
 ## Cl
     Cl-new
@@ -151,10 +150,9 @@ without spoiling convergence is not trivial
 
 ## Fe
 
-  model core charge too hard, try the one from Fe-sp-high.
-
   * Fe-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW. Uses `ncon 3`, the standard is 4.
+    TODO: model core charge too hard, try the one from Fe-sp-high.
 
   * Fe-sp-high.in: Smaller core radii for high accuracy calculations
     Can be used for GW. Uses `ncon 3`, the standard is 4.
@@ -177,6 +175,8 @@ without spoiling convergence is not trivial
 
 ## Cu
 
+  mc could be improved
+
   * Cu-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
 
@@ -191,6 +191,7 @@ without spoiling convergence is not trivial
     I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
     Ask about mc params
     $$ Michiel will look at this. the total energy convergence look a bit suspicious...
+    Replaced by Zn-sp-newmc
 
 ## Ga
 
@@ -201,6 +202,7 @@ without spoiling convergence is not trivial
 
   * Ga-spd-high.in: Include full (3s, 3p, 3d) shell in valence.
     Recommended version for GW and high accuracy calculations but it's hard
+    TODO: model core-charge too localized
 
 ## Ge
 
@@ -211,6 +213,7 @@ without spoiling convergence is not trivial
 
   * Ge-spd-high.in: Include full (3s, 3p, 3d) shell in valence. Recommended version for GW
     and high accuracy calculations but it's hard
+    TODO: model core-charge too localized
 
 ## As
   Trying As-new-mc1.in
@@ -230,7 +233,7 @@ without spoiling convergence is not trivial
   * Se-d.in: Include 3d in valence. Not recommended for GW
 
   * Se-spd.in: Se-spd-high has good logders but it's hard)
-    TODO: Remove model core-charge too localized
+    TODO: model core-charge too localized
 
 ## Br
 
@@ -240,7 +243,7 @@ without spoiling convergence is not trivial
 
   * Br-spd.in: Include full (3s, 3p, 3d) shell in valence.
     Recommended version for GW and high accuracy calculations but it's hard
-    TOO HARD (model core)
+    TODO: model core-charge too localized
 
 ## Kr
 
@@ -515,7 +518,13 @@ GGA_X_PBE_SOL = 116 GGA_C_PBE_SOL = 133
 LDA_X = 1 LDA_C_PW = 12
 7: dict(x=xcf.LDA_X, c=xcf.LDA_C_PW),          # PW 001012
 -->
-
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new.djrepo        |      5 -
 La/La-sp.in:# lloc lpopt rc5 dvloc0
 La/La-sp.in-4 5 1.6 2.0
+
+
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ba/Ba-sp-new.djrepo   |    275 +
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new-newmc.djrepo  | 160157 ++++++++++++++++++++++++++++++++++++++++++++++++
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-nomc.djrepo       | 160442 +++++++++++++++++++++++++++++++++++++++++++++++++
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Zn/Zn-sp-newmc.djrepo | 138778 +++++++++++++++++++++++++++++++++++++++++-
+ pseudo_dojo/pseudos/ONCVPSP-PBEsol-PDv0.3/Ba/Ba-sp.djrepo    |  87885 +++++++++++++++++++++++++++
