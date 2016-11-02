@@ -81,7 +81,7 @@ without spoiling convergence is not trivial
     Has ghost at +80 eV, not recommended for GW.
 
   * Mg-sp.in: (2s, 2p) semicore states in valence. No model core charge (AE core too localized).
-    Can be used for GW.
+    Recommended for GS. Can be used for GW.
 
 ## Al
 
@@ -187,7 +187,7 @@ without spoiling convergence is not trivial
 
   * Zn.in
 
-  * Zn-sp.in
+  * Zn-sp.in  Model core charge too hard --> phonons do not converge 
     I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
     Ask about mc params
     $$ Michiel will look at this. the total energy convergence look a bit suspicious...
@@ -234,7 +234,7 @@ without spoiling convergence is not trivial
 
 ## Br
 
-  * Br.in: Not recommended for GW
+  * Br.in: Default for GS applications. Not recommended for GW
 
   * Br-d.in: Include 3d in valence. Not recommended for GW
 
@@ -293,19 +293,19 @@ without spoiling convergence is not trivial
 ## Ag
 
   * Ag-sp.in. 
-    It seems difficult to get good logders without semicore
+    It seems difficult to get good logders without sp semicore
 
 ## Cd
 
   * Cd.in: (4d, 5s) in valence. Has ghost at +73 Ha
 
   * Cd-sp.in. (4s, 4p, 4d, 5s) in valence
-    Can be used for GW.
+    Recommended for GS. Can be used for GW.
 
 ## In
 
   * In-d: Default version for GS application with 4d in valence.
-    GHOST_In-20eV. Not recommended for GW.
+    Has GHOST_In-20eV. Not recommended for GW.
 
   * In-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
     Recommended version for GW and high accuracy calculations.
@@ -344,7 +344,7 @@ without spoiling convergence is not trivial
 
 ## I
 
-  * I.in: Not recommended for GW
+  * I.in: OK for GS applications. Not recommended for GW
 
   * I-d.in: Include 4d in valence. Not recommended for GW
 
@@ -364,9 +364,13 @@ without spoiling convergence is not trivial
 
 ## Ba
 
-  * Ba-sp-new.in: seems to have a ghost around 6 eV
+  * Ba-sp.in:
+    5s, 5p in valence. Use ground-state as reference.
+
+  * Ba-sp-new.in: 
+    seems to have a ghost around 6 eV
     Ba-sp-new adds two projectors for f to improve deltafactor and GBRV tests.
-    Uses excited configuration
+    Uses excited state (5d1, 6s1) as reference configuration
 
 ## Hf
 
@@ -429,6 +433,7 @@ without spoiling convergence is not trivial
    Pt-ex-sp does not improve, new df with pt-sp-icmod3 is 4.8)
 
   * Pt-sp.in:
+    Recommended for GS applications.
 
   * Pt-fsp.in:
 
@@ -439,16 +444,16 @@ without spoiling convergence is not trivial
   $ of them on non f potentials
 
   * Au-sp.in
-    4f frozen in core. Has 1 f-projectors to improve transferability.
+    5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
     Recommended for GS applications.
 
-## Hg: ??
+## Hg:
 
   * Hg.in: (5d, 6s) in valence.
     Not recommended for GW. Ghost at +66 eV 
 
   * Hg-sp.in: (5s, 5p, 5d, 6s) in valence.
-    Recommended version for GW.
+    Recommended for GS and GW.
 
 ## Tl:
   
