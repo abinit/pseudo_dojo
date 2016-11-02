@@ -174,7 +174,7 @@ without spoiling convergence is not trivial
 
   * Cu-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
-    TODO: mc could be improved
+    TODO: mc could be improved (RUnning Cu-sp-new)
 
   * Cu-sp-high.in: Smaller core radii for high accuracy calculations.
     Can be used for GW.
@@ -433,6 +433,7 @@ without spoiling convergence is not trivial
     Recommended for GS applications.
 
   * Pt-fsp.in:
+    Experimental version!
 
 ## Au
   $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
