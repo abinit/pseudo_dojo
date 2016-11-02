@@ -231392,6 +231392,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 24.0
+}, 
+"low": {
+"ecut": 14.0
+}, 
+"normal": {
+"ecut": 18.0
+}
+}, 
 "md5": "375a51a9af78b818ff07d08a574b83ab", 
 "phgamma": {
 "10.0": {
@@ -231996,6 +232007,12 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "As", 
+"tags": [
+" "
+], 
+"validation": {
+"validated_on": "2016-11-02 21:51:21"
+}, 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

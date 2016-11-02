@@ -215,13 +215,11 @@ without spoiling convergence is not trivial
     TODO: model core-charge too localized
 
 ## As
-  Trying As-new-mc1.in
-  [DONE, RUNNING] phonons are missing
 
-  * As.in:** No convergence (v(d)?) 
-    Try As-new with modcore from As
+  * As-new.in:
 
   * As-d: Require GW version
+    TODO: Phonons
 
   * As-spd-high has good logders but it's hard
 
