@@ -54,7 +54,6 @@ Pseudos with the GW tag have good logarithmic derivatives up to
     Can be used for GW.
 
 <!--
-[Generated new pseudo, TO BE TESTED]
 F:***   
     F.psp8 can be improved (model core a bit too hard, phonons don't converge)
     PHONONS are not smooth
@@ -524,7 +523,3 @@ La/La-sp.in-4 5 1.6 2.0
 
 
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ba/Ba-sp-new.djrepo   |    275 +
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-new-newmc.djrepo  | 160157 ++++++++++++++++++++++++++++++++++++++++++++++++
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/F/F-nomc.djrepo       | 160442 +++++++++++++++++++++++++++++++++++++++++++++++++
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Zn/Zn-sp-newmc.djrepo | 138778 +++++++++++++++++++++++++++++++++++++++++-
- pseudo_dojo/pseudos/ONCVPSP-PBEsol-PDv0.3/Ba/Ba-sp.djrepo    |  87885 +++++++++++++++++++++++++++
