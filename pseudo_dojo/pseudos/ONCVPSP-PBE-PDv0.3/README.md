@@ -519,5 +519,4 @@ LDA_X = 1 LDA_C_PW = 12
 La/La-sp.in:# lloc lpopt rc5 dvloc0
 La/La-sp.in-4 5 1.6 2.0
 
-
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ba/Ba-sp-new.djrepo   |    275 +
