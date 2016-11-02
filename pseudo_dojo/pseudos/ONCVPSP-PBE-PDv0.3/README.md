@@ -1,8 +1,8 @@
 ## GGA-PBE table (oncvpsp NC pseudos)
 
 Otherwise explicitly noted, all pseudos have been generated using the neutral ground-state
-configuration as reference, non-linear core correction in included except for
-pseudos in which the all-electron (AE) core is too localized or pseudos having 1s in valence.
+configuration as reference, non-linear core correction is always included except for
+pseudos in which the all-electron (AE) core is too localized (mentioned above) or pseudos having 1s in valence.
 Pseudos with the GW tag have good logarithmic derivatives up to
 
 ## H
@@ -100,7 +100,7 @@ without spoiling convergence is not trivial
     $$ the model core charge should be improved
     $$ the algorithm detects dispersionless states but inspection of the BS does not show any
 
-##Cl
+## Cl
     Cl-new
     Has 2 d-projectors to improve transferability.
 
