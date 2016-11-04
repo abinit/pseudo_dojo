@@ -151,7 +151,7 @@ without spoiling convergence is not trivial
 
   * Fe-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW. Uses `ncon 3`, the standard is 4.
-    TODO: model core charge too hard, try the one from Fe-sp-high.
+    TODO: model core charge too hard. Use Fe-sp-new and generate PBEsol
 
   * Fe-sp-high.in: Smaller core radii for high accuracy calculations
     Can be used for GW. Uses `ncon 3`, the standard is 4.
@@ -174,7 +174,7 @@ without spoiling convergence is not trivial
 
   * Cu-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
-    TODO: mc could be improved (RUnning Cu-sp-new)
+    TODO: Use Cu-sp-new and generate PBEsol
 
   * Cu-sp-high.in: Smaller core radii for high accuracy calculations.
     Can be used for GW.
@@ -216,7 +216,6 @@ without spoiling convergence is not trivial
   * As-new.in:
 
   * As-d: Require GW version
-    TODO: Phonons
 
   * As-spd-high has good logders but it's hard
 
@@ -319,6 +318,7 @@ without spoiling convergence is not trivial
     Recommended version for GW and high accuracy calculations.
 
 ## Sb
+  PROBLEMATIC
 
   * Sb.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
     Not recommended for GW.
@@ -445,6 +445,8 @@ without spoiling convergence is not trivial
     5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
     Recommended for GS applications.
 
+  * Au-sp-new  (generate PBEsol)
+
 ## Hg:
 
   * Hg.in: (5d, 6s) in valence.
@@ -452,6 +454,10 @@ without spoiling convergence is not trivial
 
   * Hg-sp.in: (5s, 5p, 5d, 6s) in valence.
     Recommended for GS and GW.
+  
+  * Hg-sp-new: Add f projector
+    Recommended for GS and GW.
+    TODO: Generate PBEsol
 
 ## Tl:
   
@@ -518,3 +524,9 @@ La/La-sp.in:# lloc lpopt rc5 dvloc0
 La/La-sp.in-4 5 1.6 2.0
 
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ba/Ba-sp-new.djrepo   |    275 +
+
+In-d, Sb-d
+
+
+ pseudo_dojo/pseudos/ONCVPSP-PBEsol-PDv0.3/Zn/Zn-sp.djrepo   | 137613 ++++++++++++++++++++++++++++++
+ pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/In/In-d-new.djrepo   |  95432 +++++++++++++++++++++
