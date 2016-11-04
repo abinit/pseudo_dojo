@@ -429,7 +429,7 @@ without spoiling convergence is not trivial
   (Pt-p gives much better deltafactor but has ghosts at +25 eV,
    Pt-ex-sp does not improve, new df with pt-sp-icmod3 is 4.8)
 
-  * Pt-sp.in:
+  * Pt-sp.in (replaced by Pt-sp-new2.in with 2 projectors for f)
     Recommended for GS applications.
 
   * Pt-fsp.in:
