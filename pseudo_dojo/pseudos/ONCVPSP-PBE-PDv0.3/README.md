@@ -29,10 +29,10 @@ Pseudos with the GW tag have good logarithmic derivatives up to
 
 ## B:
 
-  * B.in: Default version with (2s, 2p) in valence.
+  * B.in: Default version with (2s, 2p) in valence. (TODO Remove)
 
   * B-gw.in: Version with improved logarithmic derivatives, based on B.in.
-    Recommended for GW.
+    Recommended for GW. Default Version
 
 ## C
 
@@ -137,7 +137,8 @@ without spoiling convergence is not trivial
     Can be used for GW.
 
   * Cr-sp-high.in: Similar to Cr-sp.in but with smaller core radii (and larger cutoff) 
-    for high-accuracy calculations. Can be used for GW.
+    for high-accuracy calculations e.g. magnetic systems.
+    Can be used for GW.
 
 ## Mn
 
@@ -145,7 +146,8 @@ without spoiling convergence is not trivial
     Can be used for GW.
 
   * Mn-sp-high.in: Similar to Mn-sp.in but with smaller core radii (and larger cutoff)
-    for high-accuracy calculations. Can be used for GW.
+    for high-accuracy calculations e.g. in magnetic systems.
+    Can be used for GW.
 
 ## Fe
 
@@ -153,7 +155,7 @@ without spoiling convergence is not trivial
     Can be used for GW. Uses `ncon 3`, the standard is 4.
     TODO: model core charge too hard. Use Fe-sp-new and generate PBEsol
 
-  * Fe-sp-high.in: Smaller core radii for high accuracy calculations
+  * Fe-sp-high.in: Smaller core radii for high accuracy calculations e.g. in magnetic systems.
     Can be used for GW. Uses `ncon 3`, the standard is 4.
 
 ## Co:
@@ -161,7 +163,7 @@ without spoiling convergence is not trivial
   * Co-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
 
-  * Co-sp-high.in: Smaller core radii for high accuracy calculations.
+  * Co-sp-high.in: Smaller core radii for high accuracy calculations e.g. in magnetic systems.
     Can be used for GW.
 
 ## Ni
@@ -249,7 +251,7 @@ without spoiling convergence is not trivial
 
 ## Sr
 
-  * Sr-sp.in: use two d-projectors for d (4d is bound in GGA-PBE)
+  * Sr-sp.in: uses two d-projectors for d (4d is bound in GGA-PBE)
     Require GW version.
 
 ## Y
@@ -445,7 +447,7 @@ without spoiling convergence is not trivial
     5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
     Recommended for GS applications.
 
-  * Au-sp-new  (generate PBEsol)
+  * Au-sp-new  (generate PBEsol): Todo Use this as default
 
 ## Hg:
 
