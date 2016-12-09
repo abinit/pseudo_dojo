@@ -2,7 +2,7 @@
 
 Otherwise explicitly noted, all pseudos have been generated using the neutral ground-state
 configuration as reference, non-linear core correction is always included except for
-pseudos in which the all-electron (AE) core is too localized (mentioned above) or pseudos having 1s in valence.
+pseudos in which the all-electron (AE) core is too localized (mentioned in the text) or pseudos with 1s in valence.
 Pseudos with the GW tag have good logarithmic derivatives up to
 
 ## H
@@ -96,9 +96,11 @@ without spoiling convergence is not trivial
     TODO: the model core charge should be improved
 
 ## S
+
     S.in: Has 2 d-projectors to improve transferability.
 
 ## Cl
+
     Cl.in: Has 2 d-projectors to improve transferability.
 
 ## Ar
@@ -152,7 +154,6 @@ without spoiling convergence is not trivial
 
   * Fe-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW. Uses `ncon 3`, the standard is 4.
-    TODO: generate PW
 
   * Fe-sp-high.in: Smaller core radii for high accuracy calculations e.g. in magnetic systems.
     Can be used for GW. Uses `ncon 3`, the standard is 4.
@@ -175,7 +176,6 @@ without spoiling convergence is not trivial
 
   * Cu-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
-    TODO: generate PW
 
   * Cu-sp-high.in: Smaller core radii for high accuracy calculations.
     Can be used for GW.
@@ -434,7 +434,6 @@ without spoiling convergence is not trivial
   * Au-sp.in
     5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
     Recommended for GS applications.
-    TODO (generate PW):
 
 ## Hg:
 
@@ -443,7 +442,6 @@ without spoiling convergence is not trivial
 
   * Hg-sp.in: (5s, 5p, 5d, 6s) in valence. Add f projector
     Recommended for GS and GW.
-    TODO: Generate PW
 
 ## Tl:
   
