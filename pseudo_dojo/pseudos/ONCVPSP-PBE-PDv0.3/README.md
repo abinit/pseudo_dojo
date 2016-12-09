@@ -155,7 +155,7 @@ without spoiling convergence is not trivial
 
   * Fe-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW. Uses `ncon 3`, the standard is 4.
-    TODO: generate PBEsol and PW
+    TODO: generate PW
 
   * Fe-sp-high.in: Smaller core radii for high accuracy calculations e.g. in magnetic systems.
     Can be used for GW. Uses `ncon 3`, the standard is 4.
@@ -187,11 +187,8 @@ without spoiling convergence is not trivial
 
   * Zn.in
 
-  * Zn-sp.in  Model core charge too hard --> phonons do not converge 
-    I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
-    Ask about mc params
-    $$ Michiel will look at this. the total energy convergence look a bit suspicious...
-    RUNNING: Replaced by Zn-sp-newmc
+  * Zn-sp.in
+    I've added the GW tag but mind ZnO.
 
 ## Ga
 
