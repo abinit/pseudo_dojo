@@ -1,0 +1,50 @@
+{
+"basename": "Ge-low.psp8", 
+"ecuts": [
+6.0, 
+8.0, 
+10.0, 
+12.0, 
+14.0, 
+16.0, 
+18.0, 
+20.0, 
+22.0, 
+24.0, 
+26.0, 
+34.0, 
+36.0
+], 
+"md5": "698c0aea1d29e2ebd94c277d0193c290", 
+"ppgen_hints": {
+"high": {
+"ecut": 16.0, 
+"pawecutdg": 16.0
+}, 
+"low": {
+"ecut": 11.0, 
+"pawecutdg": 11.0
+}, 
+"normal": {
+"ecut": 12.0, 
+"pawecutdg": 12.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Ge", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_C_PBE_SOL"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_X_PBE_SOL"
+}
+}
+}
