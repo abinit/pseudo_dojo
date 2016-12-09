@@ -155,7 +155,7 @@ without spoiling convergence is not trivial
 
   * Fe-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW. Uses `ncon 3`, the standard is 4.
-    TODO: model core charge too hard. Use Fe-sp-new and generate PBEsol
+    TODO: generate PBEsol and PW
 
   * Fe-sp-high.in: Smaller core radii for high accuracy calculations e.g. in magnetic systems.
     Can be used for GW. Uses `ncon 3`, the standard is 4.
