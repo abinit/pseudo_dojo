@@ -178,7 +178,7 @@ without spoiling convergence is not trivial
 
   * Cu-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
-    TODO: Use Cu-sp-new and generate PBEsol
+    TODO: generate PBEsol/PW
 
   * Cu-sp-high.in: Smaller core radii for high accuracy calculations.
     Can be used for GW.
