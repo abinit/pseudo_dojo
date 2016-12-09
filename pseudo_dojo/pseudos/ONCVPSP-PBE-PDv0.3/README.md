@@ -98,9 +98,11 @@ without spoiling convergence is not trivial
     Requires GW version
     TODO: the model core charge should be improved
 
+## S
+    S.in: Has 2 d-projectors to improve transferability.
+
 ## Cl
-    Cl-new
-    Has 2 d-projectors to improve transferability.
+    Cl.in: Has 2 d-projectors to improve transferability.
 
 ## Ar
 
@@ -215,9 +217,11 @@ without spoiling convergence is not trivial
 
 ## As
 
-  * As-new.in:
+  * As.in:
+    Version with d frozen.
 
-  * As-d: Require GW version
+  * As-d: Version with d electrons in valence. Recommended for GS applications.
+    Require GW version
 
   * As-spd-high has good logders but it's hard
 
@@ -301,6 +305,7 @@ without spoiling convergence is not trivial
     Recommended for GS. Can be used for GW.
 
 ## In
+  PROBLEMATIC?
 
   * In-d: Default version for GS application with 4d in valence.
     Has GHOST_In-20eV. Not recommended for GW.
@@ -320,7 +325,7 @@ without spoiling convergence is not trivial
     Recommended version for GW and high accuracy calculations.
 
 ## Sb
-  PROBLEMATIC
+  PROBLEMATIC?
 
   * Sb.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
     Not recommended for GW.
@@ -366,10 +371,10 @@ without spoiling convergence is not trivial
   * Ba-sp.in:
     5s, 5p in valence. Use ground-state as reference.
 
-  * Ba-sp-new.in: 
-    seems to have a ghost around 6 eV
+  * Ba-sp-exc.in: 
     Ba-sp-new adds two projectors for f to improve deltafactor and GBRV tests.
     Uses excited state (5d1, 6s1) as reference configuration
+    seems to have a ghost around 6 eV
 
 ## Hf
 
@@ -425,13 +430,7 @@ without spoiling convergence is not trivial
     Recommended for GS applications.
 
 ## Pt
-  fsp softer model core charge? the two highest energy points seem off...
-  add an f projector to sp?
-  $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
-  (Pt-p gives much better deltafactor but has ghosts at +25 eV,
-   Pt-ex-sp does not improve, new df with pt-sp-icmod3 is 4.8)
-
-  * Pt-sp.in (replaced by Pt-sp-new2.in with 2 projectors for f)
+  * Pt-sp.in has with 2 projectors for unbound f states
     Recommended for GS applications.
 
   * Pt-fsp.in:
@@ -447,7 +446,7 @@ without spoiling convergence is not trivial
     5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
     Recommended for GS applications.
 
-  * Au-sp-new  (generate PBEsol): Todo Use this as default
+  * TODO Au-sp-new  (generate PBEsol): Todo Use this as default
 
 ## Hg:
 
@@ -503,7 +502,6 @@ without spoiling convergence is not trivial
   * Rn-d.in: (5d, 6s, 6p) in valence for high accuracy calculations. 
     Not recommended for GW. 
 
-
 ## TODO
     * test for the 6th row the addition of an explicit f projector
     * Pd --> Cd (look at Pd/Ag/Cd carefully)
@@ -528,7 +526,5 @@ La/La-sp.in-4 5 1.6 2.0
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ba/Ba-sp-new.djrepo   |    275 +
 
 In-d, Sb-d
-
-
  pseudo_dojo/pseudos/ONCVPSP-PBEsol-PDv0.3/Zn/Zn-sp.djrepo   | 137613 ++++++++++++++++++++++++++++++
  pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/In/In-d-new.djrepo   |  95432 +++++++++++++++++++++
