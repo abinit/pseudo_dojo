@@ -437,11 +437,6 @@ without spoiling convergence is not trivial
     Experimental version!
 
 ## Au
-  $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
-  $ we actually did the GW calcualtion on gold both SigmaX and SigmaC are seriously affected by unfreezing
-  $ the 4f electrons ~10% total effect. since they are les deep in the Hf-Pt series I don't trust the GW tag on any
-  $ of them on non f potentials
-
   * Au-sp.in
     5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
     Recommended for GS applications.
@@ -453,10 +448,7 @@ without spoiling convergence is not trivial
   * Hg.in: (5d, 6s) in valence.
     Not recommended for GW. Ghost at +66 eV 
 
-  * Hg-sp.in: (5s, 5p, 5d, 6s) in valence.
-    Recommended for GS and GW.
-  
-  * Hg-sp-new: Add f projector
+  * Hg-sp.in: (5s, 5p, 5d, 6s) in valence. Add f projector
     Recommended for GS and GW.
     TODO: Generate PBEsol
 
