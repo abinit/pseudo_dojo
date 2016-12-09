@@ -29,10 +29,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to
 
 ## B:
 
-  * B.in: Default version with (2s, 2p) in valence. (TODO Remove)
-
-  * B-gw.in: Version with improved logarithmic derivatives, based on B.in.
-    Recommended for GW. Default Version
+  * B.in: Default version with (2s, 2p) in valence. Can be used for GW
 
 ## C
 
