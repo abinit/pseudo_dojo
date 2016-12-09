@@ -178,7 +178,7 @@ without spoiling convergence is not trivial
 
   * Cu-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
-    TODO: generate PBEsol/PW
+    TODO: generate PW
 
   * Cu-sp-high.in: Smaller core radii for high accuracy calculations.
     Can be used for GW.
@@ -437,8 +437,7 @@ without spoiling convergence is not trivial
   * Au-sp.in
     5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
     Recommended for GS applications.
-
-  * TODO Au-sp-new  (generate PBEsol): Todo Use this as default
+    TODO (generate PW):
 
 ## Hg:
 
@@ -447,7 +446,7 @@ without spoiling convergence is not trivial
 
   * Hg-sp.in: (5s, 5p, 5d, 6s) in valence. Add f projector
     Recommended for GS and GW.
-    TODO: Generate PBEsol
+    TODO: Generate PW
 
 ## Tl:
   
