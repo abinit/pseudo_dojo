@@ -50,12 +50,9 @@ Pseudos with the GW tag have good logarithmic derivatives up to
   * O-high.in: Similar to O.in but with smaller core radii for high-accuracy applications.
     Can be used for GW.
 
-<!--
-F:***   
-    F.psp8 can be improved (model core a bit too hard, phonons don't converge)
-    PHONONS are not smooth
-    Model core charge too peacked
--->
+## F: 
+
+   * F.psp8: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
 
 ## Ne
 
