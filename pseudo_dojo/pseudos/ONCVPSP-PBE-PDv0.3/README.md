@@ -231,7 +231,6 @@ without spoiling convergence is not trivial
   * Br.in: Default for GS applications. Not recommended for GW
 
   * Br-d.in: Include 3d in valence. Not recommended for GW
-    TODO: PBEsol
 
   * Br-spd.in: Include full (3s, 3p, 3d) shell in valence.
     Recommended version for GW and high accuracy calculations but it's hard
