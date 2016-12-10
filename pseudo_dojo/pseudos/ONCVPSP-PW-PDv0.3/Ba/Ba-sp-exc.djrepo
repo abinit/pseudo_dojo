@@ -1,0 +1,50 @@
+{
+"basename": "Ba-sp-exc.psp8", 
+"ecuts": [
+16.0, 
+18.0, 
+20.0, 
+22.0, 
+24.0, 
+26.0, 
+28.0, 
+30.0, 
+32.0, 
+34.0, 
+36.0, 
+44.0, 
+46.0
+], 
+"md5": "f4295ff61b52a9713f5c9d9b16fb2ed2", 
+"ppgen_hints": {
+"high": {
+"ecut": 26.0, 
+"pawecutdg": 26.0
+}, 
+"low": {
+"ecut": 24.0, 
+"pawecutdg": 24.0
+}, 
+"normal": {
+"ecut": 25.0, 
+"pawecutdg": 25.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Ba", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_C_PW"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_X"
+}
+}
+}
