@@ -137353,6 +137353,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 48.0
+}, 
+"low": {
+"ecut": 38.0
+}, 
+"normal": {
+"ecut": 42.0
+}
+}, 
 "md5": "b133d1ca60efec457c7ac69c1cd4f327", 
 "phgamma": {
 "28.0": {
@@ -137645,6 +137656,12 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Zn", 
+"tags": [
+" GW"
+], 
+"validation": {
+"validated_on": "2016-12-10 13:18:38"
+}, 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

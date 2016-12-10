@@ -104985,6 +104985,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 24.0
+}, 
+"low": {
+"ecut": 14.0
+}, 
+"normal": {
+"ecut": 18.0
+}
+}, 
 "md5": "698c0aea1d29e2ebd94c277d0193c290", 
 "phgamma": {
 "10.0": {
@@ -105277,6 +105288,12 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ge", 
+"tags": [
+" "
+], 
+"validation": {
+"validated_on": "2016-12-10 13:26:17"
+}, 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

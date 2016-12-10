@@ -214,6 +214,8 @@ Cd:
     Cd.in:* Has ghost at +73 Ha $$ to discuss
 -->
 
+Hg: TODO Phonons are missing
+
 In-d: ghost at +30eV (In-spd-high is much better for GW)
 
 Sn-d: (ghost at +60, use Sn-spd-high for GW)
@@ -307,6 +309,9 @@ Xe: Require GW version
   * Hg-sp.in: (5s, 5p, 5d, 6s) in valence.
     Recommended version for GW.
 
+## I: 
+  * I-d: Phonons are missing
+
 ## Tl:
   
   * Tl-d.in: Default version for GS applications with 5d in valence. 
@@ -349,6 +354,7 @@ Xe: Require GW version
 
   * Rn-d.in: (5d, 6s, 6p) in valence for high accuracy calculations. 
     Not recommended for GW. 
+    TODO: Phonons are missing
 
 
 ## TODO
