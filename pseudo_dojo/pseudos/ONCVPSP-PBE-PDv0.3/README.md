@@ -79,7 +79,8 @@ without spoiling convergence is not trivial
 ## Al
 
   * Al.in: Has 2 d-projectors to improve transferability.
-    Oscillations in form factors. Requires GW version.
+    Requires GW version.
+    TODO: Oscillations in form factors. 
 
 ## Si
 
@@ -90,7 +91,7 @@ without spoiling convergence is not trivial
 
   * P.in: Has 2 d-projectors to improve transferability.
     Requires GW version
-    TODO: the model core charge should be improved
+    TODO: the model core charge and GBRV should be improved
 
 ## S
 
@@ -333,7 +334,9 @@ without spoiling convergence is not trivial
   * Te-d.in: Include 4d in valence. 
     Not recommended for GW. Ghost at +77 eV.
 
-  * Te-spd-high.in: TODO Complete tests
+  * Te-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
+    TODO Complete tests
 
 ## I
 
@@ -343,6 +346,7 @@ without spoiling convergence is not trivial
 
   * I-spd-high: Include full (4s, 4p, 4d) shell in valence.
     Recommended version for GW and high accuracy calculations.
+    TODO: Complete tests
 
 ## Xe
 
@@ -359,6 +363,7 @@ without spoiling convergence is not trivial
 
   * Ba-sp.in:
     5s, 5p in valence. Use ground-state as reference.
+    TODO: Ba-sp with f?
 
   * Ba-sp-exc.in: 
     Ba-sp-new adds two projectors for f to improve deltafactor and GBRV tests.
@@ -501,8 +506,4 @@ LDA_X = 1 LDA_C_PW = 12
 La/La-sp.in:# lloc lpopt rc5 dvloc0
 La/La-sp.in-4 5 1.6 2.0
 
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/Ba/Ba-sp-new.djrepo   |    275 +
-
 In-d, Sb-d
- pseudo_dojo/pseudos/ONCVPSP-PBEsol-PDv0.3/Zn/Zn-sp.djrepo   | 137613 ++++++++++++++++++++++++++++++
- pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/In/In-d-new.djrepo   |  95432 +++++++++++++++++++++

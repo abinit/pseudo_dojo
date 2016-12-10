@@ -45,13 +45,8 @@ PBEsol
   * O.in: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
   * O-high.in: Similar to O.in, smaller core radii for high-accuracy applications.
 
-<!--
-[Generated new pseudo, TO BE TESTED]
-F:***   
-    F.psp8 can be improved (model core a bit too hard, phonons don't converge)
-    PHONONS are not smooth
-    Model core charge too peacked
-
+## F:
+    TODO: PHONONS are missing
 
 Ne: Pseudo without nlcc since modeling 1s core density without spoiling convergence is not trivial
     Ne.in: Default version with (2s, 2p) in valence.
@@ -73,7 +68,7 @@ Ne: Pseudo without nlcc since modeling 1s core density without spoiling converge
   * Al.in: Oscillations in from factors, Requires GW version.
   Has 2 projectors in the d-channel to improve transferability.
 
-##Si  REQUIRES validation (see PBE)
+## Si  REQUIRES validation (see PBE)
 
   * Si.in: Requires GW version
   Has 2 projectors in the d-channel to improve transferability.
@@ -334,7 +329,7 @@ Xe: Require GW version
 
   * Bi-d.in: Default version for GS applications with 5d in valence. 
     Not recommended for GW. Ghost at +70 eV.
-    PHGAMMA Missing
+    TODO: PHGAMMA Missing
 
   * Bi-spd-high.in: Include full (6s, 6p, 6d) shell in valence.
     Recommended version for GW. $ 4f at -5.6H
