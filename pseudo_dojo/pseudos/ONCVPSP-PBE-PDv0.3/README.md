@@ -51,14 +51,14 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
     Can be used for GW.
 
 ## F: 
-   Needs GW version
+  Needs GW version
 
-   * F.psp8: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
+  * F.psp8: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
 
 ## Ne
   Needs GW version
-These pseudos are without nlcc since modeling 1s core density 
-without spoiling convergence is not trivial
+  These pseudos are without nlcc since modeling 1s core density 
+  without spoiling convergence is not trivial
 
   * Ne.in: Default version with (2s, 2p) in valence.
 
@@ -437,7 +437,7 @@ without spoiling convergence is not trivial
 ## Pt
   Needs GW version
 
-  * Pt-sp.in Default version with 2 projectors for unbound f states
+  * Pt-sp.in: Default version with 2 projectors for unbound f states
     Recommended for GS applications.
 
   * Pt-fsp.in:
