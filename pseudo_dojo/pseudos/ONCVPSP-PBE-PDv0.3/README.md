@@ -514,7 +514,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
     add hints for 
     As-spd-high
-    Sc-spd-high
+    Se-spd-high
     Br-spd-high
     Te-spd-high
     Pt-spd
