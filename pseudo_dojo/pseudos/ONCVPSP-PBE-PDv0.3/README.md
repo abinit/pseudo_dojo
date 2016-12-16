@@ -3,7 +3,7 @@
 Otherwise explicitly noted, all pseudos have been generated using the neutral ground-state
 configuration as reference, non-linear core correction is always included except for
 pseudos in which the all-electron (AE) core is too localized (mentioned in the text) or pseudos with 1s in valence.
-Pseudos with the GW tag have good logarithmic derivatives up to
+Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
 ## H
 
@@ -51,17 +51,18 @@ Pseudos with the GW tag have good logarithmic derivatives up to
     Can be used for GW.
 
 ## F: 
+   Needs GW version
 
    * F.psp8: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
 
 ## Ne
-
+  Needs GW version
 These pseudos are without nlcc since modeling 1s core density 
 without spoiling convergence is not trivial
 
   * Ne.in: Default version with (2s, 2p) in valence.
 
-  * Ne-high.in: Similar to Ne.in but with smaller core radii. Requires GW version.
+  * Ne-high.in: Similar to Ne.in but with smaller core radii.
 
 ## Na
 
@@ -77,29 +78,31 @@ without spoiling convergence is not trivial
     Recommended for GS. Can be used for GW.
 
 ## Al
+  Needs GW version
 
   * Al.in: Default version with 2 d-projectors to improve transferability.
-    Requires GW version.
     TODO: Oscillations in form factors. 
 
 ## Si
+  Needs GW version
 
   * Si.in: Default version with 2 d-projectors to improve transferability.
-    Requires GW version
 
 ## P
+  Needs GW version
 
   * P.in: Default version with 2 d-projectors to improve transferability.
-    Requires GW version
     TODO: the model core charge and GBRV should be improved
 
 ## S
+  Needs GW version
 
-    S.in: Default version with 2 d-projectors to improve transferability.
+  * S.in: Default version with 2 d-projectors to improve transferability.
 
 ## Cl
+  Needs GW version
 
-    Cl.in: Default version with 2 d-projectors to improve transferability.
+  * Cl.in: Default version with 2 d-projectors to improve transferability.
 
 ## Ar
 
@@ -118,15 +121,18 @@ without spoiling convergence is not trivial
 
 ## Sc
 
-  * Sc-sp.in: Default version with (3s, 3p) semicore states in valence. Can be used for GW.
+  * Sc-sp.in: Default version with (3s, 3p) semicore states in valence. 
+    Can be used for GW.
 
 ## Ti
 
-  * Ti-sp.in: Default version with (3s, 3p) semicore states in valence. Can be used for GW.
+  * Ti-sp.in: Default version with (3s, 3p) semicore states in valence. 
+    Can be used for GW.
 
 ## V
 
-  * V-sp.in: Default version with (3s, 3p) semicore states in valence. Can be used for GW.
+  * V-sp.in: Default version with (3s, 3p) semicore states in valence. 
+    Can be used for GW.
 
 ## Cr
 
@@ -163,6 +169,7 @@ without spoiling convergence is not trivial
     Can be used for GW.
 
 ## Ni
+  Needs GW version
 
   * Ni-sp.in: Default version with (3s, 3p) semicore states in valence.
 
@@ -205,12 +212,12 @@ without spoiling convergence is not trivial
     TODO: model core-charge too localized
 
 ## As
+  Needs GW version
 
   * As.in:
     Version with d frozen.
 
   * As-d: Default version with d electrons in valence. Recommended for GS applications.
-    Require GW version
 
   * As-spd-high has good logders but it's hard
 
@@ -234,54 +241,65 @@ without spoiling convergence is not trivial
     TODO: model core-charge too localized
 
 ## Kr
+  Needs GW version
 
   * Kr.in: Default version, needs GW version
 
 ## Rb  
-    Rb-sp.in: Default version with two d-projectors for unbound d
+
+  * Rb-sp.in: Default version with two d-projectors for unbound d
     uses dvloc0 2.5 to improve scattering properties at high energy
     Can be used for GW.
 
 ## Sr
+  Needs GW version
 
   * Sr-sp.in: Default version with two d-projectors for d (4d is bound in GGA-PBE)
     Requires GW version.
 
 ## Y
+  Needs GW version
 
-  * Y-sp.in: Default version with 4s-4p semicore in valence. Requires GW version?
+  * Y-sp.in: Default version with 4s-4p semicore in valence.
 
 ## Zr
 
-  * Zr-sp.in: Default version with 4s-4p semicore in valence. Can be used for GW.
+  * Zr-sp.in: Default version with 4s-4p semicore in valence. 
+    Can be used for GW.
 
 ## Nb
 
-  * Nb-sp.in: Default version with 4s-4p semicore in valence. Can be used for GW
+  * Nb-sp.in: Default version with 4s-4p semicore in valence. 
+    Can be used for GW
 
 ## Mo
 
-  * Mo-sp.in: Default version with 4s-4p semicore in valence. Can be used for GW
+  * Mo-sp.in: Default version with 4s-4p semicore in valence. 
+    Can be used for GW
 
 ## Tc
 
-  * Tc-sp.in: Default version with 4s-4p semicore in valence. Can be used for GW
+  * Tc-sp.in: Default version with 4s-4p semicore in valence. 
+    Can be used for GW
 
 ## Ru
 
-  * Ru-sp.in: Default version with 4s-4p semicore in valence. Can be used for GW
+  * Ru-sp.in: Default version with 4s-4p semicore in valence. 
+    Can be used for GW
 
 ## Rh
+  Needs GW version
 
   * Rh-sp.in: Default version with 4s-4p semicore in valence.
 
 ## Pd
+  Needs GW version
 
   * Pd-sp.in: Default version with 4s-4p semicore in valence. 
-    Requires GW version
     Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
 
 ## Ag
+  Needs GW version
 
   * Ag-sp.in: Default version. 
     It seems difficult to get good logders without sp semicore
@@ -348,17 +366,19 @@ without spoiling convergence is not trivial
     TODO: Complete tests
 
 ## Xe
+  Needs GW version
 
   * Xe.in: Default version with 5s-5p in valence. Two projectors for f to improve trasferability.
-    Requires GW version
 
 ## Cs
+  Needs GW version
 
   * Cs-sp.in: Default version with (5s, 5p, 6s) in valence, 4f in core.
     Use two f-projectors to improve transferability.
     Require GW version.
 
 ## Ba
+  Needs GW version
 
   * Ba-sp.in:Default version with 5s, 5p in valence. Use ground-state as reference.
     TODO: Ba-sp with f?
@@ -369,7 +389,6 @@ without spoiling convergence is not trivial
     seems to have a ghost around 6 eV
 
 ## Hf
-
   Needs a GW version fsp is probably unavoidable but log ders are not optimal.
   the p version is the only one that does not have an explicit f projector, did we never try?
 
@@ -399,7 +418,8 @@ without spoiling convergence is not trivial
   * W-fsp.in:
 
 ## Re:
-
+  Needs GW version
+ 
   * Re-sp.in: Default version with 4f frozen in core. Has 2 f-projectors to improve transferability.
     The missing f, only at ~1.5 H below the fermi level is probably too much to classify the sp as GW
 
@@ -415,6 +435,8 @@ without spoiling convergence is not trivial
     Recommended for GS applications.
 
 ## Pt
+  Needs GW version
+
   * Pt-sp.in Default version with 2 projectors for unbound f states
     Recommended for GS applications.
 
@@ -422,6 +444,8 @@ without spoiling convergence is not trivial
     Experimental version!
 
 ## Au
+  Needs GW version
+
   * Au-sp.in: Default version with  5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
     Recommended for GS applications.
 
@@ -468,6 +492,7 @@ without spoiling convergence is not trivial
     Recommended version for GW. $ 4f at 6.4H
 
 ## Rn: 
+  Needs GW version
 
   * Rn.in: Default version for GS applications with (6s, 6p) in valence. 
     Not recommended for GW. d is only 1.7H below ef
