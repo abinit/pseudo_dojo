@@ -53,7 +53,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 ## F: 
   Needs GW version
 
-  * F.psp8: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
+  * F.in: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
 
 ## Ne
   Needs GW version
@@ -160,7 +160,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
   * Fe-sp-high.in: Smaller core radii for high accuracy calculations e.g. in magnetic systems.
     Can be used for GW. Uses `ncon 3`, the standard is 4.
 
-## Co:
+## Co
 
   * Co-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
@@ -205,7 +205,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
   * Ge-low.in: Low-accuracy version with 3d in core, (4s,4p) in valence.
     2 d-projectors for unbound states.
 
-  * Ge-d: Default version with 3d in valence, for GS applications. NOT recommended for GW.
+  * Ge-d.in: Default version with 3d in valence, for GS applications. NOT recommended for GW.
 
   * Ge-spd-high.in: Include full (3s, 3p, 3d) shell in valence. Recommended version for GW
     and high accuracy calculations but it's hard
@@ -217,9 +217,9 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
   * As.in:
     Version with d frozen.
 
-  * As-d: Default version with d electrons in valence. Recommended for GS applications.
+  * As-d.in: Default version with d electrons in valence. Recommended for GS applications.
 
-  * As-spd-high has good logders but it's hard
+  * As-spd-high.in has good logders but it's hard
 
 ## Se
 
@@ -308,13 +308,13 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
   * Cd.in: Default version with (4d, 5s) in valence. Has ghost at +73 Ha
 
-  * Cd-sp.in. (4s, 4p, 4d, 5s) in valence
+  * Cd-sp.in (4s, 4p, 4d, 5s) in valence
     Recommended for GS. Can be used for GW.
 
 ## In
   PROBLEMATIC?
 
-  * In-d: Default version for GS application with 4d in valence.
+  * In-d.in: Default version for GS application with 4d in valence.
     Has GHOST_In-20eV. Not recommended for GW.
 
   * In-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
@@ -361,7 +361,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
   * I-d.in: Include 4d in valence. Not recommended for GW
 
-  * I-spd-high: Include full (4s, 4p, 4d) shell in valence.
+  * I-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
     Recommended version for GW and high accuracy calculations.
     TODO: Complete tests
 
@@ -431,7 +431,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 ## Ir
   Needs GW version
 
-  * Ir-sp: Default version with. Has 2 f-projectors to improve transferability.
+  * Ir-sp.in: Default version with. Has 2 f-projectors to improve transferability.
     Recommended for GS applications.
 
 ## Pt
