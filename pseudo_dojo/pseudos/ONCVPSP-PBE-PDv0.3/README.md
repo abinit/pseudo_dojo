@@ -219,7 +219,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
   * As-d.in: Default version with d electrons in valence. Recommended for GS applications.
 
-  * As-spd-high.in has good logders but it's hard
+  * As-spd-high.in: has good logders but it's hard
 
 ## Se
 
@@ -227,7 +227,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
   * Se-d.in: Default version ??? with 3d in valence. Not recommended for GW
 
-  * Se-spd.in: Se-spd-high has good logders but it's hard)
+  * Se-spd-high.in: Se-spd-high has good logders but it's hard)
     TODO: model core-charge too localized
 
 ## Br
@@ -236,7 +236,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
   * Br-d.in: Include 3d in valence. Not recommended for GW
 
-  * Br-spd.in: Include full (3s, 3p, 3d) shell in valence.
+  * Br-spd-high.in: Include full (3s, 3p, 3d) shell in valence.
     Recommended version for GW and high accuracy calculations but it's hard
     TODO: model core-charge too localized
 
@@ -308,7 +308,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
   * Cd.in: Default version with (4d, 5s) in valence. Has ghost at +73 Ha
 
-  * Cd-sp.in (4s, 4p, 4d, 5s) in valence
+  * Cd-sp.in: (4s, 4p, 4d, 5s) in valence
     Recommended for GS. Can be used for GW.
 
 ## In
