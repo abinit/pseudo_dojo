@@ -512,6 +512,14 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
     In-d is very sensitive, changing XC (GGa-->LDA) gives a ghost very close to 0.
     The first s projectors presents oscillations I don't see in the other pseudos.
 
+    add hints for 
+    As-spd-high
+    Sc-spd-high
+    Br-spd-high
+    Te-spd-high
+    Pt-spd
+
+
 <!--
 GGA_X_PBE_SOL = 116 GGA_C_PBE_SOL = 133
 LDA_X = 1 LDA_C_PW = 12
