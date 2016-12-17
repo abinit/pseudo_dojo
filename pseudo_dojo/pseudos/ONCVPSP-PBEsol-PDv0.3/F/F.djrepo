@@ -15,16 +15,6 @@
 58.0, 
 60.0
 ], 
-"hints": {
-"high": {
-"ecut": 48.0
-}, 
-"low": {
-"ecut": 36.0
-}, 
-"normal": {
-"ecut": 42.0
-}, 
 "ghosts": {
 "40.0": {
 "dojo_status": 1, 
@@ -64359,7 +64349,17 @@ null
 "min_npw": 12699, 
 "nband": 420, 
 "pawecutdg": null
->>>>>>> 8a5f394f45e2624b4dacafa75d202568dc520a9d
+}
+}, 
+"hints": {
+"high": {
+"ecut": 48.0
+}, 
+"low": {
+"ecut": 36.0
+}, 
+"normal": {
+"ecut": 42.0
 }
 }, 
 "md5": "ed5167e88939c53c4d7eacd77a750c00", 
@@ -64383,7 +64383,7 @@ null
 " "
 ], 
 "validation": {
-"validated_on": "2016-12-10 13:04:44"
+"validated_on": "2016-12-17 16:00:18"
 }, 
 "version": "1.0", 
 "xc": {
