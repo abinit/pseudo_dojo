@@ -156,6 +156,8 @@ without spoiling convergence is not trivial
 
 ## Co:
 
+  AE core very localized --> Had to find a compromise for model core charge 
+
   * Co-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
 
@@ -239,6 +241,7 @@ without spoiling convergence is not trivial
   * Kr.in: needs GW version
 
 ## Rb  
+
     Rb-sp.in: use two d-projectors for unbound d
     use dvloc0 2.5 to improve scattering properties at high energy
     Can be used for GW.
@@ -315,7 +318,7 @@ without spoiling convergence is not trivial
     Recommended version for GW and high accuracy calculations.
 
 ## Sb
-  PROBLEMATIC? (PBESOl new?)
+  PROBLEMATIC? 
 
   * Sb.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
     Not recommended for GW.
@@ -373,10 +376,6 @@ without spoiling convergence is not trivial
 ## Hf
 
   Needs a GW version fsp is probably unavoidable but log ders are not optimal.
-  the p version is the only one that does not have an explicit f projector, did we never try?
-
-  * Hf-p.in:
-    Use dvloc0 8.0
 
   * Hf-sp.in:
     4f frozen in core. Has 2 f-projectors to improve transferability.
@@ -419,11 +418,12 @@ without spoiling convergence is not trivial
 
 ## Ir
 
-  * Ir-sp: removed the GW tag, 4f to close
-    4f frozen in core. Has 2 f-projectors to improve transferability.
+  * Ir-sp: 4f frozen in core. Has 2 f-projectors to improve transferability.
     Recommended for GS applications.
+    removed the GW tag, 4f to close
 
 ## Pt
+
   * Pt-sp.in has with 2 projectors for unbound f states
     Recommended for GS applications.
 
@@ -431,9 +431,12 @@ without spoiling convergence is not trivial
     Experimental version!
 
 ## Au
+
   * Au-sp.in
     5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
     Recommended for GS applications.
+    We actually did GW calculations for gold and both SigmaX and SigmaC are seriously affected by unfreezing
+    the 4f electrons ~10% total effect. 
 
 ## Hg:
 
@@ -479,10 +482,10 @@ without spoiling convergence is not trivial
 
 ## Rn: 
 
-  * Rn.in: Default version for GS applications with (6s, 6p) in valence. 
+  * Rn.in: Version wtih (6s, 6p) in valence and 5d frozen
     Not recommended for GW. d is only 1.7H below ef
 
-  * Rn-d.in: (5d, 6s, 6p) in valence for high accuracy calculations. 
+  * Rn-d.in: Default version for GS applications with (5d, 6s, 6p) in valence 
     Not recommended for GW. 
 
 ## TODO

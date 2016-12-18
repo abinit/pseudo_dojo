@@ -82469,10 +82469,10 @@ null
 "pseudo_type": "NC", 
 "symbol": "Rb", 
 "tags": [
-" "
+" GW"
 ], 
 "validation": {
-"validated_on": "2016-10-31 11:51:45"
+"validated_on": "2016-12-18 21:05:23"
 }, 
 "version": "1.0", 
 "xc": {
