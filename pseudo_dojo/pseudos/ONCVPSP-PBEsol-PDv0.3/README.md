@@ -225,6 +225,8 @@ without spoiling convergence is not trivial
     Require GW version
     Phonons are missing
 
+  * As-spd-high has good logders but it's hard and model core is peaked
+
 ## Se 
 
   * Se.in: Not recommended for GW
@@ -232,11 +234,18 @@ without spoiling convergence is not trivial
   * Se-d.in: Include 3d in valence. Not recommended for GW
   TODO: PHGAMMA RUNNING
 
+  * Se-spd.in: Se-spd-high has good logders but it's hard)
+    TODO: model core-charge too localized
+
 ## Br
 
   * Br.in: Default for GS applications. Not recommended for GW
 
   * Br-d.in: Include 3d in valence. Not recommended for GW
+
+  * Br-spd.in: Include full (3s, 3p, 3d) shell in valence.
+    Recommended version for GW and high accuracy calculations but it's hard
+    TODO: model core-charge too localized
 
 ## Kr
 
@@ -308,6 +317,9 @@ without spoiling convergence is not trivial
   * In-d: Default version for GS application with 4d in valence.
     Has GHOST_In-20eV. Not recommended for GW.
 
+  * In-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
+
 ## Sn
 
   * Sn.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
@@ -315,6 +327,9 @@ without spoiling convergence is not trivial
 
   * Sn-d.in: Include 4d in valence. Default version for GS applications. 
     Not recommended for GW. Ghost at +60 eV
+
+  * Sn-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
 
 ## Sb
   PROBLEMATIC? (
@@ -325,6 +340,9 @@ without spoiling convergence is not trivial
   * Sb-d.in: Include 4d in valence. Default version for GS applications. 
     Not recommended for GW. Ghost at +20 eV,
 
+  * Sb-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
+
 ## Te
 
   * Te.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
@@ -333,11 +351,19 @@ without spoiling convergence is not trivial
   * Te-d.in: Include 4d in valence. 
     Not recommended for GW. Ghost at +77 eV.
 
+  * Te-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
+    TODO Complete tests
+
 ## I
 
   * I.in: OK for GS applications. Not recommended for GW
 
   * I-d.in: Include 4d in valence. Not recommended for GW
+
+  * I-spd-high: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
+    TODO: Complete tests
 
 ## Xe
 

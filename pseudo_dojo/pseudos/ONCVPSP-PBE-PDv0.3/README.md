@@ -215,7 +215,7 @@ without spoiling convergence is not trivial
   * As-d: Version with d electrons in valence. Recommended for GS applications.
     Require GW version
 
-  * As-spd-high has good logders but it's hard
+  * As-spd-high has good logders but it's hard and model core is peaked
 
 ## Se
 

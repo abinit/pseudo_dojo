@@ -89272,6 +89272,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 62.0
+}, 
+"low": {
+"ecut": 50.0
+}, 
+"normal": {
+"ecut": 56.0
+}
+}, 
 "md5": "04093209c6c72085ff8c78be26b79e3c", 
 "ppgen_hints": {
 "high": {
@@ -89289,6 +89300,12 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "As", 
+"tags": [
+" GW"
+], 
+"validation": {
+"validated_on": "2016-12-19 00:05:14"
+}, 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 
