@@ -216,7 +216,7 @@ class DojoReport(dict):
         "deltafactor",
         "gbrv_bcc",
         "gbrv_fcc",
-        #"phgamma",
+        "phgamma",
         #"ghosts",
     ]
 
@@ -227,7 +227,7 @@ class DojoReport(dict):
         "deltafactor": "dfact_meV",
         "gbrv_bcc": "a0_rel_err",
         "gbrv_fcc": "a0_rel_err",
-        #"phgamma": "all",
+        "phgamma": "all",
         #"ghosts": "all",
     }
 
@@ -737,8 +737,8 @@ class DojoReport(dict):
                 If None, all trials are analyzed.
         """
         check_trials = self.ALL_TRIALS if check_trials is None else list_strings(check_trials)
-	# Relativistic pseudos (_r.psp8) must have trials done with/without SOC
-        if not "_r" in self["basename"]:
+        # Relativistic pseudos (_r.psp8) must have trials done with/without SOC
+        if "_r" not in self["basename"]:
             check_trials = [t for t in check_trials if not t.endswith("_soc")]
 
         errors = []
@@ -1227,6 +1227,7 @@ class DojoDataFrame(pd.DataFrame):
         "deltafactor": "dfact_meV",
         "gbrv_bcc": "gbrv_bcc_a0_rel_err",
         "gbrv_fcc": "gbrv_fcc_a0_rel_err",
+        "phgamma": "asr2_phfreqs_mev"
     }
 
     _TRIALS2YLABEL = {
@@ -1234,6 +1235,7 @@ class DojoDataFrame(pd.DataFrame):
         "deltafactor": "$\Delta$-factor [meV]",
         "gbrv_bcc": "BCC $\Delta a_0$ (%)",
         "gbrv_fcc": "FCC $\Delta a_0$ (%)",
+        "phgamma": "asr2_phfreqs_mev"
     }
 
     # The frame has its own list so that one can easily change the
@@ -1283,6 +1285,7 @@ class DojoDataFrame(pd.DataFrame):
             "deltafactor": ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1"],
             "gbrv_bcc": ["a0_rel_err"],
             "gbrv_fcc": ["a0_rel_err"],
+            "phgamma": ["asr2_phfreqs_mev", "noasr_phfreqs_mev"]
         }
 
         rows, names, errors = [], [], []
@@ -1336,7 +1339,7 @@ class DojoDataFrame(pd.DataFrame):
                         ecut = ecut_acc[acc] if ecut_acc[acc] in data.keys() else ecut_acc_trial[acc]
                         # store the actual ecut for this trial
                         d.update({acc + "_ecut_" + trial: ecut})
-                        if keys == 'all':
+                        if trial.startswith('ph'):
                             ecuts = data
                             d.update({acc + "_" + trial: data[ecut]})
                         else:
