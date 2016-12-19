@@ -1,4 +1,9 @@
-PBEsol
+## GGA-PBEsol table (oncvpsp NC pseudos)
+
+Otherwise explicitly noted, all pseudos have been generated using the neutral ground-state
+configuration as reference, non-linear core correction is always included except for
+pseudos in which the all-electron (AE) core is too localized (mentioned in the text) or pseudos with 1s in valence.
+Pseudos with the GW tag have good logarithmic derivatives up to
 
 ## H 
 
@@ -14,303 +19,444 @@ PBEsol
 
 ## Li
 
-  * Li-s.in: Default version with 1s in valence.
+  * Li-s.in: Default version with 1s in valence. Can be used for GW.
 
-  * Li-s-high.in: Similar to Be-s but with smaller core radius.
+  * Li-s-high.in: Similar to Li-s but with smaller core radius.
 
 ## Be
 
-  * Be-s.in: Default version with 1s in valence.
+  * Be-s.in: Default version with 1s in valence. Can be used for GW
 
-  * Be-s-high.in: Similar to Li-s but with smaller core radius.
+  * Be-s-high.in: Similar to Be-s but with smaller core radius. Can be used for GW.
 
 ## B
 
-  * B.in: Default version with (2s, 2p) in valence.
+  * B.in: Default version with (2s, 2p) in valence. Can be used for GW
 
-  * B-gw.in: Version with improved logarithmic derivatives, recommended for GW.
-
-## C No PHGAMMA
+## C 
 
   * C.in: Default version with (2s, 2p) in valence
-  * C-gw.in: Version with improved logarithmic derivatives, recommended for GW.
+
+  * C-gw.in: Version with improved logarithmic derivatives, based on C.in.
+    Recommended for GW.
+
+    Relaxation with deltafactor structure didn't converge --> no phonons
 
 ## N   
 
-  * N.in: Default version with (2s, 2p) in valence
-  Phonons at Gamma present some noise
+  * N.in: Default version with (2s, 2p) in valence. Can be used for GW.
+    Phonons at Gamma present some noise
 
-## O NO PHGAMMA
+## O 
 
   * O.in: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
+    Can be used for GW.
+
   * O-high.in: Similar to O.in, smaller core radii for high-accuracy applications.
+    Can be used for GW.
+
+    Relaxation with deltafactor structure didn't converge --> no phonons
 
 ## F:
-    TODO: PHONONS are missing
 
-Ne: Pseudo without nlcc since modeling 1s core density without spoiling convergence is not trivial
-    Ne.in: Default version with (2s, 2p) in valence.
-    Ne-high.in: Similar to Ne.in but with smaller core radii.
--->
+   * F.psp8: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
+
+    Relaxation with deltafactor structure didn't converge --> no phonons
+
+## Ne: 
+
+These pseudos are without nlcc since modeling 1s core density 
+without spoiling convergence is not trivial
+
+  * Ne.in: Default version with (2s, 2p) in valence.
+
+  * Ne-high.in: Similar to Ne.in but with smaller core radii. Requires GW version.
 
 ## Na
 
-  * Na-sp.in: (2s, 2p) semicore in valence. No model core charge (ae core too localized).
-    Phonons woasr are noisy
+  * Na-sp.in: (2s, 2p) semicore in valence. No model core charge (AE core too localized).
+    Can be used for GW.
+    Phonons without ASR are noisy
  
 ## Mg
 
-  * Mg.in: has ghost at +80 eV, it's the fast low-accuracy version without semicore.
+  * Mg.in: Low-cutoff low-accuracy version without semicore.
+    Has ghost at +80 eV, not recommended for GW.
+
   * Mg-sp.in: (2s, 2p) semicore in valence. No model core charge (ae core too localized)
+    Recommended for GS. Can be used for GW.
+    Phonons without ASR are noisy
 
 ## Al 
 
-  * Al.in: Oscillations in from factors, Requires GW version.
-  Has 2 projectors in the d-channel to improve transferability.
+  * Al.in: Has 2 d-projectors to improve transferability.
+    Requires GW version.
+    TODO: Oscillations in form factors. 
 
-## Si  REQUIRES validation (see PBE)
+## Si 
 
-  * Si.in: Requires GW version
-  Has 2 projectors in the d-channel to improve transferability.
+  * Si.in: Has 2 d-projectors to improve transferability.
+    Requires GW version
 
 ## P 
-  * P.in: requires GW version 
-  Has 2 projectors in the d-channel to improve transferability.
-  $$ the model core charge should be improved
-  $$ the algorithm detects dispersionless states but inspection of the BS does not show any
 
-<!--
-[new pseudo, TO BE TESTED Complete PHGAMMA]
-Cl:** (vloc(d), slow convergence)
-  $$ lets use new, some phonons are missing though
--->
+  * P.in: Has 2 d-projectors to improve transferability.
+    Requires GW version
+    TODO: the model core charge and GBRV should be improved
+
+## S
+
+    S.in: Has 2 d-projectors to improve transferability.
+
+## Cl
+
+    Cl.in: Has 2 d-projectors to improve transferability.
 
 ## Ar
+
   * Ar.in: (3s, 3p) in valence. Has 2 projectors in the d-channel to improve transferability.
-    Phonons woasr are noisy
+    Can be used for GW.
+    Phonons without ASR are noisy
 
 ## K
-  * K-sp.in: (3s, 3p) semicore states in valence. 
-  Has 2 projectors in the d-channel to improve transferability.
 
-## C
-  * Ca-sp.in: (3s, 3p) semicore states in valence. 
-  Has 2 projectors in the d-channel to improve transferability.
+  * K-sp.in: (3s, 3p) semicore states in valence. Has 2 projectors in the d-channel to improve transferability.
+    Can be used for GW.
+
+## Ca
+
+  * Ca-sp.in: (3s, 3p) semicore states in valence. Has 2 projectors in the d-channel to improve transferability.
+    Can be used for GW
 
 ## Sc
-  * Sc-sp.in: (3s, 3p) semicore states in valence. 
-    Phonons woasr are noisy
+
+  * Sc-sp.in: (3s, 3p) semicore states in valence. Can be used for GW.
+    Phonons without ASR are noisy
 
 ## Ti
-  * Ti-sp.in: (3s, 3p) semicore states in valence. 
+
+  * Ti-sp.in: (3s, 3p) semicore states in valence. Can be used for GW.
 
 ## V
-  * V-sp.in: (3s, 3p) semicore states in valence. 
 
-## Cr the mc could be improved
+  * V-sp.in: (3s, 3p) semicore states in valence. Can be used for GW.
+
+## Cr 
+
   * Cr-sp.in: Default version with (3s, 3p) semicore states in valence. 
-    TODO: PHGAMMA is missing RUNNING
+    Can be used for GW.
 
-  * Cr-sp-high.in: Similar to Cr-sp.in but with smaller core radii (and larger cutoff)
-    for high-accuracy calculations.
+  * Cr-sp-high.in: Similar to Cr-sp.in but with smaller core radii (and larger cutoff) 
+    for high-accuracy calculations e.g. magnetic systems.
+    Can be used for GW.
+
+    TODO: PHGAMMA is missing RUNNING
 
 ## Mn
 
   * Mn-sp.in: Default version with (3s, 3p) semicore states in valence. 
+    Can be used for GW.
 
   * Mn-sp-high.in: Similar to Mn-sp.in but with smaller core radii (and larger cutoff)
-    for high-accuracy calculations.
+    for high-accuracy calculations e.g. in magnetic systems.
+    Can be used for GW.
     TODO: Phgamma RUNNING
 
-## Fe model core charge too hard, try the one from Fe-sp-high.
+## Fe 
 
   * Fe-sp.in: Default version with (3s, 3p) semicore states in valence.
-    Uses `ncon 3`, the standard is 4
+    Can be used for GW. Uses `ncon 3`, the standard is 4.
 
-  * Fe-sp-high.in: Smaller core radii for high accuracy calculations.
-    Uses `ncon 3`, the standard is 4
+  * Fe-sp-high.in: Smaller core radii for high accuracy calculations e.g. in magnetic systems.
+    Can be used for GW. Uses `ncon 3`, the standard is 4.
 
-## Co mc could be improved
+## Co 
 
-  * Co-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 1.2.
-  * Co-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 0.7
+  AE core very localized --> Had to find a compromise for model core charge 
+
+  * Co-sp.in: Default version with (3s, 3p) semicore states in valence.
+    Can be used for GW.
+
+  * Co-sp-high.in: Smaller core radii for high accuracy calculations e.g. in magnetic systems.
+    Can be used for GW.
 
 ## Ni
-  * Ni-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 1.2
-  * Ni-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 1.2
+
+  * Ni-sp.in: Default version with (3s, 3p) semicore states in valence. 
+
+  * Ni-sp-high.in: Smaller core radii for high accuracy calculations. 
 
 ## Cu
-  * Cu-sp.in: Default version with (3s, 3p) semicore states in valence. deltafactor ~= 0.3
-  * Cu-sp-high.in: Smaller core radii for high accuracy calculations. deltafactor ~= 0.3
 
-Zn-sp: 
-    I've added the GW tag (ok but not "perfect", ask Michiel if he has specialized version)
-    Ask about mc params
-    $$ Michiel will look at this. the total energy convergence look a bit suspicious...
-    ** phonons are noisy.
+  * Cu-sp.in: Default version with (3s, 3p) semicore states in valence. 
+    Can be used for GW.
+
+  * Cu-sp-high.in: Smaller core radii for high accuracy calculations. 
+    Can be used for GW.
+
+## Zn 
+
+  * Zn.in
+
+  * Zn-sp.in
+    I've added the GW tag but mind ZnO.
+    phonons are noisy.
 
 ## Ga
-  * Ga-d.in: 3d in valence, default for GS applications.
+
+  * Ga-low.in: Low-accuracy version with 3d in core, (4s,4p) in valence.
+    2 d-projectors for unbound states.
+
+  * Ga-d.in: 3d in valence, default for GS applications. NOT recommended for GW.
 
 ## Ge
-  * Ge-d: Require GW version 
 
-<!--
-[DONE, RUNNING] phonons are missing
-As:
-    As.in:** No convergence (v(d)?) Try As-new with modcore from As
-    As-d:* Require GW version 
-    As-spd-high has good logders but it's hard)
+  * Ge-low.in: Low-accuracy version with 3d in core, (4s,4p) in valence.
+    2 d-projectors for unbound states.
 
--->
+  * Ge-d: 3d in valence, default for GS applications. NOT recommended for GW.
+
+## As
+
+  * As.in:
+    Version with d frozen.
+
+  * As-d: Version with d electrons in valence. Recommended for GS applications.
+    Require GW version
+    Phonons are missing
+
+  * As-spd-high has good logders but it's hard and model core is peaked
+
 ## Se 
-  * Se-d.in: Require GW version 
+
+  * Se.in: Not recommended for GW
+
+  * Se-d.in: Include 3d in valence. Not recommended for GW
   TODO: PHGAMMA RUNNING
 
-## Br needs GW version
-   TODO: PHGAMMA RUNNING
+  * Se-spd.in: Se-spd-high has good logders but it's hard)
+    TODO: model core-charge too localized
 
-## Kr needs GW version
-   phonons are noisy but it could be due to the particular system
+## Br
+
+  * Br.in: Default for GS applications. Not recommended for GW
+
+  * Br-d.in: Include 3d in valence. Not recommended for GW
+
+  * Br-spd.in: Include full (3s, 3p, 3d) shell in valence.
+    Recommended version for GW and high accuracy calculations but it's hard
+    TODO: model core-charge too localized
+
+## Kr
+
+  * Kr.in: needs GW version
+   phonons are noisy but this is usually observed in noble gases.
 
 ## Rb  
+
     Rb-sp.in: use two d-projectors for unbound d
     use dvloc0=2.5 to improve scattering properties at high energy
+    Can be used for GW.
 
-Sr:
--->
+## Sr
+
+  * Sr-sp.in: uses two d-projectors for d (4d is bound in GGA-PBEsol)
+    Require GW version.
 
 # Y
-  * Y-sp.in: 4s-4p semicore in valence
-    Phonons woasr are noisy
 
+  * Y-sp.in: 4s-4p semicore in valence. Requires GW version?
+    Phonons woasr are noisy
 
 # Zr
 
-  * Zr-sp.in: 4s-4p semicore in valence.
-  Phonons woasr are noisy
+  * Zr-sp.in: 4s-4p semicore in valence. Can be used for GW.
+    Phonons woasr are noisy
 
 # Nb
-  * Nb-sp.in: 4s-4p semicore in valence.
+
+  * Nb-sp.in: 4s-4p semicore in valence. Can be used for GW
 
 # Mo
-  * Mo-sp.in: 4s-4p semicore in valence.
+
+  * Mo-sp.in: 4s-4p semicore in valence. Can be used for GW
 
 # Tc
-  * Tc-sp.in: 4s-4p semicore in valence.
+
+  * Tc-sp.in: 4s-4p semicore in valence. Can be used for GW
 
 # Ru
-  * Ru-sp.in: 4s-4p semicore in valence.
+
+  * Ru-sp.in: 4s-4p semicore in valence. Can be used for GW
 
 # Rh
+
   * Rh-sp.in: 4s-4p semicore in valence.
 
-<!--
-Pd: Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
+## Pd
 
-Ag: It seems difficult to get good logders without semicore
+  * Pd-sp.in: 4s-4p semicore in valence. 
+    Require GW version
+    Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
 
-Cd:
-    Cd.in:* Has ghost at +73 Ha $$ to discuss
--->
+## Ag
 
-Hg: TODO Phonons are missing
+  * Ag-sp.in. 
+    It seems difficult to get good logders without sp semicore
 
-In-d: ghost at +30eV (In-spd-high is much better for GW)
+## Cd
 
-Sn-d: (ghost at +60, use Sn-spd-high for GW)
+  * Cd.in: (4d, 5s) in valence. Has ghost at +73 Ha
 
-Sb-d: ghost at +20 eV, Use Sb-spd-high for GW
+  * Cd-sp.in. (4s, 4p, 4d, 5s) in valence
+    Recommended for GS. Can be used for GW.
 
-Te-d:** ghost at +77 eV  (Should try Te-spd-high for GW)
+## In
+  PROBLEMATIC?
 
-I: needs GW version
+  * In-d: Default version for GS application with 4d in valence.
+    Has GHOST_In-20eV. Not recommended for GW.
 
-Xe: Require GW version
-    Xe.in: 5s-5p in valence. Two projectors for f to improve trasferability.
+  * In-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
 
-<!--
+## Sn
+
+  * Sn.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
+    Not recommended for GW.
+
+  * Sn-d.in: Include 4d in valence. Default version for GS applications. 
+    Not recommended for GW. Ghost at +60 eV
+
+  * Sn-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
+
+## Sb
+  PROBLEMATIC? (
+
+  * Sb.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
+    Not recommended for GW.
+
+  * Sb-d.in: Include 4d in valence. Default version for GS applications. 
+    Not recommended for GW. Ghost at +20 eV,
+
+  * Sb-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
+
+## Te
+
+  * Te.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
+    Not recommended for GW.
+
+  * Te-d.in: Include 4d in valence. 
+    Not recommended for GW. Ghost at +77 eV.
+
+  * Te-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
+    TODO Complete tests
+
+## I
+
+  * I.in: OK for GS applications. Not recommended for GW
+
+  * I-d.in: Include 4d in valence. Not recommended for GW
+
+  * I-spd-high: Include full (4s, 4p, 4d) shell in valence.
+    Recommended version for GW and high accuracy calculations.
+    TODO: Complete tests
+
+## Xe
+
+  * Xe.in: 5s-5p in valence. Two projectors for f to improve trasferability.
+    Require GW version
+
 ## Cs
 
   * Cs-sp.in: (5s, 5p, 6s) in valence, 4f in core.
     Use two f-projectors to improve transferability.
     Require GW version.
-    PHGAMMA is missing
 
 ## Ba
 
-  * Ba-sp-new.in: seems to have a ghost around 6 eV
+  * Ba-sp.in:
+    5s, 5p in valence. Use ground-state as reference.
+    TODO: Ba-sp with f?
+
+  * Ba-sp-exc.in: 
     Ba-sp-new adds two projectors for f to improve deltafactor and GBRV tests.
+    Uses excited state (5d1, 6s1) as reference configuration
+    seems to have a ghost around 6 eV
 
 ## Hf
 
   Needs a GW version fsp is probably unavoidable but log ders are not optimal.
-  the p version is the only one that does not have an explicit f projector, did we never try?
-
-  * Hf-p.in:
-    Use dvloc0 8.0
 
   * Hf-sp.in:
+    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
 
   * Hf-fsp.in:
 
 ## Ta
+  Needs GW version
 
   * Ta-sp.in:
-  The missing f, only at 1 H below the fermi level is probably too much to classify the sp as GW
+    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
+    The missing f, only at ~1 H below the fermi level is probably too much to classify the sp as GW
 
   * Ta-fsp.in:
 
 ## W
+  Needs GW version
 
   * W-sp.in:
+    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
+    The missing f, only at ~1 H below the fermi level is probably too much to classify the sp as GW
 
   * W-fsp.in:
 
 ## Re:
 
-  * Re-sp.in: needs GW version
+  * Re-sp.in
+    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
+    The missing f, only at ~1.5 H below the fermi level is probably too much to classify the sp as GW
 
 ## Os
 
   * Os-sp.in: needs GW version
+    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
 
 ## Ir
 
-  * Ir-sp: removed the GW tag, 4f to close
+  * Ir-sp: 4f frozen in core. Has 2 f-projectors to improve transferability.
+    Recommended for GS applications.
+    removed the GW tag, 4f to close
 
 ## Pt
-  fsp softer model core charge? the two highest energy points seem off...
-  add an f projector to sp?
-  $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
-  Pt-sp: Regenerated with modcore 3
-  (Pt-p gives much better deltafactor but has ghosts at +25 eV,
-  Pt-ex-sp does not improve, new df with pt-sp-icmod3 is 4.8)
-  Ask michiel about MC
 
-  * Pt-sp.in:
-
-  * Pt-fsp.in:
+  * Pt-sp.in has with 2 projectors for unbound f states
+    Recommended for GS applications.
 
 ## Au
-  $ removed the GW tag from sp, its high in energy and the fsp shows a serious overlap
-  $ we actually did the GW calcualtion on gold both SigmaX and SigmaC are seriously affected by unfreezing
-  $ the 4f electrons ~10% total effect. since they are les deep in the Hf-Pt series I don't trust the GW tag on any
-  $ of them on non f potentials
 
   * Au-sp.in
+    5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
+    Recommended for GS applications.
+    We actually did GW calculations for gold and both SigmaX and SigmaC are seriously affected by unfreezing
+    the 4f electrons ~10% total effect. 
 
-## Hg: ??
+## Hg:
 
   * Hg.in: (5d, 6s) in valence.
     Not recommended for GW. Ghost at +66 eV 
-    PHGAMMA is missing (problems to converge)
 
-  * Hg-sp.in: (5s, 5p, 5d, 6s) in valence.
-    Recommended version for GW.
-
-## I: 
-  * I-d: Phonons are missing
+  * Hg-sp.in: (5s, 5p, 5d, 6s) in valence. Add f projector
+    Recommended for GS and GW.
+    TODO Phonons are missing (problems to converge structural relaxation)
 
 ## Tl:
   
@@ -356,7 +502,6 @@ Xe: Require GW version
     Not recommended for GW. 
     TODO: Phonons are missing
 
-
 ## TODO
     * test for the 6th row the addition of an explicit f projector
     * Pd --> Cd (look at Pd/Ag/Cd carefully)
@@ -369,7 +514,6 @@ Xe: Require GW version
     In-d is very sensitive, changing XC (GGa-->LDA) gives a ghost very close to 0.
     The first s projectors presents oscillations I don't see in the other pseudos.
 -->
-
 
  pseudo_dojo/pseudos/ONCVPSP-PBEsol-PDv0.3/As/As-d.djrepo        |    137 +
  pseudo_dojo/pseudos/ONCVPSP-PBEsol-PDv0.3/F/F-new.djrepo        | 158536 ++++++++++++++++++++++++++++++++++++++++++++++

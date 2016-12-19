@@ -162,6 +162,8 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
 ## Co
 
+  AE core very localized --> Had to find a compromise for model core charge 
+
   * Co-sp.in: Default version with (3s, 3p) semicore states in valence.
     Can be used for GW.
 
@@ -219,7 +221,8 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
   * As-d.in: Default version with d electrons in valence. Recommended for GS applications.
 
-  * As-spd-high.in: has good logders but it's hard
+
+  * As-spd-high has good logders but it's hard and model core is peaked
 
 ## Se
 
@@ -332,7 +335,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
     Recommended version for GW and high accuracy calculations.
 
 ## Sb
-  PROBLEMATIC? (PBESOl new?)
+  PROBLEMATIC? 
 
   * Sb.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
     Not recommended for GW.
@@ -390,10 +393,6 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
 ## Hf
   Needs a GW version fsp is probably unavoidable but log ders are not optimal.
-  the p version is the only one that does not have an explicit f projector, did we never try?
-
-  * Hf-p.in: Default version ???
-    Use dvloc0 8.0
 
   * Hf-sp.in:
     4f frozen in core. Has 2 f-projectors to improve transferability.
@@ -431,10 +430,12 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 ## Ir
   Needs GW version
 
-  * Ir-sp.in: Default version with. Has 2 f-projectors to improve transferability.
+  * Ir-sp.in: Default version with 4f frozen in core. Has 2 f-projectors to improve transferability.
     Recommended for GS applications.
+    removed the GW tag, 4f to close
 
 ## Pt
+
   Needs GW version
 
   * Pt-sp.in: Default version with 2 projectors for unbound f states
@@ -444,10 +445,13 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
     Experimental version!
 
 ## Au
+
   Needs GW version
 
   * Au-sp.in: Default version with  5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
     Recommended for GS applications.
+    We actually did GW calculations for gold and both SigmaX and SigmaC are seriously affected by unfreezing
+    the 4f electrons ~10% total effect. 
 
 ## Hg:
 
@@ -494,10 +498,10 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 ## Rn: 
   Needs GW version
 
-  * Rn.in: Default version for GS applications with (6s, 6p) in valence. 
+  * Rn.in: Version wtih (6s, 6p) in valence and 5d frozen
     Not recommended for GW. d is only 1.7H below ef
 
-  * Rn-d.in: (5d, 6s, 6p) in valence for high accuracy calculations. 
+  * Rn-d.in: Default version for GS applications with (5d, 6s, 6p) in valence 
     Not recommended for GW. 
 
 ## TODO
