@@ -1,0 +1,50 @@
+{
+"basename": "Ge-spd-high.psp8", 
+"ecuts": [
+48.0, 
+50.0, 
+52.0, 
+54.0, 
+56.0, 
+58.0, 
+60.0, 
+62.0, 
+64.0, 
+66.0, 
+68.0, 
+76.0, 
+78.0
+], 
+"md5": "54d3c5d44f15ac512e0b35cd53d93d29", 
+"ppgen_hints": {
+"high": {
+"ecut": 58.0, 
+"pawecutdg": 58.0
+}, 
+"low": {
+"ecut": 54.0, 
+"pawecutdg": 54.0
+}, 
+"normal": {
+"ecut": 56.0, 
+"pawecutdg": 56.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Ge", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_C_PW"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_X"
+}
+}
+}
