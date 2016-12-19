@@ -94,7 +94,7 @@ def dojo_figures(options):
                                              'high_b0_GPa', 'high_b1', 'high_v0', 'high_dfact_meV',
                                              'high_dfactprime_meV', 'high_ecut', 'high_gbrv_bcc_a0_rel_err',
                                              'high_gbrv_fcc_a0_rel_err', 'high_ecut',
-                                             #'low_phonon', 'high_phonon',
+                                             'low_phonon', 'normal_phonon', 'high_phonon',
                                              'low_ecut_hint', 'normal_ecut_hint', 'high_ecut_hint',
                                              'nv', 'valence', 'rcmin', 'rcmax')}
         for k, v in l.items():
@@ -423,7 +423,6 @@ def dojo_table(options):
     """Build and show a pandas table."""
     pseudos = options.pseudos
     data, errors = pseudos.get_dojo_dataframe()
-
     if errors:
         cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
         if options.verbose:
@@ -464,8 +463,11 @@ def dojo_table(options):
         return 0
 
     accuracies = ["normal", "high"]
-    #accuracies = ["low", "normal", "high"]
     keys = ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1", "ecut_deltafactor", "ecut_hint"]
+    if options.json: 
+        accuracies = ["low", "normal", "high"]
+        keys.append("phonon")
+    
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
 
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]
