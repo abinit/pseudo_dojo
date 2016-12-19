@@ -71,6 +71,7 @@ def djrepo_check(options):
     """Check djrepo files."""
     retcode = 0
     for path in options.paths:
+        #print(path)
         pseudo = dojopseudo_from_file(path)
         report = pseudo.dojo_report
         validation = report.get("validation", None)
