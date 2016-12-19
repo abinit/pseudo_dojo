@@ -3,16 +3,16 @@
 Otherwise explicitly noted, all pseudos have been generated using the neutral ground-state
 configuration as reference, non-linear core correction is always included except for
 pseudos in which the all-electron (AE) core is too localized (mentioned in the text) or pseudos with 1s in valence.
-Pseudos with the GW tag have good logarithmic derivatives up to
+Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
 ## H
 
-  * H.in: Uses one p-projector to improve transferability. Can be used for GW.
+  * H.in: Default version uses one p-projector to improve transferability. Can be used for GW.
     Using v_p as local part produces vloc(q) with high Fourier components at large q
 
 ## He
 
-  * He.in: Uses one p-projector to improve transferability. Can be used for GW.
+  * He.in: Default version uses one p-projector to improve transferability. Can be used for GW.
     Using v_p as local part produces vloc(q) with high Fourier components at large q
 
 ## Li
@@ -51,21 +51,22 @@ Pseudos with the GW tag have good logarithmic derivatives up to
     Can be used for GW.
 
 ## F: 
+  Needs GW version
 
-   * F.psp8: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
+  * F.in: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
 
 ## Ne
-
-These pseudos are without nlcc since modeling 1s core density 
-without spoiling convergence is not trivial
+  Needs GW version
+  These pseudos are without nlcc since modeling 1s core density 
+  without spoiling convergence is not trivial
 
   * Ne.in: Default version with (2s, 2p) in valence.
 
-  * Ne-high.in: Similar to Ne.in but with smaller core radii. Requires GW version.
+  * Ne-high.in: Similar to Ne.in but with smaller core radii.
 
 ## Na
 
-  * Na-sp.in: (2s, 2p) semicore in valence. No model core charge (AE core too localized).
+  * Na-sp.in: Default version with (2s, 2p) semicore in valence. No model core charge (AE core too localized).
     Can be used for GW.
 
 ## Mg
@@ -73,60 +74,65 @@ without spoiling convergence is not trivial
   * Mg.in: Low-cutoff low-accuracy version without semicore.
     Has ghost at +80 eV, not recommended for GW.
 
-  * Mg-sp.in: (2s, 2p) semicore states in valence. No model core charge (AE core too localized).
+  * Mg-sp.in: Default version with (2s, 2p) semicore states in valence. No model core charge (AE core too localized).
     Recommended for GS. Can be used for GW.
 
 ## Al
+  Needs GW version
 
-  * Al.in: Has 2 d-projectors to improve transferability.
-    Requires GW version.
+  * Al.in: Default version with 2 d-projectors to improve transferability.
     TODO: Oscillations in form factors. 
 
 ## Si
+  Needs GW version
 
-  * Si.in: Has 2 d-projectors to improve transferability.
-    Requires GW version
+  * Si.in: Default version with 2 d-projectors to improve transferability.
 
 ## P
+  Needs GW version
 
-  * P.in: Has 2 d-projectors to improve transferability.
-    Requires GW version
+  * P.in: Default version with 2 d-projectors to improve transferability.
     TODO: the model core charge and GBRV should be improved
 
 ## S
+  Needs GW version
 
-    S.in: Has 2 d-projectors to improve transferability.
+  * S.in: Default version with 2 d-projectors to improve transferability.
 
 ## Cl
+  Needs GW version
 
-    Cl.in: Has 2 d-projectors to improve transferability.
+  * Cl.in: Default version with 2 d-projectors to improve transferability.
 
 ## Ar
 
-  * Ar.in: (3s, 3p) in valence. Has 2 d-projectors to improve transferability.
+  * Ar.in: Default version with (3s, 3p) in valence. Has 2 d-projectors to improve transferability.
     Can be used for GW.
 
 ## K
 
-  * K-sp.in: (3s, 3p) semicore states in valence. Has 2 d-projectors to improve transferability.
+  * K-sp.in: Default version with (3s, 3p) semicore states in valence. Has 2 d-projectors to improve transferability.
     Can be used for GW.
 
 ## Ca
 
-  * Ca-sp.in: (3s, 3p) semicore states in valence. Has 2 d-projectors to improve transferability.
+  * Ca-sp.in: Default version with (3s, 3p) semicore states in valence. Has 2 d-projectors to improve transferability.
     Can be used for GW.
 
 ## Sc
 
-  * Sc-sp.in: (3s, 3p) semicore states in valence. Can be used for GW.
+  * Sc-sp.in: Default version with (3s, 3p) semicore states in valence. 
+    Can be used for GW.
 
 ## Ti
 
-  * Ti-sp.in: (3s, 3p) semicore states in valence. Can be used for GW.
+  * Ti-sp.in: Default version with (3s, 3p) semicore states in valence. 
+    Can be used for GW.
 
 ## V
 
-  * V-sp.in: (3s, 3p) semicore states in valence. Can be used for GW.
+  * V-sp.in: Default version with (3s, 3p) semicore states in valence. 
+    Can be used for GW.
 
 ## Cr
 
@@ -154,7 +160,7 @@ without spoiling convergence is not trivial
   * Fe-sp-high.in: Smaller core radii for high accuracy calculations e.g. in magnetic systems.
     Can be used for GW. Uses `ncon 3`, the standard is 4.
 
-## Co:
+## Co
 
   AE core very localized --> Had to find a compromise for model core charge 
 
@@ -165,6 +171,7 @@ without spoiling convergence is not trivial
     Can be used for GW.
 
 ## Ni
+  Needs GW version
 
   * Ni-sp.in: Default version with (3s, 3p) semicore states in valence.
 
@@ -180,17 +187,16 @@ without spoiling convergence is not trivial
 
 ## Zn
 
-  * Zn.in
+  * Zn.in: Default version ???
 
-  * Zn-sp.in
-    I've added the GW tag but mind ZnO.
+  * Zn-sp.in: Has the GW tag but mind ZnO.
 
 ## Ga
 
   * Ga-low.in: Low-accuracy version with 3d in core, (4s,4p) in valence.
     2 d-projectors for unbound states.
 
-  * Ga-d.in: 3d in valence, default for GS applications. NOT recommended for GW.
+  * Ga-d.in: Default version with 3d in valence, for GS applications. NOT recommended for GW.
 
   * Ga-spd-high.in: Include full (3s, 3p, 3d) shell in valence.
     Recommended version for GW and high accuracy calculations but it's hard
@@ -201,19 +207,20 @@ without spoiling convergence is not trivial
   * Ge-low.in: Low-accuracy version with 3d in core, (4s,4p) in valence.
     2 d-projectors for unbound states.
 
-  * Ge-d: 3d in valence, default for GS applications. NOT recommended for GW.
+  * Ge-d.in: Default version with 3d in valence, for GS applications. NOT recommended for GW.
 
   * Ge-spd-high.in: Include full (3s, 3p, 3d) shell in valence. Recommended version for GW
     and high accuracy calculations but it's hard
     TODO: model core-charge too localized
 
 ## As
+  Needs GW version
 
   * As.in:
     Version with d frozen.
 
-  * As-d: Version with d electrons in valence. Recommended for GS applications.
-    Require GW version
+  * As-d.in: Default version with d electrons in valence. Recommended for GS applications.
+
 
   * As-spd-high has good logders but it's hard and model core is peaked
 
@@ -221,86 +228,96 @@ without spoiling convergence is not trivial
 
   * Se.in: Not recommended for GW
 
-  * Se-d.in: Include 3d in valence. Not recommended for GW
+  * Se-d.in: Default version ??? with 3d in valence. Not recommended for GW
 
-  * Se-spd.in: Se-spd-high has good logders but it's hard)
+  * Se-spd-high.in: Se-spd-high has good logders but it's hard)
     TODO: model core-charge too localized
 
 ## Br
 
-  * Br.in: Default for GS applications. Not recommended for GW
+  * Br.in: Default version for GS applications. Not recommended for GW
 
   * Br-d.in: Include 3d in valence. Not recommended for GW
 
-  * Br-spd.in: Include full (3s, 3p, 3d) shell in valence.
+  * Br-spd-high.in: Include full (3s, 3p, 3d) shell in valence.
     Recommended version for GW and high accuracy calculations but it's hard
     TODO: model core-charge too localized
 
 ## Kr
+  Needs GW version
 
-  * Kr.in: needs GW version
+  * Kr.in: Default version, needs GW version
 
 ## Rb  
 
-    Rb-sp.in: use two d-projectors for unbound d
-    use dvloc0 2.5 to improve scattering properties at high energy
+  * Rb-sp.in: Default version with two d-projectors for unbound d
+    uses dvloc0 2.5 to improve scattering properties at high energy
     Can be used for GW.
 
 ## Sr
+  Needs GW version
 
-  * Sr-sp.in: uses two d-projectors for d (4d is bound in GGA-PBE)
-    Require GW version.
+  * Sr-sp.in: Default version with two d-projectors for d (4d is bound in GGA-PBE)
+    Requires GW version.
 
 ## Y
+  Needs GW version
 
-  * Y-sp.in: 4s-4p semicore in valence. Requires GW version?
+  * Y-sp.in: Default version with 4s-4p semicore in valence.
 
 ## Zr
 
-  * Zr-sp.in: 4s-4p semicore in valence. Can be used for GW.
+  * Zr-sp.in: Default version with 4s-4p semicore in valence. 
+    Can be used for GW.
 
 ## Nb
 
-  * Nb-sp.in: 4s-4p semicore in valence. Can be used for GW
+  * Nb-sp.in: Default version with 4s-4p semicore in valence. 
+    Can be used for GW
 
 ## Mo
 
-  * Mo-sp.in: 4s-4p semicore in valence. Can be used for GW
+  * Mo-sp.in: Default version with 4s-4p semicore in valence. 
+    Can be used for GW
 
 ## Tc
 
-  * Tc-sp.in: 4s-4p semicore in valence. Can be used for GW
+  * Tc-sp.in: Default version with 4s-4p semicore in valence. 
+    Can be used for GW
 
 ## Ru
 
-  * Ru-sp.in: 4s-4p semicore in valence. Can be used for GW
+  * Ru-sp.in: Default version with 4s-4p semicore in valence. 
+    Can be used for GW
 
 ## Rh
+  Needs GW version
 
-  * Rh-sp.in: 4s-4p semicore in valence.
+  * Rh-sp.in: Default version with 4s-4p semicore in valence.
 
 ## Pd
+  Needs GW version
 
-  * Pd-sp.in: 4s-4p semicore in valence. 
-    Require GW version
+  * Pd-sp.in: Default version with 4s-4p semicore in valence. 
     Previous attempt to generate Pd without semicore lead to ghost state at +1 eV  
 
 ## Ag
+  Needs GW version
 
-  * Ag-sp.in. 
+  * Ag-sp.in: Default version. 
     It seems difficult to get good logders without sp semicore
 
 ## Cd
 
-  * Cd.in: (4d, 5s) in valence. Has ghost at +73 Ha
+  * Cd.in: Default version with (4d, 5s) in valence. Has ghost at +73 Ha
 
-  * Cd-sp.in. (4s, 4p, 4d, 5s) in valence
+  * Cd-sp.in: (4s, 4p, 4d, 5s) in valence
     Recommended for GS. Can be used for GW.
 
 ## In
   PROBLEMATIC?
 
-  * In-d: Default version for GS application with 4d in valence.
+  * In-d.in: Default version for GS application with 4d in valence.
     Has GHOST_In-20eV. Not recommended for GW.
 
   * In-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
@@ -311,7 +328,7 @@ without spoiling convergence is not trivial
   * Sn.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
     Not recommended for GW.
 
-  * Sn-d.in: Include 4d in valence. Default version for GS applications. 
+  * Sn-d.in: Default version with 4d in valence. Default version for GS applications. 
     Not recommended for GW. Ghost at +60 eV
 
   * Sn-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
@@ -323,7 +340,7 @@ without spoiling convergence is not trivial
   * Sb.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
     Not recommended for GW.
 
-  * Sb-d.in: Include 4d in valence. Default version for GS applications. 
+  * Sb-d.in: Default version with 4d in valence. Default version for GS applications. 
     Not recommended for GW. Ghost at +20 eV,
 
   * Sb-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
@@ -331,7 +348,7 @@ without spoiling convergence is not trivial
 
 ## Te
 
-  * Te.in: (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
+  * Te.in: Default version with ??? (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
     Not recommended for GW.
 
   * Te-d.in: Include 4d in valence. 
@@ -343,29 +360,30 @@ without spoiling convergence is not trivial
 
 ## I
 
-  * I.in: OK for GS applications. Not recommended for GW
+  * I.in: Default version for GS applications. Not recommended for GW
 
   * I-d.in: Include 4d in valence. Not recommended for GW
 
-  * I-spd-high: Include full (4s, 4p, 4d) shell in valence.
+  * I-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
     Recommended version for GW and high accuracy calculations.
     TODO: Complete tests
 
 ## Xe
+  Needs GW version
 
-  * Xe.in: 5s-5p in valence. Two projectors for f to improve trasferability.
-    Require GW version
+  * Xe.in: Default version with 5s-5p in valence. Two projectors for f to improve trasferability.
 
 ## Cs
+  Needs GW version
 
-  * Cs-sp.in: (5s, 5p, 6s) in valence, 4f in core.
+  * Cs-sp.in: Default version with (5s, 5p, 6s) in valence, 4f in core.
     Use two f-projectors to improve transferability.
     Require GW version.
 
 ## Ba
+  Needs GW version
 
-  * Ba-sp.in:
-    5s, 5p in valence. Use ground-state as reference.
+  * Ba-sp.in:Default version with 5s, 5p in valence. Use ground-state as reference.
     TODO: Ba-sp with f?
 
   * Ba-sp-exc.in: 
@@ -374,7 +392,6 @@ without spoiling convergence is not trivial
     seems to have a ghost around 6 eV
 
 ## Hf
-
   Needs a GW version fsp is probably unavoidable but log ders are not optimal.
 
   * Hf-sp.in:
@@ -386,9 +403,7 @@ without spoiling convergence is not trivial
 ## Ta 
   Needs GW version
 
-  * Ta-sp.in:
-    4f frozen in core. Has 2 f-projectors to improve transferability.
-    Recommended for GS applications.
+  * Ta-sp.in: Default version with 4f frozen in core. Has 2 f-projectors to improve transferability.
     The missing f, only at ~1 H below the fermi level is probably too much to classify the sp as GW
 
   * Ta-fsp.in:
@@ -396,35 +411,34 @@ without spoiling convergence is not trivial
 ## W
   Needs GW version
 
-  * W-sp.in:
-    4f frozen in core. Has 2 f-projectors to improve transferability.
-    Recommended for GS applications.
+  * W-sp.in: Default version with  4f frozen in core. Has 2 f-projectors to improve transferability.
     The missing f, only at ~1 H below the fermi level is probably too much to classify the sp as GW
 
   * W-fsp.in:
 
 ## Re:
-
-  * Re-sp.in
-    4f frozen in core. Has 2 f-projectors to improve transferability.
-    Recommended for GS applications.
+  Needs GW version
+ 
+  * Re-sp.in: Default version with 4f frozen in core. Has 2 f-projectors to improve transferability.
     The missing f, only at ~1.5 H below the fermi level is probably too much to classify the sp as GW
 
 ## Os
+  Needs GW version
 
-  * Os-sp.in: needs GW version
-    4f frozen in core. Has 2 f-projectors to improve transferability.
-    Recommended for GS applications.
+  * Os-sp.in:  Default version with 4f frozen in core. Has 2 f-projectors to improve transferability.
 
 ## Ir
+  Needs GW version
 
-  * Ir-sp: 4f frozen in core. Has 2 f-projectors to improve transferability.
+  * Ir-sp.in: Default version with 4f frozen in core. Has 2 f-projectors to improve transferability.
     Recommended for GS applications.
     removed the GW tag, 4f to close
 
 ## Pt
 
-  * Pt-sp.in has with 2 projectors for unbound f states
+  Needs GW version
+
+  * Pt-sp.in: Default version with 2 projectors for unbound f states
     Recommended for GS applications.
 
   * Pt-fsp.in:
@@ -432,8 +446,9 @@ without spoiling convergence is not trivial
 
 ## Au
 
-  * Au-sp.in
-    5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
+  Needs GW version
+
+  * Au-sp.in: Default version with  5s, 5p, 5d, 6s in valence,  4f frozen in core. Has 1 f-projector for unbound 5f to improve transferability.
     Recommended for GS applications.
     We actually did GW calculations for gold and both SigmaX and SigmaC are seriously affected by unfreezing
     the 4f electrons ~10% total effect. 
@@ -443,7 +458,7 @@ without spoiling convergence is not trivial
   * Hg.in: (5d, 6s) in valence.
     Not recommended for GW. Ghost at +66 eV 
 
-  * Hg-sp.in: (5s, 5p, 5d, 6s) in valence. Add f projector
+  * Hg-sp.in: Default version with (5s, 5p, 5d, 6s) in valence. Add f projector
     Recommended for GS and GW.
 
 ## Tl:
@@ -481,6 +496,7 @@ without spoiling convergence is not trivial
     Recommended version for GW. $ 4f at 6.4H
 
 ## Rn: 
+  Needs GW version
 
   * Rn.in: Version wtih (6s, 6p) in valence and 5d frozen
     Not recommended for GW. d is only 1.7H below ef
@@ -499,6 +515,14 @@ without spoiling convergence is not trivial
 
     In-d is very sensitive, changing XC (GGa-->LDA) gives a ghost very close to 0.
     The first s projectors presents oscillations I don't see in the other pseudos.
+
+    add hints for 
+    As-spd-high
+    Se-spd-high
+    Br-spd-high
+    Te-spd-high
+    Pt-spd
+
 
 <!--
 GGA_X_PBE_SOL = 116 GGA_C_PBE_SOL = 133
