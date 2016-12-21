@@ -708,7 +708,11 @@ class OfficialDojoTable(DojoTable):
 
         meta = d["pseudos_metadata"]
 
-        top = os.path.dirname(json_path)
+        if dojo_info.get("dojo_dir", None):
+            from pseudo_dojo.pseudos import dojotable_absdir
+            top = dojotable_absdir(dojo_info.dojo_dir)
+        else:
+            top = os.path.dirname(json_path)
         paths, md5dict = [], {}
         for esymb, m in meta.items():
             if isinstance(m, (list, tuple)):

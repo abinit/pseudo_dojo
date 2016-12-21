@@ -11,6 +11,7 @@ import os
 DOJOTABLE_BASEDIRS = [
     "ONCVPSP-PBE-PDv0.2",
     "ONCVPSP-PBE-PDv0.3",
+    "ONCVPSP-PBEsol-PDv0.3",
     "ONCVPSP-PW-DEV",
 ]
 
