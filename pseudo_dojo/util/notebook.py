@@ -7,7 +7,7 @@ import io
 from monty.os.path import which
 
 
-def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=None):
+def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=None, hide_code=False):
     """
     Read a pseudopotential file and write an ipython notebook.
     By default, the notebook is created in the same directory
@@ -29,15 +29,41 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=No
     import nbformat
     nbf = nbformat.v4
     nb = nbf.new_notebook()
+    name = str(os.path.basename(pseudopath)).split('.')[0]
+    nb.cells.extend([nbf.new_markdown_cell("# PseudoDojo notebook for %s" % name),  # os.path.basename(pseudopath)),
+
+                     nbf.new_code_cell("""\
+    from __future__ import print_function, division, unicode_literals
+    %matplotlib notebook"""),
+
+                     ])
+
+    # Add cell to hide code.
+    if hide_code:
+        nb.cells.extend([
+        nbf.new_code_cell("""\
+from IPython.display import HTML
+HTML('''<script>
+code_show=true;
+function code_toggle() {
+ if (code_show){
+ $('div.input').hide();
+ } else {
+ $('div.input').show();
+ }
+ code_show = !code_show
+}
+$( document ).ready(code_toggle);
+</script>
+The raw code for this IPython notebook is by default hidden for easier reading.
+To toggle on/off the raw code, click <a href="javascript:code_toggle()">here</a>.''')
+"""),
+        ])
+
+    else:
+        nb.cells.extend([nbf.new_markdown_cell("## Construct the pseudo object and the DojoReport"), ])
 
     nb.cells.extend([
-        nbf.new_markdown_cell("# PseudoDojo notebook for %s" % os.path.basename(pseudopath)),
-        nbf.new_code_cell("""\
-from __future__ import print_function, division, unicode_literals
-%matplotlib notebook"""),
-
-        nbf.new_markdown_cell("## Construct the pseudo object and the DojoReport"),
-
         nbf.new_code_cell("""\
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 pseudo = dojopseudo_from_file('%s')
@@ -134,6 +160,7 @@ A comparison using the Delta-gauge between many codes and many pseudo tables can
 [Science 351, 1394-1395](http://science.sciencemag.org/content/351/6280/aad3000.full?ijkey=teUZMpwU49vhY&keytype=ref&siteid=sci)
 """),
         nbf.new_code_cell("""fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("dfact_meV", "dfactprime_meV"), show=False)"""),
+
     ])
 
     # Add validation widget.
@@ -191,7 +218,7 @@ The calculation is performed with the Wien2k relaxed parameters obtained from th
     return nbpath
 
 
-def make_open_notebook(pseudopath, with_validation=False, with_eos=True):
+def make_open_notebook(pseudopath, with_validation=False, with_eos=True, hide_code=False):
     """
     Generate a jupyter notebook from the pseudopotential path and
     open it in the browser. Return system exit code.
@@ -199,8 +226,9 @@ def make_open_notebook(pseudopath, with_validation=False, with_eos=True):
     Raise:
         RuntimeError if jupyther is not in $PATH
     """
+    print('test')
     path = write_notebook(pseudopath, with_validation=with_validation,
-                          with_eos=with_eos, tmpfile=True)
+                          with_eos=with_eos, tmpfile=True, hide_code=hide_code)
 
     if which("jupyter") is None:
         raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")

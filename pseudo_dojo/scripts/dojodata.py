@@ -359,15 +359,15 @@ def dojo_notebook(options):
     Generate an ipython notebook for each pseudopotential and open it in the browser.
     """
     from pseudo_dojo.util.notebook import make_open_notebook
-
     #if True:
     with daemon.DaemonContext(detach_process=True):
         retcode = 0
         with_validation = not options.no_validation
+        hide_code = options.hide_code
         for p in options.pseudos:
-            retcode += make_open_notebook(p.filepath, with_validation=with_validation, with_eos=True)
+            retcode += make_open_notebook(p.filepath, with_validation=with_validation, with_eos=True,
+                                          hide_code=hide_code)
             if retcode != 0: break
-
         return retcode
 
 
@@ -767,6 +767,8 @@ Usage example:
                              help="Don't start jupyter notebook with daemon process")
     p_notebook.add_argument('--no-validation', action='store_true', default=False,
                              help="Don't add the validation cell.")
+    p_notebook.add_argument('--hide-code', action='store_true', default=False,
+                            help="Add a cell that hided the raw code.")
 
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[copts_parser, plot_options_parser],
