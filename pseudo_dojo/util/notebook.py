@@ -149,7 +149,7 @@ A comparison using the Delta-gauge between many codes and many pseudo tables can
 # Absolute difference with respect to Wien2k results.
 fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-dfactprime_meV"), show=False)"""),
 
-        nbf.new_markdown_cell("## Deltaf-gauge EOS for the different cutoff energies"),
+        nbf.new_markdown_cell("## Delta-gauge EOS for the different cutoff energies"),
         nbf.new_code_cell("fig = report.plot_deltafactor_eos(show=False)"),
 
         nbf.new_markdown_cell("""## Convergence of the GBRV lattice parameters
