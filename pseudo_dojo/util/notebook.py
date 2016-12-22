@@ -117,13 +117,22 @@ Zoom in on the band plot to see if an actual ghost is there."""),
         nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False); fig"),
 
         nbf.new_markdown_cell("""## Convergence of the total energy wrt ecut
-The energies are obtained from the deltafactor calculations performed at the Wien2K equilibrium volume)"""),
+The energies are obtained from the deltafactor calculations performed at the Wien2K equilibrium volume"""),
         nbf.new_code_cell("""\
 fig = report.plot_etotal_vs_ecut(show=False)"""),
 
         nbf.new_code_cell("fig = report.plot_etotal_vs_ecut(inv_ecut=True, show=False)"),
 
-        nbf.new_markdown_cell("## Convergence of the deltafactor results"),
+        nbf.new_markdown_cell("""## Convergence of the Delta-Gauge results
+
+The Delta-gauge compares the Equation Of State (EOS) of the elemental solid of the element calculated using the pseudo
+potential to reference curves calculated using an all electron method. The Delta-gauge was introduced by K. Lejaeghere,
+V. Van Speybroeck, G. Van Oost, and&S. Cottenier in [Critical Reviews in Solid State and Materials Sciences 39, 1](http://www.tandfonline.com/doi/abs/10.1080/10408436.2013.772503)
+
+A comparison using the Delta-gauge between many codes and many pseudo tables can be found at the
+[center for molecular modeling](http://molmod.ugent.be/deltacodesdft) and in
+[Science 351, 1394-1395](http://science.sciencemag.org/content/351/6280/aad3000.full?ijkey=teUZMpwU49vhY&keytype=ref&siteid=sci)
+"""),
         nbf.new_code_cell("""fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("dfact_meV", "dfactprime_meV"), show=False)"""),
     ])
 
@@ -140,10 +149,17 @@ fig = report.plot_etotal_vs_ecut(show=False)"""),
 # Absolute difference with respect to Wien2k results.
 fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-dfactprime_meV"), show=False)"""),
 
-        nbf.new_markdown_cell("## Deltafactor EOS for the different cutoff energies"),
+        nbf.new_markdown_cell("## Deltaf-gauge EOS for the different cutoff energies"),
         nbf.new_code_cell("fig = report.plot_deltafactor_eos(show=False)"),
 
-        nbf.new_markdown_cell("## Convergence of the GBRV lattice parameters"),
+        nbf.new_markdown_cell("""## Convergence of the GBRV lattice parameters
+
+The GBRV tests compare the lattice parameter of a FCC and BCC lattice of the element to all electron reference
+data. The test was introduced by Kevin F. Garrity, Joseph W. Bennett, Karin M. Rabe, and David Vanderbilt in
+developing th GBRV pseudo potential table. More information can be found in [Computational Materials Science 81,
+446-452.](http://www.sciencedirect.com/science/article/pii/S0927025613005077)
+"""),
+
         nbf.new_code_cell("fig = report.plot_gbrv_convergence(show=False)"),
 
         nbf.new_markdown_cell("""## Convergence of the phonon frequencies at $\Gamma$
