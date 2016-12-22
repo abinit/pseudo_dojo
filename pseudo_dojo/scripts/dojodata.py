@@ -363,8 +363,9 @@ def dojo_notebook(options):
     #if True:
     with daemon.DaemonContext(detach_process=True):
         retcode = 0
+        with_validation = not options.no_validation
         for p in options.pseudos:
-            retcode += make_open_notebook(p.filepath, with_validation=True, with_eos=True)
+            retcode += make_open_notebook(p.filepath, with_validation=with_validation, with_eos=True)
             if retcode != 0: break
 
         return retcode
@@ -764,6 +765,8 @@ Usage example:
                                        help=dojo_notebook.__doc__)
     p_notebook.add_argument('--no-daemon', action='store_true', default=False,
                              help="Don't start jupyter notebook with daemon process")
+    p_notebook.add_argument('--no-validation', action='store_true', default=False,
+                             help="Don't add the validation cell.")
 
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[copts_parser, plot_options_parser],
