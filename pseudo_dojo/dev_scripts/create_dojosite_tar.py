@@ -5,7 +5,7 @@ Script to create a tar with the downloadable files and html for the pseudo-dojo.
 create the directory structure
 
 element
-    EX_version_type
+    EX_version
     ..
     ..
 ..
