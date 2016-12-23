@@ -97,11 +97,13 @@ def main():
         for fname in fileList:
             if fname.split('.')[-1] in ['html', 'psp8', 'upf', 'djrepo']:
                 name = fname.split('.')[0]
-                if prev_name is not None and name != prev_name:
-                    HTML_string += "<BR>\n"
+                if name != prev_name:
+                    if prev_name is not None:
+                        HTML_string += "<BR>\n"
+                    HTML_string += "%s: " % name
                     print(prev_name, name)
                 prev_name = name
-                HTML_string += " %s " % fname  # todo create the links
+                HTML_string += "<A href='%s'>%s</A> " % (os.path.join(pseudo,fname), fname.split('.')[-1])
         HTML_string += "\n"
 
     return
