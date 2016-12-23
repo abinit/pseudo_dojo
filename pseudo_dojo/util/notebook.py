@@ -7,7 +7,7 @@ import io
 from monty.os.path import which
 
 
-def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=None):
+def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=None, hide_code=False):
     """
     Read a pseudopotential file and write an ipython notebook.
     By default, the notebook is created in the same directory
@@ -29,15 +29,41 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=No
     import nbformat
     nbf = nbformat.v4
     nb = nbf.new_notebook()
+    name = str(os.path.basename(pseudopath)).split('.')[0]
+    nb.cells.extend([nbf.new_markdown_cell("# PseudoDojo notebook for %s" % name),  # os.path.basename(pseudopath)),
+
+                     nbf.new_code_cell("""\
+    from __future__ import print_function, division, unicode_literals
+    %matplotlib notebook"""),
+
+                     ])
+
+    # Add cell to hide code.
+    if hide_code:
+        nb.cells.extend([
+        nbf.new_code_cell("""\
+from IPython.display import HTML
+HTML('''<script>
+code_show=true;
+function code_toggle() {
+ if (code_show){
+ $('div.input').hide();
+ } else {
+ $('div.input').show();
+ }
+ code_show = !code_show
+}
+$( document ).ready(code_toggle);
+</script>
+The raw code for this IPython notebook is by default hidden for easier reading.
+To toggle on/off the raw code, click <a href="javascript:code_toggle()">here</a>.''')
+"""),
+        ])
+
+    else:
+        nb.cells.extend([nbf.new_markdown_cell("## Construct the pseudo object and the DojoReport"), ])
 
     nb.cells.extend([
-        nbf.new_markdown_cell("# PseudoDojo notebook for %s" % os.path.basename(pseudopath)),
-        nbf.new_code_cell("""\
-from __future__ import print_function, division, unicode_literals
-%matplotlib notebook"""),
-
-        nbf.new_markdown_cell("## Construct the pseudo object and the DojoReport"),
-
         nbf.new_code_cell("""\
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 pseudo = dojopseudo_from_file('%s')
@@ -117,14 +143,24 @@ Zoom in on the band plot to see if an actual ghost is there."""),
         nbf.new_code_cell("fig = report.plot_ebands(with_soc=False, show=False); fig"),
 
         nbf.new_markdown_cell("""## Convergence of the total energy wrt ecut
-The energies are obtained from the deltafactor calculations performed at the Wien2K equilibrium volume)"""),
+The energies are obtained from the deltafactor calculations performed at the Wien2K equilibrium volume"""),
         nbf.new_code_cell("""\
 fig = report.plot_etotal_vs_ecut(show=False)"""),
 
         nbf.new_code_cell("fig = report.plot_etotal_vs_ecut(inv_ecut=True, show=False)"),
 
-        nbf.new_markdown_cell("## Convergence of the deltafactor results"),
+        nbf.new_markdown_cell("""## Convergence of the Delta-Gauge results
+
+The Delta-gauge compares the Equation Of State (EOS) of the elemental solid of the element calculated using the pseudo
+potential to reference curves calculated using an all electron method. The Delta-gauge was introduced by K. Lejaeghere,
+V. Van Speybroeck, G. Van Oost, and&S. Cottenier in [Critical Reviews in Solid State and Materials Sciences 39, 1](http://www.tandfonline.com/doi/abs/10.1080/10408436.2013.772503)
+
+A comparison using the Delta-gauge between many codes and many pseudo tables can be found at the
+[center for molecular modeling](http://molmod.ugent.be/deltacodesdft) and in
+[Science 351, 1394-1395](http://science.sciencemag.org/content/351/6280/aad3000.full?ijkey=teUZMpwU49vhY&keytype=ref&siteid=sci)
+"""),
         nbf.new_code_cell("""fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("dfact_meV", "dfactprime_meV"), show=False)"""),
+
     ])
 
     # Add validation widget.
@@ -140,10 +176,17 @@ fig = report.plot_etotal_vs_ecut(show=False)"""),
 # Absolute difference with respect to Wien2k results.
 fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-dfactprime_meV"), show=False)"""),
 
-        nbf.new_markdown_cell("## Deltafactor EOS for the different cutoff energies"),
+        nbf.new_markdown_cell("## Delta-gauge EOS for the different cutoff energies"),
         nbf.new_code_cell("fig = report.plot_deltafactor_eos(show=False)"),
 
-        nbf.new_markdown_cell("## Convergence of the GBRV lattice parameters"),
+        nbf.new_markdown_cell("""## Convergence of the GBRV lattice parameters
+
+The GBRV tests compare the lattice parameter of a FCC and BCC lattice of the element to all electron reference
+data. The test was introduced by Kevin F. Garrity, Joseph W. Bennett, Karin M. Rabe, and David Vanderbilt in
+developing th GBRV pseudo potential table. More information can be found in [Computational Materials Science 81,
+446-452.](http://www.sciencedirect.com/science/article/pii/S0927025613005077)
+"""),
+
         nbf.new_code_cell("fig = report.plot_gbrv_convergence(show=False)"),
 
         nbf.new_markdown_cell("""## Convergence of the phonon frequencies at $\Gamma$
@@ -175,7 +218,7 @@ The calculation is performed with the Wien2k relaxed parameters obtained from th
     return nbpath
 
 
-def make_open_notebook(pseudopath, with_validation=False, with_eos=True):
+def make_open_notebook(pseudopath, with_validation=False, with_eos=True, hide_code=False):
     """
     Generate a jupyter notebook from the pseudopotential path and
     open it in the browser. Return system exit code.
@@ -183,8 +226,9 @@ def make_open_notebook(pseudopath, with_validation=False, with_eos=True):
     Raise:
         RuntimeError if jupyther is not in $PATH
     """
+    print('test')
     path = write_notebook(pseudopath, with_validation=with_validation,
-                          with_eos=with_eos, tmpfile=True)
+                          with_eos=with_eos, tmpfile=True, hide_code=hide_code)
 
     if which("jupyter") is None:
         raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
