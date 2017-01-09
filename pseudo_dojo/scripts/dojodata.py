@@ -364,9 +364,11 @@ def dojo_notebook(options):
         retcode = 0
         with_validation = not options.no_validation
         hide_code = options.hide_code
+        if options.no_tmp:
+            tmpfile = None
         for p in options.pseudos:
             retcode += make_open_notebook(p.filepath, with_validation=with_validation, with_eos=True,
-                                          hide_code=hide_code)
+                                          hide_code=hide_code, tmpfile=tmpfile)
             if retcode != 0: break
         return retcode
 
@@ -769,6 +771,8 @@ Usage example:
                              help="Don't add the validation cell.")
     p_notebook.add_argument('--hide-code', action='store_true', default=False,
                             help="Add a cell that hided the raw code.")
+    p_notebook.add_argument('--no-tmp', action='store_true', default=False,
+                            help="Don't put the notebook in the tmp place.")
 
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[copts_parser, plot_options_parser],
