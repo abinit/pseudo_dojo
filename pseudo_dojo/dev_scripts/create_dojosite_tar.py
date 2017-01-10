@@ -36,8 +36,10 @@ from shutil import copyfile
 from pseudo_dojo.util.notebook import write_notebook_html
 
 #PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.2', 'ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3', 'ONCVPSP-PW-PDv0.3']
-#PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3']
-PSEUDOS_TO_INCLUDE = ['TEST', 'TEST2']
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3']
+
+#PSEUDOS_TO_INCLUDE = ['TEST', 'TEST2']
+
 LINK_NAMES = {'djrepo': 'Dojo Report (json)', 'html': 'Dojo Report HTML', 'psp8': 'pseudo in psp8 format',
               'upf': 'pseudo in upf format'}
 

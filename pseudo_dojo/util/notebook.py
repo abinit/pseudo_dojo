@@ -267,14 +267,22 @@ def make_open_notebook(pseudopath, with_validation=False, with_eos=True, hide_co
     return os.system("jupyter notebook %s" % path)
 
 
-def write_notebook_html(pseudopath, with_validation=False, with_eos=True, hide_code=True, tmpfile=None):
+def write_notebook_html(pseudopath, with_validation=False, with_eos=True, hide_code=True, tmpfile=None, mock=False):
     """
      Generate a jupyter notebook from the pseudopotential path and
      write the static html version of the executed notebook. Return system exit code.
 
      Raise:
          RuntimeError if nbconvert is not in $PATH
+     mock is for testing purposes, creating actual html takes much time
      """
+
+    if mock:
+        html_path = pseudopath.split('.')[0] + '.html'
+        with open(html_path, 'w') as f:
+            f.write('mock file')
+        return
+
     path = write_notebook(pseudopath, with_validation=with_validation,
                           with_eos=with_eos, tmpfile=tmpfile, hide_code=hide_code, inline=True)
 
