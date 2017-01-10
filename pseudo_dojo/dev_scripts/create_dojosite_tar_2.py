@@ -10,9 +10,10 @@ import os
 from shutil import copyfile
 from pseudo_dojo.util.notebook import write_notebook_html
 #from pseudo_dojo.util.convert import make_upf
+from pseudo_dojo.ppcodes.ppgen import OncvGenerator
 
 
-def make_upf(pseudo_path, mock=False):
+def make_upf(pseudo_path, calctype, mock=False):
     """
     converter takes a path to a psp8 file, assumes the same .in file is present changes the .in file to upf,
     runs oncvpsp to generate hte upf file and finally changes the .in file back
@@ -34,6 +35,11 @@ def make_upf(pseudo_path, mock=False):
         return upf_path
 
     # the actual upf creation
+
+    generator = OncvGenerator.from_file(path=in_path, calc_type=calctype)
+    generator._input_str.replace('psp8', 'upf')
+    generator.start()
+    generator.wait()
 
     return upf_path
 
@@ -90,7 +96,8 @@ def main():
                     write_notebook_html(os.path.join(website, name + "_psp8", os.path.split(p)[1]), mock=mock)
                     os.rename(os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', 'html')),
                               os.path.join(website, name + "_HTML", os.path.split(p)[1].replace('psp8', 'html')))
-                    make_upf(os.path.join(website, name + "_PSP8", os.path.split(p)[1]), mock=True)
+                    make_upf(os.path.join(website, name + "_PSP8", os.path.split(p)[1]), mock=mock,
+                             calctype="scalar-relativistic")
                     os.rename(os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', 'upf')),
                               os.path.join(website, name + "_UPF", os.path.split(p)[1].replace('psp8', 'upf')))
                     os.rename(os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', 'djrepo')),
