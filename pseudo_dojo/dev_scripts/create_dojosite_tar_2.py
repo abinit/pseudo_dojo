@@ -112,8 +112,8 @@ def main():
             for fmt in ['PSP8', 'UPF', 'HTML', 'DJREPO']:
                 os.makedirs(os.path.join(website, '%s_%s' % (name, fmt)))
             for pseudo in pseudos:
+                p = pseudo.strip()
                 try:
-                    p = pseudo.strip()
                     for extension in ['in', 'psp8', 'djrepo', 'out']:
                         copyfile(os.path.join(set, p).replace('psp8', extension),
                                  os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', extension)))
