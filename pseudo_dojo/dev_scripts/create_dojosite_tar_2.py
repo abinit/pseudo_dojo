@@ -1,31 +1,6 @@
 #!/usr/bin/env python
 """
 Script to create a tar with the downloadable files and html for the pseudo-dojo.org website.
-
-create the directory structure
-
-element
-    EX_version
-    ..
-    ..
-..
-    ..
-    ..
-
-
-each of these contains
-    the static html version of the notebook.
-    the psp8 and upf version of the pseudo
-    index.html
-
-index.html contains a list of all EX_version_type and for each entry a link to open the static html notebook and
-links to download the psp8 and upf files.
-
-the file ~/.jupyter/jupyter_notebook_config.py makes that all notebooks on save also are stored as html
-http://protips.maxmasnick.com/ipython-notebooks-automatically-export-py-and-html
-
-ipython nbconvert --to html
-
 """
 
 from __future__ import unicode_literals, division, print_function, absolute_import
@@ -42,7 +17,7 @@ def make_upf(pseudo_path, mock=False):
     converter takes a path to a psp8 file, assumes the same .in file is present changes the .in file to upf,
     runs oncvpsp to generate hte upf file and finally changes the .in file back
 
-    ?? polimorfic? if a .in file is provided it works with the .in ?
+    ?? polymorfic? if a .in file is provided it works with the .in ?
 
     Args:
         pseudo_path: path to a psp8 file
