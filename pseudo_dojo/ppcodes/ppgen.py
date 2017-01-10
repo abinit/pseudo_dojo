@@ -353,6 +353,7 @@ class OncvGenerator(PseudoGenerator):
         if self.executable is None:
             msg = "Cannot find executable for oncvpsp is PATH. Use `export PATH=dir_with_executable:$PATH`"
             raise RuntimeError(msg)
+        self.format = 'psp8'
 
     def check_status(self):
         """Check the status of the run, set and return self.status attribute."""
@@ -394,20 +395,22 @@ class OncvGenerator(PseudoGenerator):
             self._plotter = parser.make_plotter()
 
             # Write Abinit pseudopotential.
-            filepath = os.path.join(self.workdir, parser.atsym + ".psp8")
+            filepath = os.path.join(self.workdir, parser.atsym + "." + self.format)
+            self.filepath = filepath
             #if os.path.exists(filepath):
             #    raise RuntimeError("File %s already exists" % filepath)
 
-            # Initialize self.pseudo from file.
-            with open(filepath, "wt") as fh:
-                fh.write(parser.get_pseudo_str())
+            if self.format == 'psp8':
+                # Initialize self.pseudo from file.
+                with open(filepath, "wt") as fh:
+                    fh.write(parser.get_pseudo_str())
 
-            self._pseudo = p = Pseudo.from_file(filepath)
+                self._pseudo = p = Pseudo.from_file(filepath)
 
-            # Add md5 checksum to dojo_report
-            if p.has_dojo_report:
-                p.dojo_report["md5"] = p.compute_md5()
-                p.write_dojo_report(report=p.dojo_report)
+                # Add md5 checksum to dojo_report
+                if p.has_dojo_report:
+                    p.dojo_report["md5"] = p.compute_md5()
+                    p.write_dojo_report(report=p.dojo_report)
 
         if parser.errors:
             logger.warning("setting status to S_ERROR")

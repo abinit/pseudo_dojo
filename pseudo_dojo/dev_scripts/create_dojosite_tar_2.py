@@ -35,11 +35,15 @@ def make_upf(pseudo_path, calctype, mock=False):
         return upf_path
 
     # the actual upf creation
-
     generator = OncvGenerator.from_file(path=in_path, calc_type=calctype)
-    generator._input_str.replace('psp8', 'upf')
+    generator._input_str = generator._input_str.replace('psp8', 'upf')
+    generator.format = 'upf'
     generator.start()
     generator.wait()
+    parser = generator.OutputParser(generator.stdout_path)
+    parser.scan()
+    with open(upf_path, 'w') as f:
+        f.write(parser.get_pseudo_str())
 
     return upf_path
 
@@ -78,6 +82,7 @@ def main():
 
     #  walk the current tree, create the directory structure and copy the .in, .psp8, and .djrepo files
     print('copying selected pseudos:\n%s' % PSEUDOS_TO_INCLUDE)
+    a = 0
 
     for pseudo_set in PSEUDOS_TO_INCLUDE:
         xc = pseudo_set.split('-')[1]
@@ -102,10 +107,13 @@ def main():
                               os.path.join(website, name + "_UPF", os.path.split(p)[1].replace('psp8', 'upf')))
                     os.rename(os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', 'djrepo')),
                               os.path.join(website, name + "_DJREPO", os.path.split(p)[1].replace('psp8', 'djrepo')))
+                    print('%s %s %s %s ' % ('mocked' if mock else 'done', xc, acc, p))
                 except IOError:
                     print('missing %s %s ' % (pseudo_set, p))
                     pass
-                mock = True
+                a += 1
+                if a > 10:
+                    mock = True
     return
 
 
