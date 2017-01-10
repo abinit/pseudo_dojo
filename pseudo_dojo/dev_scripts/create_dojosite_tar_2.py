@@ -38,13 +38,8 @@ def make_upf(pseudo_path, mock=False):
     return upf_path
 
 
-#PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.2', 'ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3', 'ONCVPSP-PW-PDv0.3']
 PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
 
-#PSEUDOS_TO_INCLUDE = ['TEST', 'TEST2']
-
-LINK_NAMES = {'djrepo': 'Dojo Report (json)', 'html': 'Dojo Report HTML', 'psp8': 'pseudo in psp8 format',
-              'upf': 'pseudo in upf format'}
 
 ACCURACIES = ['standard', 'high']
 
@@ -78,10 +73,10 @@ def main():
     #  walk the current tree, create the directory structure and copy the .in, .psp8, and .djrepo files
     print('copying selected pseudos:\n%s' % PSEUDOS_TO_INCLUDE)
 
-    for set in PSEUDOS_TO_INCLUDE:
-        xc = set.split('-')[1]
+    for pseudo_set in PSEUDOS_TO_INCLUDE:
+        xc = pseudo_set.split('-')[1]
         for acc in ACCURACIES:
-            with open(os.path.join(set, acc)) as f:
+            with open(os.path.join(pseudo_set, acc)) as f:
                 pseudos = f.readlines()
             name = "%s_%s_SR" % (xc, acc[0].capitalize())
             for fmt in ['PSP8', 'UPF', 'HTML', 'DJREPO']:
