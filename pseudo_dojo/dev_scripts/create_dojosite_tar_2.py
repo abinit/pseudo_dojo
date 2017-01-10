@@ -91,7 +91,7 @@ def main():
                 p = pseudo.strip()
                 try:
                     for extension in ['in', 'psp8', 'djrepo', 'out']:
-                        copyfile(os.path.join(set, p).replace('psp8', extension),
+                        copyfile(os.path.join(pseudo_set, p).replace('psp8', extension),
                                  os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', extension)))
                     write_notebook_html(os.path.join(website, name + "_psp8", os.path.split(p)[1]), mock=mock)
                     os.rename(os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', 'html')),
@@ -103,7 +103,7 @@ def main():
                     os.rename(os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', 'djrepo')),
                               os.path.join(website, name + "_DJREPO", os.path.split(p)[1].replace('psp8', 'djrepo')))
                 except IOError:
-                    print('missing %s %s ' % (set, p))
+                    print('missing %s %s ' % (pseudo_set, p))
                     pass
                 mock = True
     return
