@@ -9,6 +9,7 @@ import sys
 import os
 from shutil import copyfile
 from pseudo_dojo.util.notebook import write_notebook_html
+from pseudo_dojo.core.dojoreport import DojoReport
 #from pseudo_dojo.util.convert import make_upf
 from pseudo_dojo.ppcodes.ppgen import OncvGenerator
 
@@ -32,7 +33,7 @@ def make_upf(pseudo_path, calctype, mock=False):
     if mock:
         with open(upf_path, 'w') as f:
             f.write('upf mock file')
-        return upf_path
+        return 'NA'
 
     # the actual upf creation
     generator = OncvGenerator.from_file(path=in_path, calc_type=calctype)
@@ -42,12 +43,14 @@ def make_upf(pseudo_path, calctype, mock=False):
     generator.wait()
     parser = generator.OutputParser(generator.stdout_path)
     parser.scan()
+    nv = parser.nv
     with open(upf_path, 'w') as f:
         f.write(parser.get_pseudo_str())
 
-    return upf_path
+    return nv
 
 
+#PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
 PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
 
 
@@ -85,35 +88,58 @@ def main():
     a = 0
 
     for pseudo_set in PSEUDOS_TO_INCLUDE:
-        xc = pseudo_set.split('-')[1]
+        xc = pseudo_set.split('-')[1].lower()
         for acc in ACCURACIES:
             with open(os.path.join(pseudo_set, acc)) as f:
                 pseudos = f.readlines()
-            name = "%s_%s_SR" % (xc, acc[0].capitalize())
-            for fmt in ['PSP8', 'UPF', 'HTML', 'DJREPO']:
-                os.makedirs(os.path.join(website, '%s_%s' % (name, fmt)))
+            name = "%s_%s_sr" % (xc, acc[0])
+            #for fmt in ['psp8', 'upf', 'html', 'djrepo']:
+            #    os.makedirs(os.path.join(website, '%s_%s' % (name, fmt)))
+            os.makedirs(os.path.join(website, name))
             for pseudo in pseudos:
                 p = pseudo.strip()
                 try:
                     for extension in ['in', 'psp8', 'djrepo', 'out']:
                         copyfile(os.path.join(pseudo_set, p).replace('psp8', extension),
-                                 os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', extension)))
-                    write_notebook_html(os.path.join(website, name + "_psp8", os.path.split(p)[1]), mock=mock)
-                    os.rename(os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', 'html')),
-                              os.path.join(website, name + "_HTML", os.path.split(p)[1].replace('psp8', 'html')))
-                    make_upf(os.path.join(website, name + "_PSP8", os.path.split(p)[1]), mock=mock,
-                             calctype="scalar-relativistic")
-                    os.rename(os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', 'upf')),
-                              os.path.join(website, name + "_UPF", os.path.split(p)[1].replace('psp8', 'upf')))
-                    os.rename(os.path.join(website, name + "_PSP8", os.path.split(p)[1].replace('psp8', 'djrepo')),
-                              os.path.join(website, name + "_DJREPO", os.path.split(p)[1].replace('psp8', 'djrepo')))
+                                 os.path.join(website, name, os.path.split(p)[1].replace('psp8', extension)))
+                    try:
+                        write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), mock=mock)
+                    except:
+                        pass
+                    try:
+                        nv = make_upf(os.path.join(website, name, os.path.split(p)[1]), mock=mock,
+                                      calctype="scalar-relativistic")
+                    except:
+                        nv = 'NA'
+                    p_name = os.path.split(p)[1]
+                    el = p_name.split('-')[0].split('.')[0]
+                    for extension in ['psp8', 'upf', 'djrepo', 'html']:
+                        os.rename(os.path.join(website, name, p_name.replace('psp8', extension)),
+                                  os.path.join(website, name, el + '.' + extension))
+                    os.remove(os.path.join(website, name, os.path.split(p)[1].replace('psp8', 'out')))
                     print('%s %s %s %s ' % ('mocked' if mock else 'done', xc, acc, p))
-                except IOError:
+                    dojoreport = DojoReport.from_file(os.path.join(website, name, el + '.djrepo'))
+                    try:
+                        normal_hint = dojoreport["hints"]["normal"]["ecut"]
+                    except KeyError:
+                        normal_hint = 'NA'
+                    try:
+                        delta_ecuts = dojoreport["deltafactor"].keys()
+                        delta_ecut = delta_ecuts[-1]
+                        delta = dojoreport["deltafactor"][delta_ecut]["dfact_meV"]
+                        delta_s = "%1.1f" % round(delta, 1)
+                    except KeyError:
+                        delta_s = 'NA'
+                    print("%s %s %s" % (nv, normal_hint, delta_s))
+                    with open(os.path.join(website, name, el + '.txt'), 'w') as f:
+                        f.write("%s %s %s" % (nv, normal_hint, delta_s))
+                except:  #(IOError, ValueError, CellExecutionError):
                     print('missing %s %s ' % (pseudo_set, p))
                     pass
-                a += 1
-                if a > 10:
-                    mock = True
+
+                #a += 1
+                #if a > 0:
+                #    mock = True
     return
 
 
