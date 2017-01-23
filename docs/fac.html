@@ -29,6 +29,12 @@ We provide PBE, PBEsol and one LDA set of pseudo potentials.
     We could reuse most of out PBE inputs to generate the PBEsol potentials.
     Using <a href="http://octopus-code.org/wiki/Libxc_functionals">LibXC</a>, which is linked to ONCVPSP, almost all functionals can be used.
 
+<h2>All the ONCVPSP potentials are wiht non-linear core correction I need some without.</h2>
+We usually observe better convergenc with so indeed all are generated with nlcc.
+I yo really need one without take the input from the HTML page on the pseudo (select format : html and click the element).
+Install <a href="http://www.mat-simresearch.com/">ONCVPSP</a>.
+Turn icmod to 0 in the input and generate the pseudo.
+
 <h2>What about hybrids and meta functionals?</h2>
 These are currently under development.
 
