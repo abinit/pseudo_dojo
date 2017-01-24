@@ -12,6 +12,7 @@ from pseudo_dojo.util.notebook import write_notebook_html
 from pseudo_dojo.core.dojoreport import DojoReport
 #from pseudo_dojo.util.convert import make_upf
 from pseudo_dojo.ppcodes.ppgen import OncvGenerator
+from nbconvert.preprocessors.execute import CellExecutionError
 
 
 def make_upf(pseudo_path, calctype, mock=False):
@@ -25,6 +26,8 @@ def make_upf(pseudo_path, calctype, mock=False):
         pseudo_path: path to a psp8 file
 
     Returns: the path to the generated upf
+
+    001012: ' SLA  PW   NOGX NOGC '
 
     """
     in_path = pseudo_path.split('.')[0] + '.in'
@@ -52,6 +55,7 @@ def make_upf(pseudo_path, calctype, mock=False):
 
 #PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
 PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.3']
 
 
 ACCURACIES = ['standard', 'high']
@@ -109,7 +113,7 @@ def main():
                     try:
                         nv = make_upf(os.path.join(website, name, os.path.split(p)[1]), mock=mock,
                                       calctype="scalar-relativistic")
-                    except:
+                    except None:
                         nv = 'NA'
                     p_name = os.path.split(p)[1]
                     el = p_name.split('-')[0].split('.')[0]
@@ -133,7 +137,7 @@ def main():
                     print("%s %s %s" % (nv, normal_hint, delta_s))
                     with open(os.path.join(website, name, el + '.txt'), 'w') as f:
                         f.write("%s %s %s" % (nv, normal_hint, delta_s))
-                except:  #(IOError, ValueError, CellExecutionError):
+                except (IOError, ValueError, CellExecutionError):
                     print('missing %s %s ' % (pseudo_set, p))
                     pass
 
