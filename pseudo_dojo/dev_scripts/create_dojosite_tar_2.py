@@ -137,7 +137,7 @@ def main():
                     print("%s %s %s" % (nv, normal_hint, delta_s))
                     with open(os.path.join(website, name, el + '.txt'), 'w') as f:
                         f.write("%s %s %s" % (nv, normal_hint, delta_s))
-                except (IOError, ValueError, CellExecutionError):
+                except (IOError, ValueError, CellExecutionError, OSError):
                     print('missing %s %s ' % (pseudo_set, p))
                     pass
 
