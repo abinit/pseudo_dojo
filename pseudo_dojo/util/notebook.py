@@ -7,7 +7,7 @@ import io
 from monty.os.path import which
 
 
-def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=None, hide_code=False):
+def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=None, hide_code=False, inline=False):
     """
     Read a pseudopotential file and write an ipython notebook.
     By default, the notebook is created in the same directory
@@ -19,6 +19,9 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=No
         with_validation: If True an ipython widget is added at the end of the notebook
           to validate the pseudopotential.
         with_eos: True if EOS plots are wanted.
+        tmpfile: None the ipynb is written at the present location else at a temp location
+        inline: if true matplotlib magic is set inline else notebook. While auto generating the notebooks for the
+        web site this is needed to actually show hte figures
 
     Returns:
         The path to the ipython notebook.
@@ -30,18 +33,27 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=No
     nbf = nbformat.v4
     nb = nbf.new_notebook()
     name = str(os.path.basename(pseudopath)).split('.')[0]
-    nb.cells.extend([nbf.new_markdown_cell("# PseudoDojo notebook for %s" % name),  # os.path.basename(pseudopath)),
 
-                     nbf.new_code_cell("""\
-    from __future__ import print_function, division, unicode_literals
-    %matplotlib notebook"""),
+    if inline:
+        nb.cells.extend([nbf.new_markdown_cell("# PseudoDojo notebook for %s" % name),  # os.path.basename(pseudopath)),
 
-                     ])
+                         nbf.new_code_cell("""\
+from __future__ import print_function, division, unicode_literals
+%matplotlib inline"""),
+
+                         ])
+    else:
+        nb.cells.extend([nbf.new_markdown_cell("# PseudoDojo notebook for %s" % name),  # os.path.basename(pseudopath)),
+
+                         nbf.new_code_cell("""\
+from __future__ import print_function, division, unicode_literals
+%matplotlib notebook"""),
+                         ])
 
     # Add cell to hide code.
     if hide_code:
         nb.cells.extend([
-        nbf.new_code_cell("""\
+            nbf.new_code_cell("""\
 from IPython.display import HTML
 HTML('''<script>
 code_show=true;
@@ -56,8 +68,22 @@ function code_toggle() {
 $( document ).ready(code_toggle);
 </script>
 The raw code for this IPython notebook is by default hidden for easier reading.
-To toggle on/off the raw code, click <a href="javascript:code_toggle()">here</a>.''')
-"""),
+To toggle on/off the raw code, click <a href="javascript:code_toggle()">here</a>.''')"""),
+
+#            nbf.new_code_cell("""\
+#HTML('''<script>
+#    require(
+#        ['base/js/namespace', 'jquery'],
+#            function(jupyter, $) {
+#            $(jupyter.events).on("kernel_ready.Kernel", function(){
+#                console.log("Auto-running all cells-below...");
+#                jupyter.actions.call('jupyter-notebook:run-all-cells-below');
+#                jupyter.actions.call('jupyter-notebook:save-notebook');
+#            });
+#        }
+#    );
+#</script>''')"""),
+
         ])
 
     else:
@@ -122,19 +148,25 @@ In this case, `fcfact` mainly determines the height of the model core charge whi
 
         nbf.new_markdown_cell("## Local potential and $l$-dependent potentials"),
         nbf.new_code_cell("fig = plotter.plot_potentials(show=False)"),
+        ])
+
+    if with_validation:
 
         #nbf.new_markdown_cell("## 1-st order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
         #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=1, show=False)"""),
         #nbf.new_markdown_cell("## 2-nd order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
         #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=2, show=False)"""),
 
+        nb.cells.extend([
         nbf.new_markdown_cell("## Model core charge and form factors computed by ABINIT"),
         nbf.new_code_cell("""\
 with pseudo.open_pspsfile() as psps:
     fform_fig = psps.plot(show=False);
 fform_fig"""),
+        ])
 
-        nbf.new_markdown_cell("""## Ghosts Test
+    nb.cells.extend([
+            nbf.new_markdown_cell("""## Ghosts Test
 
 Self-consistent band structure calculation performed on a regular mesh.
 The algorithm to detect ghosts is just an indication usually on the side of false positives.
@@ -218,19 +250,45 @@ The calculation is performed with the Wien2k relaxed parameters obtained from th
     return nbpath
 
 
-def make_open_notebook(pseudopath, with_validation=False, with_eos=True, hide_code=False):
+def make_open_notebook(pseudopath, with_validation=False, with_eos=True, hide_code=False, tmpfile=True):
     """
     Generate a jupyter notebook from the pseudopotential path and
     open it in the browser. Return system exit code.
 
     Raise:
-        RuntimeError if jupyther is not in $PATH
+        RuntimeError if jupyter is not in $PATH
     """
-    print('test')
     path = write_notebook(pseudopath, with_validation=with_validation,
-                          with_eos=with_eos, tmpfile=True, hide_code=hide_code)
+                          with_eos=with_eos, tmpfile=tmpfile, hide_code=hide_code)
 
     if which("jupyter") is None:
         raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
 
     return os.system("jupyter notebook %s" % path)
+
+
+def write_notebook_html(pseudopath, with_validation=False, with_eos=True, hide_code=True, tmpfile=None, mock=False):
+    """
+     Generate a jupyter notebook from the pseudopotential path and
+     write the static html version of the executed notebook. Return system exit code.
+
+     Raise:
+         RuntimeError if nbconvert is not in $PATH
+     mock is for testing purposes, creating actual html takes much time
+     """
+
+    if mock:
+        html_path = pseudopath.split('.')[0] + '.html'
+        with open(html_path, 'w') as f:
+            f.write('mock file')
+        return
+
+    path = write_notebook(pseudopath, with_validation=with_validation,
+                          with_eos=with_eos, tmpfile=tmpfile, hide_code=hide_code, inline=True)
+
+    if which("jupyter") is None:
+        raise RuntimeError("Cannot find jupyter in PATH. This is needed to save the static HTML version of "
+                           "a notebook. Install it with `pip install`")
+
+    return os.system("jupyter nbconvert --to html --execute %s" % path)
+#    return os.system("jupyter nbconvert --to html --ExecutePreprocessor.enabled=True %s" % path)
