@@ -1,19 +1,19 @@
 ## GGA-PBE table (oncvpsp NC pseudos)
 
-Otherwise explicitly noted, all pseudos have been generated using the neutral ground-state
+Unless explicitly noted otherwise, all pseudos have been generated using the neutral ground-state
 configuration as reference, non-linear core correction is always included except for
 pseudos in which the all-electron (AE) core is too localized (mentioned in the text) or pseudos with 1s in valence.
 Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
 ## H
 
-  * H.in: Default version uses one p-projector to improve transferability. Can be used for GW.
-    Using v_p as local part produces vloc(q) with high Fourier components at large q
+  * H.in: Default version with one p-projector to improve transferability. Can be used for GW.
+    Using v_p as local part produces vloc(q) with high Fourier components at large q.
 
 ## He
 
-  * He.in: Default version uses one p-projector to improve transferability. Can be used for GW.
-    Using v_p as local part produces vloc(q) with high Fourier components at large q
+  * He.in: Default version with one p-projector to improve transferability. Can be used for GW.
+    Using v_p as local part produces vloc(q) with high Fourier components at large q.
 
 ## Li
 
@@ -51,18 +51,20 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
     Can be used for GW.
 
 ## F: 
-  Needs GW version
 
   * F.in: Default version with (2s, 2p) in valence and one d-projector for unbound 3d.
+    Needs GW version
 
 ## Ne
-  Needs GW version
+
   These pseudos are without nlcc since modeling 1s core density 
   without spoiling convergence is not trivial
 
   * Ne.in: Default version with (2s, 2p) in valence.
+    Needs GW version
 
   * Ne-high.in: Similar to Ne.in but with smaller core radii.
+    Needs GW version
 
 ## Na
 
@@ -78,31 +80,31 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
     Recommended for GS. Can be used for GW.
 
 ## Al
-  Needs GW version
 
   * Al.in: Default version with 2 d-projectors to improve transferability.
+    Needs GW version
     TODO: Oscillations in form factors. 
 
 ## Si
-  Needs GW version
 
   * Si.in: Default version with 2 d-projectors to improve transferability.
+    Needs GW version
 
 ## P
-  Needs GW version
 
   * P.in: Default version with 2 d-projectors to improve transferability.
     TODO: the model core charge and GBRV should be improved
+    Needs GW version
 
 ## S
-  Needs GW version
 
   * S.in: Default version with 2 d-projectors to improve transferability.
+    Needs GW version
 
 ## Cl
-  Needs GW version
 
   * Cl.in: Default version with 2 d-projectors to improve transferability.
+    Needs GW version
 
 ## Ar
 
@@ -187,9 +189,9 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
 ## Zn
 
-  * Zn.in: Default version ???
+  * Zn.in:  Low-accuracy version.
 
-  * Zn-sp.in: Has the GW tag but mind ZnO.
+  * Zn-sp.in: Default version. Has the GW tag but mind ZnO.
 
 ## Ga
 
@@ -228,7 +230,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
   * Se.in: Not recommended for GW
 
-  * Se-d.in: Default version ??? with 3d in valence. Not recommended for GW
+  * Se-d.in: Default version with 3d in valence. Not recommended for GW
 
   * Se-spd-high.in: Se-spd-high has good logders but it's hard)
     TODO: model core-charge too localized
@@ -309,10 +311,10 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
 ## Cd
 
-  * Cd.in: Default version with (4d, 5s) in valence. Has ghost at +73 Ha
+  * Cd.in: version with (4d, 5s) in valence. Has ghost at +73 Ha
 
   * Cd-sp.in: (4s, 4p, 4d, 5s) in valence
-    Recommended for GS. Can be used for GW.
+    Default version. Can be used for GW.
 
 ## In
   PROBLEMATIC?
@@ -348,10 +350,10 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
 ## Te
 
-  * Te.in: Default version with ??? (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
+  * Te.in: Version (5s,5p) in valence + 2 d-projectors for unbound state to improve transferability
     Not recommended for GW.
 
-  * Te-d.in: Include 4d in valence. 
+  * Te-d.in: Include 4d in valence. Default version.
     Not recommended for GW. Ghost at +77 eV.
 
   * Te-spd-high.in: Include full (4s, 4p, 4d) shell in valence.
@@ -395,7 +397,7 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
   Needs a GW version fsp is probably unavoidable but log ders are not optimal.
 
   * Hf-sp.in:
-    4f frozen in core. Has 2 f-projectors to improve transferability.
+    Default version with 4f frozen in core. Has 2 f-projectors to improve transferability.
     Recommended for GS applications.
 
   * Hf-fsp.in:
