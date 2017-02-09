@@ -31730,6 +31730,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 48.0
+}, 
+"low": {
+"ecut": 38.0
+}, 
+"normal": {
+"ecut": 42.0
+}
+}, 
 "md5": "5287960de1bed3f02fecd81a1bab4c41", 
 "phgamma": {
 "30.0": {
@@ -32178,6 +32189,12 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Al", 
+"tags": [
+" GW"
+], 
+"validation": {
+"validated_on": "2017-02-09 12:50:37"
+}, 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

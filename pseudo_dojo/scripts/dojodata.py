@@ -359,16 +359,13 @@ def dojo_notebook(options):
     Generate an ipython notebook for each pseudopotential and open it in the browser.
     """
     from pseudo_dojo.util.notebook import make_open_notebook
-    #if True:
-    with daemon.DaemonContext(detach_process=True):
+    if True:
+    #with daemon.DaemonContext(detach_process=True):
         retcode = 0
-        with_validation = not options.no_validation
-        hide_code = options.hide_code
-        if options.no_tmp:
-            tmpfile = None
         for p in options.pseudos:
-            retcode += make_open_notebook(p.filepath, with_validation=with_validation, with_eos=True,
-                                          hide_code=hide_code, tmpfile=tmpfile)
+            retcode += make_open_notebook(p.filepath, with_validation=not options.no_validation,
+                                          with_eos=True, hide_code=options.hide_code,
+                                          tmpfile=not options.no_tmp)
             if retcode != 0: break
         return retcode
 
@@ -467,10 +464,10 @@ def dojo_table(options):
 
     accuracies = ["normal", "high"]
     keys = ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1", "ecut_deltafactor", "ecut_hint"]
-    if options.json: 
+    if options.json:
         accuracies = ["low", "normal", "high"]
         keys.append("phonon")
-    
+
     columns = ["symbol"] + [acc + "_" + k for k in keys for acc in accuracies]
 
     #data = data[data["high_dfact_meV"] <= data["high_dfact_meV"].mean()]

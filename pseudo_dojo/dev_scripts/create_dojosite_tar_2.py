@@ -107,7 +107,7 @@ def main():
                         copyfile(os.path.join(pseudo_set, p).replace('psp8', extension),
                                  os.path.join(website, name, os.path.split(p)[1].replace('psp8', extension)))
                     try:
-                        write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), mock=mock)
+                        write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), tmpfile=False, mock=mock)
                     except:
                         pass
                     try:

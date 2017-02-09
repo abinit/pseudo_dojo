@@ -7,7 +7,7 @@ import io
 from monty.os.path import which
 
 
-def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=None, hide_code=False, inline=False):
+def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=True, hide_code=False, inline=False):
     """
     Read a pseudopotential file and write an ipython notebook.
     By default, the notebook is created in the same directory
@@ -16,10 +16,10 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=No
 
     Args:
         pseudopath: Path to the pseudopotential file.
-        with_validation: If True an ipython widget is added at the end of the notebook
-          to validate the pseudopotential.
+        with_validation: If True an ipython widget is added at the end of the notebook to validate the pseudopotential.
         with_eos: True if EOS plots are wanted.
-        tmpfile: None the ipynb is written at the present location else at a temp location
+        tmpfile: True if notebook should be written to temp location else build ipynb name from pseudo file.
+        hide_code: True to hide python code in notebook.
         inline: if true matplotlib magic is set inline else notebook. While auto generating the notebooks for the
         web site this is needed to actually show hte figures
 
@@ -236,7 +236,7 @@ The calculation is performed with the Wien2k relaxed parameters obtained from th
             nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="bcc", show=False)"""),
         ])
 
-    if tmpfile is None:
+    if not tmpfile:
         root, ext = os.path.splitext(pseudopath)
         nbpath = root + '.ipynb'
     else:
@@ -255,6 +255,13 @@ def make_open_notebook(pseudopath, with_validation=False, with_eos=True, hide_co
     Generate a jupyter notebook from the pseudopotential path and
     open it in the browser. Return system exit code.
 
+    Args:
+        pseudopath: Path to the pseudopotential file.
+        with_validation: If True an ipython widget is added at the end of the notebook
+          to validate the pseudopotential.
+        with_eos: True if EOS plots are wanted.
+        tmpfile: True if notebook should be written to temp location else build ipynb name from pseudo file.
+
     Raise:
         RuntimeError if jupyter is not in $PATH
     """
@@ -267,15 +274,21 @@ def make_open_notebook(pseudopath, with_validation=False, with_eos=True, hide_co
     return os.system("jupyter notebook %s" % path)
 
 
-def write_notebook_html(pseudopath, with_validation=False, with_eos=True, hide_code=True, tmpfile=None, mock=False):
+def write_notebook_html(pseudopath, with_validation=False, with_eos=True, hide_code=True, tmpfile=True, mock=False):
     """
-     Generate a jupyter notebook from the pseudopotential path and
-     write the static html version of the executed notebook. Return system exit code.
+    Generate a jupyter notebook from the pseudopotential path and
+    write the static html version of the executed notebook. Return system exit code.
 
-     Raise:
-         RuntimeError if nbconvert is not in $PATH
-     mock is for testing purposes, creating actual html takes much time
-     """
+    Args:
+        with_validation: If True an ipython widget is added at the end of the notebook to validate the pseudopotential.
+        with_eos: True if EOS plots are wanted.
+        hide_code: True to hide python code in notebook.
+        tmpfile: True if notebook should be written to temp location else build ipynb name from pseudo file.
+        mock: for testing purposes, creating actual html takes much time
+
+    Raise:
+        RuntimeError if nbconvert is not in $PATH
+    """
 
     if mock:
         html_path = pseudopath.split('.')[0] + '.html'

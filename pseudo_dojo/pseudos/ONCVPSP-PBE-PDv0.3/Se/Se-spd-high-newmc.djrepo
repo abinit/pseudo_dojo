@@ -160579,6 +160579,17 @@ null
 "pawecutdg": null
 }
 }, 
+"hints": {
+"high": {
+"ecut": 56.0
+}, 
+"low": {
+"ecut": 48.0
+}, 
+"normal": {
+"ecut": 52.0
+}
+}, 
 "md5": "7e92c19a5230bd332acf904fca0deb77", 
 "phgamma": {
 "40.0": {
@@ -160949,6 +160960,12 @@ null
 }, 
 "pseudo_type": "NC", 
 "symbol": "Se", 
+"tags": [
+"GW "
+], 
+"validation": {
+"validated_on": "2017-02-09 13:36:46"
+}, 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 
