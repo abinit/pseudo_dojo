@@ -47507,7 +47507,7 @@ null
 "ecut": 48.0
 }, 
 "low": {
-"ecut": 40.0
+"ecut": 39.0
 }, 
 "normal": {
 "ecut": 43.0
@@ -48277,7 +48277,7 @@ null
 " GW"
 ], 
 "validation": {
-"validated_on": "2017-02-09 12:58:38"
+"validated_on": "2017-02-09 14:41:59"
 }, 
 "version": "1.0", 
 "xc": {
