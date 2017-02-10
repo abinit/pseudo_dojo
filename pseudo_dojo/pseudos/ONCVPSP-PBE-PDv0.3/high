@@ -35,7 +35,7 @@ Se/Se-spd-high.psp8
 Br/Br-spd-high.psp8
 Kr/Kr.psp8
 Rb/Rb-sp.psp8
-Sr/Sr-sp.psp8
+Sr/Sr-sp-high.psp8
 Y/Y-sp.psp8
 Zr/Zr-sp.psp8
 Nb/Nb-sp.psp8
@@ -45,7 +45,7 @@ Ru/Ru-sp.psp8
 Rh/Rh-sp.psp8
 Pd/Pd-sp.psp8
 Ag/Ag-sp.psp8
-Cd/Cd-sp.psp8 
+Cd/Cd-sp-high.psp8 
 In/In-spd-high.psp8
 Sn/Sn-spd-high.psp8
 Sb/Sb-spd-high.psp8
@@ -53,7 +53,8 @@ Te/Te-spd-high.psp8
 I/I-spd-high.psp8
 Xe/Xe.psp8
 Cs/Cs-sp.psp8
-Ba/Ba-sp.psp8
+Ba/Ba-sp-high.psp8
+Lu/Lu-fsp.psp8
 Hf/Hf-fsp.psp8
 Ta/Ta-fsp.psp8
 W/W-sp.psp8
@@ -62,7 +63,7 @@ Os/Os-sp.psp8
 Ir/Ir-sp.psp8
 Pt/Pt-sp.psp8
 Au/Au-sp.psp8
-Hg/Hg-sp.psp8
+Hg/Hg-sp-high.psp8
 Tl/Tl-spd-high.psp8
 Pb/Pb-spd-high.psp8
 Bi/Bi-spd-high.psp8
