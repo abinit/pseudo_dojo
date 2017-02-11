@@ -196,6 +196,25 @@ class DojoTable(PseudoTable):
 
         return cls(pseudos).sort_by_z()
 
+    @classmethod
+    def from_txtfile(cls, path):
+        """
+        Initialize the table from a text file containing the relative path
+        of the pseudopotential (one name per line).
+        """
+        path = os.path.abspath(path)
+        root, _ = os.path.split(path)
+        pseudos = []
+        with open(path, "rt") as fh:
+            for line in fh:
+                p = os.path.join(root, line.strip())
+                pseudo = dojopseudo_from_file(p)
+                if pseudo is None:
+                    raise RuntimeError("Error while parsing:", p)
+                pseudos.append(pseudo)
+
+        return cls(pseudos).sort_by_z()
+
     def to_djson(self, verbose=0, ignore_dup=False):
         """
         Tool used by the PseudoDojo maintainers to build a dictionary

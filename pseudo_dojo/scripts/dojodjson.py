@@ -3,6 +3,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import sys
+import os
 import argparse
 import json
 
@@ -12,9 +13,13 @@ from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 
 
 def djson_new(options, stream=sys.stdout):
-    """Create a new djson file. Print document to stdout."""
-    # Build full table
-    table = DojoTable.from_dojodir(options.top, exclude_wildcard=options.exclude)
+    """Create a new djson file from directory or from text file. Print document to stdout."""
+    # Build full table (either from directory or text file.
+    if not os.path.isdir(options.top):
+        # Assume top is a text file
+        table = DojoTable.from_txtfile(options.top)
+    else:
+        table = DojoTable.from_dojodir(options.top, exclude_wildcard=options.exclude)
     djson = table.to_djson(options.verbose, ignore_dup=False)
     print(json.dumps(djson, indent=1), file=stream)
     return 0
@@ -44,7 +49,7 @@ def main():
     def str_examples():
         return """\
 Usage example:
-    djson.py  new [DIR]        => Generate new djson file.
+    djson.py  new [DIR]        => Generate new djson file from pseudos inside directory.
     djson.py  validate djson   => Validate djson file.
 """
 
@@ -74,7 +79,7 @@ Usage example:
                        help=("Exclude files mathing these pattern. Example"
                              "exclude=\"*_r.psp8|*.xml\" selects only those files that do not end with _r.psp8 or .xml"
                       ))
-    p_new.add_argument("top", nargs="?", default=".", help="Directory with pseudos")
+    p_new.add_argument("top", nargs="?", default=".", help="Directory with pseudos or text file")
 
     # Subparser for validate command.
     p_validate = subparsers.add_parser('validate', parents=[copts_parser], help=djson_validate.__doc__)

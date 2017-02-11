@@ -91,7 +91,7 @@ def gbrv_rundb(options):
             pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in job.pseudos)
             if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
             # Increase by 10 since many pseudos only have ppgen_hints
-            ecut += 10
+            #ecut += 10
             work = gbrv_factory.relax_and_eos_work(accuracy, job.pseudos, job.formula, job.struct_type,
                                                    ecut=ecut, pawecutdg=pawecutdg)
 
