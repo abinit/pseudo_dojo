@@ -172,9 +172,15 @@ def oncv_run(options):
         return 1
 
     # Extract psp8 files from the oncvpsp output and write it to file.
-    s = onc_parser.get_pseudo_str()
+    s = onc_parser.get_psp8_str()
     with open(psp8_path, "wt") as fh:
         fh.write(s)
+
+    # Write upf if available.
+    upf_str = onc_parser.get_upf_str()
+    if upf_str is not None:
+        with open(psp8_path.replace(".psp8", ".upf"), "wt") as fh:
+            fh.write(upf_str)
 
     pseudo = Pseudo.from_file(psp8_path)
     if pseudo is None:
