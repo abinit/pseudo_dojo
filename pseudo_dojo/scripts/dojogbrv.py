@@ -6,6 +6,7 @@ import sys
 import os
 import argparse
 import logging
+import hashlib
 
 from monty.termcolor import cprint
 from monty.functools import prof_main
@@ -17,16 +18,16 @@ from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
 from pseudo_dojo.dojo.gbrv_compounds import GbrvCompoundsFactory, GbrvCompoundsFlow
 
 
-def ecut_from_pseudos(pseudos):
+def ecut_from_pseudos(pseudos, accuracy):
     """Compute ecut either from hints or from ppgen hints."""
     ecut, use_ppgen_hints = 0.0, False
     for p in pseudos:
         report = p.dojo_report
         if "hints" in report:
-            ecut = max(ecut, report["hints"]["high"]["ecut"])
+            ecut = max(ecut, report["hints"][accuracy]["ecut"])
         else:
             use_ppgen_hints = True
-            ecut = max(ecut, report["ppgen_hints"]["high"]["ecut"])
+            ecut = max(ecut, report["ppgen_hints"][accuracy]["ecut"])
 
     assert ecut != 0.0
     if use_ppgen_hints:
@@ -81,17 +82,24 @@ def gbrv_rundb(options):
 
     gbrv_factory = GbrvCompoundsFactory(xc=outdb["xc_name"])
 
-    workdir = os.path.join(os.getcwd(), "GBRV_OUTDB_" + "-".join(job.formula for job in jobs))
+    # Build workdir.
+    s = "-".join(job.formula for job in jobs)
+    m = hashlib.md5()
+    m.update(s)
+    workdir = os.path.join(os.getcwd(),
+                          "GBRV_OUTDB_" + jobs[0].formula + "_" + jobs[-1].formula + "_" + m.hexdigest())
+    #workdir = os.path.join(os.getcwd(), "GBRV_OUTDB_" + s)
     flow = GbrvCompoundsFlow(workdir=workdir)
 
     for job in jobs:
-        #for accuracy in ("normal", "high"):
-        for accuracy in ("high",):
+        #for accuracy in ("low", "normal", "high"):
+        for accuracy in ("normal", "high"):
+        #for accuracy in ("high",):
             ecut = max(p.hint_for_accuracy(accuracy).ecut for p in job.pseudos)
             pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in job.pseudos)
             if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
             # Increase by 10 since many pseudos only have ppgen_hints
-            ecut += 10
+            #ecut += 10
             work = gbrv_factory.relax_and_eos_work(accuracy, job.pseudos, job.formula, job.struct_type,
                                                    ecut=ecut, pawecutdg=pawecutdg)
 
@@ -149,9 +157,9 @@ def gbrv_notebook(options):
     """
     outdb = GbrvOutdb.from_file(options.path)
 
-    import daemon
-    with daemon.DaemonContext(detach_process=True):
-        return outdb.make_open_notebook()
+    #import daemon
+    #with daemon.DaemonContext(detach_process=True):
+    return outdb.make_open_notebook()
 
 
 def gbrv_runps(options):
@@ -182,10 +190,14 @@ def gbrv_runps(options):
     print("Working in:", workdir)
     flow = GbrvCompoundsFlow(workdir=workdir)
 
-    ecut = ecut_from_pseudos(pseudos)
+    accuracy = "high"
+    ecut = max(p.hint_for_accuracy(accuracy).ecut for p in pseudos)
+    pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in pseudos)
+    if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
+    #ecut = ecut_from_pseudos(pseudos, accuracy)
     print("Adding work for formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
 
-    work = gbrv_factory.relax_and_eos_work("normal", pseudos, entry.symbol, entry.struct_type,
+    work = gbrv_factory.relax_and_eos_work(accuracy, pseudos, entry.symbol, entry.struct_type,
                                            ecut=ecut, pawecutdg=None)
     flow.register_work(work)
 
@@ -201,7 +213,7 @@ def gbrv_runform(options):
     """
     Run GBRV compound tests given a chemical formula.
     """
-    # Extract checmical symbols from formula
+    # Extract chemical symbols from formula
     formula = options.formula
     symbols = set(species_from_formula(formula))
 
@@ -209,8 +221,8 @@ def gbrv_runform(options):
     table = DojoTable.from_dir(top=options.pseudo_dir, exts=("psp8", "xml"), exclude_dirs="_*")
     pseudo_list = table.all_combinations_for_elements(symbols)
 
-    print("Removing relativistic pseudos from list")
-    pseudo_list = [plist for plist in pseudo_list if not any("_r" in p.basename for p in plist)]
+    #print("Removing relativistic pseudos from list")
+    #pseudo_list = [plist for plist in pseudo_list if not any("_r" in p.basename for p in plist)]
 
     # This is hard-coded since we GBRV results are PBE-only.
     # There's a check between xc and pseudo.xc below.
@@ -228,14 +240,18 @@ def gbrv_runform(options):
     print("Working in:", workdir)
     flow = GbrvCompoundsFlow(workdir=workdir)
 
+    accuracy = "high"
     for pseudos in pseudo_list:
         if any(xc != p.xc for p in pseudos):
             raise ValueError("Pseudos with different XC functional")
-        ecut = ecut_from_pseudos(pseudos)
+        ecut = max(p.hint_for_accuracy(accuracy).ecut for p in pseudos)
+        pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in pseudos)
+        if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
+        #ecut = ecut_from_pseudos(pseudos, accuracy)
         print("Adding work for pseudos:", pseudos)
         print("    formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
 
-        work = gbrv_factory.relax_and_eos_work("normal", pseudos, entry.symbol, entry.struct_type,
+        work = gbrv_factory.relax_and_eos_work(accuracy, pseudos, entry.symbol, entry.struct_type,
                                                ecut=ecut, pawecutdg=None)
         flow.register_work(work)
 
@@ -289,6 +305,7 @@ Usage example:
                                                with the scheduler.
 
    dojogbrv reset database --status=fs      => Reset all failed entries in the json database.
+                                               f for failed, s for scheduled.
    dojogbrv update directory                => Update all the json files in directory (check for
                                                new pseudos or stale entries)
 """
@@ -340,7 +357,7 @@ Usage example:
 
     #p_rundb.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
     p_rundb.add_argument('-n', '--max-njobs', type=int, default=3,
-                          help="Maximum number of jobs (a.k.a. works) that will be build and submitted")
+                          help="Maximum number of jobs (a.k.a. works) that will be built and submitted")
     #def parse_formulas(s):
     #    return s.split(",") if s is not None else None
     #p_rundb.add_argument('-f', '--formulas', type=parse_formulas, default=None,

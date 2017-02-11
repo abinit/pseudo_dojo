@@ -54,6 +54,7 @@ I/I.psp8
 Xe/Xe.psp8
 Cs/Cs-sp.psp8
 Ba/Ba-sp.psp8
+La/La-sp.psp8
 Lu/Lu-fsp.psp8
 Hf/Hf-sp.psp8
 Ta/Ta-sp.psp8

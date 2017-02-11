@@ -35,9 +35,6 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
   * C.in: Default version with (2s, 2p) in valence
 
-  * C-gw.in: Version with improved logarithmic derivatives, based on C.in.
-    Recommended for GW.
-
 ## N
 
   * N.in: Default version with (2s, 2p) in valence. Can be used for GW.

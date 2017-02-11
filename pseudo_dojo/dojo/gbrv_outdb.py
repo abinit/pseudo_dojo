@@ -344,7 +344,7 @@ class GbrvOutdb(dict):
     ### Post-processing tools ###
     #############################
 
-    def get_pdframe(self, reference="ae", pptable=None, **kwargs):
+    def get_pdframe(self, reference="ae", accuracy="normal", pptable=None, **kwargs):
         """
         Build and return a :class:`GbrvCompoundDataFrame` with the most important results.
 
@@ -382,12 +382,17 @@ class GbrvOutdb(dict):
                 miss += 1
                 continue
 
-            a0 = data["high"]["a0"]
+            try:
+                a0 = data[accuracy]["a0"]
+            except KeyError:
+                print("No entry with accuracy %s for %s" % (accuracy, formula))
+                a0 = None
 
             row = dict(formula=formula, struct_type=struct_type, this=a0,
-                     #basenames=set(p.basename for p in rec.pseudos),
-                     #pseudos_meta={p.symbol: get_meta(p) for p in rec.pseudos},
-                     #symbols={p.symbol for p in rec.pseudos},
+                       accuracy=accuracy,
+                       #basenames=set(p.basename for p in rec.pseudos),
+                       #pseudos_meta={p.symbol: get_meta(p) for p in rec.pseudos},
+                       #symbols={p.symbol for p in rec.pseudos},
                      )
 
             # Add results from the database.
@@ -445,7 +450,7 @@ import seaborn
             nbv.new_code_cell("""\
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
 outdb = GbrvOutdb.from_file('%s')
-frame = outdb.get_pdframe()
+frame = outdb.get_pdframe(accuracy='normal')
 display(frame.code_errors())""" % as_dojo_path(self.path)),
 
             nbv.new_code_cell("display(frame)"),
@@ -530,6 +535,7 @@ class GbrvCompoundDataFrame(DataFrame):
         return frame
 
     def select_bad_guys(self, reltol=0.4, struct_type=None):
+        """Return new frame with the entries whose relative errors is > reltol."""
         new = self[abs(100 * (self["this"] - self["ae"]) / self["ae"]) > reltol].copy()
         new["rel_err"] = 100 * (self["this"] - self["ae"]) / self["ae"]
         if struct_type is not None:
@@ -545,6 +551,7 @@ class GbrvCompoundDataFrame(DataFrame):
         return new
 
     def remove_bad_guys(self, reltol=0.4):
+        """Return new frame in which the entries whose relative errors is > reltol are removed."""
         new = self[abs(100 * (self["this"] - self["ae"]) / self["ae"]) <= reltol].copy()
         new.__class__ = self.__class__
         new["rel_err"] = 100 * (self["this"] - self["ae"]) / self["ae"]
@@ -564,6 +571,9 @@ class GbrvCompoundDataFrame(DataFrame):
 
     @add_fig_kwargs
     def plot_errors_for_structure(self, struct_type, ax=None, **kwargs):
+        """
+        Plot the errors for a given crystalline structure.
+        """
         ax, fig, plt = get_ax_fig_plt(ax=ax)
         data = self[self["struct_type"] == struct_type].copy()
         if not len(data):
