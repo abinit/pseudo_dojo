@@ -401,10 +401,18 @@ class OncvGenerator(PseudoGenerator):
             #    raise RuntimeError("File %s already exists" % filepath)
 
             if self.format == 'psp8':
-                # Initialize self.pseudo from file.
-                with open(filepath, "wt") as fh:
-                    fh.write(parser.get_pseudo_str())
 
+                # Write psp8 file.
+                with open(filepath, "wt") as fh:
+                    fh.write(parser.get_psp8_str())
+
+                # Add upf string (if present).
+                upf_str = parser.get_upf_str()
+                if upf_str is not None:
+                    with open(filepath.replace(".psp8", ".upf"), "wt") as fh:
+                        fh.write(upf_str)
+
+                # Initialize self.pseudo from file.
                 self._pseudo = p = Pseudo.from_file(filepath)
 
                 # Add md5 checksum to dojo_report
