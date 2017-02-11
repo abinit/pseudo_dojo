@@ -6,6 +6,7 @@ import sys
 import os
 import argparse
 import logging
+import hashlib
 
 from monty.termcolor import cprint
 from monty.functools import prof_main
@@ -81,7 +82,13 @@ def gbrv_rundb(options):
 
     gbrv_factory = GbrvCompoundsFactory(xc=outdb["xc_name"])
 
-    workdir = os.path.join(os.getcwd(), "GBRV_OUTDB_" + "-".join(job.formula for job in jobs))
+    # Build workdir.
+    s = "-".join(job.formula for job in jobs)
+    m = hashlib.md5()
+    m.update(s)
+    workdir = os.path.join(os.getcwd(),
+                          "GBRV_OUTDB_" + jobs[0].formula + "_" + jobs[-1].formula + "_" + m.hexdigest())
+    #workdir = os.path.join(os.getcwd(), "GBRV_OUTDB_" + s)
     flow = GbrvCompoundsFlow(workdir=workdir)
 
     for job in jobs:
@@ -150,9 +157,9 @@ def gbrv_notebook(options):
     """
     outdb = GbrvOutdb.from_file(options.path)
 
-    import daemon
-    with daemon.DaemonContext(detach_process=True):
-        return outdb.make_open_notebook()
+    #import daemon
+    #with daemon.DaemonContext(detach_process=True):
+    return outdb.make_open_notebook()
 
 
 def gbrv_runps(options):
@@ -298,6 +305,7 @@ Usage example:
                                                with the scheduler.
 
    dojogbrv reset database --status=fs      => Reset all failed entries in the json database.
+                                               f for failed, s for scheduled.
    dojogbrv update directory                => Update all the json files in directory (check for
                                                new pseudos or stale entries)
 """
