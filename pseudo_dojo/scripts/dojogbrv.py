@@ -17,16 +17,16 @@ from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
 from pseudo_dojo.dojo.gbrv_compounds import GbrvCompoundsFactory, GbrvCompoundsFlow
 
 
-def ecut_from_pseudos(pseudos):
+def ecut_from_pseudos(pseudos, accuracy):
     """Compute ecut either from hints or from ppgen hints."""
     ecut, use_ppgen_hints = 0.0, False
     for p in pseudos:
         report = p.dojo_report
         if "hints" in report:
-            ecut = max(ecut, report["hints"]["high"]["ecut"])
+            ecut = max(ecut, report["hints"][accuracy]["ecut"])
         else:
             use_ppgen_hints = True
-            ecut = max(ecut, report["ppgen_hints"]["high"]["ecut"])
+            ecut = max(ecut, report["ppgen_hints"][accuracy]["ecut"])
 
     assert ecut != 0.0
     if use_ppgen_hints:
@@ -85,8 +85,9 @@ def gbrv_rundb(options):
     flow = GbrvCompoundsFlow(workdir=workdir)
 
     for job in jobs:
-        #for accuracy in ("normal", "high"):
-        for accuracy in ("high",):
+        #for accuracy in ("low", "normal", "high"):
+        for accuracy in ("normal", "high"):
+        #for accuracy in ("high",):
             ecut = max(p.hint_for_accuracy(accuracy).ecut for p in job.pseudos)
             pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in job.pseudos)
             if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
@@ -182,10 +183,14 @@ def gbrv_runps(options):
     print("Working in:", workdir)
     flow = GbrvCompoundsFlow(workdir=workdir)
 
-    ecut = ecut_from_pseudos(pseudos)
+    accuracy = "high"
+    ecut = max(p.hint_for_accuracy(accuracy).ecut for p in pseudos)
+    pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in pseudos)
+    if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
+    #ecut = ecut_from_pseudos(pseudos, accuracy)
     print("Adding work for formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
 
-    work = gbrv_factory.relax_and_eos_work("normal", pseudos, entry.symbol, entry.struct_type,
+    work = gbrv_factory.relax_and_eos_work(accuracy, pseudos, entry.symbol, entry.struct_type,
                                            ecut=ecut, pawecutdg=None)
     flow.register_work(work)
 
@@ -201,7 +206,7 @@ def gbrv_runform(options):
     """
     Run GBRV compound tests given a chemical formula.
     """
-    # Extract checmical symbols from formula
+    # Extract chemical symbols from formula
     formula = options.formula
     symbols = set(species_from_formula(formula))
 
@@ -209,8 +214,8 @@ def gbrv_runform(options):
     table = DojoTable.from_dir(top=options.pseudo_dir, exts=("psp8", "xml"), exclude_dirs="_*")
     pseudo_list = table.all_combinations_for_elements(symbols)
 
-    print("Removing relativistic pseudos from list")
-    pseudo_list = [plist for plist in pseudo_list if not any("_r" in p.basename for p in plist)]
+    #print("Removing relativistic pseudos from list")
+    #pseudo_list = [plist for plist in pseudo_list if not any("_r" in p.basename for p in plist)]
 
     # This is hard-coded since we GBRV results are PBE-only.
     # There's a check between xc and pseudo.xc below.
@@ -228,14 +233,18 @@ def gbrv_runform(options):
     print("Working in:", workdir)
     flow = GbrvCompoundsFlow(workdir=workdir)
 
+    accuracy = "high"
     for pseudos in pseudo_list:
         if any(xc != p.xc for p in pseudos):
             raise ValueError("Pseudos with different XC functional")
-        ecut = ecut_from_pseudos(pseudos)
+        ecut = max(p.hint_for_accuracy(accuracy).ecut for p in pseudos)
+        pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in pseudos)
+        if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
+        #ecut = ecut_from_pseudos(pseudos, accuracy)
         print("Adding work for pseudos:", pseudos)
         print("    formula:", entry.symbol, ", structure:", entry.struct_type, ", ecut:", ecut)
 
-        work = gbrv_factory.relax_and_eos_work("normal", pseudos, entry.symbol, entry.struct_type,
+        work = gbrv_factory.relax_and_eos_work(accuracy, pseudos, entry.symbol, entry.struct_type,
                                                ecut=ecut, pawecutdg=None)
         flow.register_work(work)
 
