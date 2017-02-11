@@ -207,7 +207,9 @@ class DojoTable(PseudoTable):
         pseudos = []
         with open(path, "rt") as fh:
             for line in fh:
-                p = os.path.join(root, line.strip())
+                line = line.strip()
+                if line.startswith("#"): continue
+                p = os.path.join(root, line)
                 pseudo = dojopseudo_from_file(p)
                 if pseudo is None:
                     raise RuntimeError("Error while parsing:", p)

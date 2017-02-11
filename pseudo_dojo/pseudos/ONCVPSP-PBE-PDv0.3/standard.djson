@@ -1,9 +1,9 @@
 {
  "dojo_info": {
   "pp_type": "NC",
-  "description": "Standard table designed for GS applications", 
-  "xc_name": "PBE", 
-  "references": ["Dojo paper"], 
+  "description": "Standard table designed for GS applications",
+  "xc_name": "PBE",
+  "references": ["Dojo paper"],
   "authors": ["M. J. van Setten", "M. Giantomassi"],
   "dojo_dir": "ONCVPSP-PBE-PDv0.3"
  }, 
@@ -1237,6 +1237,28 @@
     }, 
     "normal": {
      "ecut": 22.0
+    }
+   }
+  }, 
+  "La": {
+   "basename": "La-sp.psp8", 
+   "Z_val": 11.0, 
+   "l_max": 3, 
+   "md5": "f985d5074868a37fc207c811a4931824", 
+   "dfact_meV": null, 
+   "dfactprime_meV": null, 
+   "tags": [
+    " "
+   ], 
+   "hints": {
+    "high": {
+     "ecut": 65.0
+    }, 
+    "low": {
+     "ecut": 50.0
+    }, 
+    "normal": {
+     "ecut": 55.0
     }
    }
   }, 

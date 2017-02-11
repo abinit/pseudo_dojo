@@ -349,7 +349,7 @@ Usage example:
 
     #p_rundb.add_argument('--paral-kgb', type=int, default=0,  help="Paral_kgb input variable.")
     p_rundb.add_argument('-n', '--max-njobs', type=int, default=3,
-                          help="Maximum number of jobs (a.k.a. works) that will be build and submitted")
+                          help="Maximum number of jobs (a.k.a. works) that will be built and submitted")
     #def parse_formulas(s):
     #    return s.split(",") if s is not None else None
     #p_rundb.add_argument('-f', '--formulas', type=parse_formulas, default=None,
