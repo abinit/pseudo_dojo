@@ -820,7 +820,7 @@ class OncvOutputParser(PseudoGenOutputParser):
             ae_wf = g.data[:, 2]
             ps_wf = g.data[:, 3]
 
-            assert nlk not in ae_waves
+            #assert nlk not in ae_waves
             ae_waves[nlk] = RadialWaveFunction(nlk, str(nlk), rmesh, ae_wf)
             ps_waves[nlk] = RadialWaveFunction(nlk, str(nlk), rmesh, ps_wf)
 
