@@ -173,6 +173,7 @@ class PseudoGenDataPlotter(object):
         linestyle = {1: "solid", 2: "dashed"}
         lines, legends = [], []
         for nlk, proj in self.projectors.items():
+            #print(nlk)
             if nlk.l in lselect: continue
             line, = ax.plot(proj.rmesh, proj.values,
                             color=self.color_l[nlk.l], linestyle=linestyle[nlk.n],
@@ -841,8 +842,14 @@ class OncvOutputParser(PseudoGenOutputParser):
             # TODO: Get n, l, k from header.
             header = self.lines[g.start-2]
 
+            #n= 1 2  l= 0, projecctor pseudo wave functions, well or 2nd valence
+            # n= 1 2  l= 0  kap=-1, projecctor pseudo wave functions, well or 2nd valence
+
             rmesh = g.data[:, 1]
             l = int(g.data[0, 0])
+            #print("header", header)
+            #print("g.data", g.data[0, 0])
+            #print("l",l)
 
             for n in range(len(g.data[0]) - 2):
                 nlk = NlkState(n=n+1, l=l, k=None)
@@ -982,8 +989,52 @@ class OncvOutputParser(PseudoGenOutputParser):
             i = self.find_string("Reference configufation results")
             return "\n".join(self.lines[:i])
 
+    def get_psp8_str(self):
+        """
+        Return string with the pseudopotential data in psp8 format.
+        None if field is not present.
+        """
+        start, stop = None, None
+        for i, line in enumerate(self.lines):
+            if 'Begin PSPCODE8' in line: start = i
+            if start is not None and 'END_PSP' in line:
+                stop = i
+                break
+        if start is None and stop is None: return None
+        ps_data = "\n".join(self.lines[start+1:stop])
+
+        if "<INPUT>" not in ps_data:
+            # oncvpsp <= 3.2.2 --> Append the input to ps_data (note XML markers)
+            # oncvpsp >= 3.2.3 --> Input is already there
+            ps_data += "\n\n<INPUT>\n" + self.get_input_str() + "</INPUT>\n"
+
+        return ps_data
+
+    def get_upf_str(self):
+        """
+        Return string with the pseudopotential data in upf format.
+        None if field is not present.
+        """
+        start, stop = None, None
+        for i, line in enumerate(self.lines):
+            if  "Begin PSP_UPF" in line: start = i
+            if start is not None and 'END_PSP' in line:
+                stop = i
+                break
+        if start is None and stop is None: return None
+        return "\n".join(self.lines[start+1:stop])
+
     def get_pseudo_str(self):
         """Return string with the pseudopotential data."""
+
+        psdata = self.get_psp8_str()
+        if psdata is not None:
+            return psdata
+        psdata = self.get_upf_str()
+        if psdata is not None:
+            return psdata
+
+        raise ValueError("Cannot find neither PSPCODE8 not PSP_UPF tag in output file")
 
         # Extract the pseudo in Abinit format.
         try:
