@@ -240,7 +240,9 @@ Pseudos with the GW tag have good logarithmic derivatives up to 6 H.
 
   * Br-spd-high.in: Include full (3s, 3p, 3d) shell in valence.
     Recommended version for GW and high accuracy calculations but it's hard
-    TODO: model core-charge too localized
+
+    TODO: model core-charge too localized (hints are not enough to converge GBRV
+    compounds with normal)
 
 ## Kr
   Needs GW version
