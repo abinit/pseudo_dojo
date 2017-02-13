@@ -1,0 +1,50 @@
+{
+"basename": "Re-sp_r.psp8", 
+"ecuts": [
+22.0, 
+24.0, 
+26.0, 
+28.0, 
+30.0, 
+32.0, 
+34.0, 
+36.0, 
+38.0, 
+40.0, 
+42.0, 
+50.0, 
+52.0
+], 
+"md5": "503969bf246dee3f1fe023d59c39eb5c", 
+"ppgen_hints": {
+"high": {
+"ecut": 32.0, 
+"pawecutdg": 32.0
+}, 
+"low": {
+"ecut": 28.0, 
+"pawecutdg": 28.0
+}, 
+"normal": {
+"ecut": 30.0, 
+"pawecutdg": 30.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Re", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_C_PBE"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_X_PBE"
+}
+}
+}

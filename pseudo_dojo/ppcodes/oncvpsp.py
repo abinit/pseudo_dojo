@@ -70,7 +70,9 @@ class PseudoGenDataPlotter(object):
 
     linestyle_aeps = dict(ae="solid", ps="dashed")
     markers_aeps = dict(ae=".", ps="o")
-    color_l = {-1: "black", 0: "red", 1: "blue", 2: "green", 3: "orange"}
+    #color_l = {-1: "black", 0: "red", 1: "blue", 2: "green", 3: "orange"}
+    color_l = {0: "black", -1: "magenta", 1: "red", -2: "cyan", 2: "blue", -3: "yellow", 3: "orange"}
+
 
     def __init__(self, **kwargs):
         """Store kwargs in self if k is in self.all_keys."""
@@ -176,7 +178,7 @@ class PseudoGenDataPlotter(object):
             #print(nlk)
             if nlk.l in lselect: continue
             line, = ax.plot(proj.rmesh, proj.values,
-                            color=self.color_l[nlk.l], linestyle=linestyle[nlk.n],
+                            color=self.color_l.get(nlk.l, 'black'), linestyle=linestyle[nlk.n],
                             linewidth=self.linewidth, markersize=self.markersize)
             lines.append(line); legends.append("Proj %s" % str(nlk))
 
@@ -821,7 +823,7 @@ class OncvOutputParser(PseudoGenOutputParser):
             ae_wf = g.data[:, 2]
             ps_wf = g.data[:, 3]
 
-            assert nlk not in ae_waves
+            #assert nlk not in ae_waves
             ae_waves[nlk] = RadialWaveFunction(nlk, str(nlk), rmesh, ae_wf)
             ps_waves[nlk] = RadialWaveFunction(nlk, str(nlk), rmesh, ps_wf)
 

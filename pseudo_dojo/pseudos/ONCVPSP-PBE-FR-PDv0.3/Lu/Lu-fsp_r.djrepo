@@ -1,0 +1,50 @@
+{
+"basename": "Lu-fsp_r.psp8", 
+"ecuts": [
+38.0, 
+40.0, 
+42.0, 
+44.0, 
+46.0, 
+48.0, 
+50.0, 
+52.0, 
+54.0, 
+56.0, 
+58.0, 
+66.0, 
+68.0
+], 
+"md5": "894ae4ca30f456b63e11c5778928f0ab", 
+"ppgen_hints": {
+"high": {
+"ecut": 48.0, 
+"pawecutdg": 48.0
+}, 
+"low": {
+"ecut": 43.0, 
+"pawecutdg": 43.0
+}, 
+"normal": {
+"ecut": 45.0, 
+"pawecutdg": 45.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Lu", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_C_PBE"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_X_PBE"
+}
+}
+}
