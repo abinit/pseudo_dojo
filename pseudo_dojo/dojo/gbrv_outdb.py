@@ -444,8 +444,18 @@ class GbrvOutdb(dict):
             nbv.new_code_cell("""\
 from __future__ import print_function, division, unicode_literals
 from IPython.display import display
-import seaborn
-%matplotlib notebook"""),
+import seaborn as sns
+import pandas as pd
+import pylab
+%matplotlib notebook
+pd.options.display.float_format = '{:,.3f}'.format
+
+# disable table reduction
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+sns.set(font_scale=1.6)
+sns.set_style("whitegrid")
+pylab.rcParams['figure.figsize'] = (12.0, 6.0)"""),
 
             nbv.new_code_cell("""\
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
@@ -453,24 +463,54 @@ outdb = GbrvOutdb.from_file('%s')
 frame = outdb.get_pdframe(accuracy='normal')
 display(frame.code_errors())""" % as_dojo_path(self.path)),
 
+            nbv.new_code_cell("""\
+with open('gbrv_errors.tex', 'w') as f:
+    f.write(frame.code_errors().to_latex())"""),
+
             nbv.new_code_cell("display(frame)"),
         ])
 
         for struct_type in frame.struct_types():
             nb.cells += [
                 nbv.new_markdown_cell("## GBRV results for structure %s:" % struct_type),
-                nbv.new_code_cell("fig = frame.plot_errors_for_structure('%s')" % struct_type),
-                nbv.new_code_cell("fig = frame.plot_hist('%s')" % struct_type),
+                nbv.new_code_cell("""\
+fig = frame.plot_errors_for_structure('%s')
+pylab.tight_layout()""" % struct_type),
+                nbv.new_code_cell("""\
+fig = frame.plot_hist('%s')
+pylab.tight_layout()""" % struct_type),
                 nbv.new_code_cell("display(frame.select_bad_guys(reltol=0.35, struct_type='%s'))" % struct_type),
         ]
 
         nb.cells += [
             nbv.new_markdown_cell("## GBRV Compounds: relative errors as function of chemical element"),
-            nbv.new_code_cell("fig = frame.plot_errors_for_elements()"),
+            nbv.new_code_cell("""\
+fig = frame.plot_errors_for_elements()
+pylab.tight_layout()"""),
+            nbv.new_code_cell("fig.savefig('gbrv.elements.eps', bbox_inches='tight')"),
             nbv.new_markdown_cell("## Bad guys:"),
-            nbv.new_code_cell("bad = frame.select_bad_guys(reltol=0.35)"),
-            nbv.new_code_cell("display(bad)"),
+            nbv.new_code_cell("bad = frame.select_bad_guys(reltol=0.25)"),
+            nbv.new_code_cell("display(bad.sort_values(by='rel_err'))"),
+            nbv.new_code_cell("""\
+with open('gbrv_compounds_outliers.tex', 'w') as f:
+    f.write(bad.to_latex())"""),
             nbv.new_code_cell("print(bad.symbol_counter)"),
+            nbv.new_code_cell("""\
+from IPython.display import HTML
+HTML('''<script>
+code_show=true;
+function code_toggle() {
+ if (code_show){
+ $('div.input').hide();
+ } else {
+ $('div.input').show();
+ }
+ code_show = !code_show
+}
+$( document ).ready(code_toggle);
+</script>
+The code cells for this IPython notebook is by default hidden for easier reading.
+To toggle on/off the raw code, click <a href="javascript:code_toggle()">here</a>.''')""")
         ]
 
         import io, tempfile
@@ -585,15 +625,22 @@ class GbrvCompoundDataFrame(DataFrame):
             data[col + "_rel_err"] = 100 * (data[col] - data["ae"]) / data["ae"]
             #data[col + "_rel_err"] = abs(100 * (data[col] - data["ae"]) / data["ae"])
             data.plot(x="formula", y=col + "_rel_err", ax=ax, style="o-", grid=True)
-
-        ax.set_title(struct_type)
-        ax.set_ylabel("relative error %")
-        # Set xticks and lables (show'em all)
-        #print(data)
-        ax.set_xticks(list(range(len(data.index))))
-        ax.set_xticklabels(data["formula"], rotation="vertical")
-        ax.tick_params(which='both', direction='out')
-        ax.set_ylim(-1, 1)
+        labels = data['formula'].values
+        ax.set_ylabel("relative error %% for %s" % struct_type)
+        ticks = list(range(len(data.index)))
+        ticks1 = range(min(ticks), max(ticks)+1, 2)
+        ticks2 = range(min(ticks)+1, max(ticks)+1, 2)
+        labels1 = [labels[i] for i in ticks1]
+        labels2 = [labels[i] for i in ticks2]
+ #       ax.tick_params(which='both', direction='out')
+        #ax.set_ylim(-1, 1)
+        ax.set_xticks(ticks1)
+        ax.set_xticklabels(labels1, rotation=90)
+        ax2 = ax.twiny()
+        ax2.set_zorder(-1)
+        ax2.set_xticks(ticks2)
+        ax2.set_xticklabels(labels2, rotation=90)
+        ax2.set_xlim(ax.get_xlim())
 
         return fig
 
@@ -656,10 +703,29 @@ class GbrvCompoundDataFrame(DataFrame):
         # Box plot
         ax = sns.boxplot(x="element", y="rerr", data=frame, ax=ax, order=order, whis=np.inf, color="c")
         # Add in points to show each observation
-        sns.stripplot(x="element", y="rerr", data=frame, ax=ax, order=order,
-                      jitter=True, size=5, color=".3", linewidth=0)
+        sns.stripplot(x="element", y="rerr", data=frame, ax=ax, order=order, hue='struct_type',
+        #              jitter=True, size=5, color=".3", linewidth=0)
+                      jitter=0, size=4, color=".3", linewidth=0, palette=sns.color_palette("muted"))
 
         sns.despine(left=True)
         ax.set_ylabel("Relative error %")
+
+        labels = ax.get_xticklabels()
+        ticks = ax.get_xticks()
+        ticks1 = range(min(ticks), max(ticks)+1, 2)
+        ticks2 = range(min(ticks) + 1, max(ticks)+1, 2)
+        labels1 = [labels[i].get_text() for i in ticks1]
+        labels2 = [labels[i].get_text() for i in ticks2]
+
+        #       ax.tick_params(which='both', direction='out')
+        #ax.set_ylim(-1, 1)
+        ax.set_xticks(ticks1)
+        ax.set_xticklabels(labels1, rotation=90)
+        ax2 = ax.twiny()
+        ax2.set_zorder(-1)
+        ax2.set_xticks(ticks2)
+        ax2.set_xticklabels(labels2, rotation=90)
+        ax2.set_xlim(ax.get_xlim())
+
         ax.grid(True)
         return fig

@@ -277,7 +277,7 @@ def gbrv_find(options):
 
     print("Found %d entries" % len(entries))
     for i, entry in enumerate(entries):
-	print("[%i]" % i, entry)
+        print("[%i]" % i, entry)
 
     return 0
 
