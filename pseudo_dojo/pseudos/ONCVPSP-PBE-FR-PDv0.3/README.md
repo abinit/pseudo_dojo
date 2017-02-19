@@ -12,3 +12,30 @@ Pseudo's that are not mentionned here have the same input as the SR version
 
   * In_r.in: still generated well wiht the same input as SR but the second p projector looks critical
 
+
+## W
+
+  * W-sp_.in: second  projector looks critical
+
+
+## Tl
+
+  * Tl-d_r.in: reduced the energy of the second s projector to remove a second node
+
+
+## Pb 
+
+  * Pb-d_r.in: reduced the energy of the second s projector to remove a second node
+
+
+## Bi
+
+  * Bi-d_r.in: reduced the energy of the second s projector to remove a second node 
+
+
+## Po 
+
+  * Po-d_r.in: reduced the energy of the second s projector to remove a second node
+               this does actually introduce a ghost like feature about 2H above Ef 
+
+
