@@ -15,18 +15,7 @@
 55.0, 
 57.0
 ], 
-"hints": {
-"high": {
-"ecut": 47.0
-}, 
-"low": {
-"ecut": 35.0
-}, 
-"normal": {
-"ecut": 41.0
-}
-}, 
-"md5": "ff5562da17bd43925b30755fbd1b95f7", 
+"md5": "3cd4737499852af2d4852efb067eacff", 
 "ppgen_hints": {
 "high": {
 "ecut": 37.0, 
@@ -43,9 +32,6 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ge", 
-"tags": [
-""
-], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

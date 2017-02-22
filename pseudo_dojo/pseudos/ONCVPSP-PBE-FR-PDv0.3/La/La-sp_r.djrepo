@@ -15,18 +15,7 @@
 72.0, 
 74.0
 ], 
-"hints": {
-"high": {
-"ecut": 65.0
-}, 
-"low": {
-"ecut": 50.0
-}, 
-"normal": {
-"ecut": 55.0
-}
-}, 
-"md5": "5a630190329e6808b2efcd1fc42e091b", 
+"md5": "f2ed0ccec55febce9e1399a5ffffdf62", 
 "ppgen_hints": {
 "high": {
 "ecut": 54.0, 
@@ -43,9 +32,6 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "La", 
-"tags": [
-" "
-], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

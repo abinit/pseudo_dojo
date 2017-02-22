@@ -1,5 +1,5 @@
 Mo    ONCVPSP-3.2.3  r_core=   1.45541   1.45541   1.35488
-42.0000     14.0000      170213    zatom,zion,pspd
+42.0000     14.0000      170222    zatom,zion,pspd
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  3.00000000  0.00000000    rchrg fchrg qchrg
 2     3     4     0    nproj

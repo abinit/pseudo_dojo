@@ -15,18 +15,7 @@
 56.0, 
 58.0
 ], 
-"hints": {
-"high": {
-"ecut": 46.0
-}, 
-"low": {
-"ecut": 36.0
-}, 
-"normal": {
-"ecut": 40.0
-}
-}, 
-"md5": "f38498bdbd79e2a7c288c50c531c628a", 
+"md5": "7d3612a37ce9a3161897ced49378caa5", 
 "ppgen_hints": {
 "high": {
 "ecut": 38.0, 
@@ -43,9 +32,6 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Ga", 
-"tags": [
-""
-], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

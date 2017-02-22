@@ -15,18 +15,7 @@
 57.0, 
 59.0
 ], 
-"hints": {
-"high": {
-"ecut": 50.0
-}, 
-"low": {
-"ecut": 39.0
-}, 
-"normal": {
-"ecut": 45.0
-}
-}, 
-"md5": "f55f9e2fb97932acbd03412f588e88ae", 
+"md5": "dd3f30eb17c2cd0f2512f0337e375557", 
 "ppgen_hints": {
 "high": {
 "ecut": 39.0, 
@@ -43,9 +32,6 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "He", 
-"tags": [
-" GW"
-], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

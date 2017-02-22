@@ -12263,7 +12263,7 @@ END_GNU
 
 Begin PSPCODE8
 H     ONCVPSP-3.2.3  r_core=   1.00957   0.70586
-      1.0000      1.0000      170211    zatom,zion,pspd
+      1.0000      1.0000      170222    zatom,zion,pspd
      8      11   1     4   300     0    pspcod,pspxc,lmax,lloc,mmax,r2well
   2.99000000  0.00000000  0.00000000    rchrg fchrg qchrg
      2     2     0     0    nproj
@@ -13895,7 +13895,7 @@ Begin PSP_UPF
     <PP_HEADER
        generated="Generated using ONCVPSP code by D. R. Hamann"
        author="anonymous"
-       date="170211"
+       date="170222"
        comment=""
        element="H "
        pseudo_type="NC"
