@@ -1,5 +1,5 @@
 Lu    ONCVPSP-3.2.3  r_core=   1.56315   1.60089   1.45518   1.86943
-71.0000     25.0000      170213    zatom,zion,pspd
+71.0000     25.0000      170222    zatom,zion,pspd
 8      11   3     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  4.00000000  0.00000000    rchrg fchrg qchrg
 2     4     4     2    nproj
