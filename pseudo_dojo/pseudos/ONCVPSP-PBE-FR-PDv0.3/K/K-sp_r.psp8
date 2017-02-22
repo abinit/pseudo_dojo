@@ -1,5 +1,5 @@
 K     ONCVPSP-3.2.3  r_core=   1.36296   1.46408   1.61068
-19.0000      9.0000      170211    zatom,zion,pspd
+19.0000      9.0000      170222    zatom,zion,pspd
 8      11   2     4   400     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 3.99000000  5.00000000  0.00000000    rchrg fchrg qchrg
 2     3     2     0    nproj

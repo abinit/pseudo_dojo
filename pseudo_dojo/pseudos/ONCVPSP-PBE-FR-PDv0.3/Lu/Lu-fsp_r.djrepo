@@ -15,18 +15,7 @@
 66.0, 
 68.0
 ], 
-"hints": {
-"high": {
-"ecut": 58.0
-}, 
-"low": {
-"ecut": 46.0
-}, 
-"normal": {
-"ecut": 50.0
-}
-}, 
-"md5": "894ae4ca30f456b63e11c5778928f0ab", 
+"md5": "f490528233154afec9f91f34026557db", 
 "ppgen_hints": {
 "high": {
 "ecut": 48.0, 
@@ -43,9 +32,6 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Lu", 
-"tags": [
-""
-], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

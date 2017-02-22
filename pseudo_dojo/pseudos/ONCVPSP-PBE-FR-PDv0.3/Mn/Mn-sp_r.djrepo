@@ -15,18 +15,7 @@
 64.0, 
 66.0
 ], 
-"hints": {
-"high": {
-"ecut": 54.0
-}, 
-"low": {
-"ecut": 42.0
-}, 
-"normal": {
-"ecut": 48.0
-}
-}, 
-"md5": "5f923b7bfdc6dbddae2802d4de09de2a", 
+"md5": "5b93781886de4ec4dce89d799f20f168", 
 "ppgen_hints": {
 "high": {
 "ecut": 46.0, 
@@ -43,9 +32,6 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Mn", 
-"tags": [
-" GW"
-], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

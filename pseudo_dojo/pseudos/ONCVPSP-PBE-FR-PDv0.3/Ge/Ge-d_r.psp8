@@ -1,5 +1,5 @@
 Ge    ONCVPSP-3.2.3  r_core=   1.91022   1.82122   1.91022
-32.0000     14.0000      170211    zatom,zion,pspd
+32.0000     14.0000      170222    zatom,zion,pspd
 8      11   2     4   600     0    pspcod,pspxc,lmax,lloc,mmax,r2well
 5.99000000  5.00000000  0.00000000    rchrg fchrg qchrg
 2     4     2     0    nproj
