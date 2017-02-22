@@ -15,6 +15,17 @@
 57.0, 
 59.0
 ], 
+"hints": {
+"high": {
+"ecut": 49.0
+}, 
+"low": {
+"ecut": 39.0
+}, 
+"normal": {
+"ecut": 43.0
+}
+}, 
 "md5": "832b29a5b0497cc36f9b36c44dd56c40", 
 "ppgen_hints": {
 "high": {
@@ -32,6 +43,9 @@
 }, 
 "pseudo_type": "NC", 
 "symbol": "Se", 
+"tags": [
+""
+], 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 
