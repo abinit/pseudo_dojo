@@ -100,7 +100,7 @@ class DojoReportTest(PseudoDojoTest):
         self.assert_almost_equal(report["gbrv_fcc"][34]["a0_rel_err"], 0.044806085362549146)
 
         # Test Phonon entry
-        self.assert_almost_equal(report["phonon"][36][-1], 528.9531110978663)
+        self.assert_almost_equal(report["phgamma"][36][-1], 528.9531110978663)
 
         # Test API to add ecuts and find missing entries.
         assert np.all(report.ecuts == [32.0,  34.0,  36.0, 38.0, 40.0, 42.0, 52.0])

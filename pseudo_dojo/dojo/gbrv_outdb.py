@@ -16,10 +16,10 @@ from monty.functools import lazy_property
 from monty.os.path import which
 from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
-from pymatgen.analysis.eos import EOS
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, gbrv_code_names, species_from_formula
 from pseudo_dojo.pseudos import as_dojo_path
+from pseudo_dojo.util.dojo_eos import EOS
 
 
 import logging

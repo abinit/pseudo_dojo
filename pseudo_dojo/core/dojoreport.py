@@ -16,11 +16,11 @@ from monty.json import MSONable, MontyEncoder
 from monty.string import list_strings, is_string
 from monty.termcolor import cprint
 from monty.bisect import find_le
-from pymatgen.analysis.eos import EOS
 from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 from pseudo_dojo.refdata.gbrv import gbrv_database
+from pseudo_dojo.util.dojo_eos import EOS
 
 
 logger = logging.getLogger(__name__)
