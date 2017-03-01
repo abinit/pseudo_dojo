@@ -18,7 +18,7 @@ from monty.termcolor import cprint
 from monty.bisect import find_le
 from pymatgen.analysis.eos import EOS
 from pymatgen.core.periodic_table import Element
-from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
+from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 from pseudo_dojo.refdata.gbrv import gbrv_database
 

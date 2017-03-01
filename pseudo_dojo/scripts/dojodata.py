@@ -18,7 +18,7 @@ from monty.os.path import find_exts
 from monty.functools import prof_main
 from monty import termcolor
 from monty.termcolor import cprint
-from pymatgen.util.io_utils import ask_yesno, prompt
+from pymatgen.util.io_utils import ask_yesno
 from pseudo_dojo.core.pseudos import dojopseudo_from_file, DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pseudo_dojo.pseudos import check_pseudo
@@ -29,6 +29,16 @@ def straceback():
     import traceback
     return traceback.format_exc()
 
+
+def prompt(question):
+    import six
+    # Fix python 2.x.
+    if six.PY2:
+        my_input = raw_input
+    else:
+        my_input = input
+
+    return my_input(question)
 
 def dojo_figures(options):
     """

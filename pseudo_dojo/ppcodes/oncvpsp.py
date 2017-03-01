@@ -13,7 +13,7 @@ from collections import namedtuple, OrderedDict
 from monty.os.path import which
 from monty.functools import lazy_property
 from monty.collections import AttrDict
-from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
+from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.core import NlkState, RadialFunction, RadialWaveFunction
 from abipy.tools.derivatives import finite_diff
 

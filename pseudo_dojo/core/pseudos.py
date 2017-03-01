@@ -17,7 +17,7 @@ from monty.termcolor import cprint
 from monty.os.path import which
 from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
-from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
+from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
 from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
 from pseudo_dojo.core.dojoreport import DojoReport
 

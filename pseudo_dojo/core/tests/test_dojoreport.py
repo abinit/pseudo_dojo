@@ -47,7 +47,7 @@ class DojoReportTest(PseudoDojoTest):
 
         assert not report.has_trial("deltafactor", ecut=10)
         report.add_entry("deltafactor", ecut=10, entry={})
-        print(report)
+        str(report)
         #assert report.has_trial("deltafactor", ecut=10)
         #assert not report.check(check_trials=["deltafactors"])
 
@@ -64,15 +64,15 @@ class DojoReportTest(PseudoDojoTest):
         assert h_wdr.md5 == ref_md5
         assert "md5" in h_wdr.dojo_report and h_wdr.dojo_report["md5"] == ref_md5
 
-        print(repr(h_wdr))
-        print(h_wdr.as_dict())
+        repr(h_wdr)
+        assert isinstance(h_wdr.as_dict(), dict)
 
         # Test DojoReport
         #report = h_wdr.read_dojo_report()
         #report = h_wdr.read_dojo_report()
         assert h_wdr.has_dojo_report
         report = h_wdr.dojo_report
-        print(report)
+        #print(report)
         assert report.symbol == "H"
         assert report.element.symbol == "H"
         assert report["pseudo_type"] == "NC"

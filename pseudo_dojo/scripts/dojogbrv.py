@@ -11,7 +11,7 @@ import hashlib
 from monty.termcolor import cprint
 from monty.functools import prof_main
 from monty.io import FileLock
-from abipy import abilab
+#from abipy import abilab
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formula
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb

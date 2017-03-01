@@ -15,7 +15,7 @@ from monty.collections import dict2namedtuple
 from monty.functools import lazy_property
 from monty.os.path import which
 from pymatgen.core.periodic_table import Element
-from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
+from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
 from pymatgen.analysis.eos import EOS
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, gbrv_code_names, species_from_formula

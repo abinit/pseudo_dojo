@@ -18,7 +18,7 @@ import numpy as np
 from monty.functools import lazy_property
 from pymatgen.core.units import FloatWithUnit
 from pymatgen.core.xcfunc import XcFunc
-from pymatgen.util.plotting_utils import add_fig_kwargs
+from pymatgen.util.plotting import add_fig_kwargs
 
 
 class DeltaFactorEntry(collections.namedtuple("DeltaFactorEntry", "symbol v0 b0 b1 xc")):
