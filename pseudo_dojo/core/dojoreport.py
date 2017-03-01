@@ -259,14 +259,14 @@ class DojoReport(dict):
             return new
 
     @classmethod
-    def empty_from_pseudo(cls, pseudo, hints, devel=False):
+    def empty_from_pseudo(cls, pseudo, ppgen_hints, devel=False):
         """
         Initialize an empty `DojoReport` from the pseudo and an initial guess
         for the cutoff energies in Hartree
 
         Args:
             pseudo: :class:`Pseudo` object.
-            hints: Initial hints on the cutoff energy provided by the pp generator.
+            ppgen_hints: Initial hints on the cutoff energy provided by the pp generator.
                 Dictionary [accuracy]["ecut"] --> ecut_value
         """
         # Build initial list of cutoff energies for tests.
@@ -276,7 +276,7 @@ class DojoReport(dict):
 
         new = cls()
 
-        estart = hints["high"]["ecut"]
+        estart = ppgen_hints["high"]["ecut"]
         dense_right = np.linspace(estart - 10, estart + 10, num=11)
         ecuts = list(dense_right) + [dense_right[-1] + 8, dense_right[-1] + 10,]
 
@@ -298,7 +298,7 @@ class DojoReport(dict):
             pseudo_type=pseudo_type,
             xc=pseudo.xc.as_dict(),
             md5=pseudo.compute_md5(),
-            ppgen_hints=hints,
+            ppgen_hints=ppgen_hints,
             ecuts=ecuts,
         )
         new.path = pseudo.djrepo_path
@@ -799,7 +799,7 @@ class DojoReport(dict):
         """
         trial = "deltafactor" if not with_soc else "deltafactor_soc"
         if trial not in self:
-            print("dojo report does not contain trial:", trial)
+            cprint("dojo report does not contain trial: %s" % str(trial), "red")
             return None
 
         label = kwargs.pop("label", None)
@@ -837,8 +837,7 @@ class DojoReport(dict):
             for acc in self.ALL_ACCURACIES:
                 x0 = self["hints"][acc]["ecut"]
                 if inv_ecut: x0 = 1/x0
-                ax.vlines(x0, vmin, vmax,
-                          colors=self.ACC2COLOR[acc], linestyles="dashed")
+                ax.vlines(x0, vmin, vmax, colors=self.ACC2COLOR[acc], linestyles="dashed")
 
         if label is not None: ax.legend(lines, [label], loc='best', shadow=True)
 
@@ -883,7 +882,7 @@ class DojoReport(dict):
         """
         trial = "deltafactor" if not with_soc else "deltafactor_soc"
         if trial not in self:
-            print("dojo report does not contain trial:", trial)
+            cprint("dojo report does not contain trial: %s" % str(trial), "red")
             return None
 
         ax, fig, plt = get_ax_fig_plt(ax)
@@ -926,7 +925,7 @@ class DojoReport(dict):
         """
         trial = "deltafactor" if not with_soc else "deltafactor_soc"
         if trial not in self:
-            print("dojo report does not contain trial:", trial)
+            cprint("dojo report does not contain trial: %s" % str(trial), "red")
             return None
 
         all_keys = ["dfact_meV", "dfactprime_meV", "v0", "b0_GPa", "b1"]
@@ -1016,7 +1015,7 @@ class DojoReport(dict):
 
         # Handle missing entries: noble gases, Hg ...
         if trial not in self:
-            print("dojo report does not contain trial:", trial)
+            cprint("dojo report does not contain trial: %s" % str(trial), "red")
             return None
 
         ax, fig, plt = get_ax_fig_plt(ax)
@@ -1060,7 +1059,7 @@ class DojoReport(dict):
             trial = "gbrv_" + stype
             if with_soc: trial += "_soc"
             if trial not in self:
-                print("dojo report does not contain trial:", trial)
+                cprint("dojo report does not contain trial: %s" % str(trial), "red")
                 return None
 
         if ax_list is None:
@@ -1112,7 +1111,7 @@ class DojoReport(dict):
         """
         trial = "phgamma" if not with_soc else "phgamma_soc"
         if trial not in self:
-            print("dojo report does not contain trial:", trial)
+            cprint("dojo report does not contain trial: %s" % str(trial), "red")
             return None
 
         frame = self.get_pdframe(trial, "asr2_phfreqs_mev", "noasr_phfreqs_mev")
@@ -1194,7 +1193,7 @@ class DojoReport(dict):
         """
         trial = "ghosts" if not with_soc else "ghosts_soc"
         if trial not in self:
-            print("dojo report does not contain trial:", trial)
+            cprint("dojo report does not contain trial: %s" % str(trial), "red")
             return None
         ecut = list(self[trial].keys())[-1]
 
@@ -1228,6 +1227,7 @@ class DojoDataFrame(pd.DataFrame):
         "gbrv_bcc": "gbrv_bcc_a0_rel_err",
         "gbrv_fcc": "gbrv_fcc_a0_rel_err",
         "phgamma": "asr2_phfreqs_mev"
+        #"phgamma": ["asr2_phfreqs_mev", "noasr_phfreqs_mev"]
     }
 
     _TRIALS2YLABEL = {
@@ -1474,7 +1474,11 @@ class DojoDataFrame(pd.DataFrame):
         fig, ax_list = plt.subplots(nrows=len(trials), ncols=1, sharex=True, sharey=False, squeeze=True)
 
         # See also http://matplotlib.org/examples/pylab_examples/barchart_demo.html
+        #print("frame keys:", self.keys())
+        #print("phgamma:", self["normal_phgamma"])
         for i, (trial, ax) in enumerate(zip(trials, ax_list)):
+            # FIXME
+            if trial == "phgamma": continue
             what = self._TRIALS2KEY[trial]
             ax.set_ylabel(self._TRIALS2YLABEL[trial])
             minval, maxval = np.inf, -np.inf
@@ -1563,7 +1567,7 @@ class DfGbrvDataFrame(pd.DataFrame):
                 try:
                     data = report[trial]
                 except KeyError:
-                    print("%s does not have %s" % (p.basename, trial))
+                    cprint("%s does not have %s" % (p.basename, trial), "red")
                     continue
 
                 # Extract the value with highest ecut.

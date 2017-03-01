@@ -5,7 +5,6 @@ from __future__ import division, print_function, unicode_literals
 import io
 import os
 import abc
-import json
 import tempfile
 import numpy as np
 
@@ -72,7 +71,6 @@ class PseudoGenDataPlotter(object):
     markers_aeps = dict(ae=".", ps="o")
     #color_l = {-1: "black", 0: "red", 1: "blue", 2: "green", 3: "orange"}
     color_l = {0: "black", -1: "magenta", 1: "red", -2: "cyan", 2: "blue", -3: "yellow", 3: "orange"}
-
 
     def __init__(self, **kwargs):
         """Store kwargs in self if k is in self.all_keys."""

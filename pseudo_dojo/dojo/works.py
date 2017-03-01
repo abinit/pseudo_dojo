@@ -3,13 +3,11 @@
 from __future__ import division, print_function, unicode_literals
 
 import abc
-import sys
 import os
 import logging
 import numpy as np
 
 from monty.io import FileLock
-from pymatgen.core.xcfunc import XcFunc
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
 from pymatgen.io.abinit.works import Work, RelaxWork, PhononWork
 from abipy.core.structure import Structure
@@ -17,8 +15,7 @@ from abipy.abio.factories import ion_ioncell_relax_input
 from abipy import abilab
 from pseudo_dojo.core.dojoreport import DojoReport, dojo_dfact_results, dojo_gbrv_results
 from pseudo_dojo.refdata.gbrv import gbrv_database
-from pseudo_dojo.refdata.deltafactor import df_database, df_compute
-from pseudo_dojo.util.dojo_eos import EOS
+from pseudo_dojo.refdata.deltafactor import df_database
 
 logger = logging.getLogger(__name__)
 
