@@ -37,6 +37,7 @@ class GbrvOutdbTest(PseudoDojoTest):
             assert not rec.has_data("normal")
 
             d = rec.as_dict()
+            assert isinstance(d, dict)
             same_rec = GbrvRecord.from_dict(d, outdb.struct_type, rec.dojo_pptable)
             #print(rec)
             assert same_rec == rec
@@ -57,6 +58,7 @@ class GbrvOutdbTest(PseudoDojoTest):
         all_records = []
         for records in outdb.values():
             all_records.extend(records)
+
         for rec1, rec2 in zip(all_records[:-1], all_records[1:]):
             assert rec1 != rec2
             assert not rec1.matches_pseudos(rec2.pseudos)
@@ -66,7 +68,8 @@ class GbrvOutdbTest(PseudoDojoTest):
         assert frame is not None
 
         # Test matplotlib tools
-        outdb.plot_errors()
+        if self.has_matplotlib():
+            outdb.plot_errors()
 
         # Test API to extract jobs
         jobs = outdb.find_jobs_torun(max_njobs=3)

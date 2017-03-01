@@ -61,7 +61,6 @@ class DojoTableTest(PseudoDojoTest):
 
         # Test DeltaFactor, GBRV DataFrame
         dfgbrv_frame = table.get_dfgbrv_dataframe()
-        #print(dfgbrv_frame)
         if self.has_matplotlib():
             dfgbrv_frame.plot_dfgbrv_dist(show=False)
 

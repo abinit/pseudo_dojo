@@ -79,8 +79,3 @@ class RadialFunctionTest(PseudoDojoTest):
         rslice, vslice = rf[1:4]
         self.assert_equal(rslice, rf.rmesh[1:4])
         self.assert_equal(vslice, rf.values[1:4])
-
-
-if __name__ == '__main__':
-    import unittest
-    unittest.main()

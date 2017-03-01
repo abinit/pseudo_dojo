@@ -3,7 +3,7 @@ from __future__ import unicode_literals, division, print_function
 import os.path
 import collections
 import numpy as np
-import unittest2 as unittest
+import unittest
 import pseudo_dojo.data as pdj_data
 
 from copy import copy
@@ -48,7 +48,7 @@ class DojoReportTest(PseudoDojoTest):
         assert not report.has_trial("deltafactor", ecut=10)
         report.add_entry("deltafactor", ecut=10, entry={})
         str(report)
-        #assert report.has_trial("deltafactor", ecut=10)
+        assert report.has_trial("deltafactor", ecut=10)
         #assert not report.check(check_trials=["deltafactors"])
 
     def test_oncvpsp_dojo_report(self):
@@ -119,6 +119,9 @@ class DojoReportTest(PseudoDojoTest):
     @unittest.skipIf(Fig is None, "This test requires matplotlib")
     def test_dojoreport_plots(self):
         """Testing dojoreport plotting methods"""
+        if not self.has_matplotlib():
+            raise unittest.SkipTest("Skipping matpltlib tests")
+
         h_wdr = pdj_data.pseudo("H-wdr.psp8")
         report = h_wdr.dojo_report
         assert isinstance(report.plot_deltafactor_convergence(xc=h_wdr.xc, show=False), Fig)

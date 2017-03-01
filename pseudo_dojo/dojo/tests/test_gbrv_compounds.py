@@ -2,9 +2,9 @@
 from __future__ import division, print_function, unicode_literals
 
 import os
+import pseudo_dojo.data as pdj_data
 
 from abipy import abilab
-import pseudo_dojo.data as pdj_data
 from pseudo_dojo.core import PseudoDojoTest
 from pseudo_dojo.dojo.gbrv_compounds import *
 
