@@ -13,7 +13,7 @@ from pymatgen.util.testing import PymatgenTest
 import numpy.testing.utils as nptu
 import os
 import subprocess
-#import tempfile
+import tempfile
 
 def cmp_version(this, other, op=">="):
     """
@@ -120,6 +120,7 @@ class PseudoDojoTest(PymatgenTest):
 
     @staticmethod
     def has_seaborn():
+        """True if seaborn is installed."""
         return has_seaborn()
 
     def get_tmpname(self, **kwargs):

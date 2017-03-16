@@ -369,15 +369,13 @@ def dojo_notebook(options):
     Generate an ipython notebook for each pseudopotential and open it in the browser.
     """
     from pseudo_dojo.util.notebook import make_open_notebook
-    if True:
-    #with daemon.DaemonContext(detach_process=True):
-        retcode = 0
-        for p in options.pseudos:
-            retcode += make_open_notebook(p.filepath, with_validation=not options.no_validation,
-                                          with_eos=True, hide_code=options.hide_code,
-                                          tmpfile=not options.no_tmp)
-            if retcode != 0: break
-        return retcode
+    retcode = 0
+    for p in options.pseudos:
+        retcode += make_open_notebook(p.filepath, with_validation=not options.no_validation,
+                                      with_eos=True, hide_code=options.hide_code,
+                                      tmpfile=not options.no_tmp)
+        if retcode != 0: break
+    return retcode
 
 
 def dojo_compare(options):

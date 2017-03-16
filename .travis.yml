@@ -1,47 +1,67 @@
 language: python
-python:
-  - "2.7"
-#before_install:
-#
-# command to install dependencies
-#install: "pip install -r requirements.txt --use-mirrors"
-#install: "pip install"
-# This is needed, otherwise, nosetests will import try to import wx.
-#before_script:
-    #- rm abipy/gui/__init__.py 
-    #- export LD_LIBRARY_PATH=/usr/lib/:$LD_LIBRARY_PATH
-    #- python -m netCDF4_utils
-    #- abipy/dev_scripts/check_netcdf4.py
 
-# Setup anaconda to facilitate the installation of numpy and scipy
-# See https://gist.github.com/dan-blanchard/7045057
-before_install:
-  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - export PATH=/home/travis/miniconda/bin:$PATH
-  - conda update --yes conda
-  # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
-  - sudo rm -rf /dev/shm
-  - sudo ln -s /run/shm /dev/shm
-# Install packages
+os:
+  - linux
+#  - osx
+
+#python: # We don't actually use the Travis Python, but this keeps it organized.
+#  - "2.7"
+#  - "3.4"
+#  - "3.5"
+#  - "3.6"
+
+sudo: required
+
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib nose dateutil pandas statsmodels
-  # Coverage packages are on my binstar channel
-  #- conda install --yes -c dan_blanchard python-coveralls nose-cov
+  #- sudo apt-get update
+
+  # Install conda https://conda.io/docs/travis.html
+  - source conda_installer.sh
+
+  # Add my channel
+  #- conda config --add channels gmatteo
+
+  # See https://github.com/BVLC/caffe/issues/3884 and https://docs.continuum.io/mkl-optimizations/
+  - conda install nomkl
+  - conda install gcc scipy
+  - conda install pandas
+  - conda install netcdf4 
+  # See hSttps://github.com/ContinuumIO/anaconda-issues/issues/1360
+  - conda install hdf4=4.2.12
+  - pip install pytest scripttest nose nose-exclude
+  - pip install pep8 python-coveralls
+  - conda install matplotlib seaborn
+  - conda install ipython jupyter nbformat
+  # Install abinit from gmatteo's conda channel.
+  - conda install abinit
+  # phonopy is not a requirement but we test scripts in data/runs that use it
+  - conda install -c conda-forge phonopy
+  # FIXME: I'm still using my fork
+  - git clone https://github.com/gmatteo/pymatgen.git && cd pymatgen && pip install -q -r requirements.txt && pip install -q -r requirements-optional.txt && python setup.py install && cd ../
   - python setup.py install
+  #- mkdir -p ${HOME}/.abinit/abipy 
+  #- cp abipy/data/managers/travis_scheduler.yml ${HOME}/.abinit/abipy/scheduler.yml
+  #- cp abipy/data/managers/travis_manager.yml ${HOME}/.abinit/abipy/manager.yml
+  #- ./dev_scripts/pyclean.py .
+
 # command to run tests
- script: nosetests
- branches:
-   only:
-     - foobar
- notifications:
-   email:
-     recipients:
-       - gmatteo@gmail.com
-     on_success: change
-     on_failure: always
-# Calculate coverage
-# after_success:
-#   - coveralls --config_file .coveragerc
-#
+#script: abicheck.py; pytest -v abipy
+script: abicheck.py; nosetests abipy -v --with-coverage --cover-package=abipy --logging-level=INFO
+# This is to run the integration tests (slow)
+#; pytest -v abipy/integration_tests
+
+branches:
+  only:
+    - master
+
+after_success:
+#- if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+#          coveralls;
+#  fi
+
+notifications:
+  email:
+    recipients:
+      - gmatteo@gmail.com
+    on_success: change
+    on_failure: always

@@ -304,4 +304,4 @@ def write_notebook_html(pseudopath, with_validation=False, with_eos=True, hide_c
                            "a notebook. Install it with `pip install`")
 
     return os.system("jupyter nbconvert --to html --execute %s" % path)
-#    return os.system("jupyter nbconvert --to html --ExecutePreprocessor.enabled=True %s" % path)
+    #return os.system("jupyter nbconvert --to html --ExecutePreprocessor.enabled=True %s" % path)
