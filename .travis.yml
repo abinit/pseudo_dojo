@@ -1,19 +1,24 @@
 language: python
 
-os:
-  - linux
-#  - osx
-
-python: # We don't actually use the Travis Python, but this keeps it organized.
-  - "2.7"
-#  - "3.4"
-#  - "3.5"
-#  - "3.6"
+# We don't actually use the Travis Python but conda
+matrix:
+  include:
+    - os: linux
+      python: 2.7
+      env: PYTHON_VERSION=2.7
+    - os: linux
+      python: 3.6
+      env: PYTHON_VERSION=3.6
+    #- os: osx
+    #  python: 2.7
+    #  language: generic
+    #  env: PYTHON_VERSION=2.7
 
 sudo: required
 
 install:
   #- sudo apt-get update
+  - env
 
   # Install conda https://conda.io/docs/travis.html
   - source conda_installer.sh
@@ -48,7 +53,7 @@ install:
 
 # command to run tests
 #script: pytest -v pseudo_dojo
-script: nosetests pseudo_dojo -v --with-coverage --cover-package=pseudo_dojo --logging-level=INFO
+script: nosetests -v --with-coverage --cover-package=pseudo_dojo --logging-level=INFO
 # This is to run the integration tests (slow)
 #; pytest -v abipy/integration_tests
 
