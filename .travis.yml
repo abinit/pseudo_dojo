@@ -4,8 +4,8 @@ os:
   - linux
 #  - osx
 
-#python: # We don't actually use the Travis Python, but this keeps it organized.
-#  - "2.7"
+python: # We don't actually use the Travis Python, but this keeps it organized.
+  - "2.7"
 #  - "3.4"
 #  - "3.5"
 #  - "3.6"
@@ -38,6 +38,8 @@ install:
   #- conda install -c conda-forge phonopy
   # FIXME: I'm still using my fork
   - git clone https://github.com/gmatteo/pymatgen.git && cd pymatgen && pip install -q -r requirements.txt && pip install -q -r requirements-optional.txt && python setup.py install && cd ../
+  - git clone https://github.com/gmatteo/abipy.git && cd abipy && pip install -q -r requirements.txt && pip install -q -r requirements-optional.txt && python setup.py install && cd ../
+
   - python setup.py install
   #- mkdir -p ${HOME}/.abinit/abipy 
   #- cp abipy/data/managers/travis_scheduler.yml ${HOME}/.abinit/abipy/scheduler.yml
@@ -54,7 +56,7 @@ branches:
   only:
     - master
 
-after_success:
+#after_success:
 #- if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
 #          coveralls;
 #  fi
