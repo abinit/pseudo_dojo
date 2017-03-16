@@ -5,6 +5,7 @@ import os
 import io
 
 from monty.os.path import which
+from monty.termcolor import cprint
 
 
 def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=True, hide_code=False, inline=False):
@@ -250,7 +251,7 @@ The calculation is performed with the Wien2k relaxed parameters obtained from th
     return nbpath
 
 
-def make_open_notebook(pseudopath, with_validation=False, with_eos=True, hide_code=False, tmpfile=True):
+def make_open_notebook(pseudopath, with_validation=False, with_eos=True, hide_code=False, tmpfile=True, foreground=False):
     """
     Generate a jupyter notebook from the pseudopotential path and
     open it in the browser. Return system exit code.
@@ -261,17 +262,34 @@ def make_open_notebook(pseudopath, with_validation=False, with_eos=True, hide_co
           to validate the pseudopotential.
         with_eos: True if EOS plots are wanted.
         tmpfile: True if notebook should be written to temp location else build ipynb name from pseudo file.
+        foreground: By default, jupyter is executed in background and stdout, stderr are redirected
+        to devnull. Use foreground to run the process in foreground
 
     Raise:
         RuntimeError if jupyter is not in $PATH
     """
-    path = write_notebook(pseudopath, with_validation=with_validation,
-                          with_eos=with_eos, tmpfile=tmpfile, hide_code=hide_code)
+    nbpath = write_notebook(pseudopath, with_validation=with_validation,
+                            with_eos=with_eos, tmpfile=tmpfile, hide_code=hide_code)
 
     if which("jupyter") is None:
         raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
 
-    return os.system("jupyter notebook %s" % path)
+    if foreground:
+        cmd = "jupyter notebook %s" % nbpath
+        return os.system(cmd)
+
+    else:
+        cmd = "jupyter notebook %s &> /dev/null &" % nbpath
+        print("Executing:", cmd)
+
+        import subprocess
+        try:
+            from subprocess import DEVNULL # py3k
+        except ImportError:
+            DEVNULL = open(os.devnull, "wb")
+
+        process = subprocess.Popen(cmd.split(), shell=False, stdout=DEVNULL) #, stderr=DEVNULL)
+        cprint("pid: %s" % str(process.pid), "yellow")
 
 
 def write_notebook_html(pseudopath, with_validation=False, with_eos=True, hide_code=True, tmpfile=True, mock=False):

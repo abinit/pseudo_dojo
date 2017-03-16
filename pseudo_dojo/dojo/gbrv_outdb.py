@@ -9,6 +9,7 @@ import numpy as np
 from collections import OrderedDict, defaultdict, Counter
 from monty.io import FileLock
 from monty.string import list_strings
+from monty.termcolor import cprint
 from atomicfile import AtomicFile
 from pandas import DataFrame
 from monty.collections import dict2namedtuple
@@ -409,19 +410,39 @@ class GbrvOutdb(dict):
         frame["rel_err"] = 100 * (frame["this"] - frame["ae"]) / frame["ae"]
         return frame
 
-    def make_open_notebook(self, nbpath=None):
+    def make_open_notebook(self, nbpath=None, foreground=False):
         """
-        Generate an ipython notebook open it in the browser. Return system exit code.
+        Generate an ipython notebook and open it in the browser.
+
+        Args:
+            nbpath: If nbpath is None, a temporay file is created.
+            foreground: By default, jupyter is executed in background and stdout, stderr are redirected
+            to devnull. Use foreground to run the process in foreground
+
+        Return:
+            system exit code.
 
         Raise:
-            RuntimeError if jupyther or ipython are not in $PATH
+            RuntimeError if jupyter is not in $PATH
         """
-        path = self.write_notebook(nbpath=nbpath)
-        cmd = "jupyter notebook %s" % path
-        if which("jupyter") is None:
-            raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
+        nbpath = self.write_notebook(nbpath=nbpath)
 
-        return os.system(cmd)
+        if foreground:
+            cmd = "jupyter notebook %s" % nbpath
+            return os.system(cmd)
+
+        else:
+            cmd = "jupyter notebook %s &> /dev/null &" % nbpath
+            print("Executing:", cmd)
+
+            import subprocess
+            try:
+                from subprocess import DEVNULL # py3k
+            except ImportError:
+                DEVNULL = open(os.devnull, "wb")
+
+            process = subprocess.Popen(cmd.split(), shell=False, stdout=DEVNULL) #, stderr=DEVNULL)
+            cprint("pid: %s" % str(process.pid), "yellow")
 
     def write_notebook(self, nbpath):
         """

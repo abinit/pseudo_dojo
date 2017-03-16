@@ -12,6 +12,7 @@ from collections import namedtuple, OrderedDict
 from monty.os.path import which
 from monty.functools import lazy_property
 from monty.collections import AttrDict
+from monty.termcolor import cprint
 from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.core import NlkState, RadialFunction, RadialWaveFunction
 from abipy.tools.derivatives import finite_diff
@@ -1158,21 +1159,38 @@ class OncvOutputParser(PseudoGenOutputParser):
         os.rmdir(workdir)
 
 
-def oncv_make_open_notebook(outpath):
+def oncv_make_open_notebook(outpath, foreground=False):
     """
-    Generate an ipython notebook from the oncvpsp outputh
-    and open it in the browser. Return system exit code.
+    Generate an ipython notebook and open it in the browser.
+
+    Args:
+        foreground: By default, jupyter is executed in background and stdout, stderr are redirected
+        to devnull. Use foreground to run the process in foreground
+
+    Return:
+        system exit code.
 
     Raise:
-        RuntimeError if jupyther or ipython are not in $PATH
+        RuntimeError if jupyter is not in $PATH
     """
     nbpath = oncv_write_notebook(outpath, nbpath=None)
-    cmd = "jupyter notebook %s" % nbpath
-    if which("jupyter") is not None:
-        return os.system("jupyter notebook %s" % nbpath)
 
-    raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
+    if foreground:
+        cmd = "jupyter notebook %s" % nbpath
+        return os.system(cmd)
 
+    else:
+        cmd = "jupyter notebook %s &> /dev/null &" % nbpath
+        print("Executing:", cmd)
+
+        import subprocess
+        try:
+            from subprocess import DEVNULL # py3k
+        except ImportError:
+            DEVNULL = open(os.devnull, "wb")
+
+        process = subprocess.Popen(cmd.split(), shell=False, stdout=DEVNULL) #, stderr=DEVNULL)
+        cprint("pid: %s" % str(process.pid), "yellow")
 
 def oncv_write_notebook(outpath, nbpath=None):
     """
