@@ -199,11 +199,11 @@ def main():
     def str_examples():
         return """\
 Usage example:
-    oncv.py run H.in         ==> Run oncvpsp input file (scalar relativistic mode).
-    oncv.py plot H.out       ==> Use matplotlib to plot oncvpsp results for pseudo H.psp8.
-    oncv.py gnuplot H.out    ==> Use gnuplot to plot oncvpsp results for pseudo H.psp8.
-    oncv.py nbplot H.out     ==> Generate jupyter notebook to plot oncvpsp results.
-    oncv.py json H.out       ==> Generate JSON file.
+    dojoncv.py run H.in         ==> Run oncvpsp input file (scalar relativistic mode).
+    dojoncv.py plot H.out       ==> Use matplotlib to plot oncvpsp results for pseudo H.psp8.
+    dojoncv.py gnuplot H.out    ==> Use gnuplot to plot oncvpsp results for pseudo H.psp8.
+    dojoncv.py nbplot H.out     ==> Generate jupyter notebook to plot oncvpsp results.
+    dojoncv.py json H.out       ==> Generate JSON file.
 """
 
     def show_examples_and_exit(err_msg=None, error_code=1):
