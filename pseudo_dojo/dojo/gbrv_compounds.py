@@ -7,7 +7,6 @@ import pandas as pd
 import json
 
 from abipy import abilab
-from pymatgen.analysis.eos import EOS
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
 from pymatgen.io.abinit.works import Work
 from pymatgen.io.abinit.flows import Flow
@@ -15,6 +14,7 @@ from abipy.core.structure import Structure
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb
+from pseudo_dojo.util.dojo_eos import EOS
 
 import logging
 logger = logging.getLogger(__name__)

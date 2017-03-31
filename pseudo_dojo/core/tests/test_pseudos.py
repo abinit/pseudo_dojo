@@ -32,10 +32,11 @@ class DojoTableTest(PseudoDojoTest):
         #assert not errors
 
         # Write ipython notebook
-        table.write_notebook()
+        if self.has_nbformat():
+            table.write_notebook()
 
         # Test helper functions
-        dojo_frame.tabulate()
+        #dojo_frame.tabulate()
 
         # Test myfamilies and select_families
         assert isinstance(dojo_frame.select_family("alkaline"), dojo_frame.__class__)
@@ -54,13 +55,14 @@ class DojoTableTest(PseudoDojoTest):
         assert isinstance(dojo_frame.select_rows([1, 3]), dojo_frame.__class__)
 
         # Plot tools
-        dojo_frame.plot_hist(show=False)
-        dojo_frame.plot_trials(show=False)
+        if self.has_matplotlib():
+            dojo_frame.plot_hist(show=False)
+            dojo_frame.plot_trials(show=False)
 
         # Test DeltaFactor, GBRV DataFrame
         dfgbrv_frame = table.get_dfgbrv_dataframe()
-        #print(dfgbrv_frame)
-        dfgbrv_frame.plot_dfgbrv_dist(show=False)
+        if self.has_matplotlib():
+            dfgbrv_frame.plot_dfgbrv_dist(show=False)
 
     #def test_from_djson(self):
     #    """Initializing DojoTable from djson file."""

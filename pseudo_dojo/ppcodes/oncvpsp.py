@@ -5,7 +5,6 @@ from __future__ import division, print_function, unicode_literals
 import io
 import os
 import abc
-import json
 import tempfile
 import numpy as np
 
@@ -13,7 +12,8 @@ from collections import namedtuple, OrderedDict
 from monty.os.path import which
 from monty.functools import lazy_property
 from monty.collections import AttrDict
-from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
+from monty.termcolor import cprint
+from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.core import NlkState, RadialFunction, RadialWaveFunction
 from abipy.tools.derivatives import finite_diff
 
@@ -72,7 +72,6 @@ class PseudoGenDataPlotter(object):
     markers_aeps = dict(ae=".", ps="o")
     #color_l = {-1: "black", 0: "red", 1: "blue", 2: "green", 3: "orange"}
     color_l = {0: "black", -1: "magenta", 1: "red", -2: "cyan", 2: "blue", -3: "yellow", 3: "orange"}
-
 
     def __init__(self, **kwargs):
         """Store kwargs in self if k is in self.all_keys."""
@@ -1160,21 +1159,38 @@ class OncvOutputParser(PseudoGenOutputParser):
         os.rmdir(workdir)
 
 
-def oncv_make_open_notebook(outpath):
+def oncv_make_open_notebook(outpath, foreground=False):
     """
-    Generate an ipython notebook from the oncvpsp outputh
-    and open it in the browser. Return system exit code.
+    Generate an ipython notebook and open it in the browser.
+
+    Args:
+        foreground: By default, jupyter is executed in background and stdout, stderr are redirected
+        to devnull. Use foreground to run the process in foreground
+
+    Return:
+        system exit code.
 
     Raise:
-        RuntimeError if jupyther or ipython are not in $PATH
+        RuntimeError if jupyter is not in $PATH
     """
     nbpath = oncv_write_notebook(outpath, nbpath=None)
-    cmd = "jupyter notebook %s" % nbpath
-    if which("jupyter") is not None:
-        return os.system("jupyter notebook %s" % nbpath)
 
-    raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
+    if foreground:
+        cmd = "jupyter notebook %s" % nbpath
+        return os.system(cmd)
 
+    else:
+        cmd = "jupyter notebook %s &> /dev/null &" % nbpath
+        print("Executing:", cmd)
+
+        import subprocess
+        try:
+            from subprocess import DEVNULL # py3k
+        except ImportError:
+            DEVNULL = open(os.devnull, "wb")
+
+        process = subprocess.Popen(cmd.split(), shell=False, stdout=DEVNULL) #, stderr=DEVNULL)
+        cprint("pid: %s" % str(process.pid), "yellow")
 
 def oncv_write_notebook(outpath, nbpath=None):
     """

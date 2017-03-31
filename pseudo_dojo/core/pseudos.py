@@ -17,7 +17,7 @@ from monty.termcolor import cprint
 from monty.os.path import which
 from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
-from pymatgen.util.plotting_utils import add_fig_kwargs, get_ax_fig_plt
+from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
 from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
 from pseudo_dojo.core.dojoreport import DojoReport
 
@@ -584,11 +584,17 @@ pseudos = DojoTable(%s)""" % str(paths)),
 
         return fig
 
-    def make_open_notebook(self, nbpath=None):
+    def make_open_notebook(self, nbpath=None, foreground=False):
         """
         Generate an ipython notebook and open it in the browser.
-        If nbpath is None, a temporay file is created.
-        Return system exit code.
+
+        Args:
+            nbpath: If nbpath is None, a temporay file is created.
+            foreground: By default, jupyter is executed in background and stdout, stderr are redirected
+            to devnull. Use foreground to run the process in foreground
+
+        Return:
+            system exit code.
 
         Raise:
             RuntimeError if jupyter is not in $PATH
@@ -597,7 +603,23 @@ pseudos = DojoTable(%s)""" % str(paths)),
 
         if which("jupyter") is None:
             raise RuntimeError("Cannot find jupyter in PATH. Install it with `pip install`")
-        return os.system("jupyter notebook %s" % nbpath)
+
+        if foreground:
+            cmd = "jupyter notebook %s" % nbpath
+            return os.system(cmd)
+
+        else:
+            cmd = "jupyter notebook %s &> /dev/null &" % nbpath
+            print("Executing:", cmd)
+
+            import subprocess
+            try:
+                from subprocess import DEVNULL # py3k
+            except ImportError:
+                DEVNULL = open(os.devnull, "wb")
+
+            process = subprocess.Popen(cmd.split(), shell=False, stdout=DEVNULL) #, stderr=DEVNULL)
+            cprint("pid: %s" % str(process.pid), "yellow")
 
     def write_notebook(self, nbpath=None):
         """

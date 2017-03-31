@@ -81,7 +81,7 @@ class TestDojoData(ScriptTest):
 
 
 class TestOncv(ScriptTest):
-    script = os.path.join(script_dir, "oncv.py")
+    script = os.path.join(script_dir, "dojoncv.py")
 
     def test_oncv(self):
         """Testing dojodata.py script"""

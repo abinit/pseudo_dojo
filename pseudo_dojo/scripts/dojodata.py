@@ -7,7 +7,6 @@ import os
 import glob
 import argparse
 import numpy as np
-import daemon
 
 from time import gmtime, strftime
 from warnings import warn
@@ -18,7 +17,7 @@ from monty.os.path import find_exts
 from monty.functools import prof_main
 from monty import termcolor
 from monty.termcolor import cprint
-from pymatgen.util.io_utils import ask_yesno, prompt
+from pymatgen.util.io_utils import ask_yesno
 from pseudo_dojo.core.pseudos import dojopseudo_from_file, DojoTable
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pseudo_dojo.pseudos import check_pseudo
@@ -29,6 +28,16 @@ def straceback():
     import traceback
     return traceback.format_exc()
 
+
+def prompt(question):
+    import six
+    # Fix python 2.x.
+    if six.PY2:
+        my_input = raw_input
+    else:
+        my_input = input
+
+    return my_input(question)
 
 def dojo_figures(options):
     """
@@ -350,8 +359,7 @@ def dojo_nbtable(options):
     """
     Generate an ipython notebook for a pseudopotential table and open it in the browser.
     """
-    with daemon.DaemonContext(detach_process=True):
-        return options.pseudos.make_open_notebook()
+    return options.pseudos.make_open_notebook()
 
 
 def dojo_notebook(options):
@@ -359,15 +367,13 @@ def dojo_notebook(options):
     Generate an ipython notebook for each pseudopotential and open it in the browser.
     """
     from pseudo_dojo.util.notebook import make_open_notebook
-    if True:
-    #with daemon.DaemonContext(detach_process=True):
-        retcode = 0
-        for p in options.pseudos:
-            retcode += make_open_notebook(p.filepath, with_validation=not options.no_validation,
-                                          with_eos=True, hide_code=options.hide_code,
-                                          tmpfile=not options.no_tmp)
-            if retcode != 0: break
-        return retcode
+    retcode = 0
+    for p in options.pseudos:
+        retcode += make_open_notebook(p.filepath, with_validation=not options.no_validation,
+                                      with_eos=True, hide_code=options.hide_code,
+                                      tmpfile=not options.no_tmp)
+        if retcode != 0: break
+    return retcode
 
 
 def dojo_compare(options):
@@ -386,13 +392,12 @@ def dojo_compare(options):
 def dojo_nbcompare(options):
     """Generate ipython notebooks to compare DOJO results for multiple pseudos."""
     pseudos = options.pseudos
-    with daemon.DaemonContext(detach_process=True):
-        for z in pseudos.zlist:
-            pseudos_z = pseudos[z]
-            if len(pseudos_z) > 1:
-                pseudos_z.dojo_nbcompare(what=options.what_plot)
-            else:
-                print("Found only one pseudo for Z=%s" % z)
+    for z in pseudos.zlist:
+        pseudos_z = pseudos[z]
+        if len(pseudos_z) > 1:
+            pseudos_z.dojo_nbcompare(what=options.what_plot)
+        else:
+            print("Found only one pseudo for Z=%s" % z)
 
         return 0
 
@@ -762,8 +767,8 @@ Usage example:
     # Subparser for notebook command.
     p_notebook = subparsers.add_parser('notebook', parents=[copts_parser],
                                        help=dojo_notebook.__doc__)
-    p_notebook.add_argument('--no-daemon', action='store_true', default=False,
-                             help="Don't start jupyter notebook with daemon process")
+    parser.add_argument('--foreground', action='store_true', default=False,
+                         help="Run jupyter notebook in the foreground.")
     p_notebook.add_argument('--no-validation', action='store_true', default=False,
                              help="Don't add the validation cell.")
     p_notebook.add_argument('--hide-code', action='store_true', default=False,

@@ -3,7 +3,7 @@ from __future__ import unicode_literals, division, print_function
 import os.path
 import collections
 import numpy as np
-import unittest2 as unittest
+import unittest
 import pseudo_dojo.data as pdj_data
 
 from copy import copy
@@ -20,15 +20,23 @@ class DojoReportTest(PseudoDojoTest):
 
     def test_dojo_report_base_api(self):
         """Testing dojo report low-level API."""
-        report = DojoReport.from_hints(10, "Si")
-        #report = DojoReport.empty_from_pseudo(cls, pseudo, hints, devel=False)
-        #print(report)
+        #report = DojoReport.from_hints(10, "Si")
+        pseudo = pdj_data.pseudo("Si.psp8")
+        ppgen_hints = {
+            "low": {"ecut": 8.0, "pawecutdg": 8.0},
+            "normal": {"ecut": 10.0, "pawecutdg": 10.0},
+            "high": { "ecut": 16.0, "pawecutdg": 16.0},
+        }
+
+        report = DojoReport.empty_from_pseudo(pseudo, ppgen_hints, devel=False)
+        print(report)
         assert report.symbol == "Si"
         assert report.element.symbol == "Si"
         assert report.ecuts
         assert not report.trials
         for trial in report.ALL_TRIALS:
             assert not report.has_trial(trial)
+        assert not report.has_hints
         assert report.check()
 
         #prev_ecuts = copy(report.ecuts)
@@ -37,8 +45,9 @@ class DojoReportTest(PseudoDojoTest):
 
         report.add_hints([10, 20, 30])
         assert report.has_hints
-        #assert report.hints.low.ecut == 10
-        #assert report.hints.high.ecut == 30
+        assert report["hints"]["low"]["ecut"] == 10
+        assert report["hints"]["high"]["ecut"] == 30
+        assert not report.isvalidated
         #assert not report.md5
 
         # Test add_entry
@@ -47,8 +56,8 @@ class DojoReportTest(PseudoDojoTest):
 
         assert not report.has_trial("deltafactor", ecut=10)
         report.add_entry("deltafactor", ecut=10, entry={})
-        print(report)
-        #assert report.has_trial("deltafactor", ecut=10)
+        str(report)
+        assert report.has_trial("deltafactor", ecut=10)
         #assert not report.check(check_trials=["deltafactors"])
 
     def test_oncvpsp_dojo_report(self):
@@ -64,15 +73,15 @@ class DojoReportTest(PseudoDojoTest):
         assert h_wdr.md5 == ref_md5
         assert "md5" in h_wdr.dojo_report and h_wdr.dojo_report["md5"] == ref_md5
 
-        print(repr(h_wdr))
-        print(h_wdr.as_dict())
+        repr(h_wdr)
+        assert isinstance(h_wdr.as_dict(), dict)
 
         # Test DojoReport
         #report = h_wdr.read_dojo_report()
         #report = h_wdr.read_dojo_report()
         assert h_wdr.has_dojo_report
         report = h_wdr.dojo_report
-        print(report)
+        #print(report)
         assert report.symbol == "H"
         assert report.element.symbol == "H"
         assert report["pseudo_type"] == "NC"
@@ -100,7 +109,7 @@ class DojoReportTest(PseudoDojoTest):
         self.assert_almost_equal(report["gbrv_fcc"][34]["a0_rel_err"], 0.044806085362549146)
 
         # Test Phonon entry
-        self.assert_almost_equal(report["phonon"][36][-1], 528.9531110978663)
+        self.assert_almost_equal(report["phgamma"][36][-1], 528.9531110978663)
 
         # Test API to add ecuts and find missing entries.
         assert np.all(report.ecuts == [32.0,  34.0,  36.0, 38.0, 40.0, 42.0, 52.0])
@@ -119,10 +128,13 @@ class DojoReportTest(PseudoDojoTest):
     @unittest.skipIf(Fig is None, "This test requires matplotlib")
     def test_dojoreport_plots(self):
         """Testing dojoreport plotting methods"""
-        h_wdr = pdj_data.pseudo("H-wdr.psp8")
-        report = h_wdr.dojo_report
-        assert isinstance(report.plot_deltafactor_convergence(xc=h_wdr.xc, show=False), Fig)
-        assert report.plot_deltafactor_convergence(xc=h_wdr.xc, with_soc=True, show=False) is None
+        if not self.has_matplotlib():
+            raise unittest.SkipTest("Skipping matplotlib tests")
+
+        oxygen = pdj_data.pseudo("O.psp8")
+        report = oxygen.dojo_report
+        assert isinstance(report.plot_deltafactor_convergence(xc=oxygen.xc, show=False), Fig)
+        assert report.plot_deltafactor_convergence(xc=oxygen.xc, with_soc=True, show=False) is None
         assert isinstance(report.plot_deltafactor_eos(show=False), Fig)
         assert isinstance(report.plot_etotal_vs_ecut(show=False), Fig)
         assert isinstance(report.plot_gbrv_convergence(show=False), Fig)
