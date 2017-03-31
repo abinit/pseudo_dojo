@@ -1,33 +1,33 @@
 {
-"basename": "Og_r.psp8", 
+"basename": "Og-d_r.psp8", 
 "ecuts": [
-9.0, 
-11.0, 
-13.0, 
-15.0, 
-17.0, 
-19.0, 
-21.0, 
-23.0, 
-25.0, 
-27.0, 
-29.0, 
-37.0, 
-39.0
+10.0, 
+12.0, 
+14.0, 
+16.0, 
+18.0, 
+20.0, 
+22.0, 
+24.0, 
+26.0, 
+28.0, 
+30.0, 
+38.0, 
+40.0
 ], 
-"md5": "f6aadc15e7cd8489e84f19d2aa8ac1bd", 
+"md5": "71a245e3f373d238a140de0a889f5937", 
 "ppgen_hints": {
 "high": {
-"ecut": 19.0, 
-"pawecutdg": 19.0
+"ecut": 20.0, 
+"pawecutdg": 20.0
 }, 
 "low": {
-"ecut": 11.0, 
-"pawecutdg": 11.0
+"ecut": 18.0, 
+"pawecutdg": 18.0
 }, 
 "normal": {
-"ecut": 12.0, 
-"pawecutdg": 12.0
+"ecut": 19.0, 
+"pawecutdg": 19.0
 }
 }, 
 "pseudo_type": "NC", 
