@@ -96,11 +96,11 @@ install_requires = [
     "atomicfile",
     "periodic_table_plotter",
     "monty",
-    "pymatgen",
     "ipython",
     "nbformat",
     "matplotlib",
-    "abipy",
+    "pymatgen",
+    "abipy>0.2.0",
 ]
 
 #---------------------------------------------------------------------------

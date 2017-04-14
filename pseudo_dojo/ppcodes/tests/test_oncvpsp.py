@@ -1,5 +1,5 @@
 """Unit tests for oncvpsp"""
-from __future__ import division, print_function, unicode_literals
+from __future__ import division, print_function, unicode_literals, absolute_import
 
 import os
 
@@ -20,7 +20,7 @@ class OncvOutputParserTest(PseudoDojoTest):
         p.scan(verbose=1)
         assert p.run_completed
 
-        print(p)
+        repr(p); str(p)
         assert p.calc_type == "non-relativistic"
         assert not p.fully_relativistic
         assert p.version == "2.1.1"
@@ -69,7 +69,7 @@ class OncvOutputParserTest(PseudoDojoTest):
 
         for l, pot in p.potentials.items():
             assert pot.rmesh[0], pot.rmesh[-1] == (0.0099448, 3.9647436)
-            print(l)
+            str(l)
             assert pot.values[0] == pl0[l]
             assert all(pot.rmesh == vloc.rmesh)
 

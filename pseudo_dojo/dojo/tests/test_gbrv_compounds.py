@@ -1,5 +1,5 @@
 """Unit tests for dojo works"""
-from __future__ import division, print_function, unicode_literals
+from __future__ import division, print_function, unicode_literals, absolute_import
 
 import os
 import pseudo_dojo.data as pdj_data

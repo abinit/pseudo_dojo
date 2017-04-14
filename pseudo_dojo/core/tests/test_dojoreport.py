@@ -1,4 +1,5 @@
-from __future__ import unicode_literals, division, print_function
+"""Tests for dojoreport module."""
+from __future__ import unicode_literals, division, print_function, absolute_import
 
 import os.path
 import collections
@@ -9,11 +10,6 @@ import pseudo_dojo.data as pdj_data
 from copy import copy
 from pseudo_dojo.core.testing import PseudoDojoTest
 from pseudo_dojo.core.dojoreport import DojoReport
-
-try:
-    from matplotlib.figure import Figure as Fig
-except ImportError:
-    Fig = None
 
 
 class DojoReportTest(PseudoDojoTest):
@@ -29,7 +25,7 @@ class DojoReportTest(PseudoDojoTest):
         }
 
         report = DojoReport.empty_from_pseudo(pseudo, ppgen_hints, devel=False)
-        print(report)
+        repr(repr); str(report)
         assert report.symbol == "Si"
         assert report.element.symbol == "Si"
         assert report.ecuts
@@ -56,7 +52,7 @@ class DojoReportTest(PseudoDojoTest):
 
         assert not report.has_trial("deltafactor", ecut=10)
         report.add_entry("deltafactor", ecut=10, entry={})
-        str(report)
+        repr(report); str(report)
         assert report.has_trial("deltafactor", ecut=10)
         #assert not report.check(check_trials=["deltafactors"])
 
@@ -125,7 +121,6 @@ class DojoReportTest(PseudoDojoTest):
         #missing = report.find_missing_entries()
         #assert missing and all(v == [30, 33, 53] for v in missing.values())
 
-    @unittest.skipIf(Fig is None, "This test requires matplotlib")
     def test_dojoreport_plots(self):
         """Testing dojoreport plotting methods"""
         if not self.has_matplotlib():
@@ -133,11 +128,11 @@ class DojoReportTest(PseudoDojoTest):
 
         oxygen = pdj_data.pseudo("O.psp8")
         report = oxygen.dojo_report
-        assert isinstance(report.plot_deltafactor_convergence(xc=oxygen.xc, show=False), Fig)
+        assert report.plot_deltafactor_convergence(xc=oxygen.xc, show=False)
         assert report.plot_deltafactor_convergence(xc=oxygen.xc, with_soc=True, show=False) is None
-        assert isinstance(report.plot_deltafactor_eos(show=False), Fig)
-        assert isinstance(report.plot_etotal_vs_ecut(show=False), Fig)
-        assert isinstance(report.plot_gbrv_convergence(show=False), Fig)
-        assert isinstance(report.plot_gbrv_eos('bcc', show=False), Fig)
-        assert isinstance(report.plot_gbrv_eos('fcc', show=False), Fig)
-        assert isinstance(report.plot_phonon_convergence(show=False), Fig)
+        assert report.plot_deltafactor_eos(show=False)
+        assert report.plot_etotal_vs_ecut(show=False)
+        assert report.plot_gbrv_convergence(show=False)
+        assert report.plot_gbrv_eos('bcc', show=False)
+        assert report.plot_gbrv_eos('fcc', show=False)
+        assert report.plot_phonon_convergence(show=False)

@@ -21,10 +21,18 @@ install:
   - env
 
   # Install conda https://conda.io/docs/travis.html
-  - source conda_installer.sh
+  - source ./dev_scripts/conda_installer.sh
 
-  # Add my channel
-  #- conda config --add channels gmatteo
+  # Install abinit from abinit conda channel.
+  - conda config --add channels conda-forge
+  - conda install -c abinit abinit=8.2.2
+
+  # Get pymatgen from matsci
+  - conda config --add channels matsci
+  # Use my pymatgen fork
+  #- git clone https://github.com/gmatteo/pymatgen.git && cd pymatgen && pip install -q -r requirements.txt && pip install -q -r requirements-optional.txt && python setup.py install && cd ../
+  # pymatgen master
+  #- git clone https://github.com/materialsproject/pymatgen.git && cd pymatgen && pip install -q -r requirements.txt && pip install -q -r requirements-optional.txt && python setup.py install && cd ../
 
   # See https://github.com/BVLC/caffe/issues/3884 and https://docs.continuum.io/mkl-optimizations/
   - conda install nomkl
@@ -46,25 +54,22 @@ install:
   - git clone https://github.com/gmatteo/abipy.git && cd abipy && pip install -q -r requirements.txt && pip install -q -r requirements-optional.txt && python setup.py install && cd ../
 
   - python setup.py install
-  #- mkdir -p ${HOME}/.abinit/abipy 
-  #- cp abipy/data/managers/travis_scheduler.yml ${HOME}/.abinit/abipy/scheduler.yml
-  #- cp abipy/data/managers/travis_manager.yml ${HOME}/.abinit/abipy/manager.yml
-  #- ./dev_scripts/pyclean.py .
+  - mkdir -p ${HOME}/.abinit/abipy 
+  - cp dev_scripts/travis_scheduler.yml ${HOME}/.abinit/abipy/scheduler.yml
+  - cp dev_scripts/travis_manager.yml ${HOME}/.abinit/abipy/manager.yml
+    #- ./dev_scripts/pyclean.py .
 
 # command to run tests
-#script: pytest -v pseudo_dojo
-script: nosetests -v --with-coverage --cover-package=pseudo_dojo --logging-level=INFO
-# This is to run the integration tests (slow)
-#; pytest -v abipy/integration_tests
+script: ./dev_scripts/runtests.sh
 
 branches:
   only:
     - master
+    - develop
 
-#after_success:
-#- if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-#          coveralls;
-#  fi
+after_success:
+- if [[ "${PYTHON_VERSION}" == "2.7" && "${TRAVIS_OS_NAME}" == "linux" ]]; then coveralls; fi
+
 
 notifications:
   email:

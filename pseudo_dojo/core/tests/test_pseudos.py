@@ -1,5 +1,5 @@
 # coding: utf-8
-from __future__ import division, print_function, unicode_literals
+from __future__ import division, print_function, unicode_literals, absolute_import
 
 import tempfile
 
@@ -16,7 +16,7 @@ class DojoTableTest(PseudoDojoTest):
         table = DojoTable.from_dojodir(dojotable_absdir("ONCVPSP-PBE-PDv0.3"))
 
         # Produce template file for djson file.
-        table.to_djson()
+        assert isinstance(table.to_djson(), dict)
 
         # This table contains multiple pseudos for element!
         # dojo_check_errors should detect it.
@@ -52,6 +52,7 @@ class DojoTableTest(PseudoDojoTest):
         for row in myrows:
             f = dojo_frame.select_rows(row)
             assert len(f) and isinstance(f, dojo_frame.__class__)
+
         assert isinstance(dojo_frame.select_rows([1, 3]), dojo_frame.__class__)
 
         # Plot tools
