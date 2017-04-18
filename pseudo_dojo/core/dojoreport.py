@@ -792,6 +792,7 @@ class DojoReport(dict):
 
         Args:
             ax: matplotlib Axes, if ax is None a new figure is created.
+            inv_ecut: True to plot etotal vs 1/ecut.
             with_soc: If True, the results obtained with SOC are plotted (if available).
 
         Returns:
@@ -916,8 +917,9 @@ class DojoReport(dict):
 
         Args:
             xc: String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE"
-            code: Reference code
+            code: Reference code.
             with_soc: If True, the results obtained with SOC are plotted (if available).
+            what:
             ax_list: List of matplotlib Axes, if ax_list is None a new figure is created
 
         Returns:
@@ -1170,7 +1172,6 @@ class DojoReport(dict):
 
         fig.suptitle("Phonons in cm-1")
         return fig
-
 
     @add_fig_kwargs
     def plot_ebands(self, ecut=None, with_soc=False, **kwargs):

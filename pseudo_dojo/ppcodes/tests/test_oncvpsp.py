@@ -17,10 +17,12 @@ class OncvOutputParserTest(PseudoDojoTest):
         """Parsing the non-relativistic output file produced by ONCVPSPS."""
         # Non-relativistic results
         p = OncvOutputParser(filepath("08_O_nr.out"))
+        repr(p); str(p)
+
         p.scan(verbose=1)
+        repr(p); str(p)
         assert p.run_completed
 
-        repr(p); str(p)
         assert p.calc_type == "non-relativistic"
         assert not p.fully_relativistic
         assert p.version == "2.1.1"
@@ -44,12 +46,17 @@ class OncvOutputParserTest(PseudoDojoTest):
 
         # Build the plotter
         plotter = p.make_plotter()
+        repr(plotter); str(plotter)
+        self._call_plotter_methods(plotter)
+
+        #if self.has_nbformat():
 
     def test_scalar_relativistic(self):
         """Parsing the scalar-relativistic output file produced by ONCVPSPS."""
         # Scalar relativistic output
         p = OncvOutputParser(filepath("08_O_sr.out"))
         p.scan(verbose=1)
+        repr(p); str(p)
         assert p.run_completed
 
         assert not p.fully_relativistic
@@ -118,10 +125,17 @@ class OncvOutputParserTest(PseudoDojoTest):
         assert ae1.energies[0], ae1.values[0]  == (2.000000, -2.523018)
         assert ps1.values[0] == -2.521334
 
+        # Build the plotter
+        plotter = p.make_plotter()
+        repr(plotter); str(plotter)
+        self._call_plotter_methods(plotter)
+
     def test_full_relativistic(self):
         """Parsing the full-relativistic output file produced by ONCVPSPS."""
         p = OncvOutputParser(filepath("08_O_r.out"))
+
         p.scan(verbose=1)
+        repr(p); str(p)
         assert p.run_completed
 
         assert p.fully_relativistic
@@ -136,3 +150,23 @@ class OncvOutputParserTest(PseudoDojoTest):
         assert p.lmax == 1
 
         # TODO: Wavefunctions
+
+        # Build the plotter
+        plotter = p.make_plotter()
+        repr(plotter); str(plotter)
+        self._call_plotter_methods(plotter)
+
+    def _call_plotter_methods(self, plotter):
+        if self.has_matplotlib():
+            assert plotter.plot_atan_logders(show=False)
+            assert plotter.plot_radial_wfs(show=False)
+            assert plotter.plot_projectors(show=False)
+            assert plotter.plot_densities(show=False)
+            assert plotter.plot_der_densities(order=1, show=False)
+            assert plotter.plot_potentials(show=False)
+            assert plotter.plot_der_potentials(order=1, show=False)
+            assert plotter.plot_ene_vs_ecut(show=False)
+            assert plotter.plot_atanlogder_econv(show=False)
+            assert plotter.plot_dens_and_pots(show=False)
+            assert plotter.plot_waves_and_projs(show=False)
+            assert plotter.plot_den_formfact(ecut=40, show=False)
