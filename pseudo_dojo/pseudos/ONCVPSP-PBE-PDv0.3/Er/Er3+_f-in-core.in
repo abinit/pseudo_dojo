@@ -1,18 +1,18 @@
 # ATOM AND REFERENCE CONFIGURATION
 # atsym  z   nc   nv     iexc    psfile
-  Sm 62.00   10    4       4      psp8
+  Er 68.00   10    4       4            psp8
 #
 #   n    l    f        energy (Ha)
     1    0    2.00    
-    2    0    2.00    
+    2    0    2.00   
     2    1    6.00    
-    3    0    2.00    
+    3    0    2.00   
     3    1    6.00    
     3    2   10.00    
     4    0    2.00    
     4    1    6.00    
     4    2   10.00    
-    4    3    5.00    
+    4    3   11.00    
     5    0    2.00    
     5    1    6.00    
     5    2    1.00    
@@ -23,14 +23,14 @@
     3
 #
 #   l,   rc,     ep,   ncon, nbas, qcut
-    0    2.10   -1.61    4    8    5.50
-    1    1.90   -0.91    4    8    7.00
-    2    1.90   -0.11    4    9    6.60
+    0    2.05   -1.90    4    8    6.40
+    1    1.80   -1.00    4    9    7.50
+    2    1.80   -0.80    4    9    6.60
     3    2.50    1.00    4    8    6.50
 #
 # LOCAL POTENTIAL
 # lloc, lpopt,  rc(5),   dvloc0
-    4    4      1.90       0.00
+    4    4      1.80       0.00
 #
 # VANDERBILT-KLEINMAN-BYLANDER PROJECTORs
 # l, nproj, debl
