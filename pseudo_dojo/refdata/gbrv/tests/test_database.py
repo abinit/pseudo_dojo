@@ -1,6 +1,5 @@
 """Unit tests for gbrv database."""
-from __future__ import division, print_function
-
+from __future__ import division, print_function, unicode_literals, absolute_import
 
 from pymatgen.core.xcfunc import XcFunc
 from pseudo_dojo.core.testing import PseudoDojoTest

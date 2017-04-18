@@ -1,15 +1,10 @@
-from __future__ import print_function, division
+from __future__ import print_function, division, unicode_literals
 
-import unittest2 as unittest
+import unittest
 
 from pymatgen.core.xcfunc import XcFunc
 from pseudo_dojo.core import PseudoDojoTest
 from pseudo_dojo.refdata.deltafactor.database import df_database, df_compute, read_tables_from_file
-
-try:
-    import matplotlib
-except ImportError:
-    matplotlib = None
 
 class DeltaFactorDatabaseTest(PseudoDojoTest):
 
@@ -84,10 +79,10 @@ class DeltaFactorDatabaseTest(PseudoDojoTest):
             same_df = df_compute(wien2k.v0, wien2k.b0, wien2k.b1, vasp.v0, vasp.b0, vasp.b1, b0_GPa=False)
             self.assert_almost_equal(df, same_df, decimal=2)
 
-    @unittest.skipIf(matplotlib is None, "Requires matplotlib")
     def test_plot(self):
         """Test plot_error_of_code."""
-        self.pbe_db.plot_error_of_code("VASP", show=False)
+        if self.has_matplotlib():
+            assert self.pbe_db.plot_error_of_code("VASP", show=False)
 
     #def test_read_tables_from_file(filepath):
     #    for xc, files in DeltaFactorDatabase._FILES4XC.items():

@@ -15,6 +15,7 @@ import os
 import subprocess
 import tempfile
 
+
 def cmp_version(this, other, op=">="):
     """
     Compare two version strings with the given operator `op`
