@@ -251,7 +251,8 @@ The calculation is performed with the Wien2k relaxed parameters obtained from th
     return nbpath
 
 
-def make_open_notebook(pseudopath, with_validation=False, with_eos=True, hide_code=False, tmpfile=True, foreground=False):
+def make_open_notebook(pseudopath, with_validation=False, with_eos=True,
+                       hide_code=False, tmpfile=True, foreground=False):
     """
     Generate a jupyter notebook from the pseudopotential path and
     open it in the browser. Return system exit code.

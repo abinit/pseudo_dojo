@@ -367,13 +367,10 @@ def dojo_notebook(options):
     Generate an ipython notebook for each pseudopotential and open it in the browser.
     """
     from pseudo_dojo.util.notebook import make_open_notebook
-    retcode = 0
     for p in options.pseudos:
-        retcode += make_open_notebook(p.filepath, with_validation=not options.no_validation,
-                                      with_eos=True, hide_code=options.hide_code,
-                                      tmpfile=not options.no_tmp)
-        if retcode != 0: break
-    return retcode
+        make_open_notebook(p.filepath, with_validation=not options.no_validation,
+                           with_eos=True, hide_code=options.hide_code, tmpfile=not options.no_tmp)
+    return 0
 
 
 def dojo_compare(options):
@@ -772,9 +769,9 @@ Usage example:
     p_notebook.add_argument('--no-validation', action='store_true', default=False,
                              help="Don't add the validation cell.")
     p_notebook.add_argument('--hide-code', action='store_true', default=False,
-                            help="Add a cell that hided the raw code.")
+                            help="Add a cell that hides the raw code.")
     p_notebook.add_argument('--no-tmp', action='store_true', default=False,
-                            help="Don't put the notebook in the tmp place.")
+                            help="Don't use temporary file for notebook.")
 
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[copts_parser, plot_options_parser],
