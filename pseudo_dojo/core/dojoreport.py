@@ -1211,7 +1211,7 @@ class DojoReport(dict):
             for i, s in enumerate(dless_states):
                 print("[%d]" % i, s)
 
-        return ebands.plot_with_edos(edos, **kwargs)
+        return ebands.plot_with_edos(edos, show=False, **kwargs)
 
 ######################
 ## Pandas DataFrame ##
