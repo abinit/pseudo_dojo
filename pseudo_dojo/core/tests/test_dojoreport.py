@@ -69,7 +69,7 @@ class DojoReportTest(PseudoDojoTest):
         assert h_wdr.md5 == ref_md5
         assert "md5" in h_wdr.dojo_report and h_wdr.dojo_report["md5"] == ref_md5
 
-        repr(h_wdr)
+        repr(h_wdr); str(h_wdr)
         assert isinstance(h_wdr.as_dict(), dict)
 
         # Test DojoReport
@@ -129,10 +129,19 @@ class DojoReportTest(PseudoDojoTest):
         oxygen = pdj_data.pseudo("O.psp8")
         report = oxygen.dojo_report
         assert report.plot_deltafactor_convergence(xc=oxygen.xc, show=False)
+        assert report.plot_deltafactor_convergence(xc=oxygen.xc, code="VASP", with_soc=False, show=False)
         assert report.plot_deltafactor_convergence(xc=oxygen.xc, with_soc=True, show=False) is None
         assert report.plot_deltafactor_eos(show=False)
+        assert report.plot_deltafactor_eos(with_soc=True, show=False) is None
         assert report.plot_etotal_vs_ecut(show=False)
+        assert report.plot_etotal_vs_ecut(inv_ecut=True, show=False)
+        assert report.plot_etotal_vs_ecut(with_soc=True, show=False) is None
         assert report.plot_gbrv_convergence(show=False)
+        assert report.plot_gbrv_convergence(with_soc=True, show=False) is None
         assert report.plot_gbrv_eos('bcc', show=False)
         assert report.plot_gbrv_eos('fcc', show=False)
+        assert report.plot_gbrv_eos('fcc', with_soc=True, show=False) is None
         assert report.plot_phonon_convergence(show=False)
+        assert report.plot_phonon_convergence(with_soc=True, show=False) is None
+        assert report.plot_ebands(show=False)
+        assert report.plot_ebands(with_soc=True, show=False) is None

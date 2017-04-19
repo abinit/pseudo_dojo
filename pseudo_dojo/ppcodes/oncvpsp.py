@@ -88,13 +88,14 @@ class PseudoGenDataPlotter(object):
         """Iterator with the keys stored in self."""
         return (k for k in self.all_keys if getattr(self, k))
 
-    def plot_key(self, key, ax=None, **kwargs):
+    def plot_key(self, key, ax=None, show=True, **kwargs):
         """Plot a singol quantity specified by key."""
         ax, fig, plt = get_ax_fig_plt(ax)
 
         # key --> self.plot_key()
         getattr(self, "plot_" + key)(ax=ax, **kwargs)
-        self._mplt.show()
+        if show:
+            self._mplt.show()
 
     def _wf_pltopts(self, l, aeps):
         """Plot options for wavefunctions."""
@@ -461,7 +462,7 @@ class MultiPseudoGenDataPlotter(object):
         i = -1
         for (label, plotter), lineopt in zip(self._plotters_odict.items(), self.iter_lineopt()):
             i += 1
-            plotter.plot_key(key, ax=ax_list[i])
+            plotter.plot_key(key, ax=ax_list[i], show=False)
 
         return fig
 
@@ -480,6 +481,7 @@ class PseudoGenResults(AttrDict):
 
 
 class AtanLogDer(namedtuple("AtanLogDer", "l, energies, values")):
+
     @property
     def to_dict(self):
         return dict(
@@ -731,9 +733,13 @@ class OncvOutputParser(PseudoGenOutputParser):
         """String representation."""
         lines = []
         app = lines.append
-        app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
-        app("oncvpsp calculation: %s: " % self.calc_type)
-        app("completed: %s" % self.run_completed)
+
+        if hasattr(self, "calc_type"):
+            app("%s, oncvpsp version: %s, date: %s" % (self.calc_type, self.version, self.gendate))
+            app("oncvpsp calculation: %s: " % self.calc_type)
+            app("completed: %s" % self.run_completed)
+        else:
+            app("Object is empty. Call scan method to analyze output file")
 
         return "\n".join(lines)
 
@@ -1191,6 +1197,7 @@ def oncv_make_open_notebook(outpath, foreground=False):
 
         process = subprocess.Popen(cmd.split(), shell=False, stdout=DEVNULL) #, stderr=DEVNULL)
         cprint("pid: %s" % str(process.pid), "yellow")
+
 
 def oncv_write_notebook(outpath, nbpath=None):
     """

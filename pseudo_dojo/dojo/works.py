@@ -8,7 +8,10 @@ import logging
 import numpy as np
 
 from monty.io import FileLock
+from pymatgen.core.units import bohr_to_ang
+from pymatgen.core.xcfunc import XcFunc
 from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
+from pymatgen.io.abinit.tasks import RelaxTask
 from pymatgen.io.abinit.works import Work, RelaxWork, PhononWork
 from abipy.core.structure import Structure
 from abipy.abio.factories import ion_ioncell_relax_input
@@ -31,6 +34,12 @@ class DojoWork(Work):
     def dojo_trial(self):
         """String identifying the DOJO trial. Used to write results in the DOJO_REPORT."""
 
+    @property
+    def djrepo_path(self):
+        """Path to the djrepo file."""
+        root, ext = os.path.splitext(self.dojo_pseudo.filepath)
+        return root + ".djrepo"
+
     def add_entry_to_dojoreport(self, entry, overwrite_data=False, pop_trial=False):
         """
         Write/update the DOJO_REPORT section of the pseudopotential.
@@ -44,8 +53,9 @@ class DojoWork(Work):
                 already filled.
             pop_trial: True if the trial should be removed before adding the new entry.
         """
-        root, ext = os.path.splitext(self.dojo_pseudo.filepath)
-        djrepo = root + ".djrepo"
+        #root, ext = os.path.splitext(self.dojo_pseudo.filepath)
+        #djrepo = root + ".djrepo"
+        djrepo = self.djrepo_path
         self.history.info("Writing dojreport data to %s" % djrepo)
 
         # Update file content with Filelock.
@@ -861,6 +871,7 @@ class RelaxAndAddPhGammaWork(RelaxWork):
 
 
 class PhononDojoWork(PhononWork, DojoWork):
+
     @property
     def dojo_trial(self):
         return self._dojo_trial
@@ -894,3 +905,170 @@ class PhononDojoWork(PhononWork, DojoWork):
 
         self.add_entry_to_dojoreport(entry)
         return results
+
+
+
+class RocksaltRelaxationFactory(object):
+    """
+    Factory producing work objects for the calculation of ebands for testing for ghosts.
+    """
+
+    def __init__(self, xc):
+        """xc is the exchange-correlation functional e.g. PBE, PW."""
+        self.xc = XcFunc.asxc(xc)
+
+    def work_for_pseudo(self, pseudo, ecut=None, pawecutdg=None,
+                        spin_mode="unpolarized", include_soc=False,
+                        tolwfr=1.e-12, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
+        """
+        Returns a :class:`Work` object from the given pseudopotential.
+
+        Args:
+            pseudo: :class:`Pseudo` object.
+            ecut: Cutoff energy in Hartree
+            pawecutdg: Cutoff energy of the fine grid (PAW only)
+            spin_mode: Spin polarization option
+            tolwfr: Tolerance on the residuals.
+            smearing: Smearing technique.
+            workdir: Working directory.
+            manager: :class:`TaskManager` object.
+            kwargs: Extra variables passed to Abinit.
+        """
+        if pseudo.ispaw and pawecutdg is None:
+            raise ValueError("pawecutdg must be specified for PAW calculations.")
+
+        if pseudo.xc != self.xc:
+            raise ValueError(
+                "Pseudo xc differs from the XC used to instantiate the factory\n"
+                "Pseudo: %s, Factory: %s" % (pseudo.xc, self.xc))
+
+        # Build structure.
+        a = 9.26 * bohr_to_ang # * 2
+        species = [pseudo.symbol, "N"]
+        structure = Structure.rocksalt(a, species)
+
+        n_pseudo = "../pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/N/N.psp8"
+
+        # Build input template.
+        template = abilab.AbinitInput(structure, pseudos=[pseudo, n_pseudo])
+
+        # input for EuN Rocksalt
+        template.set_vars(
+            #ntypat  2
+            #znucl   63 7
+            #natom   2
+            #typat   1 2
+            #acell   3*9.26
+            #rprim   0.0  0.5  0.5
+            #        0.5  0.0  0.5
+            #        0.5  0.5  0.0
+            #xred    0.00000  0.00000  0.00000
+            #        0.50000  0.50000  0.50000
+            occopt=7,
+            tsmear=0.001,
+            #ndtset   6
+            #ecut:    30
+            #ecut+    5
+            ecutsm=0.5,
+
+            kptopt=1,
+            ngkpt=[8, 8, 8],
+            nshiftk=4,
+            shiftk=[0.0, 0.0, 0.5,
+                    0.0, 0.5, 0.0,
+                    0.5, 0.0, 0.0,
+                    0.5, 0.5, 0.5],
+            nstep=60,
+            ionmov=2,
+            optcell=1,
+            dilatmx=1.14,
+            tolvrs=1.0E-16,
+            tolmxf=1.0E-06,
+            ntime=40,
+            prtden=0,
+            prteig=0,
+            prtwf=-1,
+        )
+
+        work = RocksaltRelaxationWork()
+        work._dojo_pseudo = pseudo
+        for ecut in ecut_list:
+            task = RelaxTask(template.new_with_vars(ecut=ecut))
+            print(task.input)
+            work.register(task)
+
+        return work
+
+        #return GhostsWork(
+        #    structure, pseudo, kppa, maxene,
+        #    spin_mode=spin_mode, include_soc=include_soc, tolwfr=tolwfr, smearing=smearing,
+        #    ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
+        #    workdir=workdir, manager=manager, **kwargs)
+
+
+class RocksaltRelaxationWork(DojoWork):
+
+    @property
+    def dojo_trial(self):
+        if not self.include_soc:
+            return "lanthanides_relax"
+        else:
+            return "lanthanides_relax_soc"
+
+    @property
+    def dojo_pseudo(self):
+        return self._pseudo
+
+    def on_all_ok(self):
+        """
+        Results are written to the dojoreport.
+        """
+        results = super(PhononDojoWork, self).on_all_ok()
+
+        entries = {}
+        for task in self:
+            ecut = task.input["ecut"]
+            final_structure = task.get_final_structure()
+
+            # Convert float to string with 1 decimal digit.
+            dojo_ecut = "%.1f" % ecut
+            entries[dojo_ecut] = final.structure.lattice.as_dict()
+
+        # Convert to JSON and add results to the dojo report.
+        #entry = dict(ecut=self.ecut, pawecutdg=self.dojo_pawecutdg, kppa=self.dojo_kppa)
+        #self.add_entry_to_dojoreport(entry)
+
+        return results
+
+        djrepo = self.djrepo_path
+
+        # Update file content with Filelock.
+        with FileLock(djrepo):
+            # Read report from file.
+            file_report = DojoReport.from_file(djrepo)
+
+            # Create new entry if not already there
+            dojo_trial = self.dojo_trial
+
+            #if pop_trial:
+            #    file_report.pop(dojo_trial, None)
+
+            if dojo_trial not in file_report:
+                file_report[dojo_trial] = {}
+
+            # Convert float to string with 1 decimal digit.
+            dojo_ecut = "%.1f" % self.ecut
+
+            # Check that we are not going to overwrite data.
+            if dojo_ecut in file_report[dojo_trial]:
+                if not overwrite_data:
+                    raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
+                else:
+                    file_report[dojo_trial].pop(dojo_ecut)
+
+            # Update file_report by adding the new entry and write new file
+            file_report[dojo_trial][dojo_ecut] = entry
+
+            # Write new dojo report and update the pseudo attribute
+            file_report.json_write()
+            self._pseudo.dojo_report = file_report

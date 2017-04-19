@@ -38,7 +38,7 @@ class DojoApiTest(PseudoDojoTest):
         # Select one particular table to be used for calculations.
         # Main entry point for client code.
         oncv_pbe_table = dojo_tables["ONCVPSP-PBE-PDv0.2-accuracy"]
-        #print(oncv_pbe_table)
+        repr(oncv_pbe_table); str(oncv_pbe_table)
         assert oncv_pbe_table
         assert oncv_pbe_table.xc == "PBE"
         assert all(p.isnc for p in oncv_pbe_table)
@@ -108,7 +108,8 @@ class DojoApiTest(PseudoDojoTest):
                 dojo_tables.select_paw_pseudos("Al", xc="PW")))
 
         # Plots
-        #dojo_tables.plot_numpseudos()
+        #if self.has_matplotlib():
+            #dojo_tables.plot_numpseudos()
 
 
 class DojoPseudoFilesTest(PseudoDojoTest):
