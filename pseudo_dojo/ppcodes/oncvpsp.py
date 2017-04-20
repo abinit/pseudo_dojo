@@ -640,7 +640,7 @@ class OncvOutputParser(PseudoGenOutputParser):
             if line.startswith("# atsym"):
                 values = self.lines[i+1].split()
                 keys = header[1:].split()
-                assert len(keys) == len(values)
+                # assert len(keys) == len(values)
                 # Store them in self.
                 for k, v in zip(keys, values):
                     setattr(self, k, v)
