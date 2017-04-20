@@ -1,3 +1,4 @@
+"""Tests for deltafactor module."""
 from __future__ import print_function, division, unicode_literals
 
 import unittest
@@ -5,6 +6,7 @@ import unittest
 from pymatgen.core.xcfunc import XcFunc
 from pseudo_dojo.core import PseudoDojoTest
 from pseudo_dojo.refdata.deltafactor.database import df_database, df_compute, read_tables_from_file
+
 
 class DeltaFactorDatabaseTest(PseudoDojoTest):
 

@@ -7,11 +7,17 @@ from pseudo_dojo.refdata.gbrv.database import gbrv_database
 
 
 class TestGbrvDatabase(PseudoDojoTest):
+
     def test_gbrv(self):
         """Testing GBRV database..."""
         # Init the database.
+        with self.assertRaises(ValueError):
+            gbrv_database(xc="PW")
+
         db = gbrv_database(xc="PBE")
+        repr(db); str(db)
         assert db.xc == "PBE"
+        db.print_formulas()
 
         # Cached?
         assert gbrv_database(XcFunc.from_abinit_ixc(11)) is db
@@ -49,21 +55,21 @@ class TestGbrvDatabase(PseudoDojoTest):
         assert lif.species == ["Li", "F"]
         assert lif.ae == 4.076  and lif.pslib == 4.081
         struct = lif.build_structure()
-        #print(struct.to_abivars())
+        assert str(struct.to_abivars())
 
         # Get AB03 entry for SrLiF3
         srlif3 = db.get_abo3_entry("SrLiF3")
         assert srlif3.symbol == "SrLiF3" and srlif3.struct_type == "ABO3"
         assert srlif3.ae == 3.884  and srlif3.gbrv_paw == 3.883
-        # TODO
-        #srlif3.build_structure()
+        struct = srlif3.build_structure()
+        assert str(struct.to_abivars())
 
         # Get hH entry for SrLiF3
         agalge = db.get_hH_entry("AgAlGe")
         assert agalge.symbol == "AgAlGe" and agalge.struct_type == "hH"
         assert agalge.ae == 6.224  and agalge.gbrv_paw == 6.218
-        # TODO
-        #agalge.build_structure()
+        struct = agalge.build_structure()
+        assert str(struct.to_abivars())
 
         assert len(db.entries_with_symbol("Si")) == 10
         assert not db.entries_with_symbol("Lu")

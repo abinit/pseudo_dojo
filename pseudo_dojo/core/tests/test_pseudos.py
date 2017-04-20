@@ -14,6 +14,7 @@ class DojoTableTest(PseudoDojoTest):
     def test_from_dojodir(self):
         """Initializing DojoTable from directory."""
         table = DojoTable.from_dojodir(dojotable_absdir("ONCVPSP-PBE-PDv0.3"))
+        repr(table); str(table)
 
         # Produce template file for djson file.
         assert isinstance(table.to_djson(), dict)
@@ -28,7 +29,9 @@ class DojoTableTest(PseudoDojoTest):
         dojo_frame, errors = table.get_dojo_dataframe()
         #print(dojo_frame)
         # TODO
-        #if errors: pprint(errors)
+        #if errors:
+        #    print("Found errors in dojotable:")
+        #    pprint(errors)
         #assert not errors
 
         # Write ipython notebook
