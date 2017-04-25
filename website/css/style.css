@@ -1,10 +1,4 @@
 @charset "utf-8";
-@font-face{
-  font-family:'Open Baskerville 0.0.53';
-  src:url('../fonts/OpenBaskerville-0.0.53.otf') format('opentype');
-  font-weight:normal;
-  font-style:normal;
-}
 
 html{
   font-size:100%;
@@ -285,8 +279,7 @@ img
   width:560px;
   height:180px;
   left-margin:20px;
-  /*background:transparent url(../logo/logo_BLACK_70percent_alpha.svg) 0 0 no-repeat;*/
-  background:transparent url(../logo/logo03_BLACK_70percent_alpha.svg) 0 0 no-repeat;
+  background:transparent url(../logo/logo.svg) 0 0 no-repeat;
   text-indent:-9999px;
 }
 .infobox .logo a
@@ -294,11 +287,22 @@ img
   display:block;
   height:100%;
 }
+.infobox .version
+{
+  position: absolute;
+  left:453px;
+  top:93px;
+  font-size:350%;
+  font-weight: bold;
+}
+
 .infobox .description
 {
-  margin-top:-18px;
-  margin-left:207px;
-  font-size:13px;
+  position: absolute;
+  left:608px;
+  top:62px;
+  width:320px;
+  font-size:14px;
 }
 
 .menubar
