@@ -403,8 +403,10 @@ class OncvGenerator(PseudoGenerator):
             if self.format == 'psp8':
 
                 # Write psp8 file.
-                with open(filepath, "wt") as fh:
-                    fh.write(parser.get_psp8_str())
+                psp8_str = parser.get_psp8_str()
+                if psp8_str is not None:
+                    with open(filepath, "wt") as fh:
+                        fh.write(psp8_str)
 
                 # Add upf string (if present).
                 upf_str = parser.get_upf_str()
