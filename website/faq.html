@@ -5,11 +5,12 @@
     <link rel="stylesheet" href="css/style.css" />
     <title>Frequently asked questions</title>
 </head>
-<body style="margin: 10px;">
+<body style="margin: 10px; font-size:100%">
 
 <h1>General</h1>
 
-<h2>How do I cite the PseudoDojo?</h2>
+<h2>&#9670; How do I cite the PseudoDojo?</h2>
+
 The fully detailed paper on the pseudo dojo is still in preparation.<BR />
 For the moment you can cite:<BR />
 <blockquote>
@@ -23,34 +24,43 @@ D. R. Hamann, Phys. Rev. B 88, 085117 <a href='https://doi.org/10.1103/PhysRevB.
 </blockquote>
 <H1>Concerning the ONCVPSP pseudopotentials</H1>
 
-<h2>Do you also have the pseudo for my favorite GGA or LDA functional?</h2>
+<h2>&#9670; Do you also have the pseudo for my favorite GGA or LDA functional?</h2>
 We provide PBE, PBEsol, and one LDA set of pseudo potentials.<BR />
 The input files can be obtained from the dojo reports in the HTML files.<BR />
 Using these you can generate potentials for most LDA and GGA functionals using <a href="http://www.mat-simresearch.com/">ONCVPSP</a>.<BR />
 We could reuse most of out PBE inputs to generate the PBEsol potentials.<BR />
 Using <a href="http://octopus-code.org/wiki/Libxc_functionals">LibXC</a>, which is linked to ONCVPSP, almost all functionals can be used.
 
-<h2>All the ONCVPSP potentials are wiht non-linear core correction I need some without.</h2>
+<h2>&#9670; All the ONCVPSP potentials are wiht non-linear core correction I need some without.</h2>
 We usually observe better convergenc with so indeed all are generated with nlcc.<BR />
 I yo really need one without take the input from the HTML page on the pseudo (select format : html and click the element).<BR />
 Install <a href="http://www.mat-simresearch.com/">ONCVPSP</a>.
 Turn icmod to 0 in the input and generate the pseudo.
 
-<h2>What about hybrids and meta functionals?</h2>
+<h2>&#9670; What about hybrids and meta functionals?</h2>
 These are currently under development.<BR />
 
-<h2>Do you also have the other elements?</h2>
+<h2>&#9670; Do you also have the other elements?</h2>
 We are currently working on the Lantanides.<BR />
 
-<h2>Is it also possible to get the pseudos in other formats?</h2>
+<h2>&#9670; Is it also possible to get the pseudos in other formats?</h2>
 ONCVPSP currently supports psp8 and upf.<BR />
 These are available for download.<BR />
 We are looking at the possibility to also provide them in the psml format.<BR />
 
-<h2>Will the fully relativistic versions of the potentials be available as well?</h2>
+<h2>&#9670; Will the fully relativistic versions of the potentials be available as well?</h2>
 Yes, this is another project we are finishing at the moment.<BR />
 Most of the current PBE inputs also generate well using the fully relativistic version of ONCVPSP.<BR />
 When we have finished the final polishing we will also provide the last tuned special cases.<BR />
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
+  ga('create', 'UA-97858927-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
 </body>
 </html>

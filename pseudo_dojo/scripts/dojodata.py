@@ -39,6 +39,7 @@ def prompt(question):
 
     return my_input(question)
 
+
 def dojo_figures(options):
     """
     Create figures for a dojo table.
@@ -69,6 +70,7 @@ def dojo_figures(options):
     else:
         # Get data from dojoreport
         data_dojo, errors = pseudos.get_dojo_dataframe()
+        print('test')
 
         if errors:
             cprint("get_dojo_dataframe returned %s errors" % len(errors), "red")
@@ -79,17 +81,19 @@ def dojo_figures(options):
                     print("[%s]" % i, e)
 
         # add data that is not part of the dojo report
-        data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
-        for index, p in data_dojo.iterrows():
-            outfile = p.filepath.replace('.psp8', '.out')
-            parser = OncvOutputParser(outfile)
-            parser.scan()
-            if not parser.run_completed:
-                raise RuntimeError("[%s] Corrupted outfile")
+#        data_pseudo = DataFrame(columns=('nv', 'valence', 'rcmin', 'rcmax') )
+#        for index, p in data_dojo.iterrows():
+#            print(p.keys())
+#            outfile = p.filepath.replace('.psp8', '.out')
+#            parser = OncvOutputParser(outfile)
+#            parser.scan()
+#            if not parser.run_completed:
+#                raise RuntimeError("[%s] Corrupted outfile")
 
-            data_pseudo.loc[index] = [parser.nv, parser.valence, parser.rc_min, parser.rc_max]
+#            data_pseudo.loc[index] = [parser.nv, parser.valence, parser.rc_min, parser.rc_max]
 
-        data = concat([data_dojo, data_pseudo], axis=1)
+#        data = concat([data_dojo, data_pseudo], axis=1)
+        data = data_dojo
 
     # Select "best" entries per element.
     rows, names = [], []
@@ -367,13 +371,10 @@ def dojo_notebook(options):
     Generate an ipython notebook for each pseudopotential and open it in the browser.
     """
     from pseudo_dojo.util.notebook import make_open_notebook
-    retcode = 0
     for p in options.pseudos:
-        retcode += make_open_notebook(p.filepath, with_validation=not options.no_validation,
-                                      with_eos=True, hide_code=options.hide_code,
-                                      tmpfile=not options.no_tmp)
-        if retcode != 0: break
-    return retcode
+        make_open_notebook(p.filepath, with_validation=not options.no_validation,
+                           with_eos=True, hide_code=options.hide_code, tmpfile=not options.no_tmp)
+    return 0
 
 
 def dojo_compare(options):
@@ -772,9 +773,9 @@ Usage example:
     p_notebook.add_argument('--no-validation', action='store_true', default=False,
                              help="Don't add the validation cell.")
     p_notebook.add_argument('--hide-code', action='store_true', default=False,
-                            help="Add a cell that hided the raw code.")
+                            help="Add a cell that hides the raw code.")
     p_notebook.add_argument('--no-tmp', action='store_true', default=False,
-                            help="Don't put the notebook in the tmp place.")
+                            help="Don't use temporary file for notebook.")
 
     # Subparser for compare.
     p_compare = subparsers.add_parser('compare', parents=[copts_parser, plot_options_parser],
