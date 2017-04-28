@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) | !(IE 8)  ]><!-->
+<html lang="en-US">
+<!--<![endif]-->
+<head>
+<title>Pseudo Dojo</title>
+<meta name="viewport" content="width=1360">
+<link rel="stylesheet" href="css/style.css" />
+<meta name="description" content="This site collates tested pseudo potentials sorted by type, accuracy, and efficiency, shows information on convergens of various tested properties and provides download options." />
+<meta name="keywords" content="Pseudopotential, PAW atomic data set, Periodic Table, Ab Initio, plane wave pseudo, PAW pseudo" />
+<meta name="robots" content="index, follow" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:title" content="The Periodic Table with tested pseudopotentials" />
+<meta property="og:url" content="http://pseudodojo.org" />
+<meta property="og:description" content="This site collates tested pseudopotentials and PAW atomic data sets, ranks them according to type, accuracy and efficiency, shows statistics and provides download options." />
+
+</head>
+<body>
+<!--script type="text/javascript">
+  var _gaq = _gaq || [];
+  var pluginUrl = 
+ '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+  _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+  _gaq.push(['_setAccount', 'UA-2653828-13']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script-->
+<!--div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=203299123014981";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script-->
+<div class="wrapper">
+<div class="table">
+  <aside class="infobox">
+    <div class="intro">
+      <h1 class="logo"><a href="index.html" title="The Pseudo Dojo">The Pseudo Dojo</a></h1>
+    </div>
+    <div class="version">
+      <p>
+        v0.3  
+      </p>
+    </div>
+    <div class="description">
+      <p>
+        Select the flavor and <a href="./about.html">format</a>, then click "Download" to
+        get the complete table of pseudos or choose a specific element.
+      </p>
+    </div>
+    <div class="menubar">
+      <div class="menutext">
+        <p>
+          <a href="index.html"><span>Home</span></a>
+          <a href="faq.html"><span>F.A.Q.</span></a>
+          <a href="contribute.html"><span>Contribute</span></a>
+          <span style="padding-left: 6em">
+          <span><a href="about.html">About</a></span></span>
+        </p>
+      </div>
+    </div>
+    <div class="download_bar">
+        <table style="color:#FFFFFF;margin-top:0px; font-size: 16px;">
+<tr>
+<td rowspan="2">
+<div class="download_button">Download</div>
+</td>
+<th>
+XC
+</th>
+<th>
+Accuracy
+</th>
+<th>
+Relativistic
+</th>
+<th>
+Format
+</th>
+</tr>
+<tr>
+<td>
+<div class="styled-select">
+<select id="XCF">
+  <option value="pw">LDA</option>
+  <option value="pbe" selected>PBE</option>
+  <option value="pbesol">PBEsol</option>
+</select>
+</div>
+</td>
+<td>
+<div class="styled-select">
+<select id="ACC">
+  <option value="s" selected>standard</option>
+  <option value="h">stringent</option>
+</select>
+</div>
+</td>
+<td>
+<div class="styled-select">
+<select id="REL">
+  <option value="sr" selected>scalar</option>
+  <option value="fr">fully</option>
+</select>
+</div>
+</td>
+<td>
+<div class="styled-select">
+<select id="FMT">
+  <option value="psp8" selected>psp8</option>
+  <option value="upf">upf</option>
+  <option value="html">html</option>
+  <option value="djrepo">djrepo</option>
+</select>
+</div>
+</td>
+</tr>
+        </table>
+    </div>
+  </aside>
+  <div class="plugin bg_hydrogen 001_H">
+    <div class="element">H</div>
+    <div class="name-wrap">
+      <div class="name">Hydrogen</div>
+    </div>
+  </div>
+  <div class="plugin bg_noble_gas 002_He">
+    <div class="element">He</div>
+    <div class="name-wrap">
+      <div class="name">Helium</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkali 003_Li">
+    <div class="element">Li</div>
+    <div class="name-wrap">
+      <div class="name">Lithium</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkaline 004_Be">
+    <div class="element">Be</div>
+    <div class="name-wrap">
+      <div class="name">Beryllium</div>
+    </div>
+  </div>
+  <div class="plugin bg_metalloid 005_B">
+    <div class="element">B</div>
+    <div class="name-wrap">
+      <div class="name">Boron</div>
+    </div>
+  </div>
+  <div class="plugin bg_nonmetal 006_C">
+    <div class="element">C</div>
+    <div class="name-wrap">
+      <div class="name">Carbon</div>
+    </div>
+  </div>
+  <div class="plugin bg_nonmetal 007_N">
+    <div class="element">N</div>
+    <div class="name-wrap">
+      <div class="name">Nitrogen</div>
+    </div>
+  </div>
+  <div class="plugin bg_nonmetal 008_O">
+    <div class="element">O</div>
+    <div class="name-wrap">
+      <div class="name">Oxygen</div>
+    </div>
+  </div>
+  <div class="plugin bg_halogen 009_F">
+    <div class="element">F</div>
+    <div class="name-wrap">
+      <div class="name">Fluorine</div>
+    </div>
+  </div>
+  <div class="plugin bg_noble_gas 010_Ne">
+    <div class="element">Ne</div>
+    <div class="name-wrap">
+      <div class="name">Neon</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkali 011_Na">
+    <div class="element">Na</div>
+    <div class="name-wrap">
+      <div class="name">Sodium</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkaline 012_Mg">
+    <div class="element">Mg</div>
+    <div class="name-wrap">
+      <div class="name">Magnesium</div>
+    </div>
+  </div>
+  <div class="plugin bg_post_transition_metal 013_Al">
+    <div class="element">Al</div>
+    <div class="name-wrap">
+      <div class="name">Aluminium</div>
+    </div>
+  </div>
+  <div class="plugin bg_metalloid 014_Si">
+    <div class="element">Si</div>
+    <div class="name-wrap">
+      <div class="name">Silicon</div>
+    </div>
+  </div>
+  <div class="plugin bg_nonmetal 015_P">
+    <div class="element">P</div>
+    <div class="name-wrap">
+      <div class="name">Phosphorus</div>
+    </div>
+  </div>
+  <div class="plugin bg_nonmetal 016_S">
+    <div class="element">S</div>
+    <div class="name-wrap">
+      <div class="name">Sulphur</div>
+    </div>
+  </div>
+  <div class="plugin bg_halogen 017_Cl">
+    <div class="element">Cl</div>
+    <div class="name-wrap">
+      <div class="name">Chlorine</div>
+    </div>
+  </div>
+  <div class="plugin bg_noble_gas 018_Ar">
+    <div class="element">Ar</div>
+    <div class="name-wrap">
+      <div class="name">Argon</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkali 019_K">
+    <div class="element">K</div>
+    <div class="name-wrap">
+      <div class="name">Potassium</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkaline 020_Ca">
+    <div class="element">Ca</div>
+    <div class="name-wrap">
+      <div class="name">Calcium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 021_Sc">
+    <div class="element">Sc</div>
+    <div class="name-wrap">
+      <div class="name">Scandium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 022_Ti">
+    <div class="element">Ti</div>
+    <div class="name-wrap">
+      <div class="name">Titanium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 023_V">
+    <div class="element">V</div>
+    <div class="name-wrap">
+      <div class="name">Vanadium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 024_Cr">
+    <div class="element">Cr</div>
+    <div class="name-wrap">
+      <div class="name">Chromium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 025_Mn">
+    <div class="element">Mn</div>
+    <div class="name-wrap">
+      <div class="name">Manganese</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 026_Fe">
+    <div class="element">Fe</div>
+    <div class="name-wrap">
+      <div class="name">Iron</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 027_Co">
+    <div class="element">Co</div>
+    <div class="name-wrap">
+      <div class="name">Cobalt</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 028_Ni">
+    <div class="element">Ni</div>
+    <div class="name-wrap">
+      <div class="name">Nickel</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 029_Cu">
+    <div class="element">Cu</div>
+    <div class="name-wrap">
+      <div class="name">Copper</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 030_Zn">
+    <div class="element">Zn</div>
+    <div class="name-wrap">
+      <div class="name">Zinc</div>
+    </div>
+  </div>
+  <div class="plugin bg_post_transition_metal 031_Ga">
+    <div class="element">Ga</div>
+    <div class="name-wrap">
+      <div class="name">Gallium</div>
+    </div>
+  </div>
+  <div class="plugin bg_metalloid 032_Ge">
+    <div class="element">Ge</div>
+    <div class="name-wrap">
+      <div class="name">Germanium</div>
+    </div>
+  </div>
+  <div class="plugin bg_metalloid 033_As">
+    <div class="element">As</div>
+    <div class="name-wrap">
+      <div class="name">Arsenic</div>
+    </div>
+  </div>
+  <div class="plugin bg_nonmetal 034_Se">
+    <div class="element">Se</div>
+    <div class="name-wrap">
+      <div class="name">Selenium</div>
+    </div>
+  </div>
+  <div class="plugin bg_halogen 035_Br">
+    <div class="element">Br</div>
+    <div class="name-wrap">
+      <div class="name">Bromine</div>
+    </div>
+  </div>
+  <div class="plugin bg_noble_gas 036_Kr">
+    <div class="element">Kr</div>
+    <div class="name-wrap">
+      <div class="name">Krypton</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkali 037_Rb">
+    <div class="element">Rb</div>
+    <div class="name-wrap">
+      <div class="name">Rubidium</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkaline 038_Sr">
+    <div class="element">Sr</div>
+    <div class="name-wrap">
+      <div class="name">Strontium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 039_Y">
+    <div class="element">Y</div>
+    <div class="name-wrap">
+      <div class="name">Yttrium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 040_Zr">
+    <div class="element">Zr</div>
+    <div class="name-wrap">
+      <div class="name">Zirconium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 041_Nb">
+    <div class="element">Nb</div>
+    <div class="name-wrap">
+      <div class="name">Niobium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 042_Mo">
+    <div class="element">Mo</div>
+    <div class="name-wrap">
+      <div class="name">Molybdenum</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 043_Tc">
+    <div class="element">Tc</div>
+    <div class="name-wrap">
+      <div class="name">Technetium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 044_Ru">
+    <div class="element">Ru</div>
+    <div class="name-wrap">
+      <div class="name">Ruthenium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 045_Rh">
+    <div class="element">Rh</div>
+    <div class="name-wrap">
+      <div class="name">Rhodium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 046_Pd">
+    <div class="element">Pd</div>
+    <div class="name-wrap">
+      <div class="name">Palladium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 047_Ag">
+    <div class="element">Ag</div>
+    <div class="name-wrap">
+      <div class="name">Silver</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 048_Cd">
+    <div class="element">Cd</div>
+    <div class="name-wrap">
+      <div class="name">Cadmium</div>
+    </div>
+  </div>
+  <div class="plugin bg_post_transition_metal 049_In">
+    <div class="element">In</div>
+    <div class="name-wrap">
+      <div class="name">indium</div>
+    </div>
+  </div>
+  <div class="plugin bg_post_transition_metal 050_Sn">
+    <div class="element">Sn</div>
+    <div class="name-wrap">
+      <div class="name">Tin</div>
+    </div>
+  </div>
+  <div class="plugin bg_metalloid 051_Sb">
+    <div class="element">Sb</div>
+    <div class="name-wrap">
+      <div class="name">Antimony</div>
+    </div>
+  </div>
+  <div class="plugin bg_metalloid 052_Te">
+    <div class="element">Te</div>
+    <div class="name-wrap">
+      <div class="name">Tellurium</div>
+    </div>
+  </div>
+  <div class="plugin bg_halogen 053_I">
+    <div class="element">I</div>
+    <div class="name-wrap">
+      <div class="name">Iodine</div>
+    </div>
+  </div>
+  <div class="plugin bg_noble_gas 054_Xe">
+    <div class="element">Xe</div>
+    <div class="name-wrap">
+      <div class="name">Xenon</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkali 055_Cs">
+    <div class="element">Cs</div>
+    <div class="name-wrap">
+      <div class="name">Caesium</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkaline 056_Ba">
+    <div class="element">Ba</div>
+    <div class="name-wrap">
+      <div class="name">Barium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 057_La">
+    <div class="element">La</div>
+    <div class="name-wrap">
+      <div class="name">Lanthanum</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 058_Ce">
+    <div class="element">Ce</div>
+    <div class="name-wrap">
+      <div class="name">Cerium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 059_Pr">
+    <div class="element">Pr</div>
+    <div class="name-wrap-double">
+      <div class="name">Praseo- dymium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 060_Nd">
+    <div class="element">Nd</div>
+    <div class="name-wrap">
+      <div class="name">Neodymium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 061_Pm">
+    <div class="element">Pm</div>
+    <div class="name-wrap">
+      <div class="name">Promethium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 062_Sm">
+    <div class="element">Sm</div>
+    <div class="name-wrap">
+      <div class="name">Samarium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 063_Eu">
+    <div class="element">Eu</div>
+    <div class="name-wrap">
+      <div class="name">Europium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 064_Gd">
+    <div class="element">Gd</div>
+    <div class="name-wrap">
+      <div class="name">Gadolinium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 065_Tb">
+    <div class="element">Tb</div>
+    <div class="name-wrap">
+      <div class="name">Terbium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 066_Dy">
+    <div class="element">Dy</div>
+    <div class="name-wrap">
+      <div class="name">Dysprosium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 067_Ho">
+    <div class="element">Ho</div>
+    <div class="name-wrap">
+      <div class="name">Holmium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 068_Er">
+    <div class="element">Er</div>
+    <div class="name-wrap">
+      <div class="name">Erbium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 069_Tm">
+    <div class="element">Tm</div>
+    <div class="name-wrap">
+      <div class="name">Thulium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 070_Yb">
+    <div class="element">Yb</div>
+    <div class="name-wrap">
+      <div class="name">Ytterbium</div>
+    </div>
+  </div>
+  <div class="plugin bg_lanthanoid 071_Lu">
+    <div class="element">Lu</div>
+    <div class="name-wrap">
+      <div class="name">Lutetium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 072_Hf">
+    <div class="element">Hf</div>
+    <div class="name-wrap">
+      <div class="name">Hafnium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 073_Ta">
+    <div class="element">Ta</div>
+    <div class="name-wrap">
+      <div class="name">Tantalum</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 074_W">
+    <div class="element">W</div>
+    <div class="name-wrap">
+      <div class="name">Wolfram</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 075_Re">
+    <div class="element">Re</div>
+    <div class="name-wrap">
+      <div class="name">Rhenium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 076_Os">
+    <div class="element">Os</div>
+    <div class="name-wrap">
+      <div class="name">Osmium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 77_Ir">
+    <div class="element">Ir</div>
+    <div class="name-wrap">
+      <div class="name">Iridium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 78_Pt">
+    <div class="element">Pt</div>
+    <div class="name-wrap">
+      <div class="name">Platinum</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 79_Au">
+    <div class="element">Au</div>
+    <div class="name-wrap">
+      <div class="name">Gold</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 80_Hg">
+    <div class="element">Hg</div>
+    <div class="name-wrap">
+      <div class="name">Mercury</div>
+    </div>
+  </div>
+  <div class="plugin bg_post_transition_metal 81_Tl">
+    <div class="element">Tl</div>
+    <div class="name-wrap">
+      <div class="name">Thallium</div>
+    </div>
+  </div>
+  <div class="plugin bg_post_transition_metal 82_Pb">
+    <div class="element">Pb</div>
+    <div class="name-wrap">
+      <div class="name">Lead</div>
+    </div>
+  </div>
+  <div class="plugin bg_post_transition_metal 83_Bi">
+    <div class="element">Bi</div>
+    <div class="name-wrap">
+      <div class="name">Bismuth</div>
+    </div>
+  </div>
+  <div class="plugin bg_post_transition_metal 84_Po">
+    <div class="element">Po</div>
+    <div class="name-wrap">
+      <div class="name">Polonium</div>
+    </div>
+  </div>
+  <div class="plugin bg_halogen 85_At">
+    <div class="element">At</div>
+    <div class="name-wrap">
+      <div class="name">Astatine</div>
+    </div>
+  </div>
+  <div class="plugin bg_noble_gas 86_Rn">
+    <div class="element">Rn</div>
+    <div class="name-wrap">
+      <div class="name">Radon</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkali 87_Fr">
+    <div class="element">Fr</div>
+    <div class="name-wrap">
+      <div class="name">Francium</div>
+    </div>
+  </div>
+  <div class="plugin bg_alkaline 88_Ra">
+    <div class="element">Ra</div>
+    <div class="name-wrap">
+      <div class="name">Radium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 89_Ac">
+    <div class="element">Ac</div>
+    <div class="name-wrap">
+      <div class="name">Actinium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 90_Th">
+    <div class="element">Th</div>
+    <div class="name-wrap">
+      <div class="name">Thorium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 91_Pa">
+    <div class="element">Pa</div>
+    <div class="name-wrap">
+      <div class="name">Protactinium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 92_U">
+    <div class="element">U</div>
+    <div class="name-wrap">
+      <div class="name">Uranium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 93_Np">
+    <div class="element">Np</div>
+    <div class="name-wrap">
+      <div class="name">Neptunium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 94_Pu">
+    <div class="element">Pu</div>
+    <div class="name-wrap">
+      <div class="name">Plutonium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 95_Am">
+    <div class="element">Am</div>
+    <div class="name-wrap">
+      <div class="name">Americium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 96_Cm">
+    <div class="element">Cm</div>
+    <div class="name-wrap">
+      <div class="name">Curium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 97_Bk">
+    <div class="element">Bk</div>
+    <div class="name-wrap">
+      <div class="name">Berkelium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 98_Cf">
+    <div class="element">Cf</div>
+    <div class="name-wrap">
+      <div class="name">Californium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 99_Es">
+    <div class="element">Es</div>
+    <div class="name-wrap">
+      <div class="name">Einsteinium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 100_Fm">
+    <div class="element">Fm</div>
+    <div class="name-wrap">
+      <div class="name">Fermium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 101_Md">
+    <div class="element">Md</div>
+    <div class="name-wrap">
+      <div class="name">Mendelevium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 102_No">
+    <div class="element">No</div>
+    <div class="name-wrap">
+      <div class="name">Nobelium</div>
+    </div>
+  </div>
+  <div class="plugin bg_actinoid 103_Lr">
+    <div class="element">Lr</div>
+    <div class="name-wrap">
+      <div class="name">Lawrencium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 104_Rf">
+    <div class="element">Rf</div>
+    <div class="name-wrap-double">
+      <div class="name">Ruther- fordium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 105_Db">
+    <div class="element">Db</div>
+    <div class="name-wrap">
+      <div class="name">Dubnium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 106_Sg">
+    <div class="element">Sg</div>
+    <div class="name-wrap">
+      <div class="name">Seaborgium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 107_Bh">
+    <div class="element">Bh</div>
+    <div class="name-wrap">
+      <div class="name">Bohrium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 108_Hs">
+    <div class="element">Hs</div>
+    <div class="name-wrap">
+      <div class="name">Hassium</div>
+    </div>
+  </div>
+  <div class="plugin bg_unknown 109_Mt">
+    <div class="element">Mt</div>
+    <div class="name-wrap">
+      <div class="name">Meitnerium</div>
+    </div>
+  </div>
+  <div class="plugin bg_unknown 110_Ds">
+    <div class="element">Ds</div>
+    <div class="name-wrap-double">
+      <div class="name">Darm- stadtium</div>
+    </div>
+  </div>
+  <div class="plugin bg_unknown 111_Rg">
+    <div class="element">Rg</div>
+    <div class="name-wrap-double">
+      <div class="name">Roent- genium</div>
+    </div>
+  </div>
+  <div class="plugin bg_transition_metal 112_Cn">
+    <div class="element">Cn</div>
+    <div class="name-wrap-double">
+      <div class="name">Coper- nicium</div>
+    </div>
+  </div>
+  <div class="plugin bg_unknown 113_Nh">
+    <div class="element">Nh</div>
+    <div class="name-wrap">
+      <div class="name">Nihonium</div>
+    </div>
+  </div>
+  <div class="plugin bg_unknown 114_Fl">
+    <div class="element">Fl</div>
+    <div class="name-wrap">
+      <div class="name">Flerovium</div>
+    </div>
+  </div>
+  <div class="plugin bg_unknown 115_Mc">
+    <div class="element">Mc</div>
+    <div class="name-wrap">
+      <div class="name">Moscovium</div>
+    </div>
+  </div>
+  <div class="plugin bg_unknown 116_Lv">
+    <div class="element">Lv</div>
+    <div class="name-wrap">
+      <div class="name">Livermorium</div>
+    </div>
+  </div>
+  <div class="plugin bg_unknown 117_Ts">
+    <div class="element">Ts</div>
+    <div class="name-wrap">
+      <div class="name">Tennessine</div>
+    </div>
+  </div>
+  <div class="plugin bg_unknown 118_Og">
+    <div class="element">Og</div>
+    <div class="name-wrap">
+      <div class="name">Oganesson</div>
+    </div>
+  </div>
+
+</div>
+<div class="footer">
+</div>
+</div>
+<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+<script>
+
+  var params = decodeURIComponent(window.location.search.slice(1))
+              .split('&')
+              .reduce(function _reduce (/*Object*/ a, /*String*/ b) {
+                        b = b.split('=');
+                        a[b[0]] = b[1];
+                        return a;
+              }, {});
+
+  jQuery(document).ready(function($) {
+    $(".plugin:nth-of-type(2)").addClass('nth-of-type-float');
+    $(".plugin:nth-of-type(5), .plugin:nth-of-type(13)").addClass('nth-of-type-margin');
+    $(".plugin:nth-of-type(1), .plugin:nth-of-type(3), .plugin:nth-of-type(11), .plugin:nth-of-type(19), .plugin:nth-of-type(37), .plugin:nth-of-type(55)").addClass('nth-of-type-clear');
+
+    $('.plugin').hover(function(){
+      var str = $(this).attr("class");
+      var res = str.split(" ");
+      var dum = res[2]
+      var res = dum.split("_");
+      var trunk = "pseudos/"
+      var elm = res[1];
+      var xcf = $("#XCF").val();
+      var acc = $("#ACC").val();
+      var rel = $("#REL").val();
+      var fmt = $("#FMT").val();
+      var url = trunk.concat(xcf,"_",acc,"_",rel,"/",elm,".",fmt)
+      var mythis = $(this);
+      $.get(url)
+        .done(function() { 
+            // exists code
+          bgcheck="#44AA44";
+          mythis.css("background-color", bgcheck);
+          mythis.css("color", "#FFFFFF");
+        }).fail(function() { 
+            // not exists code
+          bgcheck="#CC4444";
+          mythis.css("background-color", bgcheck);
+          mythis.css("color", "#FFFFFF");
+        })
+      }, function(){
+      var str = $(this).attr("class");
+      var res = str.split(" ");
+      var bgori = "";
+      if(res[1]=="bg_hydrogen"){
+        bgori = "#d16969";
+      }
+      else if(res[1]=="bg_alkali"){
+        bgori = "#d19292";
+      }
+      else if(res[1]=="bg_alkaline"){
+        bgori = "#d1bd92";
+      }
+      else if(res[1]=="bg_transition_metal"){
+        bgori = "#a9c4d4";
+      }
+      else if(res[1]=="bg_post_transition_metal"){
+        bgori = "#a3b2d6";
+      }
+      else if(res[1]=="bg_metalloid"){
+        bgori = "#bdd6a3";
+      }
+      else if(res[1]=="bg_nonmetal"){
+        bgori = "#d6a3be";
+      }
+      else if(res[1]=="bg_halogen"){
+        bgori = "#d2d6a3";
+      }
+      else if(res[1]=="bg_noble_gas"){
+        bgori = "#c4cdff";
+      }
+      else if(res[1]=="bg_lanthanoid"){
+        bgori = "#edb8ff";
+      }
+      else if(res[1]=="bg_actinoid"){
+        bgori = "#bf96ff";
+      }
+      else if(res[1]=="bg_unknown"){
+        bgori = "#dcdcdc";
+      }
+      var mythis = $(this);
+      mythis.css("background-color", bgori);
+      mythis.css("color", "#4B4B4D");
+      setTimeout(function(){
+        mythis.css("background-color", bgori);
+        mythis.css("color", "#4B4B4D");
+      },500);
+    });
+
+    $('.plugin').on('click', function() {
+      var str = $(this).attr("class");
+      var res = str.split(" ");
+      var dum = res[2]
+      var res = dum.split("_");
+      var trunk = "pseudos/"
+      var elm = res[1];
+      var xcf = $("#XCF").val();
+      var acc = $("#ACC").val();
+      var rel = $("#REL").val();
+      var fmt = $("#FMT").val();
+      var url = trunk.concat(xcf,"_",acc,"_",rel,"/",elm,".",fmt)
+      $.get(url)
+        .done(function() {
+            // exists code
+//          window.location.href = url;
+            window.downloadFile(url);
+        }).fail(function() {
+            // not exists code
+        })
+    });
+
+    $('.download_button').hover(function(){
+      var trunk = "pseudos/"
+      var xcf = $("#XCF").val();
+      var acc = $("#ACC").val();
+      var rel = $("#REL").val();
+      var fmt = $("#FMT").val();
+      var url = trunk.concat(xcf,"_",acc,"_",rel,"_",fmt,".tgz")
+      var mythis = $(this);
+      $.get(url)
+        .done(function() {
+            // exists code
+          bgcheck="#44AA44";
+          mythis.css("background-color", bgcheck);
+          mythis.css("color", "#FFFFFF");
+        }).fail(function() {
+            // not exists code
+          bgcheck="#CC4444";
+          mythis.css("background-color", bgcheck);
+          mythis.css("color", "#FFFFFF");
+        })
+      }, function(){
+      var mythis = $(this);
+      mythis.css("background-color", "#CBCBCB");
+      mythis.css("color", "#333333");
+      setTimeout(function(){
+        mythis.css("background-color", "#CBCBCB");
+        mythis.css("color", "#333333");
+      },500);
+    });
+
+    $('.download_button').on('click', function(e) {
+      var trunk = "pseudos/"
+      var xcf = $("#XCF").val();
+      var acc = $("#ACC").val();
+      var rel = $("#REL").val();
+      var fmt = $("#FMT").val();
+      var url = trunk.concat(xcf,"_",acc,"_",rel,"_",fmt,".tgz")
+      $.get(url)
+        .done(function() {
+            // exists code
+          window.location.href = url;
+        }).fail(function() {
+            // not exists code
+        })
+    });
+
+    window.downloadFile = function (sUrl) {
+        //iOS devices do not support downloading.
+        // We have to inform user about this.
+        if (/(iP)/g.test(navigator.userAgent)) {
+            alert('Your device do not support files downloading. Please try again in desktop browser.');
+            return false;
+        }
+    
+        //If in Chrome or Safari - download via virtual link click
+        if (window.downloadFile.isChrome || window.downloadFile.isSafari) {
+            //Creating new link node.
+            var link = document.createElement('a');
+            link.href = sUrl;
+    
+            if (link.download !== undefined) {
+                //Set HTML5 download attribute. This will prevent file from opening if supported.
+                var fileName = sUrl.substring(sUrl.lastIndexOf('/') + 1, sUrl.length);
+                link.download = fileName;
+            }
+    
+            //Dispatching click event.
+            if (document.createEvent) {
+                var e = document.createEvent('MouseEvents');
+                e.initEvent('click', true, true);
+                link.dispatchEvent(e);
+                return true;
+            }
+        }
+    
+        // Force file download (whether supported by server).
+        var query = '?download';
+    
+        window.open(sUrl + query, '_self');
+    }
+    
+    window.downloadFile.isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+    window.downloadFile.isSafari = navigator.userAgent.toLowerCase().indexOf('safari') > -1;
+
+  });
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-97858927-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</body>
+</html>
