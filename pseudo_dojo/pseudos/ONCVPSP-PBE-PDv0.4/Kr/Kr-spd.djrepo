@@ -1,0 +1,50 @@
+{
+"basename": "Kr-spd.psp8", 
+"ecuts": [
+44.0, 
+46.0, 
+48.0, 
+50.0, 
+52.0, 
+54.0, 
+56.0, 
+58.0, 
+60.0, 
+62.0, 
+64.0, 
+72.0, 
+74.0
+], 
+"md5": "1f18c7eb2f2cd02302fb2f84e1233516", 
+"ppgen_hints": {
+"high": {
+"ecut": 54.0, 
+"pawecutdg": 54.0
+}, 
+"low": {
+"ecut": 49.0, 
+"pawecutdg": 49.0
+}, 
+"normal": {
+"ecut": 51.0, 
+"pawecutdg": 51.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Kr", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_C_PBE"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_X_PBE"
+}
+}
+}
