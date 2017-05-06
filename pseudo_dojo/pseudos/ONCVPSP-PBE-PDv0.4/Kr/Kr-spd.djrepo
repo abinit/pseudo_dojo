@@ -1,37 +1,37 @@
 {
-"basename": "F.psp8", 
+"basename": "Kr-spd.psp8", 
 "ecuts": [
-30.0, 
-32.0, 
-34.0, 
-36.0, 
-38.0, 
-40.0, 
-42.0, 
 44.0, 
 46.0, 
 48.0, 
 50.0, 
+52.0, 
+54.0, 
+56.0, 
 58.0, 
-60.0
+60.0, 
+62.0, 
+64.0, 
+72.0, 
+74.0
 ], 
-"md5": "c3f03d3c8bfaed8014dda45a8fc49c9b", 
+"md5": "1f18c7eb2f2cd02302fb2f84e1233516", 
 "ppgen_hints": {
 "high": {
-"ecut": 40.0, 
-"pawecutdg": 40.0
+"ecut": 54.0, 
+"pawecutdg": 54.0
 }, 
 "low": {
-"ecut": 36.0, 
-"pawecutdg": 36.0
+"ecut": 49.0, 
+"pawecutdg": 49.0
 }, 
 "normal": {
-"ecut": 38.0, 
-"pawecutdg": 38.0
+"ecut": 51.0, 
+"pawecutdg": 51.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "F", 
+"symbol": "Kr", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

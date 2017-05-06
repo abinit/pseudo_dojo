@@ -1,6 +1,8 @@
 {
-"basename": "F.psp8", 
+"basename": "Br-d.psp8", 
 "ecuts": [
+26.0, 
+28.0, 
 30.0, 
 32.0, 
 34.0, 
@@ -10,28 +12,26 @@
 42.0, 
 44.0, 
 46.0, 
-48.0, 
-50.0, 
-58.0, 
-60.0
+54.0, 
+56.0
 ], 
-"md5": "c3f03d3c8bfaed8014dda45a8fc49c9b", 
+"md5": "6525aa1986547cf581c0ffb86981c8ca", 
 "ppgen_hints": {
 "high": {
-"ecut": 40.0, 
-"pawecutdg": 40.0
-}, 
-"low": {
 "ecut": 36.0, 
 "pawecutdg": 36.0
 }, 
+"low": {
+"ecut": 33.0, 
+"pawecutdg": 33.0
+}, 
 "normal": {
-"ecut": 38.0, 
-"pawecutdg": 38.0
+"ecut": 35.0, 
+"pawecutdg": 35.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "F", 
+"symbol": "Br", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

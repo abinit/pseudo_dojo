@@ -1,6 +1,9 @@
 {
-"basename": "F.psp8", 
+"basename": "Sr-sp.psp8", 
 "ecuts": [
+24.0, 
+26.0, 
+28.0, 
 30.0, 
 32.0, 
 34.0, 
@@ -9,29 +12,26 @@
 40.0, 
 42.0, 
 44.0, 
-46.0, 
-48.0, 
-50.0, 
-58.0, 
-60.0
+52.0, 
+54.0
 ], 
-"md5": "c3f03d3c8bfaed8014dda45a8fc49c9b", 
+"md5": "7f9022370a0c7d83e08abc7c1ef904c7", 
 "ppgen_hints": {
 "high": {
-"ecut": 40.0, 
-"pawecutdg": 40.0
+"ecut": 34.0, 
+"pawecutdg": 34.0
 }, 
 "low": {
-"ecut": 36.0, 
-"pawecutdg": 36.0
+"ecut": 27.0, 
+"pawecutdg": 27.0
 }, 
 "normal": {
-"ecut": 38.0, 
-"pawecutdg": 38.0
+"ecut": 29.0, 
+"pawecutdg": 29.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "F", 
+"symbol": "Sr", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

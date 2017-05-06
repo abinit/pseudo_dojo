@@ -1,8 +1,6 @@
 {
-"basename": "F.psp8", 
+"basename": "Cu-sp.psp8", 
 "ecuts": [
-30.0, 
-32.0, 
 34.0, 
 36.0, 
 38.0, 
@@ -12,26 +10,28 @@
 46.0, 
 48.0, 
 50.0, 
-58.0, 
-60.0
+52.0, 
+54.0, 
+62.0, 
+64.0
 ], 
-"md5": "c3f03d3c8bfaed8014dda45a8fc49c9b", 
+"md5": "34eaeb77448968071cb309a4372c53e2", 
 "ppgen_hints": {
 "high": {
-"ecut": 40.0, 
-"pawecutdg": 40.0
+"ecut": 44.0, 
+"pawecutdg": 44.0
 }, 
 "low": {
-"ecut": 36.0, 
-"pawecutdg": 36.0
+"ecut": 39.0, 
+"pawecutdg": 39.0
 }, 
 "normal": {
-"ecut": 38.0, 
-"pawecutdg": 38.0
+"ecut": 42.0, 
+"pawecutdg": 42.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "F", 
+"symbol": "Cu", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

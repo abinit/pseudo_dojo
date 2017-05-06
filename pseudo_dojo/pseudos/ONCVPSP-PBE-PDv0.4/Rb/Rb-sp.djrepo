@@ -1,37 +1,37 @@
 {
-"basename": "F.psp8", 
+"basename": "Rb-sp.psp8", 
 "ecuts": [
-30.0, 
-32.0, 
-34.0, 
-36.0, 
-38.0, 
-40.0, 
-42.0, 
-44.0, 
-46.0, 
-48.0, 
-50.0, 
-58.0, 
-60.0
+13.0, 
+15.0, 
+17.0, 
+19.0, 
+21.0, 
+23.0, 
+25.0, 
+27.0, 
+29.0, 
+31.0, 
+33.0, 
+41.0, 
+43.0
 ], 
-"md5": "c3f03d3c8bfaed8014dda45a8fc49c9b", 
+"md5": "df9d899dfd09b1796e100d8b9b848b42", 
 "ppgen_hints": {
 "high": {
-"ecut": 40.0, 
-"pawecutdg": 40.0
+"ecut": 23.0, 
+"pawecutdg": 23.0
 }, 
 "low": {
-"ecut": 36.0, 
-"pawecutdg": 36.0
+"ecut": 19.0, 
+"pawecutdg": 19.0
 }, 
 "normal": {
-"ecut": 38.0, 
-"pawecutdg": 38.0
+"ecut": 20.0, 
+"pawecutdg": 20.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "F", 
+"symbol": "Rb", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

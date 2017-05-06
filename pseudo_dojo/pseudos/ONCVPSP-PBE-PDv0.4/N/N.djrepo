@@ -1,5 +1,5 @@
 {
-"basename": "F.psp8", 
+"basename": "N.psp8", 
 "ecuts": [
 30.0, 
 32.0, 
@@ -15,15 +15,15 @@
 58.0, 
 60.0
 ], 
-"md5": "c3f03d3c8bfaed8014dda45a8fc49c9b", 
+"md5": "01bdf84d59ae6bc236a02b05a98ec0f5", 
 "ppgen_hints": {
 "high": {
 "ecut": 40.0, 
 "pawecutdg": 40.0
 }, 
 "low": {
-"ecut": 36.0, 
-"pawecutdg": 36.0
+"ecut": 35.0, 
+"pawecutdg": 35.0
 }, 
 "normal": {
 "ecut": 38.0, 
@@ -31,7 +31,7 @@
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "F", 
+"symbol": "N", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

@@ -1,5 +1,5 @@
 {
-"basename": "F.psp8", 
+"basename": "Mg-sp.psp8", 
 "ecuts": [
 30.0, 
 32.0, 
@@ -15,7 +15,7 @@
 58.0, 
 60.0
 ], 
-"md5": "c3f03d3c8bfaed8014dda45a8fc49c9b", 
+"md5": "d65d9c3e5a38003fc995d0911d5c6f77", 
 "ppgen_hints": {
 "high": {
 "ecut": 40.0, 
@@ -31,7 +31,7 @@
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "F", 
+"symbol": "Mg", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

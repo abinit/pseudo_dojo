@@ -1,37 +1,37 @@
 {
-"basename": "F.psp8", 
+"basename": "Ni-sp-high.psp8", 
 "ecuts": [
-30.0, 
-32.0, 
-34.0, 
-36.0, 
-38.0, 
 40.0, 
 42.0, 
 44.0, 
 46.0, 
 48.0, 
 50.0, 
+52.0, 
+54.0, 
+56.0, 
 58.0, 
-60.0
+60.0, 
+68.0, 
+70.0
 ], 
-"md5": "c3f03d3c8bfaed8014dda45a8fc49c9b", 
+"md5": "9dc62f771bd187329f802d638db4a510", 
 "ppgen_hints": {
 "high": {
-"ecut": 40.0, 
-"pawecutdg": 40.0
+"ecut": 50.0, 
+"pawecutdg": 50.0
 }, 
 "low": {
-"ecut": 36.0, 
-"pawecutdg": 36.0
+"ecut": 45.0, 
+"pawecutdg": 45.0
 }, 
 "normal": {
-"ecut": 38.0, 
-"pawecutdg": 38.0
+"ecut": 48.0, 
+"pawecutdg": 48.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "F", 
+"symbol": "Ni", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 
