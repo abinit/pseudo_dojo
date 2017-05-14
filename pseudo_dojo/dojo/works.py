@@ -1158,4 +1158,3 @@ class RelaxWithGbrvParamsWork(Work):
             json.dump(results, fh, indent=4) #, sort_keys=True, cls=MontyEncoder)
 
         return super(RelaxWithGbrvParamsWork, self).on_all_ok()
->>>>>>> gmatteo/rare_earths
