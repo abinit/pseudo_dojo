@@ -58,10 +58,8 @@
     <div class="intro">
       <h1 class="logo"><a href="index.html" title="The Pseudo Dojo">The Pseudo Dojo</a></h1>
     </div>
-    <div class="version">
-      <p>
-        v0.3  
-      </p>
+    <div class="download_button">
+     Download
     </div>
     <div class="description">
       <p>
@@ -80,12 +78,12 @@
         </p>
       </div>
     </div>
-    <div class="download_bar">
+    <div class="selection_bar">
         <table style="color:#FFFFFF;margin-top:0px; font-size: 16px;">
 <tr>
-<td rowspan="2">
-<div class="download_button">Download</div>
-</td>
+<th>
+Type
+</th>
 <th>
 XC
 </th>
@@ -93,46 +91,50 @@ XC
 Accuracy
 </th>
 <th>
-Relativistic
-</th>
-<th>
 Format
 </th>
 </tr>
 <tr>
 <td>
-<div class="styled-select">
-<select id="XCF">
-  <option value="pw">LDA</option>
-  <option value="pbe" selected>PBE</option>
-  <option value="pbesol">PBEsol</option>
-</select>
+<div class="styled-longselect">
+  <select id="TYP" onchange="javascript: dynamicdropdown(this.options[this.selectedIndex].value);">
+    <option value="nc-sr" selected>NC (ONCVPSP v0.3)</option>
+<!--  <option value="nc-soc">NC + SOC (ONCVPSP v0.3)</option> --!>
+    <option value="paw">PAW (JTH v1.0)</option>
+  </select>
 </div>
 </td>
 <td>
 <div class="styled-select">
-<select id="ACC">
-  <option value="s" selected>standard</option>
-  <option value="h">stringent</option>
-</select>
+  <script type="text/javascript" language="JavaScript">
+    document.write('<select id="XCF"><option value="pw" selected>LDA</option><option value="pbe">PBE</option><option value="pbesol">PBEsol</option></select>')
+  </script>
+  <noscript>
+    <select id="XCF" >
+    </select>
+  </noscript>
 </div>
 </td>
 <td>
 <div class="styled-select">
-<select id="REL">
-  <option value="sr" selected>scalar</option>
-  <option value="fr">fully</option>
-</select>
+  <script type="text/javascript" language="JavaScript">
+    document.write('<select id="ACC"><option value="standard" selected>standard</option><option value="stringent">stringent</option></select>')
+  </script>
+  <noscript>
+    <select id="ACC" >
+    </select>
+  </noscript>
 </div>
 </td>
 <td>
 <div class="styled-select">
-<select id="FMT">
-  <option value="psp8" selected>psp8</option>
-  <option value="upf">upf</option>
-  <option value="html">html</option>
-  <option value="djrepo">djrepo</option>
-</select>
+  <script type="text/javascript" language="JavaScript">
+    document.write('<select id="FMT"><option value="psp8" selected>psp8</option><option value="upf">upf</option><option value="html">html</option><option value="djrepo">djrepo</option></select>')
+  </script>
+  <noscript>
+    <select id="FMT" >
+    </select>
+  </noscript>
 </div>
 </td>
 </tr>
@@ -852,9 +854,41 @@ Format
 <div class="footer">
 </div>
 </div>
-<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
-<script>
 
+<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+
+<script language="javascript" type="text/javascript">
+  function dynamicdropdown(listindex){
+    document.getElementById("ACC").length = 0;
+    document.getElementById("XCF").length = 0;
+    document.getElementById("FMT").length = 0;
+    switch (listindex)
+    {
+      case "nc-sr" :
+        document.getElementById("ACC").options[0]=new Option("standard","standard");
+        document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+        document.getElementById("XCF").options[0]=new Option("LDA","pw");
+        document.getElementById("XCF").options[1]=new Option("PBE","pbe");
+        document.getElementById("XCF").options[2]=new Option("PBEsol","pbesol");
+        document.getElementById("FMT").options[0]=new Option("psp8","psp8");
+        document.getElementById("FMT").options[1]=new Option("upf","upf");
+        document.getElementById("FMT").options[2]=new Option("html","html");
+        document.getElementById("FMT").options[3]=new Option("djrepo","djrepo");
+        break;
+
+      case "paw" :
+        document.getElementById("ACC").options[0]=new Option("standard","standard");
+        document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+        document.getElementById("XCF").options[0]=new Option("LDA","pw");
+        document.getElementById("XCF").options[1]=new Option("PBE","pbe");
+        document.getElementById("FMT").options[0]=new Option("xml","xml");
+        break;
+    }
+    return true;
+  }
+</script>
+
+<script>
   var params = decodeURIComponent(window.location.search.slice(1))
               .split('&')
               .reduce(function _reduce (/*Object*/ a, /*String*/ b) {
@@ -875,11 +909,11 @@ Format
       var res = dum.split("_");
       var trunk = "pseudos/"
       var elm = res[1];
+      var typ = $("#TYP").val();
       var xcf = $("#XCF").val();
       var acc = $("#ACC").val();
-      var rel = $("#REL").val();
       var fmt = $("#FMT").val();
-      var url = trunk.concat(xcf,"_",acc,"_",rel,"/",elm,".",fmt)
+      var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt)
       var mythis = $(this);
       $.get(url)
         .done(function() { 
@@ -949,11 +983,11 @@ Format
       var res = dum.split("_");
       var trunk = "pseudos/"
       var elm = res[1];
+      var typ = $("#TYP").val();
       var xcf = $("#XCF").val();
       var acc = $("#ACC").val();
-      var rel = $("#REL").val();
       var fmt = $("#FMT").val();
-      var url = trunk.concat(xcf,"_",acc,"_",rel,"/",elm,".",fmt)
+      var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt)
       $.get(url)
         .done(function() {
             // exists code
@@ -966,11 +1000,11 @@ Format
 
     $('.download_button').hover(function(){
       var trunk = "pseudos/"
+      var typ = $("#TYP").val();
       var xcf = $("#XCF").val();
       var acc = $("#ACC").val();
-      var rel = $("#REL").val();
       var fmt = $("#FMT").val();
-      var url = trunk.concat(xcf,"_",acc,"_",rel,"_",fmt,".tgz")
+      var url = trunk.concat(typ,"_",xcf,"_",acc,"_",fmt,".tgz")
       var mythis = $(this);
       $.get(url)
         .done(function() {
@@ -986,21 +1020,21 @@ Format
         })
       }, function(){
       var mythis = $(this);
-      mythis.css("background-color", "#CBCBCB");
-      mythis.css("color", "#333333");
+      mythis.css("background-color", "#4D4D4D");
+      mythis.css("color", "#FFFFFF");
       setTimeout(function(){
-        mythis.css("background-color", "#CBCBCB");
-        mythis.css("color", "#333333");
+        mythis.css("background-color", "#4D4D4D");
+        mythis.css("color", "#FFFFFF");
       },500);
     });
 
     $('.download_button').on('click', function(e) {
       var trunk = "pseudos/"
+      var typ = $("#TYP").val();
       var xcf = $("#XCF").val();
       var acc = $("#ACC").val();
-      var rel = $("#REL").val();
       var fmt = $("#FMT").val();
-      var url = trunk.concat(xcf,"_",acc,"_",rel,"_",fmt,".tgz")
+      var url = trunk.concat(typ,"_",xcf,"_",acc,"_",fmt,".tgz")
       $.get(url)
         .done(function() {
             // exists code
@@ -1058,7 +1092,6 @@ Format
 
   ga('create', 'UA-97858927-1', 'auto');
   ga('send', 'pageview');
-
 </script>
 
 </body>
