@@ -1,12 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<!--[if IE 7]>
+<html class="ie ie7" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="en-US">
+<![endif]-->
+<!--[if !(IE 7) | !(IE 8)  ]><!-->
+<html lang="en-US">
+<!--<![endif]-->
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/style.css" />
-    <title>Frequently asked questions</title>
+<title>Pseudo Dojo</title>
+<link rel="stylesheet" href="css/style.css" />
 </head>
-<body style="margin: 10px; font-size:100%">
 
+<body>
+<div class="wrapper">
+<div class="table">
+  <aside class="infobox">
+    <div class="intro">
+      <h1 class="logo"><a href="index.html" title="The Pseudo Dojo">The Pseudo Dojo</a></h1>
+    </div>
+    <div class="download_button">
+     F.A.Q.
+    </div>
+    <div class="menubar">
+      <div class="menutext">
+        <p>
+          <a href="index.html"><span>Home</span></a>
+          <a href="faq.html"><span>F.A.Q.</span></a>
+          <a href="contribute.html"><span>Contribute</span></a>
+          <span style="padding-left: 6em">
+          <span><a href="about.html">About</a></span></span>
+        </p>
+      </div>
+    </div>
+
+<div class="generaltext">
 <h1>General</h1>
 
 <h2>&#9670; How do I cite the PseudoDojo?</h2>
@@ -31,7 +60,7 @@ Using these you can generate potentials for most LDA and GGA functionals using <
 We could reuse most of out PBE inputs to generate the PBEsol potentials.<BR />
 Using <a href="http://octopus-code.org/wiki/Libxc_functionals">LibXC</a>, which is linked to ONCVPSP, almost all functionals can be used.
 
-<h2>&#9670; All the ONCVPSP potentials are wiht non-linear core correction I need some without.</h2>
+<h2>&#9670; All the ONCVPSP potentials are with non-linear core correction I need some without.</h2>
 We usually observe better convergenc with so indeed all are generated with nlcc.<BR />
 I yo really need one without take the input from the HTML page on the pseudo (select format : html and click the element).<BR />
 Install <a href="http://www.mat-simresearch.com/">ONCVPSP</a>.
@@ -41,7 +70,7 @@ Turn icmod to 0 in the input and generate the pseudo.
 These are currently under development.<BR />
 
 <h2>&#9670; Do you also have the other elements?</h2>
-We are currently working on the Lantanides.<BR />
+We are currently working on the Lanthanides.<BR />
 
 <h2>&#9670; Is it also possible to get the pseudos in other formats?</h2>
 ONCVPSP currently supports psp8 and upf.<BR />
@@ -52,6 +81,12 @@ We are looking at the possibility to also provide them in the psml format.<BR />
 Yes, this is another project we are finishing at the moment.<BR />
 Most of the current PBE inputs also generate well using the fully relativistic version of ONCVPSP.<BR />
 When we have finished the final polishing we will also provide the last tuned special cases.<BR />
+</div>
+
+  </aside>
+</div>
+</div>
+
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -62,5 +97,6 @@ When we have finished the final polishing we will also provide the last tuned sp
   ga('send', 'pageview');
 
 </script>
+
 </body>
 </html>
