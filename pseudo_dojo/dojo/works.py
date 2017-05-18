@@ -445,7 +445,7 @@ class DeltaFactorWork(DojoWork):
             scf_input.add_abiobjects(ksampling, smearing, spin_mode)
             scf_input.set_vars(extra_abivars)
 
-	    # Magnetic materials with nspinor = 2 requires connection
+            # Magnetic materials with nspinor = 2 requires connection
             # and a double SCF run (nsppol = 2 first then nspinor = 2).
             if connect and spin_mode.nspinor == 2:
                 print("Using collinear then noncollinear scf task")
@@ -909,14 +909,14 @@ class PhononDojoWork(PhononWork, DojoWork):
 
 class RocksaltRelaxationFactory(object):
     """
-    Factory producing work objects for the calculation of ebands for testing for ghosts.
+    Factory producing work objects for the calculation of Nitrogen Lantanide rocksalt lattice parameters .
     """
 
     def __init__(self, xc):
         """xc is the exchange-correlation functional e.g. PBE, PW."""
         self.xc = XcFunc.asxc(xc)
 
-    def work_for_pseudo(self, pseudo, ecut=None, pawecutdg=None,
+    def work_for_pseudo(self, pseudo, ecut_list=None, pawecutdg=None,
                         spin_mode="unpolarized", include_soc=False,
                         tolwfr=1.e-12, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
         """
@@ -1031,7 +1031,7 @@ class RocksaltRelaxationWork(DojoWork):
 
             # Convert float to string with 1 decimal digit.
             dojo_ecut = "%.1f" % ecut
-            entries[dojo_ecut] = final.structure.lattice.as_dict()
+            entries[dojo_ecut] = final_structure.lattice.as_dict()
 
         # Convert to JSON and add results to the dojo report.
         #entry = dict(ecut=self.ecut, pawecutdg=self.dojo_pawecutdg, kppa=self.dojo_kppa)
@@ -1158,4 +1158,3 @@ class RelaxWithGbrvParamsWork(Work):
             json.dump(results, fh, indent=4) #, sort_keys=True, cls=MontyEncoder)
 
         return super(RelaxWithGbrvParamsWork, self).on_all_ok()
->>>>>>> gmatteo/rare_earths
