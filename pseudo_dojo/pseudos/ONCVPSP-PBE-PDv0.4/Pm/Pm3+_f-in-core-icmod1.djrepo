@@ -1,0 +1,50 @@
+{
+"basename": "Pm3+_f-in-core-icmod1.psp8", 
+"ecuts": [
+35.0, 
+37.0, 
+39.0, 
+41.0, 
+43.0, 
+45.0, 
+47.0, 
+49.0, 
+51.0, 
+53.0, 
+55.0, 
+63.0, 
+65.0
+], 
+"md5": "a6a3cec29c301a64a50cb8df1b01c7fe", 
+"ppgen_hints": {
+"high": {
+"ecut": 45.0, 
+"pawecutdg": 45.0
+}, 
+"low": {
+"ecut": 19.0, 
+"pawecutdg": 19.0
+}, 
+"normal": {
+"ecut": 20.0, 
+"pawecutdg": 20.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Pm", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_C_PBE"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_X_PBE"
+}
+}
+}
