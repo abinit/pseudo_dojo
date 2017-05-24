@@ -1,7 +1,6 @@
 {
 "basename": "Eu3+_f-in-the-core.psp8", 
 "ecuts": [
-30.0, 
 32.0, 
 34.0, 
 36.0, 
@@ -12,14 +11,15 @@
 46.0, 
 48.0, 
 50.0, 
-58.0, 
-60.0
+52.0, 
+60.0, 
+62.0
 ], 
-"md5": "74f06d7a4c4fb89eaae3d6dee5c98329", 
+"md5": "8f475fb6efcaf8c4b42b15e4d550b821", 
 "ppgen_hints": {
 "high": {
-"ecut": 40.0, 
-"pawecutdg": 40.0
+"ecut": 42.0, 
+"pawecutdg": 42.0
 }, 
 "low": {
 "ecut": 20.0, 

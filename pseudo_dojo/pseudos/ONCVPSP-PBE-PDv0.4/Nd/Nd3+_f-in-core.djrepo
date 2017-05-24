@@ -15,7 +15,7 @@
 64.0, 
 66.0
 ], 
-"md5": "25ed3b4bdf8a5483b8c1c5ae72ff0718", 
+"md5": "50683983907f4577346af72b0041a79d", 
 "ppgen_hints": {
 "high": {
 "ecut": 46.0, 
@@ -26,8 +26,8 @@
 "pawecutdg": 19.0
 }, 
 "normal": {
-"ecut": 20.0, 
-"pawecutdg": 20.0
+"ecut": 21.0, 
+"pawecutdg": 21.0
 }
 }, 
 "pseudo_type": "NC", 
