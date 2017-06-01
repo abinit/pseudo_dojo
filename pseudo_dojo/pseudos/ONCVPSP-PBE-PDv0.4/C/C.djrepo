@@ -1,37 +1,37 @@
 {
-"basename": "Pr3+_f-in-core.psp8", 
+"basename": "C.psp8", 
 "ecuts": [
-14.0, 
-16.0, 
-18.0, 
-20.0, 
-22.0, 
-24.0, 
-26.0, 
-28.0, 
-30.0, 
-32.0, 
-34.0, 
-42.0, 
-44.0
+33.0, 
+35.0, 
+37.0, 
+39.0, 
+41.0, 
+43.0, 
+45.0, 
+47.0, 
+49.0, 
+51.0, 
+53.0, 
+61.0, 
+63.0
 ], 
-"md5": "6db58a6ce68d3c9125cf624eca557e20", 
+"md5": "8af239e6261c16367070328997070877", 
 "ppgen_hints": {
 "high": {
-"ecut": 24.0, 
-"pawecutdg": 24.0
+"ecut": 43.0, 
+"pawecutdg": 43.0
 }, 
 "low": {
-"ecut": 20.0, 
-"pawecutdg": 20.0
+"ecut": 36.0, 
+"pawecutdg": 36.0
 }, 
 "normal": {
-"ecut": 22.0, 
-"pawecutdg": 22.0
+"ecut": 39.0, 
+"pawecutdg": 39.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "Pr", 
+"symbol": "C", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

@@ -1,33 +1,33 @@
 {
 "basename": "Pm3+_f-in-core.psp8", 
 "ecuts": [
+14.0, 
+16.0, 
+18.0, 
+20.0, 
+22.0, 
+24.0, 
+26.0, 
+28.0, 
+30.0, 
 32.0, 
 34.0, 
-36.0, 
-38.0, 
-40.0, 
 42.0, 
-44.0, 
-46.0, 
-48.0, 
-50.0, 
-52.0, 
-60.0, 
-62.0
+44.0
 ], 
-"md5": "32ac9ae4102b9a66ddc52aaf005cf97a", 
+"md5": "349213f654997f93d0fa2ccd45112fb3", 
 "ppgen_hints": {
 "high": {
-"ecut": 42.0, 
-"pawecutdg": 42.0
+"ecut": 24.0, 
+"pawecutdg": 24.0
 }, 
 "low": {
 "ecut": 19.0, 
 "pawecutdg": 19.0
 }, 
 "normal": {
-"ecut": 20.0, 
-"pawecutdg": 20.0
+"ecut": 21.0, 
+"pawecutdg": 21.0
 }
 }, 
 "pseudo_type": "NC", 
