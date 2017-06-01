@@ -1,37 +1,37 @@
 {
-"basename": "Pr3+_f-in-core.psp8", 
+"basename": "Te-d.psp8", 
 "ecuts": [
-14.0, 
-16.0, 
-18.0, 
-20.0, 
-22.0, 
-24.0, 
 26.0, 
 28.0, 
 30.0, 
 32.0, 
 34.0, 
+36.0, 
+38.0, 
+40.0, 
 42.0, 
-44.0
+44.0, 
+46.0, 
+54.0, 
+56.0
 ], 
-"md5": "6db58a6ce68d3c9125cf624eca557e20", 
+"md5": "1da10c990c353a9d4a06f8b514f67806", 
 "ppgen_hints": {
 "high": {
-"ecut": 24.0, 
-"pawecutdg": 24.0
+"ecut": 36.0, 
+"pawecutdg": 36.0
 }, 
 "low": {
-"ecut": 20.0, 
-"pawecutdg": 20.0
+"ecut": 32.0, 
+"pawecutdg": 32.0
 }, 
 "normal": {
-"ecut": 22.0, 
-"pawecutdg": 22.0
+"ecut": 34.0, 
+"pawecutdg": 34.0
 }
 }, 
 "pseudo_type": "NC", 
-"symbol": "Pr", 
+"symbol": "Te", 
 "version": "1.0", 
 "xc": {
 "@class": "XcFunc", 

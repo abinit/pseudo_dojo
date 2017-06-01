@@ -1,6 +1,6 @@
 # ATOM AND REFERENCE CONFIGURATION
 # atsym  z   nc   nv     iexc    psfile
-  Ce 58.00   10    4       4            psp8
+  Ce 58   10    4       4            psp8
 #
 #   n    l    f        energy (Ha)
     1    0    2.00    -1.5952789D+03
@@ -26,7 +26,7 @@
     0    2.10   -1.61    4    8    5.40
     1    1.90   -0.91    4    8    6.60
     2    1.90   -0.11    4    9    6.60
-    3    2.50    1.00    4    8    6.50
+    3    2.50    1.00    3    8    6.8
 #
 # LOCAL POTENTIAL
 # lloc, lpopt,  rc(5),   dvloc0
