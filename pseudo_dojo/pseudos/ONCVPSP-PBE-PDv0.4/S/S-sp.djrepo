@@ -176030,7 +176030,7 @@ null
 },
 "hints": {
 "high": {
-"ecut": 52.0
+"ecut": 51.0
 },
 "low": {
 "ecut": 43.0
@@ -176256,6 +176256,9 @@ null
 "tags": [
 " GW"
 ],
+"validation": {
+"validated_on": "2017-06-27 14:32:36"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",

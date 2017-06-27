@@ -1,5 +1,5 @@
 {
-"basename": "Al-new.psp8",
+"basename": "Al.psp8",
 "deltafactor": {
 "10.0": {
 "b0": 0.49327220393686694,
@@ -30508,7 +30508,7 @@ null
 " "
 ],
 "validation": {
-"validated_on": "2017-06-27 14:17:01"
+"validated_on": "2017-06-27 14:20:49"
 },
 "version": "1.0",
 "xc": {
