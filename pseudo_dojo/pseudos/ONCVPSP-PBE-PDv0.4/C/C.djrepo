@@ -80233,8 +80233,11 @@ null
 "pseudo_type": "NC",
 "symbol": "C",
 "tags": [
-""
+"GW"
 ],
+"validation": {
+"validated_on": "2017-06-27 13:43:30"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",

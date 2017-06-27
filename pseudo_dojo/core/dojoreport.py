@@ -593,7 +593,7 @@ class DojoReport(dict):
             self.json_write()
 
         ok_button.on_click(on_button_clicked)
-        return ipw.Box(children=[low_ecut, normal_ecut, high_ecut, new_validation, tags, ok_button])
+        return ipw.VBox(children=[low_ecut, normal_ecut, high_ecut, new_validation, tags, ok_button])
 
     @staticmethod
     def _ecut2key(ecut):
