@@ -186,7 +186,7 @@ def main():
     def str_examples():
         return """\
 Usage Example:
-    ppdojo_run.py Si.psp8  => Build pseudo_dojo flow for Si.fhi
+    ppdojo_run.py Si.psp8  => Build pseudo_dojo flow for Si.psp8 pseudo
 """
 
     def show_examples_and_exit(error_code=1):
