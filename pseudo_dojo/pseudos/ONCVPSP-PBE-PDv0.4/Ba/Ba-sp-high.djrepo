@@ -89205,13 +89205,13 @@ null
 },
 "hints": {
 "high": {
-"ecut": 31.0
+"ecut": 28.0
 },
 "low": {
-"ecut": 19.0
+"ecut": 18.0
 },
 "normal": {
-"ecut": 25.0
+"ecut": 22.0
 }
 },
 "md5": "80a6a6fd89c92b7174eb941377951722",
@@ -89509,6 +89509,9 @@ null
 "tags": [
 " "
 ],
+"validation": {
+"validated_on": "2017-07-03 13:30:31"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",
