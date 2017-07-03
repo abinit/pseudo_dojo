@@ -80089,13 +80089,13 @@ null
 },
 "hints": {
 "high": {
-"ecut": 48.0
+"ecut": 49.0
 },
 "low": {
-"ecut": 38.0
+"ecut": 39.0
 },
 "normal": {
-"ecut": 42.0
+"ecut": 43.0
 }
 },
 "md5": "b5bc2275463390abd176bcd0d22fdf05",
@@ -80705,6 +80705,9 @@ null
 "tags": [
 ""
 ],
+"validation": {
+"validated_on": "2017-07-03 10:24:23"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",

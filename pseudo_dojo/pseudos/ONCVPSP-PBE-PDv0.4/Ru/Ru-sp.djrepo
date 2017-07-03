@@ -135156,10 +135156,10 @@ null
 "ecut": 50.0
 },
 "low": {
-"ecut": 40.0
+"ecut": 38.0
 },
 "normal": {
-"ecut": 44.0
+"ecut": 42.0
 }
 },
 "md5": "920316d78093f444577e850d5daca5d0",
@@ -135457,6 +135457,9 @@ null
 "tags": [
 "GW"
 ],
+"validation": {
+"validated_on": "2017-07-03 12:05:04"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",

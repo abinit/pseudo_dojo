@@ -16597,7 +16597,7 @@ null
 },
 "hints": {
 "high": {
-"ecut": 36.0
+"ecut": 34.0
 },
 "low": {
 "ecut": 22.0
@@ -17057,6 +17057,9 @@ null
 "tags": [
 ""
 ],
+"validation": {
+"validated_on": "2017-07-03 10:37:42"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",
