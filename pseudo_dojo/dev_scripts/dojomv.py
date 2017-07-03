@@ -32,8 +32,8 @@ def main():
     for ext in exts:
         path = os.path.join(new_root, "." + ext)
         if os.path.exists(path):
-	    cmd = "git rm %s" % path
-	    ret = os.system(cmd)
+            cmd = "git rm %s" % path
+            ret = os.system(cmd)
             print(cmd, "[%s]" % ret)
 
     # Git rename old files.
@@ -41,8 +41,8 @@ def main():
         old_path = old_root + "." + ext
         new_path = new_root + "." + ext
         if os.path.exists(old_path):
-	    cmd = "git mv %s %s" % (old_path, new_path)
-	    ret = os.system(cmd)
+            cmd = "git mv %s %s" % (old_path, new_path)
+            ret = os.system(cmd)
             print(cmd, "[%s]" % ret)
         else:
             print("Warning: old_path %s does not exist" % old_path)

@@ -28305,13 +28305,13 @@ null
 },
 "hints": {
 "high": {
-"ecut": 44.0
+"ecut": 43.0
 },
 "low": {
-"ecut": 34.0
+"ecut": 33.0
 },
 "normal": {
-"ecut": 38.0
+"ecut": 37.0
 }
 },
 "md5": "9b4846a554d2721f6419834272679039",
@@ -28609,6 +28609,9 @@ null
 "tags": [
 "GW"
 ],
+"validation": {
+"validated_on": "2017-06-27 14:44:18"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",

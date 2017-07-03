@@ -13,7 +13,7 @@ Ga 31 5 3 4 psp8
 2
 # l rc ep ncon nbas qcut
 0 1.65 0.0 4 8 4.4
-1 1.75 0.0 4 8 4.8
+1 1.75 0.0 4 8 5.8
 2 1.9 0.0 4 9 9.0
 # lloc lpopt rc5 dvloc0
 4 5 1.6 0.0

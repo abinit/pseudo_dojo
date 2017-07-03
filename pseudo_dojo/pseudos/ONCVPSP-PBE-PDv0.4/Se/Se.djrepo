@@ -326896,13 +326896,13 @@ null
 },
 "hints": {
 "high": {
-"ecut": 24.0
+"ecut": 23.0
 },
 "low": {
-"ecut": 14.0
+"ecut": 15.0
 },
 "normal": {
-"ecut": 18.0
+"ecut": 19.0
 }
 },
 "md5": "7a60b988214c9ef43d36e8cac3da5f6a",
@@ -327278,6 +327278,9 @@ null
 "tags": [
 " "
 ],
+"validation": {
+"validated_on": "2017-07-03 10:29:28"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",

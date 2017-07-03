@@ -231389,13 +231389,13 @@ null
 },
 "hints": {
 "high": {
-"ecut": 24.0
+"ecut": 25.0
 },
 "low": {
-"ecut": 14.0
+"ecut": 13.0
 },
 "normal": {
-"ecut": 18.0
+"ecut": 17.0
 }
 },
 "md5": "b21ca80a5c090c95dcb1aff78a55e283",
@@ -232005,6 +232005,9 @@ null
 "tags": [
 " "
 ],
+"validation": {
+"validated_on": "2017-07-03 10:13:41"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",
