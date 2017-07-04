@@ -108255,13 +108255,13 @@ null
 },
 "hints": {
 "high": {
-"ecut": 48.0
+"ecut": 50.0
 },
 "low": {
-"ecut": 36.0
+"ecut": 38.0
 },
 "normal": {
-"ecut": 42.0
+"ecut": 44.0
 }
 },
 "md5": "9c41b68b36adc5b26d74c0359f7f6d09",
@@ -108559,6 +108559,9 @@ null
 "tags": [
 " GW"
 ],
+"validation": {
+"validated_on": "2017-07-04 13:51:47"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",
