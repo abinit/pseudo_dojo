@@ -7,6 +7,7 @@ from __future__ import unicode_literals, division, print_function, absolute_impo
 
 import sys
 import os
+import json
 from shutil import copyfile
 from pseudo_dojo.util.notebook import write_notebook_html
 from pseudo_dojo.core.dojoreport import DojoReport
@@ -100,6 +101,7 @@ def main():
             #for fmt in ['psp8', 'upf', 'html', 'djrepo']:
             #    os.makedirs(os.path.join(website, '%s_%s' % (name, fmt)))
             os.makedirs(os.path.join(website, name))
+            pseudo_data = {}
             for pseudo in pseudos:
                 p = pseudo.strip()
                 try:
@@ -124,26 +126,39 @@ def main():
                     print('%s %s %s %s ' % ('mocked' if mock else 'done', xc, acc, p))
                     dojoreport = DojoReport.from_file(os.path.join(website, name, el + '.djrepo'))
                     try:
+                        low_hint = dojoreport["hints"]["low"]["ecut"]
                         normal_hint = dojoreport["hints"]["normal"]["ecut"]
+                        high_hint = dojoreport["hints"]["high"]["ecut"]
                     except KeyError:
+                        high_hint = 'NA'
                         normal_hint = 'NA'
+                        low_hint = 'NA'
                     try:
                         delta_ecuts = dojoreport["deltafactor"].keys()
                         delta_ecut = delta_ecuts[-1]
                         delta = dojoreport["deltafactor"][delta_ecut]["dfact_meV"]
                         delta_s = "%1.1f" % round(delta, 1)
+                        deltap = dojoreport["deltafactor"][delta_ecut]["dfactprime_meV"]
+                        deltap_s = "%1.1f" % round(deltap, 1)
                     except KeyError:
                         delta_s = 'NA'
+                        deltap_s = 'NA'
+                    try:
+                        gb_ecuts = dojoreport["gbrv_bcc"].keys()
+                        gb_ecut = gb_ecuts[-1]
+                        gb = dojoreport["gbrv_bcc"][gb_ecut]["a0_rel_err"]*100
+                        gb_s = "%1.1f" % round(gb, 1)
+                    except KeyError:
+                        gb_s = 'NA'
                     print("%s %s %s" % (nv, normal_hint, delta_s))
-                    with open(os.path.join(website, name, el + '.txt'), 'w') as f:
-                        f.write("%s %s %s" % (nv, normal_hint, delta_s))
+                    pseudo_data[el] = {'nv': nv, 'hh': high_hint, 'hl': low_hint, 'hn': normal_hint, 'd': delta_s,
+                                       'dp': deltap_s, 'gb': gb_s}
                 except (IOError, ValueError, CellExecutionError, OSError):
                     print('missing %s %s ' % (pseudo_set, p))
                     pass
+            with open(os.path.join(website, name + '.json'), 'w') as fp:
+                json.dump(pseudo_data, fp=fp)
 
-                #a += 1
-                #if a > 0:
-                #    mock = True
     return
 
 
