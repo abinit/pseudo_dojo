@@ -55,8 +55,8 @@ def make_upf(pseudo_path, calctype, mock=False):
 
 
 #PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.3']
+#PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4']
 
 
 ACCURACIES = ['standard', 'high']
@@ -95,7 +95,7 @@ def main():
     for pseudo_set in PSEUDOS_TO_INCLUDE:
         xc = pseudo_set.split('-')[1].lower()
         for acc in ACCURACIES:
-            with open(os.path.join(pseudo_set, acc)) as f:
+            with open(os.path.join(pseudo_set, acc+'.txt')) as f:
                 pseudos = f.readlines()
             name = "%s_%s_sr" % (xc, acc[0])
             #for fmt in ['psp8', 'upf', 'html', 'djrepo']:
