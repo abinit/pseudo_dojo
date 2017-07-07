@@ -7,6 +7,7 @@ from __future__ import unicode_literals, division, print_function, absolute_impo
 
 import sys
 import os
+import json
 from shutil import copyfile
 from pseudo_dojo.util.notebook import write_notebook_html
 from pseudo_dojo.core.dojoreport import DojoReport
@@ -19,16 +20,11 @@ def make_upf(pseudo_path, calctype, mock=False):
     """
     converter takes a path to a psp8 file, assumes the same .in file is present changes the .in file to upf,
     runs oncvpsp to generate hte upf file and finally changes the .in file back
-
     ?? polymorfic? if a .in file is provided it works with the .in ?
-
     Args:
         pseudo_path: path to a psp8 file
-
     Returns: the path to the generated upf
-
     001012: ' SLA  PW   NOGX NOGC '
-
     """
     in_path = pseudo_path.split('.')[0] + '.in'
     upf_path = pseudo_path.split('.')[0] + '.upf'
@@ -55,11 +51,11 @@ def make_upf(pseudo_path, calctype, mock=False):
 
 #PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
 PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.3']
+#PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.3']
 
 
 ACCURACIES = ['standard', 'high']
-
+rnACC = {'standard': 'standard', 'high': 'stringent'}
 
 def main():
     website = 'website'
@@ -96,10 +92,11 @@ def main():
         for acc in ACCURACIES:
             with open(os.path.join(pseudo_set, acc)) as f:
                 pseudos = f.readlines()
-            name = "%s_%s_sr" % (xc, acc[0])
+            name = "nc-sr_%s_%s" % (xc, rnACC[acc])
             #for fmt in ['psp8', 'upf', 'html', 'djrepo']:
             #    os.makedirs(os.path.join(website, '%s_%s' % (name, fmt)))
             os.makedirs(os.path.join(website, name))
+            pseudo_data = {}
             for pseudo in pseudos:
                 p = pseudo.strip()
                 try:
@@ -107,7 +104,7 @@ def main():
                         copyfile(os.path.join(pseudo_set, p).replace('psp8', extension),
                                  os.path.join(website, name, os.path.split(p)[1].replace('psp8', extension)))
                     try:
-                        write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), tmpfile=False, mock=mock)
+                        write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), tmpfile=False, mock=True)
                     except:
                         pass
                     try:
@@ -124,26 +121,42 @@ def main():
                     print('%s %s %s %s ' % ('mocked' if mock else 'done', xc, acc, p))
                     dojoreport = DojoReport.from_file(os.path.join(website, name, el + '.djrepo'))
                     try:
+                        low_hint = dojoreport["hints"]["low"]["ecut"]
                         normal_hint = dojoreport["hints"]["normal"]["ecut"]
+                        high_hint = dojoreport["hints"]["high"]["ecut"]
                     except KeyError:
-                        normal_hint = 'NA'
+                        high_hint = 'na'
+                        normal_hint = 'na'
+                        low_hint = 'na'
                     try:
                         delta_ecuts = dojoreport["deltafactor"].keys()
                         delta_ecut = delta_ecuts[-1]
                         delta = dojoreport["deltafactor"][delta_ecut]["dfact_meV"]
                         delta_s = "%1.1f" % round(delta, 1)
+                        deltap = dojoreport["deltafactor"][delta_ecut]["dfactprime_meV"]
+                        deltap_s = "%1.1f" % round(deltap, 1)
                     except KeyError:
-                        delta_s = 'NA'
+                        delta_s = 'na'
+                        deltap_s = 'na'
+                    try:
+                        gb_ecuts = dojoreport["gbrv_bcc"].keys()
+                        gb_ecut = gb_ecuts[-1]
+                        gb = dojoreport["gbrv_bcc"][gb_ecut]["a0_rel_err"]
+                        gf_ecuts = dojoreport["gbrv_fcc"].keys()
+                        gf_ecut = gf_ecuts[-1]
+                        gf = dojoreport["gbrv_fcc"][gf_ecut]["a0_rel_err"]
+                        gb_s = "%0.2f" % round((gb + gf)/2, 1)
+                    except KeyError:
+                        gb_s = 'na'
                     print("%s %s %s" % (nv, normal_hint, delta_s))
-                    with open(os.path.join(website, name, el + '.txt'), 'w') as f:
-                        f.write("%s %s %s" % (nv, normal_hint, delta_s))
+                    pseudo_data[el] = {'nv': nv, 'hh': high_hint, 'hl': low_hint, 'hn': normal_hint, 'd': delta_s,
+                                       'dp': deltap_s, 'gb': gb_s}
                 except (IOError, ValueError, CellExecutionError, OSError):
                     print('missing %s %s ' % (pseudo_set, p))
                     pass
+            with open(os.path.join(website, name + '.json'), 'w') as fp:
+                json.dump(pseudo_data, fp=fp)
 
-                #a += 1
-                #if a > 0:
-                #    mock = True
     return
 
 
