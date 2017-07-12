@@ -41,7 +41,6 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=Tr
                          nbf.new_code_cell("""\
 from __future__ import print_function, division, unicode_literals
 %matplotlib inline"""),
-
                          ])
     else:
         nb.cells.extend([nbf.new_markdown_cell("# PseudoDojo notebook for %s" % name),  # os.path.basename(pseudopath)),
