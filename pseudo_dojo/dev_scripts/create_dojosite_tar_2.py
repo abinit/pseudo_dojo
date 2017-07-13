@@ -11,7 +11,7 @@ import json
 from shutil import copyfile
 from pseudo_dojo.util.notebook import write_notebook_html
 from pseudo_dojo.core.dojoreport import DojoReport
-#from pseudo_dojo.util.convert import make_upf
+# from pseudo_dojo.util.convert import make_upf
 from pseudo_dojo.ppcodes.ppgen import OncvGenerator
 from nbconvert.preprocessors.execute import CellExecutionError
 
@@ -54,8 +54,8 @@ def make_upf(pseudo_path, calctype, mock=False):
     return nv
 
 
-#PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
-#PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
+# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
+# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
 PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4']
 
 
@@ -72,11 +72,6 @@ def main():
     if "--help" in sys.argv or "-h" in sys.argv:
         print(usage)
         return 1
-    try:
-        path = sys.argv[1]
-    except:
-        print(usage)
-        return 1
 
     mock = False
 
@@ -90,7 +85,6 @@ def main():
 
     #  walk the current tree, create the directory structure and copy the .in, .psp8, and .djrepo files
     print('copying selected pseudos:\n%s' % PSEUDOS_TO_INCLUDE)
-    a = 0
 
     for pseudo_set in PSEUDOS_TO_INCLUDE:
         xc = pseudo_set.split('-')[1].lower()
@@ -98,8 +92,6 @@ def main():
             with open(os.path.join(pseudo_set, acc+'.txt')) as f:
                 pseudos = f.readlines()
             name = "%s_%s_sr" % (xc, acc[0])
-            #for fmt in ['psp8', 'upf', 'html', 'djrepo']:
-            #    os.makedirs(os.path.join(website, '%s_%s' % (name, fmt)))
             os.makedirs(os.path.join(website, name))
             pseudo_data = {}
             for pseudo in pseudos:
