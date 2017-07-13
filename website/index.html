@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=1360">
 <link rel="stylesheet" href="css/style.css" />
 <meta name="description" content="This site collates tested pseudo potentials sorted by type, accuracy, and efficiency, shows information on convergens of various tested properties and provides download options." />
-<meta name="keywords" content="Pseudopotential, PAW atomic data set, Periodic Table, Ab Initio, plane wave pseudo, PAW pseudo" />
+<meta name="keywords" content="Pseudopotential, PAW atomic data set, Periodic Table, Ab Initio, norm conserving, plane wave pseudo, PAW pseudo" />
 <meta name="robots" content="index, follow" />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="en_US" />
@@ -52,11 +52,46 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
   })();
 </script-->
+
+<script src="dojo-tools.js">
+</script>
+
+
+
+<div class="detail 000_X" id="av">
+      <div class="element_l" id="av_el">Mean</div>
+    <div class="l_top_l">hints</div>
+    <div class="l_follow_l" id="av_hl" title="low cutoff energy hint">l</div>
+    <div class="l_follow_l" id="av_hn" title="normal cutoff energy hint">n</div>
+    <div class="l_follow_l" id="av_hh" title="high cutoff energy hint">h</div>
+    <div class="valence_l" id="av_nv" title="number of valence shells">n</div>
+    <div class="r_top_l" >tests</div>
+    <div class="r_follow_l" id="av_d" title="delta gauge">d</div>
+    <div class="r_follow_l" id="av_dp" title="normalized delta gauge">d</div>
+    <div class="r_follow_l" id="av_gb" title="gbrv bcc test">g</div>
+  </div>
+
+<script>
+  document.getElementById('av').style.visibility="hidden";
+</script>
+
 <div class="wrapper">
 <div class="table">
   <aside class="infobox">
     <div class="intro">
       <h1 class="logo"><a href="index.html" title="The Pseudo Dojo">The Pseudo Dojo</a></h1>
+    </div>
+    <div class="detail" id="X_n">
+      <div class="element" id="X_el">X</div>
+      <div class="l_top">hints</div>
+      <div class="l_follow" id="X_hl" title="low cutoff energy hint (Ha)">low</div>
+      <div class="l_follow" id="X_hn" title="normal cutoff energy hint (Ha)">normal</div>
+      <div class="l_follow" id="X_hh" title="high cutoff energy hint (Ha)">high</div>
+      <div class="valence" id="X_nv" title="number of valence shells">nv</div>
+      <div class="r_top" >tests</div>
+      <div class="r_follow" id="X_d" title="delta gauge (meV):&#013;Integral between the equation of state calculated using the pseudo potential &#013;and a reference all electron equation of state.">delta</div>
+      <div class="r_follow" id="X_dp" title="normalized delta gauge:&#013;Normalized version of the delta gauge.">delta1</div>
+      <div class="r_follow" id="X_gb" title="gbrv fcc bcc average (%):&#013;Relative error in the lattice parameter with respect to reference&#013;all electron results for elemental fcc and bcc structures.">gbrv</div>
     </div>
     <div class="download_button">
      Download
@@ -64,7 +99,7 @@
     <div class="description">
       <p>
         Select the flavor and <a href="./about.html">format</a>, then click "Download" to
-        get the complete table of pseudos or choose a specific element.
+        get the complete table of pseudos or choose a specific element. "HTML" gives full test results.
       </p>
     </div>
     <div class="menubar">
@@ -96,18 +131,18 @@ Format
 </tr>
 <tr>
 <td>
-<div class="styled-longselect">
+<div class="styled-longselect" onchange="load_set_info();">
   <select id="TYP" onchange="javascript: dynamicdropdown(this.options[this.selectedIndex].value);">
     <option value="nc-sr" selected>NC (ONCVPSP v0.3)</option>
-<!--  <option value="nc-soc">NC + SOC (ONCVPSP v0.3)</option> --!>
+<!--  <option value="nc-soc">NC + SOC (ONCVPSP v0.3)</option> -->
     <option value="paw">PAW (JTH v1.0)</option>
   </select>
 </div>
 </td>
 <td>
-<div class="styled-select">
+<div class="styled-select" onchange="load_set_info();">
   <script type="text/javascript" language="JavaScript">
-    document.write('<select id="XCF"><option value="pw" selected>LDA</option><option value="pbe">PBE</option><option value="pbesol">PBEsol</option></select>')
+    document.write('<select id="XCF"><option value="pw" selected>LDA</option><option value="pbe">PBE</option><option value="pbesol">PBEsol</option></select>');
   </script>
   <noscript>
     <select id="XCF" >
@@ -116,9 +151,10 @@ Format
 </div>
 </td>
 <td>
-<div class="styled-select">
+<div class="styled-select" onchange="load_set_info();">
   <script type="text/javascript" language="JavaScript">
-    document.write('<select id="ACC"><option value="standard" selected>standard</option><option value="stringent">stringent</option></select>')
+    document.write('<select id="ACC"><option value="standard" selected>standard</option><option value="stringent">stringent</option></select>');
+    load_set_info();
   </script>
   <noscript>
     <select id="ACC" >
@@ -128,7 +164,7 @@ Format
 </td>
 <td>
 <div class="styled-select">
-  <script type="text/javascript" language="JavaScript">
+  <script type="text/javascript" language="JavaScript" onchange="load_set_info();">
     document.write('<select id="FMT"><option value="psp8" selected>psp8</option><option value="upf">upf</option><option value="html">html</option><option value="djrepo">djrepo</option></select>')
   </script>
   <noscript>
@@ -143,708 +179,1349 @@ Format
   </aside>
   <div class="plugin bg_hydrogen 001_H">
     <div class="element">H</div>
+    <div class="l_top" id="H_hl">hl</div>
+    <div class="l_follow" id="H_hn">hn</div>
+    <div class="l_follow" id="H_hh">hh</div>
+    <div class="valence" id="H_nv">nv</div>
+    <div class="r_top" id="H_d">d</div>
+    <div class="r_follow" id="H_dp">dp</div>
+    <div class="r_follow" id="H_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Hydrogen</div>
     </div>
   </div>
   <div class="plugin bg_noble_gas 002_He">
     <div class="element">He</div>
+    <div class="l_top" id="He_hl">hl</div>
+    <div class="l_follow" id="He_hn">hn</div>
+    <div class="l_follow" id="He_hh">hh</div>
+    <div class="valence" id="He_nv">nv</div>
+    <div class="r_top" id="He_d">d</div>
+    <div class="r_follow" id="He_dp">dp</div>
+    <div class="r_follow" id="He_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Helium</div>
     </div>
   </div>
   <div class="plugin bg_alkali 003_Li">
     <div class="element">Li</div>
+    <div class="l_top" id="Li_hl">hl</div>
+    <div class="l_follow" id="Li_hn">hn</div>
+    <div class="l_follow" id="Li_hh">hh</div>
+    <div class="valence" id="Li_nv">nv</div>
+    <div class="r_top" id="Li_d">d</div>
+    <div class="r_follow" id="Li_dp">dp</div>
+    <div class="r_follow" id="Li_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Lithium</div>
     </div>
   </div>
   <div class="plugin bg_alkaline 004_Be">
     <div class="element">Be</div>
+    <div class="l_top" id="Be_hl">hl</div>
+    <div class="l_follow" id="Be_hn">hn</div>
+    <div class="l_follow" id="Be_hh">hh</div>
+    <div class="valence" id="Be_nv">nv</div>
+    <div class="r_top" id="Be_d">d</div>
+    <div class="r_follow" id="Be_dp">dp</div>
+    <div class="r_follow" id="Be_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Beryllium</div>
     </div>
   </div>
   <div class="plugin bg_metalloid 005_B">
     <div class="element">B</div>
+    <div class="l_top" id="B_hl">hl</div>
+    <div class="l_follow" id="B_hn">hn</div>
+    <div class="l_follow" id="B_hh">hh</div>
+    <div class="valence" id="B_nv">nv</div>
+    <div class="r_top" id="B_d">d</div>
+    <div class="r_follow" id="B_dp">dp</div>
+    <div class="r_follow" id="B_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Boron</div>
     </div>
   </div>
   <div class="plugin bg_nonmetal 006_C">
     <div class="element">C</div>
+    <div class="l_top" id="C_hl">hl</div>
+    <div class="l_follow" id="C_hn">hn</div>
+    <div class="l_follow" id="C_hh">hh</div>
+    <div class="valence" id="C_nv">nv</div>
+    <div class="r_top" id="C_d">d</div>
+    <div class="r_follow" id="C_dp">dp</div>
+    <div class="r_follow" id="C_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Carbon</div>
     </div>
   </div>
   <div class="plugin bg_nonmetal 007_N">
     <div class="element">N</div>
+    <div class="l_top" id="N_hl">hl</div>
+    <div class="l_follow" id="N_hn">hn</div>
+    <div class="l_follow" id="N_hh">hh</div>
+    <div class="valence" id="N_nv">nv</div>
+    <div class="r_top" id="N_d">d</div>
+    <div class="r_follow" id="N_dp">dp</div>
+    <div class="r_follow" id="N_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Nitrogen</div>
     </div>
   </div>
   <div class="plugin bg_nonmetal 008_O">
     <div class="element">O</div>
+    <div class="l_top" id="O_hl">hl</div>
+    <div class="l_follow" id="O_hn">hn</div>
+    <div class="l_follow" id="O_hh">hh</div>
+    <div class="valence" id="O_nv">nv</div>
+    <div class="r_top" id="O_d">d</div>
+    <div class="r_follow" id="O_dp">dp</div>
+    <div class="r_follow" id="O_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Oxygen</div>
     </div>
   </div>
   <div class="plugin bg_halogen 009_F">
     <div class="element">F</div>
+    <div class="l_top" id="F_hl">hl</div>
+    <div class="l_follow" id="F_hn">hn</div>
+    <div class="l_follow" id="F_hh">hh</div>
+    <div class="valence" id="F_nv">nv</div>
+    <div class="r_top" id="F_d">d</div>
+    <div class="r_follow" id="F_dp">dp</div>
+    <div class="r_follow" id="F_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Fluorine</div>
     </div>
   </div>
   <div class="plugin bg_noble_gas 010_Ne">
     <div class="element">Ne</div>
+    <div class="l_top" id="Ne_hl">hl</div>
+    <div class="l_follow" id="Ne_hn">hn</div>
+    <div class="l_follow" id="Ne_hh">hh</div>
+    <div class="valence" id="Ne_nv">nv</div>
+    <div class="r_top" id="Ne_d">d</div>
+    <div class="r_follow" id="Ne_dp">dp</div>
+    <div class="r_follow" id="Ne_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Neon</div>
     </div>
   </div>
   <div class="plugin bg_alkali 011_Na">
     <div class="element">Na</div>
+    <div class="l_top" id="Na_hl">hl</div>
+    <div class="l_follow" id="Na_hn">hn</div>
+    <div class="l_follow" id="Na_hh">hh</div>
+    <div class="valence" id="Na_nv">nv</div>
+    <div class="r_top" id="Na_d">d</div>
+    <div class="r_follow" id="Na_dp">dp</div>
+    <div class="r_follow" id="Na_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Sodium</div>
     </div>
   </div>
   <div class="plugin bg_alkaline 012_Mg">
     <div class="element">Mg</div>
+    <div class="l_top" id="Mg_hl">hl</div>
+    <div class="l_follow" id="Mg_hn">hn</div>
+    <div class="l_follow" id="Mg_hh">hh</div>
+    <div class="valence" id="Mg_nv">nv</div>
+    <div class="r_top" id="Mg_d">d</div>
+    <div class="r_follow" id="Mg_dp">dp</div>
+    <div class="r_follow" id="Mg_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Magnesium</div>
     </div>
   </div>
   <div class="plugin bg_post_transition_metal 013_Al">
     <div class="element">Al</div>
+    <div class="l_top" id="Al_hl">hl</div>
+    <div class="l_follow" id="Al_hn">hn</div>
+    <div class="l_follow" id="Al_hh">hh</div>
+    <div class="valence" id="Al_nv">nv</div>
+    <div class="r_top" id="Al_d">d</div>
+    <div class="r_follow" id="Al_dp">dp</div>
+    <div class="r_follow" id="Al_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Aluminium</div>
     </div>
   </div>
   <div class="plugin bg_metalloid 014_Si">
     <div class="element">Si</div>
+    <div class="l_top" id="Si_hl">hl</div>
+    <div class="l_follow" id="Si_hn">hn</div>
+    <div class="l_follow" id="Si_hh">hh</div>
+    <div class="valence" id="Si_nv">nv</div>
+    <div class="r_top" id="Si_d">d</div>
+    <div class="r_follow" id="Si_dp">dp</div>
+    <div class="r_follow" id="Si_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Silicon</div>
     </div>
   </div>
   <div class="plugin bg_nonmetal 015_P">
     <div class="element">P</div>
+    <div class="l_top" id="P_hl">hl</div>
+    <div class="l_follow" id="P_hn">hn</div>
+    <div class="l_follow" id="P_hh">hh</div>
+    <div class="valence" id="P_nv">nv</div>
+    <div class="r_top" id="P_d">d</div>
+    <div class="r_follow" id="P_dp">dp</div>
+    <div class="r_follow" id="P_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Phosphorus</div>
     </div>
   </div>
   <div class="plugin bg_nonmetal 016_S">
     <div class="element">S</div>
+    <div class="l_top" id="S_hl">hl</div>
+    <div class="l_follow" id="S_hn">hn</div>
+    <div class="l_follow" id="S_hh">hh</div>
+    <div class="valence" id="S_nv">nv</div>
+    <div class="r_top" id="S_d">d</div>
+    <div class="r_follow" id="S_dp">dp</div>
+    <div class="r_follow" id="S_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Sulphur</div>
     </div>
   </div>
   <div class="plugin bg_halogen 017_Cl">
     <div class="element">Cl</div>
+    <div class="l_top" id="Cl_hl">hl</div>
+    <div class="l_follow" id="Cl_hn">hn</div>
+    <div class="l_follow" id="Cl_hh">hh</div>
+    <div class="valence" id="Cl_nv">nv</div>
+    <div class="r_top" id="Cl_d">d</div>
+    <div class="r_follow" id="Cl_dp">dp</div>
+    <div class="r_follow" id="Cl_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Chlorine</div>
     </div>
   </div>
   <div class="plugin bg_noble_gas 018_Ar">
     <div class="element">Ar</div>
+    <div class="l_top" id="Ar_hl">hl</div>
+    <div class="l_follow" id="Ar_hn">hn</div>
+    <div class="l_follow" id="Ar_hh">hh</div>
+    <div class="valence" id="Ar_nv">nv</div>
+    <div class="r_top" id="Ar_d">d</div>
+    <div class="r_follow" id="Ar_dp">dp</div>
+    <div class="r_follow" id="Ar_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Argon</div>
     </div>
   </div>
   <div class="plugin bg_alkali 019_K">
     <div class="element">K</div>
+    <div class="l_top" id="K_hl">hl</div>
+    <div class="l_follow" id="K_hn">hn</div>
+    <div class="l_follow" id="K_hh">hh</div>
+    <div class="valence" id="K_nv">nv</div>
+    <div class="r_top" id="K_d">d</div>
+    <div class="r_follow" id="K_dp">dp</div>
+    <div class="r_follow" id="K_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Potassium</div>
     </div>
   </div>
   <div class="plugin bg_alkaline 020_Ca">
     <div class="element">Ca</div>
+    <div class="l_top" id="Ca_hl">hl</div>
+    <div class="l_follow" id="Ca_hn">hn</div>
+    <div class="l_follow" id="Ca_hh">hh</div>
+    <div class="valence" id="Ca_nv">nv</div>
+    <div class="r_top" id="Ca_d">d</div>
+    <div class="r_follow" id="Ca_dp">dp</div>
+    <div class="r_follow" id="Ca_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Calcium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 021_Sc">
     <div class="element">Sc</div>
+    <div class="l_top" id="Sc_hl">hl</div>
+    <div class="l_follow" id="Sc_hn">hn</div>
+    <div class="l_follow" id="Sc_hh">hh</div>
+    <div class="valence" id="Sc_nv">nv</div>
+    <div class="r_top" id="Sc_d">d</div>
+    <div class="r_follow" id="Sc_dp">dp</div>
+    <div class="r_follow" id="Sc_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Scandium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 022_Ti">
     <div class="element">Ti</div>
+    <div class="l_top" id="Ti_hl">hl</div>
+    <div class="l_follow" id="Ti_hn">hn</div>
+    <div class="l_follow" id="Ti_hh">hh</div>
+    <div class="valence" id="Ti_nv">nv</div>
+    <div class="r_top" id="Ti_d">d</div>
+    <div class="r_follow" id="Ti_dp">dp</div>
+    <div class="r_follow" id="Ti_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Titanium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 023_V">
     <div class="element">V</div>
+    <div class="l_top" id="V_hl">hl</div>
+    <div class="l_follow" id="V_hn">hn</div>
+    <div class="l_follow" id="V_hh">hh</div>
+    <div class="valence" id="V_nv">nv</div>
+    <div class="r_top" id="V_d">d</div>
+    <div class="r_follow" id="V_dp">dp</div>
+    <div class="r_follow" id="V_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Vanadium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 024_Cr">
     <div class="element">Cr</div>
+    <div class="l_top" id="Cr_hl">hl</div>
+    <div class="l_follow" id="Cr_hn">hn</div>
+    <div class="l_follow" id="Cr_hh">hh</div>
+    <div class="valence" id="Cr_nv">nv</div>
+    <div class="r_top" id="Cr_d">d</div>
+    <div class="r_follow" id="Cr_dp">dp</div>
+    <div class="r_follow" id="Cr_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Chromium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 025_Mn">
     <div class="element">Mn</div>
+    <div class="l_top" id="Mn_hl">hl</div>
+    <div class="l_follow" id="Mn_hn">hn</div>
+    <div class="l_follow" id="Mn_hh">hh</div>
+    <div class="valence" id="Mn_nv">nv</div>
+    <div class="r_top" id="Mn_d">d</div>
+    <div class="r_follow" id="Mn_dp">dp</div>
+    <div class="r_follow" id="Mn_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Manganese</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 026_Fe">
     <div class="element">Fe</div>
+    <div class="l_top" id="Fe_hl">hl</div>
+    <div class="l_follow" id="Fe_hn">hn</div>
+    <div class="l_follow" id="Fe_hh">hh</div>
+    <div class="valence" id="Fe_nv">nv</div>
+    <div class="r_top" id="Fe_d">d</div>
+    <div class="r_follow" id="Fe_dp">dp</div>
+    <div class="r_follow" id="Fe_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Iron</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 027_Co">
     <div class="element">Co</div>
+    <div class="l_top" id="Co_hl">hl</div>
+    <div class="l_follow" id="Co_hn">hn</div>
+    <div class="l_follow" id="Co_hh">hh</div>
+    <div class="valence" id="Co_nv">nv</div>
+    <div class="r_top" id="Co_d">d</div>
+    <div class="r_follow" id="Co_dp">dp</div>
+    <div class="r_follow" id="Co_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Cobalt</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 028_Ni">
     <div class="element">Ni</div>
+    <div class="l_top" id="Ni_hl">hl</div>
+    <div class="l_follow" id="Ni_hn">hn</div>
+    <div class="l_follow" id="Ni_hh">hh</div>
+    <div class="valence" id="Ni_nv">nv</div>
+    <div class="r_top" id="Ni_d">d</div>
+    <div class="r_follow" id="Ni_dp">dp</div>
+    <div class="r_follow" id="Ni_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Nickel</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 029_Cu">
     <div class="element">Cu</div>
+    <div class="l_top" id="Cu_hl">hl</div>
+    <div class="l_follow" id="Cu_hn">hn</div>
+    <div class="l_follow" id="Cu_hh">hh</div>
+    <div class="valence" id="Cu_nv">nv</div>
+    <div class="r_top" id="Cu_d">d</div>
+    <div class="r_follow" id="Cu_dp">dp</div>
+    <div class="r_follow" id="Cu_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Copper</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 030_Zn">
     <div class="element">Zn</div>
+    <div class="l_top" id="Zn_hl">hl</div>
+    <div class="l_follow" id="Zn_hn">hn</div>
+    <div class="l_follow" id="Zn_hh">hh</div>
+    <div class="valence" id="Zn_nv">nv</div>
+    <div class="r_top" id="Zn_d">d</div>
+    <div class="r_follow" id="Zn_dp">dp</div>
+    <div class="r_follow" id="Zn_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Zinc</div>
     </div>
   </div>
   <div class="plugin bg_post_transition_metal 031_Ga">
     <div class="element">Ga</div>
+    <div class="l_top" id="Ga_hl">hl</div>
+    <div class="l_follow" id="Ga_hn">hn</div>
+    <div class="l_follow" id="Ga_hh">hh</div>
+    <div class="valence" id="Ga_nv">nv</div>
+    <div class="r_top" id="Ga_d">d</div>
+    <div class="r_follow" id="Ga_dp">dp</div>
+    <div class="r_follow" id="Ga_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Gallium</div>
     </div>
   </div>
   <div class="plugin bg_metalloid 032_Ge">
     <div class="element">Ge</div>
+    <div class="l_top" id="Ge_hl">hl</div>
+    <div class="l_follow" id="Ge_hn">hn</div>
+    <div class="l_follow" id="Ge_hh">hh</div>
+    <div class="valence" id="Ge_nv">nv</div>
+    <div class="r_top" id="Ge_d">d</div>
+    <div class="r_follow" id="Ge_dp">dp</div>
+    <div class="r_follow" id="Ge_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Germanium</div>
     </div>
   </div>
   <div class="plugin bg_metalloid 033_As">
     <div class="element">As</div>
+    <div class="l_top" id="As_hl">hl</div>
+    <div class="l_follow" id="As_hn">hn</div>
+    <div class="l_follow" id="As_hh">hh</div>
+    <div class="valence" id="As_nv">nv</div>
+    <div class="r_top" id="As_d">d</div>
+    <div class="r_follow" id="As_dp">dp</div>
+    <div class="r_follow" id="As_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Arsenic</div>
     </div>
   </div>
   <div class="plugin bg_nonmetal 034_Se">
     <div class="element">Se</div>
+    <div class="l_top" id="Se_hl">hl</div>
+    <div class="l_follow" id="Se_hn">hn</div>
+    <div class="l_follow" id="Se_hh">hh</div>
+    <div class="valence" id="Se_nv">nv</div>
+    <div class="r_top" id="Se_d">d</div>
+    <div class="r_follow" id="Se_dp">dp</div>
+    <div class="r_follow" id="Se_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Selenium</div>
     </div>
   </div>
   <div class="plugin bg_halogen 035_Br">
     <div class="element">Br</div>
+    <div class="l_top" id="Br_hl">hl</div>
+    <div class="l_follow" id="Br_hn">hn</div>
+    <div class="l_follow" id="Br_hh">hh</div>
+    <div class="valence" id="Br_nv">nv</div>
+    <div class="r_top" id="Br_d">d</div>
+    <div class="r_follow" id="Br_dp">dp</div>
+    <div class="r_follow" id="Br_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Bromine</div>
     </div>
   </div>
   <div class="plugin bg_noble_gas 036_Kr">
     <div class="element">Kr</div>
+    <div class="l_top" id="Kr_hl">hl</div>
+    <div class="l_follow" id="Kr_hn">hn</div>
+    <div class="l_follow" id="Kr_hh">hh</div>
+    <div class="valence" id="Kr_nv">nv</div>
+    <div class="r_top" id="Kr_d">d</div>
+    <div class="r_follow" id="Kr_dp">dp</div>
+    <div class="r_follow" id="Kr_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Krypton</div>
     </div>
   </div>
   <div class="plugin bg_alkali 037_Rb">
     <div class="element">Rb</div>
+    <div class="l_top" id="Rb_hl">hl</div>
+    <div class="l_follow" id="Rb_hn">hn</div>
+    <div class="l_follow" id="Rb_hh">hh</div>
+    <div class="valence" id="Rb_nv">nv</div>
+    <div class="r_top" id="Rb_d">d</div>
+    <div class="r_follow" id="Rb_dp">dp</div>
+    <div class="r_follow" id="Rb_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Rubidium</div>
     </div>
   </div>
   <div class="plugin bg_alkaline 038_Sr">
     <div class="element">Sr</div>
+    <div class="l_top" id="Sr_hl">hl</div>
+    <div class="l_follow" id="Sr_hn">hn</div>
+    <div class="l_follow" id="Sr_hh">hh</div>
+    <div class="valence" id="Sr_nv">nv</div>
+    <div class="r_top" id="Sr_d">d</div>
+    <div class="r_follow" id="Sr_dp">dp</div>
+    <div class="r_follow" id="Sr_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Strontium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 039_Y">
     <div class="element">Y</div>
+    <div class="l_top" id="Y_hl">hl</div>
+    <div class="l_follow" id="Y_hn">hn</div>
+    <div class="l_follow" id="Y_hh">hh</div>
+    <div class="valence" id="Y_nv">nv</div>
+    <div class="r_top" id="Y_d">d</div>
+    <div class="r_follow" id="Y_dp">dp</div>
+    <div class="r_follow" id="Y_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Yttrium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 040_Zr">
     <div class="element">Zr</div>
+    <div class="l_top" id="Zr_hl">hl</div>
+    <div class="l_follow" id="Zr_hn">hn</div>
+    <div class="l_follow" id="Zr_hh">hh</div>
+    <div class="valence" id="Zr_nv">nv</div>
+    <div class="r_top" id="Zr_d">d</div>
+    <div class="r_follow" id="Zr_dp">dp</div>
+    <div class="r_follow" id="Zr_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Zirconium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 041_Nb">
     <div class="element">Nb</div>
+    <div class="l_top" id="Nb_hl">hl</div>
+    <div class="l_follow" id="Nb_hn">hn</div>
+    <div class="l_follow" id="Nb_hh">hh</div>
+    <div class="valence" id="Nb_nv">nv</div>
+    <div class="r_top" id="Nb_d">d</div>
+    <div class="r_follow" id="Nb_dp">dp</div>
+    <div class="r_follow" id="Nb_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Niobium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 042_Mo">
     <div class="element">Mo</div>
+    <div class="l_top" id="Mo_hl">hl</div>
+    <div class="l_follow" id="Mo_hn">hn</div>
+    <div class="l_follow" id="Mo_hh">hh</div>
+    <div class="valence" id="Mo_nv">nv</div>
+    <div class="r_top" id="Mo_d">d</div>
+    <div class="r_follow" id="Mo_dp">dp</div>
+    <div class="r_follow" id="Mo_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Molybdenum</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 043_Tc">
     <div class="element">Tc</div>
+    <div class="l_top" id="Tc_hl">hl</div>
+    <div class="l_follow" id="Tc_hn">hn</div>
+    <div class="l_follow" id="Tc_hh">hh</div>
+    <div class="valence" id="Tc_nv">nv</div>
+    <div class="r_top" id="Tc_d">d</div>
+    <div class="r_follow" id="Tc_dp">dp</div>
+    <div class="r_follow" id="Tc_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Technetium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 044_Ru">
     <div class="element">Ru</div>
+    <div class="l_top" id="Ru_hl">hl</div>
+    <div class="l_follow" id="Ru_hn">hn</div>
+    <div class="l_follow" id="Ru_hh">hh</div>
+    <div class="valence" id="Ru_nv">nv</div>
+    <div class="r_top" id="Ru_d">d</div>
+    <div class="r_follow" id="Ru_dp">dp</div>
+    <div class="r_follow" id="Ru_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Ruthenium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 045_Rh">
     <div class="element">Rh</div>
+    <div class="l_top" id="Rh_hl">hl</div>
+    <div class="l_follow" id="Rh_hn">hn</div>
+    <div class="l_follow" id="Rh_hh">hh</div>
+    <div class="valence" id="Rh_nv">nv</div>
+    <div class="r_top" id="Rh_d">d</div>
+    <div class="r_follow" id="Rh_dp">dp</div>
+    <div class="r_follow" id="Rh_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Rhodium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 046_Pd">
     <div class="element">Pd</div>
+    <div class="l_top" id="Pd_hl">hl</div>
+    <div class="l_follow" id="Pd_hn">hn</div>
+    <div class="l_follow" id="Pd_hh">hh</div>
+    <div class="valence" id="Pd_nv">nv</div>
+    <div class="r_top" id="Pd_d">d</div>
+    <div class="r_follow" id="Pd_dp">dp</div>
+    <div class="r_follow" id="Pd_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Palladium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 047_Ag">
     <div class="element">Ag</div>
+    <div class="l_top" id="Ag_hl">hl</div>
+    <div class="l_follow" id="Ag_hn">hn</div>
+    <div class="l_follow" id="Ag_hh">hh</div>
+    <div class="valence" id="Ag_nv">nv</div>
+    <div class="r_top" id="Ag_d">d</div>
+    <div class="r_follow" id="Ag_dp">dp</div>
+    <div class="r_follow" id="Ag_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Silver</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 048_Cd">
     <div class="element">Cd</div>
+    <div class="l_top" id="Cd_hl">hl</div>
+    <div class="l_follow" id="Cd_hn">hn</div>
+    <div class="l_follow" id="Cd_hh">hh</div>
+    <div class="valence" id="Cd_nv">nv</div>
+    <div class="r_top" id="Cd_d">d</div>
+    <div class="r_follow" id="Cd_dp">dp</div>
+    <div class="r_follow" id="Cd_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Cadmium</div>
     </div>
   </div>
   <div class="plugin bg_post_transition_metal 049_In">
     <div class="element">In</div>
+    <div class="l_top" id="In_hl">hl</div>
+    <div class="l_follow" id="In_hn">hn</div>
+    <div class="l_follow" id="In_hh">hh</div>
+    <div class="valence" id="In_nv">nv</div>
+    <div class="r_top" id="In_d">d</div>
+    <div class="r_follow" id="In_dp">dp</div>
+    <div class="r_follow" id="In_gb">gb</div>
     <div class="name-wrap">
-      <div class="name">indium</div>
+      <div class="name">Indium</div>
     </div>
   </div>
   <div class="plugin bg_post_transition_metal 050_Sn">
     <div class="element">Sn</div>
+    <div class="l_top" id="Sn_hl">hl</div>
+    <div class="l_follow" id="Sn_hn">hn</div>
+    <div class="l_follow" id="Sn_hh">hh</div>
+    <div class="valence" id="Sn_nv">nv</div>
+    <div class="r_top" id="Sn_d">d</div>
+    <div class="r_follow" id="Sn_dp">dp</div>
+    <div class="r_follow" id="Sn_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Tin</div>
     </div>
   </div>
   <div class="plugin bg_metalloid 051_Sb">
     <div class="element">Sb</div>
+    <div class="l_top" id="Sb_hl">hl</div>
+    <div class="l_follow" id="Sb_hn">hn</div>
+    <div class="l_follow" id="Sb_hh">hh</div>
+    <div class="valence" id="Sb_nv">nv</div>
+    <div class="r_top" id="Sb_d">d</div>
+    <div class="r_follow" id="Sb_dp">dp</div>
+    <div class="r_follow" id="Sb_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Antimony</div>
     </div>
   </div>
   <div class="plugin bg_metalloid 052_Te">
     <div class="element">Te</div>
+    <div class="l_top" id="Te_hl">hl</div>
+    <div class="l_follow" id="Te_hn">hn</div>
+    <div class="l_follow" id="Te_hh">hh</div>
+    <div class="valence" id="Te_nv">nv</div>
+    <div class="r_top" id="Te_d">d</div>
+    <div class="r_follow" id="Te_dp">dp</div>
+    <div class="r_follow" id="Te_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Tellurium</div>
     </div>
   </div>
   <div class="plugin bg_halogen 053_I">
     <div class="element">I</div>
+    <div class="l_top" id="I_hl">hl</div>
+    <div class="l_follow" id="I_hn">hn</div>
+    <div class="l_follow" id="I_hh">hh</div>
+    <div class="valence" id="I_nv">nv</div>
+    <div class="r_top" id="I_d">d</div>
+    <div class="r_follow" id="I_dp">dp</div>
+    <div class="r_follow" id="I_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Iodine</div>
     </div>
   </div>
   <div class="plugin bg_noble_gas 054_Xe">
     <div class="element">Xe</div>
+    <div class="l_top" id="Xe_hl">hl</div>
+    <div class="l_follow" id="Xe_hn">hn</div>
+    <div class="l_follow" id="Xe_hh">hh</div>
+    <div class="valence" id="Xe_nv">nv</div>
+    <div class="r_top" id="Xe_d">d</div>
+    <div class="r_follow" id="Xe_dp">dp</div>
+    <div class="r_follow" id="Xe_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Xenon</div>
     </div>
   </div>
   <div class="plugin bg_alkali 055_Cs">
     <div class="element">Cs</div>
+    <div class="l_top" id="Cs_hl">hl</div>
+    <div class="l_follow" id="Cs_hn">hn</div>
+    <div class="l_follow" id="Cs_hh">hh</div>
+    <div class="valence" id="Cs_nv">nv</div>
+    <div class="r_top" id="Cs_d">d</div>
+    <div class="r_follow" id="Cs_dp">dp</div>
+    <div class="r_follow" id="Cs_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Caesium</div>
     </div>
   </div>
   <div class="plugin bg_alkaline 056_Ba">
     <div class="element">Ba</div>
+    <div class="l_top" id="Ba_hl">hl</div>
+    <div class="l_follow" id="Ba_hn">hn</div>
+    <div class="l_follow" id="Ba_hh">hh</div>
+    <div class="valence" id="Ba_nv">nv</div>
+    <div class="r_top" id="Ba_d">d</div>
+    <div class="r_follow" id="Ba_dp">dp</div>
+    <div class="r_follow" id="Ba_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Barium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 057_La">
     <div class="element">La</div>
+    <div class="l_top" id="La_hl">hl</div>
+    <div class="l_follow" id="La_hn">hn</div>
+    <div class="l_follow" id="La_hh">hh</div>
+    <div class="valence" id="La_nv">nv</div>
+    <div class="r_top" id="La_d">d</div>
+    <div class="r_follow" id="La_dp">dp</div>
+    <div class="r_follow" id="La_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Lanthanum</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 058_Ce">
     <div class="element">Ce</div>
+    <div class="l_top" id="Ce_hl">hl</div>
+    <div class="l_follow" id="Ce_hn">hn</div>
+    <div class="l_follow" id="Ce_hh">hh</div>
+    <div class="valence" id="Ce_nv">nv</div>
+    <div class="r_top" id="Ce_d">d</div>
+    <div class="r_follow" id="Ce_dp">dp</div>
+    <div class="r_follow" id="Ce_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Cerium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 059_Pr">
     <div class="element">Pr</div>
+    <div class="l_top" id="Pr_hl">hl</div>
+    <div class="l_follow" id="Pr_hn">hn</div>
+    <div class="l_follow" id="Pr_hh">hh</div>
+    <div class="valence" id="Pr_nv">nv</div>
+    <div class="r_top" id="Pr_d">d</div>
+    <div class="r_follow" id="Pr_dp">dp</div>
+    <div class="r_follow" id="Pr_gb">gb</div>
     <div class="name-wrap-double">
       <div class="name">Praseo- dymium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 060_Nd">
     <div class="element">Nd</div>
+    <div class="l_top" id="Nd_hl">hl</div>
+    <div class="l_follow" id="Nd_hn">hn</div>
+    <div class="l_follow" id="Nd_hh">hh</div>
+    <div class="valence" id="Nd_nv">nv</div>
+    <div class="r_top" id="Nd_d">d</div>
+    <div class="r_follow" id="Nd_dp">dp</div>
+    <div class="r_follow" id="Nd_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Neodymium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 061_Pm">
     <div class="element">Pm</div>
+    <div class="l_top" id="Pm_hl">hl</div>
+    <div class="l_follow" id="Pm_hn">hn</div>
+    <div class="l_follow" id="Pm_hh">hh</div>
+    <div class="valence" id="Pm_nv">nv</div>
+    <div class="r_top" id="Pm_d">d</div>
+    <div class="r_follow" id="Pm_dp">dp</div>
+    <div class="r_follow" id="Pm_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Promethium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 062_Sm">
     <div class="element">Sm</div>
+    <div class="l_top" id="Sm_hl">hl</div>
+    <div class="l_follow" id="Sm_hn">hn</div>
+    <div class="l_follow" id="Sm_hh">hh</div>
+    <div class="valence" id="Sm_nv">nv</div>
+    <div class="r_top" id="Sm_d">d</div>
+    <div class="r_follow" id="Sm_dp">dp</div>
+    <div class="r_follow" id="Sm_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Samarium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 063_Eu">
     <div class="element">Eu</div>
+    <div class="l_top" id="Eu_hl">hl</div>
+    <div class="l_follow" id="Eu_hn">hn</div>
+    <div class="l_follow" id="Eu_hh">hh</div>
+    <div class="valence" id="Eu_nv">nv</div>
+    <div class="r_top" id="Eu_d">d</div>
+    <div class="r_follow" id="Eu_dp">dp</div>
+    <div class="r_follow" id="Eu_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Europium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 064_Gd">
     <div class="element">Gd</div>
+    <div class="l_top" id="Gd_hl">hl</div>
+    <div class="l_follow" id="Gd_hn">hn</div>
+    <div class="l_follow" id="Gd_hh">hh</div>
+    <div class="valence" id="Gd_nv">nv</div>
+    <div class="r_top" id="Gd_d">d</div>
+    <div class="r_follow" id="Gd_dp">dp</div>
+    <div class="r_follow" id="Gd_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Gadolinium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 065_Tb">
     <div class="element">Tb</div>
+    <div class="l_top" id="Tb_hl">hl</div>
+    <div class="l_follow" id="Tb_hn">hn</div>
+    <div class="l_follow" id="Tb_hh">hh</div>
+    <div class="valence" id="Tb_nv">nv</div>
+    <div class="r_top" id="Tb_d">d</div>
+    <div class="r_follow" id="Tb_dp">dp</div>
+    <div class="r_follow" id="Tb_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Terbium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 066_Dy">
     <div class="element">Dy</div>
+    <div class="l_top" id="Dy_hl">hl</div>
+    <div class="l_follow" id="Dy_hn">hn</div>
+    <div class="l_follow" id="Dy_hh">hh</div>
+    <div class="valence" id="Dy_nv">nv</div>
+    <div class="r_top" id="Dy_d">d</div>
+    <div class="r_follow" id="Dy_dp">dp</div>
+    <div class="r_follow" id="Dy_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Dysprosium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 067_Ho">
     <div class="element">Ho</div>
+    <div class="l_top" id="Ho_hl">hl</div>
+    <div class="l_follow" id="Ho_hn">hn</div>
+    <div class="l_follow" id="Ho_hh">hh</div>
+    <div class="valence" id="Ho_nv">nv</div>
+    <div class="r_top" id="Ho_d">d</div>
+    <div class="r_follow" id="Ho_dp">dp</div>
+    <div class="r_follow" id="Ho_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Holmium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 068_Er">
     <div class="element">Er</div>
+    <div class="l_top" id="Er_hl">hl</div>
+    <div class="l_follow" id="Er_hn">hn</div>
+    <div class="l_follow" id="Er_hh">hh</div>
+    <div class="valence" id="Er_nv">nv</div>
+    <div class="r_top" id="Er_d">d</div>
+    <div class="r_follow" id="Er_dp">dp</div>
+    <div class="r_follow" id="Er_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Erbium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 069_Tm">
     <div class="element">Tm</div>
+    <div class="l_top" id="Tm_hl">hl</div>
+    <div class="l_follow" id="Tm_hn">hn</div>
+    <div class="l_follow" id="Tm_hh">hh</div>
+    <div class="valence" id="Tm_nv">nv</div>
+    <div class="r_top" id="Tm_d">d</div>
+    <div class="r_follow" id="Tm_dp">dp</div>
+    <div class="r_follow" id="Tm_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Thulium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 070_Yb">
     <div class="element">Yb</div>
+    <div class="l_top" id="Yb_hl">hl</div>
+    <div class="l_follow" id="Yb_hn">hn</div>
+    <div class="l_follow" id="Yb_hh">hh</div>
+    <div class="valence" id="Yb_nv">nv</div>
+    <div class="r_top" id="Yb_d">d</div>
+    <div class="r_follow" id="Yb_dp">dp</div>
+    <div class="r_follow" id="Yb_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Ytterbium</div>
     </div>
   </div>
   <div class="plugin bg_lanthanoid 071_Lu">
     <div class="element">Lu</div>
+    <div class="l_top" id="Lu_hl">hl</div>
+    <div class="l_follow" id="Lu_hn">hn</div>
+    <div class="l_follow" id="Lu_hh">hh</div>
+    <div class="valence" id="Lu_nv">nv</div>
+    <div class="r_top" id="Lu_d">d</div>
+    <div class="r_follow" id="Lu_dp">dp</div>
+    <div class="r_follow" id="Lu_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Lutetium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 072_Hf">
     <div class="element">Hf</div>
+    <div class="l_top" id="Hf_hl">hl</div>
+    <div class="l_follow" id="Hf_hn">hn</div>
+    <div class="l_follow" id="Hf_hh">hh</div>
+    <div class="valence" id="Hf_nv">nv</div>
+    <div class="r_top" id="Hf_d">d</div>
+    <div class="r_follow" id="Hf_dp">dp</div>
+    <div class="r_follow" id="Hf_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Hafnium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 073_Ta">
     <div class="element">Ta</div>
+    <div class="l_top" id="Ta_hl">hl</div>
+    <div class="l_follow" id="Ta_hn">hn</div>
+    <div class="l_follow" id="Ta_hh">hh</div>
+    <div class="valence" id="Ta_nv">nv</div>
+    <div class="r_top" id="Ta_d">d</div>
+    <div class="r_follow" id="Ta_dp">dp</div>
+    <div class="r_follow" id="Ta_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Tantalum</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 074_W">
     <div class="element">W</div>
+    <div class="l_top" id="W_hl">hl</div>
+    <div class="l_follow" id="W_hn">hn</div>
+    <div class="l_follow" id="W_hh">hh</div>
+    <div class="valence" id="W_nv">nv</div>
+    <div class="r_top" id="W_d">d</div>
+    <div class="r_follow" id="W_dp">dp</div>
+    <div class="r_follow" id="W_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Wolfram</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 075_Re">
     <div class="element">Re</div>
+    <div class="l_top" id="Re_hl">hl</div>
+    <div class="l_follow" id="Re_hn">hn</div>
+    <div class="l_follow" id="Re_hh">hh</div>
+    <div class="valence" id="Re_nv">nv</div>
+    <div class="r_top" id="Re_d">d</div>
+    <div class="r_follow" id="Re_dp">dp</div>
+    <div class="r_follow" id="Re_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Rhenium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 076_Os">
     <div class="element">Os</div>
+    <div class="l_top" id="Os_hl">hl</div>
+    <div class="l_follow" id="Os_hn">hn</div>
+    <div class="l_follow" id="Os_hh">hh</div>
+    <div class="valence" id="Os_nv">nv</div>
+    <div class="r_top" id="Os_d">d</div>
+    <div class="r_follow" id="Os_dp">dp</div>
+    <div class="r_follow" id="Os_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Osmium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 77_Ir">
     <div class="element">Ir</div>
+    <div class="l_top" id="Ir_hl">hl</div>
+    <div class="l_follow" id="Ir_hn">hn</div>
+    <div class="l_follow" id="Ir_hh">hh</div>
+    <div class="valence" id="Ir_nv">nv</div>
+    <div class="r_top" id="Ir_d">d</div>
+    <div class="r_follow" id="Ir_dp">dp</div>
+    <div class="r_follow" id="Ir_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Iridium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 78_Pt">
     <div class="element">Pt</div>
+    <div class="l_top" id="Pt_hl">hl</div>
+    <div class="l_follow" id="Pt_hn">hn</div>
+    <div class="l_follow" id="Pt_hh">hh</div>
+    <div class="valence" id="Pt_nv">nv</div>
+    <div class="r_top" id="Pt_d">d</div>
+    <div class="r_follow" id="Pt_dp">dp</div>
+    <div class="r_follow" id="Pt_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Platinum</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 79_Au">
     <div class="element">Au</div>
+    <div class="l_top" id="Au_hl">hl</div>
+    <div class="l_follow" id="Au_hn">hn</div>
+    <div class="l_follow" id="Au_hh">hh</div>
+    <div class="valence" id="Au_nv">nv</div>
+    <div class="r_top" id="Au_d">d</div>
+    <div class="r_follow" id="Au_dp">dp</div>
+    <div class="r_follow" id="Au_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Gold</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 80_Hg">
     <div class="element">Hg</div>
+    <div class="l_top" id="Hg_hl">hl</div>
+    <div class="l_follow" id="Hg_hn">hn</div>
+    <div class="l_follow" id="Hg_hh">hh</div>
+    <div class="valence" id="Hg_nv">nv</div>
+    <div class="r_top" id="Hg_d">d</div>
+    <div class="r_follow" id="Hg_dp">dp</div>
+    <div class="r_follow" id="Hg_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Mercury</div>
     </div>
   </div>
   <div class="plugin bg_post_transition_metal 81_Tl">
     <div class="element">Tl</div>
+    <div class="l_top" id="Tl_hl">hl</div>
+    <div class="l_follow" id="Tl_hn">hn</div>
+    <div class="l_follow" id="Tl_hh">hh</div>
+    <div class="valence" id="Tl_nv">nv</div>
+    <div class="r_top" id="Tl_d">d</div>
+    <div class="r_follow" id="Tl_dp">dp</div>
+    <div class="r_follow" id="Tl_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Thallium</div>
     </div>
   </div>
   <div class="plugin bg_post_transition_metal 82_Pb">
     <div class="element">Pb</div>
+    <div class="l_top" id="Pb_hl">hl</div>
+    <div class="l_follow" id="Pb_hn">hn</div>
+    <div class="l_follow" id="Pb_hh">hh</div>
+    <div class="valence" id="Pb_nv">nv</div>
+    <div class="r_top" id="Pb_d">d</div>
+    <div class="r_follow" id="Pb_dp">dp</div>
+    <div class="r_follow" id="Pb_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Lead</div>
     </div>
   </div>
   <div class="plugin bg_post_transition_metal 83_Bi">
     <div class="element">Bi</div>
+    <div class="l_top" id="Bi_hl">hl</div>
+    <div class="l_follow" id="Bi_hn">hn</div>
+    <div class="l_follow" id="Bi_hh">hh</div>
+    <div class="valence" id="Bi_nv">nv</div>
+    <div class="r_top" id="Bi_d">d</div>
+    <div class="r_follow" id="Bi_dp">dp</div>
+    <div class="r_follow" id="Bi_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Bismuth</div>
     </div>
   </div>
   <div class="plugin bg_post_transition_metal 84_Po">
     <div class="element">Po</div>
+    <div class="l_top" id="Po_hl">hl</div>
+    <div class="l_follow" id="Po_hn">hn</div>
+    <div class="l_follow" id="Po_hh">hh</div>
+    <div class="valence" id="Po_nv">nv</div>
+    <div class="r_top" id="Po_d">d</div>
+    <div class="r_follow" id="Po_dp">dp</div>
+    <div class="r_follow" id="Po_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Polonium</div>
     </div>
   </div>
   <div class="plugin bg_halogen 85_At">
     <div class="element">At</div>
+    <div class="l_top" id="At_hl">hl</div>
+    <div class="l_follow" id="At_hn">hn</div>
+    <div class="l_follow" id="At_hh">hh</div>
+    <div class="valence" id="At_nv">nv</div>
+    <div class="r_top" id="At_d">d</div>
+    <div class="r_follow" id="At_dp">dp</div>
+    <div class="r_follow" id="At_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Astatine</div>
     </div>
   </div>
   <div class="plugin bg_noble_gas 86_Rn">
     <div class="element">Rn</div>
+    <div class="l_top" id="Rn_hl">hl</div>
+    <div class="l_follow" id="Rn_hn">hn</div>
+    <div class="l_follow" id="Rn_hh">hh</div>
+    <div class="valence" id="Rn_nv">nv</div>
+    <div class="r_top" id="Rn_d">d</div>
+    <div class="r_follow" id="Rn_dp">dp</div>
+    <div class="r_follow" id="Rn_gb">gb</div>
     <div class="name-wrap">
       <div class="name">Radon</div>
     </div>
   </div>
   <div class="plugin bg_alkali 87_Fr">
     <div class="element">Fr</div>
+    <!--<div class="l_top" id="Fr_hl">hl</div>
+    <div class="l_follow" id="Fr_hn">hn</div>
+    <div class="l_follow" id="Fr_hh">hh</div>
+    <div class="valence" id="Fr_nv">nv</div>
+    <div class="r_top" id="Fr_d">d</div>
+    <div class="r_follow" id="Fr_dp">dp</div>
+    <div class="r_follow" id="Fr_gb">gb</div>-->
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Francium</div>
     </div>
   </div>
   <div class="plugin bg_alkaline 88_Ra">
     <div class="element">Ra</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Radium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 89_Ac">
     <div class="element">Ac</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Actinium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 90_Th">
     <div class="element">Th</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Thorium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 91_Pa">
     <div class="element">Pa</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Protactinium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 92_U">
     <div class="element">U</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Uranium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 93_Np">
     <div class="element">Np</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Neptunium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 94_Pu">
     <div class="element">Pu</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Plutonium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 95_Am">
     <div class="element">Am</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Americium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 96_Cm">
     <div class="element">Cm</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Curium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 97_Bk">
     <div class="element">Bk</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Berkelium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 98_Cf">
     <div class="element">Cf</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Californium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 99_Es">
     <div class="element">Es</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Einsteinium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 100_Fm">
     <div class="element">Fm</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Fermium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 101_Md">
     <div class="element">Md</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Mendelevium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 102_No">
     <div class="element">No</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Nobelium</div>
     </div>
   </div>
   <div class="plugin bg_actinoid 103_Lr">
     <div class="element">Lr</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Lawrencium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 104_Rf">
     <div class="element">Rf</div>
+    <div class="empty"></div>
     <div class="name-wrap-double">
       <div class="name">Ruther- fordium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 105_Db">
     <div class="element">Db</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Dubnium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 106_Sg">
     <div class="element">Sg</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Seaborgium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 107_Bh">
     <div class="element">Bh</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Bohrium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 108_Hs">
     <div class="element">Hs</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Hassium</div>
     </div>
   </div>
   <div class="plugin bg_unknown 109_Mt">
     <div class="element">Mt</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Meitnerium</div>
     </div>
   </div>
   <div class="plugin bg_unknown 110_Ds">
     <div class="element">Ds</div>
+    <div class="empty"></div>
     <div class="name-wrap-double">
       <div class="name">Darm- stadtium</div>
     </div>
   </div>
   <div class="plugin bg_unknown 111_Rg">
     <div class="element">Rg</div>
+    <div class="empty"></div>
     <div class="name-wrap-double">
       <div class="name">Roent- genium</div>
     </div>
   </div>
   <div class="plugin bg_transition_metal 112_Cn">
     <div class="element">Cn</div>
+    <div class="empty"></div>
     <div class="name-wrap-double">
       <div class="name">Coper- nicium</div>
     </div>
   </div>
   <div class="plugin bg_unknown 113_Nh">
     <div class="element">Nh</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Nihonium</div>
     </div>
   </div>
   <div class="plugin bg_unknown 114_Fl">
     <div class="element">Fl</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Flerovium</div>
     </div>
   </div>
   <div class="plugin bg_unknown 115_Mc">
     <div class="element">Mc</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Moscovium</div>
     </div>
   </div>
   <div class="plugin bg_unknown 116_Lv">
     <div class="element">Lv</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Livermorium</div>
     </div>
   </div>
   <div class="plugin bg_unknown 117_Ts">
     <div class="element">Ts</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Tennessine</div>
     </div>
   </div>
   <div class="plugin bg_unknown 118_Og">
     <div class="element">Og</div>
+    <div class="empty"></div>
     <div class="name-wrap">
       <div class="name">Oganesson</div>
     </div>
@@ -854,6 +1531,10 @@ Format
 <div class="footer">
 </div>
 </div>
+
+<script>
+  load_set_info();
+</script>
 
 <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
 
@@ -909,6 +1590,7 @@ Format
       var res = dum.split("_");
       var trunk = "pseudos/"
       var elm = res[1];
+      set_X(elm);
       var typ = $("#TYP").val();
       var xcf = $("#XCF").val();
       var acc = $("#ACC").val();
@@ -928,6 +1610,7 @@ Format
           mythis.css("color", "#FFFFFF");
         })
       }, function(){
+      reset_X()
       var str = $(this).attr("class");
       var res = str.split(" ");
       var bgori = "";
