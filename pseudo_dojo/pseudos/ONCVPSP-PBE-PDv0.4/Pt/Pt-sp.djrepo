@@ -28767,10 +28767,10 @@ null
 },
 "hints": {
 "high": {
-"ecut": 48.0
+"ecut": 50.0
 },
 "low": {
-"ecut": 36.0
+"ecut": 38.0
 },
 "normal": {
 "ecut": 42.0
@@ -29227,6 +29227,9 @@ null
 "tags": [
 " "
 ],
+"validation": {
+"validated_on": "2017-07-04 13:38:27"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",
