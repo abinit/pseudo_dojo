@@ -20,16 +20,11 @@ def make_upf(pseudo_path, calctype, mock=False):
     """
     converter takes a path to a psp8 file, assumes the same .in file is present changes the .in file to upf,
     runs oncvpsp to generate hte upf file and finally changes the .in file back
-
     ?? polymorfic? if a .in file is provided it works with the .in ?
-
     Args:
         pseudo_path: path to a psp8 file
-
     Returns: the path to the generated upf
-
     001012: ' SLA  PW   NOGX NOGC '
-
     """
     in_path = pseudo_path.split('.')[0] + '.in'
     upf_path = pseudo_path.split('.')[0] + '.upf'
@@ -54,13 +49,11 @@ def make_upf(pseudo_path, calctype, mock=False):
     return nv
 
 
-# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
-# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4']
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
 
 
 ACCURACIES = ['standard', 'high']
-
+rnACC = {'standard': 'standard', 'high': 'stringent'}
 
 def main():
     website = 'website'
@@ -91,7 +84,9 @@ def main():
         for acc in ACCURACIES:
             with open(os.path.join(pseudo_set, acc+'.txt')) as f:
                 pseudos = f.readlines()
-            name = "%s_%s_sr" % (xc, acc[0])
+
+            name = "nc-sr_%s_%s" % (xc, rnACC[acc])
+
             os.makedirs(os.path.join(website, name))
             pseudo_data = {}
             for pseudo in pseudos:
@@ -101,7 +96,7 @@ def main():
                         copyfile(os.path.join(pseudo_set, p).replace('psp8', extension),
                                  os.path.join(website, name, os.path.split(p)[1].replace('psp8', extension)))
                     try:
-                        write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), tmpfile=False, mock=mock)
+                        write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), tmpfile=False, mock=True)
                     except:
                         pass
                     try:
@@ -122,9 +117,9 @@ def main():
                         normal_hint = dojoreport["hints"]["normal"]["ecut"]
                         high_hint = dojoreport["hints"]["high"]["ecut"]
                     except KeyError:
-                        high_hint = 'NA'
-                        normal_hint = 'NA'
-                        low_hint = 'NA'
+                        high_hint = 'na'
+                        normal_hint = 'na'
+                        low_hint = 'na'
                     try:
                         delta_ecuts = dojoreport["deltafactor"].keys()
                         delta_ecut = delta_ecuts[-1]
@@ -133,15 +128,18 @@ def main():
                         deltap = dojoreport["deltafactor"][delta_ecut]["dfactprime_meV"]
                         deltap_s = "%1.1f" % round(deltap, 1)
                     except KeyError:
-                        delta_s = 'NA'
-                        deltap_s = 'NA'
+                        delta_s = 'na'
+                        deltap_s = 'na'
                     try:
                         gb_ecuts = dojoreport["gbrv_bcc"].keys()
                         gb_ecut = gb_ecuts[-1]
-                        gb = dojoreport["gbrv_bcc"][gb_ecut]["a0_rel_err"]*100
-                        gb_s = "%1.1f" % round(gb, 1)
+                        gb = dojoreport["gbrv_bcc"][gb_ecut]["a0_rel_err"]
+                        gf_ecuts = dojoreport["gbrv_fcc"].keys()
+                        gf_ecut = gf_ecuts[-1]
+                        gf = dojoreport["gbrv_fcc"][gf_ecut]["a0_rel_err"]
+                        gb_s = "%0.2f" % round((gb + gf)/2, 1)
                     except KeyError:
-                        gb_s = 'NA'
+                        gb_s = 'na'
                     print("%s %s %s" % (nv, normal_hint, delta_s))
                     pseudo_data[el] = {'nv': nv, 'hh': high_hint, 'hl': low_hint, 'hn': normal_hint, 'd': delta_s,
                                        'dp': deltap_s, 'gb': gb_s}
