@@ -597,11 +597,12 @@ def dojo_check(options):
     """
     retcode = 0
     for p in options.pseudos:
+
+        if p.element.is_lanthanoid or p.element.is_actinoid:
+            print("Ignoring lanthanoid or actinoid:", os.path.relpath(p.filepath))
+            continue
+
         rc = check_pseudo(p, check_trials=options.check_trials, verbose=options.verbose)
-        #if rc != 0:
-        #    os.system("mvim %s" % p.filepath)
-        #    ans = prompt("Do you want to continue? [Y/n]")
-        #    if ans.lower() in ["n", "no"]: break
         retcode += rc
         if rc != 0: print(80*"=")
 

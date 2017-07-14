@@ -909,29 +909,25 @@ class PhononDojoWork(PhononWork, DojoWork):
 
 class RocksaltRelaxationFactory(object):
     """
-    Factory producing work objects for the calculation of Nitrogen Lantanide rocksalt lattice parameters .
+    Factory producing work objects for the structural relaxation of
+    lantanide + nitrogen in rocksalt structure
     """
-
     def __init__(self, xc):
         """xc is the exchange-correlation functional e.g. PBE, PW."""
         self.xc = XcFunc.asxc(xc)
 
-    def work_for_pseudo(self, pseudo, ecut_list=None, pawecutdg=None,
-                        spin_mode="unpolarized", include_soc=False,
-                        tolwfr=1.e-12, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
+    def work_for_pseudo(self, pseudo, ecut_list, pawecutdg=None,
+                        include_soc=False, workdir=None, manager=None):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
             pseudo: :class:`Pseudo` object.
-            ecut: Cutoff energy in Hartree
+            ecut_list: List of cutoff energies in Hartree
             pawecutdg: Cutoff energy of the fine grid (PAW only)
-            spin_mode: Spin polarization option
-            tolwfr: Tolerance on the residuals.
-            smearing: Smearing technique.
+            include_soc: True to include SOC.
             workdir: Working directory.
             manager: :class:`TaskManager` object.
-            kwargs: Extra variables passed to Abinit.
         """
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
@@ -941,36 +937,30 @@ class RocksaltRelaxationFactory(object):
                 "Pseudo xc differs from the XC used to instantiate the factory\n"
                 "Pseudo: %s, Factory: %s" % (pseudo.xc, self.xc))
 
-        # Build structure.
-        a = 9.26 * bohr_to_ang # * 2
+        # Build rocksalt structure.
+        from pseudo_dojo.refdata.lantanides.database import renrs_database
+        db = renrs_database(pseudo.xc)
+        a = db["ref"][pseudo.symbol]
         species = [pseudo.symbol, "N"]
         structure = Structure.rocksalt(a, species)
 
-        n_pseudo = "../pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/N/N.psp8"
+        if pseudo.ispaw:
+            raise NotImplementedError()
+            #n_pseudo = os.path.join(db.__path__, "data", "N.psp8")
+        else:
+            n_pseudo = os.path.join(db.__path__, "data", "N_%s.psp8" % str(xc))
+        n_pseudo = abilab.Pseudo(n_pseudo)
+        assert n_pseudo.xc == pseudo.xc
 
         # Build input template.
         template = abilab.AbinitInput(structure, pseudos=[pseudo, n_pseudo])
 
-        # input for EuN Rocksalt
+        # Input for EuN Rocksalt
         template.set_vars(
-            #ntypat  2
-            #znucl   63 7
-            #natom   2
-            #typat   1 2
-            #acell   3*9.26
-            #rprim   0.0  0.5  0.5
-            #        0.5  0.0  0.5
-            #        0.5  0.5  0.0
-            #xred    0.00000  0.00000  0.00000
-            #        0.50000  0.50000  0.50000
             occopt=7,
             tsmear=0.001,
-            #ndtset   6
-            #ecut:    30
-            #ecut+    5
             ecutsm=0.5,
-
-            kptopt=1,
+            #kptopt=1,
             ngkpt=[8, 8, 8],
             nshiftk=4,
             shiftk=[0.0, 0.0, 0.5,
@@ -983,26 +973,21 @@ class RocksaltRelaxationFactory(object):
             dilatmx=1.14,
             tolvrs=1.0E-16,
             tolmxf=1.0E-06,
-            ntime=40,
+            ntime=50,
             prtden=0,
             prteig=0,
             prtwf=-1,
         )
 
         work = RocksaltRelaxationWork()
-        work._dojo_pseudo = pseudo
+        work._pseudo = pseudo
         for ecut in ecut_list:
             task = RelaxTask(template.new_with_vars(ecut=ecut))
             print(task.input)
             work.register(task)
 
+        work.include_soc = include_soc
         return work
-
-        #return GhostsWork(
-        #    structure, pseudo, kppa, maxene,
-        #    spin_mode=spin_mode, include_soc=include_soc, tolwfr=tolwfr, smearing=smearing,
-        #    ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
-        #    workdir=workdir, manager=manager, **kwargs)
 
 
 class RocksaltRelaxationWork(DojoWork):
@@ -1010,9 +995,9 @@ class RocksaltRelaxationWork(DojoWork):
     @property
     def dojo_trial(self):
         if not self.include_soc:
-            return "lanthanides_relax"
+            return "nitride_relax"
         else:
-            return "lanthanides_relax_soc"
+            return "nitride_relax_soc"
 
     @property
     def dojo_pseudo(self):
@@ -1022,7 +1007,7 @@ class RocksaltRelaxationWork(DojoWork):
         """
         Results are written to the dojoreport.
         """
-        results = super(PhononDojoWork, self).on_all_ok()
+        results = super(RocksaltRelaxationWork, self).on_all_ok()
 
         entries = {}
         for task in self:

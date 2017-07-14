@@ -1,5 +1,5 @@
 """
-This module provides a databased for accessing the deltafactor results,
+This module provides a database with the deltafactor results,
 and tools to compute the deltafactor of a pseudopotential.
 Client code should use the official API df_database(xc) to access the database.
 
