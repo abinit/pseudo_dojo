@@ -19,6 +19,7 @@ from abipy import abilab
 from pseudo_dojo.core.dojoreport import DojoReport, dojo_dfact_results, dojo_gbrv_results
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database
+from pseudo_dojo.refdata.lantanides.database import raren_database
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +79,8 @@ class DojoWork(Work):
             # Check that we are not going to overwrite data.
             if dojo_ecut in file_report[dojo_trial]:
                 if not overwrite_data:
-                    raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
+                    raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" %
+                            (dojo_ecut, dojo_trial))
                 else:
                     file_report[dojo_trial].pop(dojo_ecut)
 
@@ -916,7 +918,7 @@ class RocksaltRelaxationFactory(object):
         """xc is the exchange-correlation functional e.g. PBE, PW."""
         self.xc = XcFunc.asxc(xc)
 
-    def work_for_pseudo(self, pseudo, ecut_list, pawecutdg=None,
+    def work_for_pseudo(self, pseudo, ecut_list, pawecutdg=None, ngkpt=(8, 8, 8),
                         include_soc=False, workdir=None, manager=None):
         """
         Returns a :class:`Work` object from the given pseudopotential.
@@ -938,19 +940,11 @@ class RocksaltRelaxationFactory(object):
                 "Pseudo: %s, Factory: %s" % (pseudo.xc, self.xc))
 
         # Build rocksalt structure.
-        from pseudo_dojo.refdata.lantanides.database import renrs_database
-        db = renrs_database(pseudo.xc)
-        a = db["ref"][pseudo.symbol]
+        db = raren_database(pseudo.xc)
+        a = db.table["ref"][pseudo.symbol]
         species = [pseudo.symbol, "N"]
         structure = Structure.rocksalt(a, species)
-
-        if pseudo.ispaw:
-            raise NotImplementedError()
-            #n_pseudo = os.path.join(db.__path__, "data", "N.psp8")
-        else:
-            n_pseudo = os.path.join(db.__path__, "data", "N_%s.psp8" % str(xc))
-        n_pseudo = abilab.Pseudo(n_pseudo)
-        assert n_pseudo.xc == pseudo.xc
+        n_pseudo = db.get_n_pseudo(pseudo)
 
         # Build input template.
         template = abilab.AbinitInput(structure, pseudos=[pseudo, n_pseudo])
@@ -961,7 +955,7 @@ class RocksaltRelaxationFactory(object):
             tsmear=0.001,
             ecutsm=0.5,
             #kptopt=1,
-            ngkpt=[8, 8, 8],
+            ngkpt=ngkpt,
             nshiftk=4,
             shiftk=[0.0, 0.0, 0.5,
                     0.0, 0.5, 0.0,
@@ -983,7 +977,7 @@ class RocksaltRelaxationFactory(object):
         work._pseudo = pseudo
         for ecut in ecut_list:
             task = RelaxTask(template.new_with_vars(ecut=ecut))
-            print(task.input)
+            #print(task.input)
             work.register(task)
 
         work.include_soc = include_soc
@@ -995,9 +989,9 @@ class RocksaltRelaxationWork(DojoWork):
     @property
     def dojo_trial(self):
         if not self.include_soc:
-            return "nitride_relax"
+            return "raren_relax"
         else:
-            return "nitride_relax_soc"
+            return "raren_relax_soc"
 
     @property
     def dojo_pseudo(self):
@@ -1018,12 +1012,12 @@ class RocksaltRelaxationWork(DojoWork):
             dojo_ecut = "%.1f" % ecut
             entries[dojo_ecut] = final_structure.lattice.as_dict()
 
+        print(entries)
+
         # Convert to JSON and add results to the dojo report.
         #entry = dict(ecut=self.ecut, pawecutdg=self.dojo_pawecutdg, kppa=self.dojo_kppa)
         #self.add_entry_to_dojoreport(entry)
-
-        return results
-
+        #return results
         djrepo = self.djrepo_path
 
         # Update file content with Filelock.
@@ -1041,17 +1035,19 @@ class RocksaltRelaxationWork(DojoWork):
                 file_report[dojo_trial] = {}
 
             # Convert float to string with 1 decimal digit.
-            dojo_ecut = "%.1f" % self.ecut
+            #dojo_ecut = "%.1f" % self.ecut
 
             # Check that we are not going to overwrite data.
-            if dojo_ecut in file_report[dojo_trial]:
-                if not overwrite_data:
-                    raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
-                else:
-                    file_report[dojo_trial].pop(dojo_ecut)
+            #if dojo_ecut in file_report[dojo_trial]:
+            #    if not overwrite_data:
+            #        raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" %
+            #                (dojo_ecut, dojo_trial))
+            #    else:
+            #        file_report[dojo_trial].pop(dojo_ecut)
 
             # Update file_report by adding the new entry and write new file
-            file_report[dojo_trial][dojo_ecut] = entry
+            for dojo_ecut, entry in entries.items():
+                file_report[dojo_trial][dojo_ecut] = entry
 
             # Write new dojo report and update the pseudo attribute
             file_report.json_write()
