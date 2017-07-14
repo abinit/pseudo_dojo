@@ -939,6 +939,9 @@ class RocksaltRelaxationFactory(object):
                 "Pseudo xc differs from the XC used to instantiate the factory\n"
                 "Pseudo: %s, Factory: %s" % (pseudo.xc, self.xc))
 
+        if not ecut_list:
+            return None
+
         # Build rocksalt structure.
         db = raren_database(pseudo.xc)
         a = db.table["ref"][pseudo.symbol]
@@ -1001,19 +1004,26 @@ class RocksaltRelaxationWork(DojoWork):
         """
         Results are written to the dojoreport.
         """
-        results = super(RocksaltRelaxationWork, self).on_all_ok()
+        def vol2a(vol):
+            """Function to compute cubic a0 from primitive v0 (depends on struct_type)"""
+            return (4 * vol) ** (1/3.)
 
         entries = {}
         for task in self:
             ecut = task.input["ecut"]
-            final_structure = task.get_final_structure()
+            #final_structure = task.get_final_structure()
+            with task.open_hist() as hist:
+                final_structure = hist.final_structure
+                initial_energy = hist.etotals[0]
 
-            # Convert float to string with 1 decimal digit.
-            dojo_ecut = "%.1f" % ecut
-            entries[dojo_ecut] = final_structure.lattice.as_dict()
+                # Convert float to string with 1 decimal digit.
+                dojo_ecut = "%.1f" % ecut
+                entries[dojo_ecut] = {
+                        "relaxed_a": vol2a(final_structure.volume),
+                        "initial_energy_ev": float(initial_energy),
+                }
 
-        print(entries)
-
+        #print(entries)
         # Convert to JSON and add results to the dojo report.
         #entry = dict(ecut=self.ecut, pawecutdg=self.dojo_pawecutdg, kppa=self.dojo_kppa)
         #self.add_entry_to_dojoreport(entry)
@@ -1036,7 +1046,6 @@ class RocksaltRelaxationWork(DojoWork):
 
             # Convert float to string with 1 decimal digit.
             #dojo_ecut = "%.1f" % self.ecut
-
             # Check that we are not going to overwrite data.
             #if dojo_ecut in file_report[dojo_trial]:
             #    if not overwrite_data:
@@ -1052,6 +1061,8 @@ class RocksaltRelaxationWork(DojoWork):
             # Write new dojo report and update the pseudo attribute
             file_report.json_write()
             self._pseudo.dojo_report = file_report
+
+        return dict(returncode=0, message="Lattice paramenters computed and stored in djrepo file")
 
 
 class RelaxWithGbrvParamsWork(Work):
@@ -1131,7 +1142,7 @@ class RelaxWithGbrvParamsWork(Work):
         for task, ecut in zip(self, self.ecut_list):
             structure = task.get_final_structure()
             a0 = vol2a(structure.volume)
-            print("ecut:", ecut, "a0:", a0)
+            #print("ecut:", ecut, "a0:", a0)
             results.append(dict(ecut=ecut, a0=a0))
 
         import json
