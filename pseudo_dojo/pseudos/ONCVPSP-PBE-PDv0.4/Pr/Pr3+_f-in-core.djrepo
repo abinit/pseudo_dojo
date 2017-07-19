@@ -33,55 +33,55 @@
 "pseudo_type": "NC", 
 "raren_relax": {
 "14.0": {
-"initial_energy_ev": -1281.9089658288046, 
+"initial_energy_ev_per_atom": -1281.9089658288046, 
 "relaxed_a": 5.2225181109450745
 }, 
 "16.0": {
-"initial_energy_ev": -1283.9046305072459, 
+"initial_energy_ev_per_atom": -1283.9046305072459, 
 "relaxed_a": 5.2260427139774768
 }, 
 "18.0": {
-"initial_energy_ev": -1285.2038743205612, 
+"initial_energy_ev_per_atom": -1285.2038743205612, 
 "relaxed_a": 5.2303385985970694
 }, 
 "20.0": {
-"initial_energy_ev": -1286.0438536110244, 
+"initial_energy_ev_per_atom": -1286.0438536110244, 
 "relaxed_a": 5.2223756693016075
 }, 
 "22.0": {
-"initial_energy_ev": -1286.5807829543323, 
+"initial_energy_ev_per_atom": -1286.5807829543323, 
 "relaxed_a": 5.2229453706007396
 }, 
 "24.0": {
-"initial_energy_ev": -1286.9187220197798, 
+"initial_energy_ev_per_atom": -1286.9187220197798, 
 "relaxed_a": 5.2173270597811126
 }, 
 "26.0": {
-"initial_energy_ev": -1287.1238242298998, 
+"initial_energy_ev_per_atom": -1287.1238242298998, 
 "relaxed_a": 5.2165718317489462
 }, 
 "28.0": {
-"initial_energy_ev": -1287.2460789674271, 
+"initial_energy_ev_per_atom": -1287.2460789674271, 
 "relaxed_a": 5.2172427343442154
 }, 
 "30.0": {
-"initial_energy_ev": -1287.3148846114452, 
+"initial_energy_ev_per_atom": -1287.3148846114452, 
 "relaxed_a": 5.216633906005594
 }, 
 "32.0": {
-"initial_energy_ev": -1287.3512901463012, 
+"initial_energy_ev_per_atom": -1287.3512901463012, 
 "relaxed_a": 5.2164581356051647
 }, 
 "34.0": {
-"initial_energy_ev": -1287.369389200894, 
+"initial_energy_ev_per_atom": -1287.369389200894, 
 "relaxed_a": 5.216567509235249
 }, 
 "42.0": {
-"initial_energy_ev": -1287.3828179697396, 
+"initial_energy_ev_per_atom": -1287.3828179697396, 
 "relaxed_a": 5.2167015565848356
 }, 
 "44.0": {
-"initial_energy_ev": -1287.3828667300402, 
+"initial_energy_ev_per_atom": -1287.3828667300402, 
 "relaxed_a": 5.2167002858660085
 }
 }, 

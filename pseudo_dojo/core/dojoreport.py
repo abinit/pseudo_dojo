@@ -1217,7 +1217,9 @@ class DojoReport(dict):
     @add_fig_kwargs
     def plot_raren_convergence(self, xc, with_soc=False, **kwargs):
         """
-        Plot
+        Plot the convergence of the total energy wrt ecut using (etotal obtained with the initial value
+        of the lattice paramenter used to start the structural relaxation) as well as the convergence of the
+        lattice parameter wrt to ecut.
 
         Args:
             xc: String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE")
@@ -1231,7 +1233,10 @@ class DojoReport(dict):
             cprint("dojo report does not contain trial: %s" % str(trial), "red")
             return None
 
-        keys = ["initial_energy_ev", "relaxed_a"]
+        # Energy is in eV/atom.
+        key2ylabel = {"initial_energy_ev_per_atom": r"$\Delta E$ [meV/natom]", "relaxed_a": "$a$ [Angstrom]"}
+
+        keys = list(key2ylabel.keys())
         data = self.get_pdframe(trial, *keys)
 
         import matplotlib.pyplot as plt
@@ -1244,12 +1249,16 @@ class DojoReport(dict):
         xmin, xmax = min(ecuts), max(ecuts)
         for i, (ax, key) in enumerate(zip(ax_list, keys)):
             values = np.array(data[key])
+            if key == "initial_energy_ev_per_atom":
+                values = values * 1000
+                ediffs = values - values[-1]
+
             ax.plot(ecuts, values, "o-")
             if key == "relaxed_a":
                 y = table["ref"][self.symbol]
                 ax.hlines(y=y, xmin=xmin, xmax=xmax, colors="b", linewidth=1.5, linestyles='dashed')
             ax.grid(True)
-            ax.set_ylabel(key)
+            ax.set_ylabel(key2ylabel[key])
             if i == len(keys) - 1: ax.set_xlabel("Ecut [Ha]")
 
         return fig

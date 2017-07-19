@@ -87,7 +87,6 @@ def psp8_get_densities(path):
         # Skip projectors (scalar relativistic, always present).
         for l, npl in enumerate(nproj):
             if npl == 0 and l != lloc: continue
-
             line = fh.readline() # l, ekb[:npl]
             l_file = int(line.split()[0])
             if l != l_file:
