@@ -20,6 +20,7 @@ from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 from pseudo_dojo.refdata.gbrv import gbrv_database
+from pseudo_dojo.refdata.lantanides.database import raren_database
 from pseudo_dojo.util.dojo_eos import EOS
 
 
@@ -1212,6 +1213,40 @@ class DojoReport(dict):
                 print("[%d]" % i, s)
 
         return ebands.plot_with_edos(edos, show=False, **kwargs)
+
+    @add_fig_kwargs
+    def plot_raren_convergence(self, with_soc=False, **kwargs):
+        """
+        Plot
+
+        Returns:
+            `matplotlib` figure. None if the ebands test is not present.
+        """
+        trial = "raren_relax" if not with_soc else "raren_relax_soc"
+        if trial not in self:
+            cprint("dojo report does not contain trial: %s" % str(trial), "red")
+            return None
+
+        keys = ["initial_energy_ev", "relaxed_a"]
+        data = get_pdframe(trial, *keys)
+
+        fig, ax_list = plt.subplots(nrows=len(keys), ncols=1, sharex=True, squeeze=False)
+        ax_list = ax_list.ravel()
+
+        ecuts = np.array(data["ecut"])
+        for i, (ax, key) in enumerate(zip(ax_list, keys)):
+            values = np.array(data[key])
+            ax.plot(ecuts, values, "o-")
+            ax.grid(True)
+            ax.set_ylabel(key)
+            if i == len(keys) - 1: ax.set_xlabel("Ecut [Ha]")
+
+        return fig
+
+    def get_raren_dataframe(self):
+        db = raren_database(self.xc)
+        return db.table[db.Z == self.element.Z]
+
 
 ######################
 ## Pandas DataFrame ##

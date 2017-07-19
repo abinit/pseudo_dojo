@@ -14,8 +14,8 @@ from monty.termcolor import cprint
 from monty.functools import prof_main
 from pymatgen.io.abinit.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
-from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, GhostsFactory, GammaPhononFactory
-
+from pseudo_dojo.dojo.works import (DeltaFactory, GbrvFactory, GhostsFactory, GammaPhononFactory,
+        RocksaltRelaxationFactory)
 
 logger = logging.getLogger(__name__)
 

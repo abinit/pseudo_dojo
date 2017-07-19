@@ -1020,7 +1020,7 @@ class RocksaltRelaxationWork(DojoWork):
                 dojo_ecut = "%.1f" % ecut
                 entries[dojo_ecut] = {
                         "relaxed_a": vol2a(final_structure.volume),
-                        "initial_energy_ev": float(initial_energy),
+                        "initial_energy_ev_per_atom": float(initial_energy) / len(final_structure),
                 }
 
         #print(entries)
