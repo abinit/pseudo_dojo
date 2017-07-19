@@ -964,6 +964,7 @@ class RocksaltRelaxationFactory(object):
                     0.0, 0.5, 0.0,
                     0.5, 0.0, 0.0,
                     0.5, 0.5, 0.5],
+            fband=2,
             nstep=60,
             ionmov=2,
             optcell=1,

@@ -235,6 +235,11 @@ The calculation is performed with the Wien2k relaxed parameters obtained from th
             nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="bcc")"""),
         ])
 
+    nb.cells.extend([
+            nbf.new_markdown_cell("## "),
+            nbf.new_code_cell("""fig = report.plot_raren_convergence()"""),
+    ])
+
     if not tmpfile:
         root, ext = os.path.splitext(pseudopath)
         nbpath = root + '.ipynb'

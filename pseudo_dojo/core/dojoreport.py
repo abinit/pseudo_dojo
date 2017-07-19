@@ -917,7 +917,7 @@ class DojoReport(dict):
         Plot the convergence of the deltafactor parameters wrt ecut.
 
         Args:
-            xc: String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE"
+            xc: String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE")
             code: Reference code.
             with_soc: If True, the results obtained with SOC are plotted (if available).
             what:
@@ -1215,9 +1215,13 @@ class DojoReport(dict):
         return ebands.plot_with_edos(edos, show=False, **kwargs)
 
     @add_fig_kwargs
-    def plot_raren_convergence(self, with_soc=False, **kwargs):
+    def plot_raren_convergence(self, xc, with_soc=False, **kwargs):
         """
         Plot
+
+        Args:
+            xc: String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE")
+            with_soc: If True, the results obtained with SOC are plotted (if available).
 
         Returns:
             `matplotlib` figure. None if the ebands test is not present.
@@ -1228,24 +1232,31 @@ class DojoReport(dict):
             return None
 
         keys = ["initial_energy_ev", "relaxed_a"]
-        data = get_pdframe(trial, *keys)
+        data = self.get_pdframe(trial, *keys)
 
+        import matplotlib.pyplot as plt
         fig, ax_list = plt.subplots(nrows=len(keys), ncols=1, sharex=True, squeeze=False)
         ax_list = ax_list.ravel()
 
+        table = raren_database(xc).table
+
         ecuts = np.array(data["ecut"])
+        xmin, xmax = min(ecuts), max(ecuts)
         for i, (ax, key) in enumerate(zip(ax_list, keys)):
             values = np.array(data[key])
             ax.plot(ecuts, values, "o-")
+            if key == "relaxed_a":
+                y = table["ref"][self.symbol]
+                ax.hlines(y=y, xmin=xmin, xmax=xmax, colors="b", linewidth=1.5, linestyles='dashed')
             ax.grid(True)
             ax.set_ylabel(key)
             if i == len(keys) - 1: ax.set_xlabel("Ecut [Ha]")
 
         return fig
 
-    def get_raren_dataframe(self):
-        db = raren_database(self.xc)
-        return db.table[db.Z == self.element.Z]
+    #def get_raren_dataframe(self):
+    #    db = raren_database(self.xc)
+    #    return db.table.loc[self.symbol]
 
 
 ######################
