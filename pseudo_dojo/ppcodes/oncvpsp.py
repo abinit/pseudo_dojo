@@ -3,6 +3,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import io
+import sys
 import os
 import abc
 import tempfile
@@ -11,7 +12,7 @@ import numpy as np
 from collections import namedtuple, OrderedDict
 from monty.os.path import which
 from monty.functools import lazy_property
-from monty.collections import AttrDict
+from monty.collections import AttrDict, dict2namedtuple
 from monty.termcolor import cprint
 from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.core import NlkState, RadialFunction, RadialWaveFunction
@@ -1273,3 +1274,216 @@ plotter = onc_parser.make_plotter()"""),
         nbformat.write(nb, f)
 
     return nbpath
+
+
+def psp8_get_densities(path, fc_file=None, ae_file=None, plot=False):
+    """
+    Extract AE-core, AE-valence and PS-valence from from a psp8 file.
+    Optionally write `.fc` and `.AE` file in format suitable for AIM and cut3d Hirshfeld code
+
+    Args:
+        path: path of the psp8 file
+        fc_file, ae_file: File-like object to `.fc.` and `.AE` file
+            Set to None if files are now wanted.
+        plot: If true, call matplotlib to plot densities.
+
+    Return:
+        namedtuple with numpy arrays: (rmesh, psval, aeval, aecore)
+            Densities are multiplied by 4 pi i.e. int aecore * r**2 dr ~= N_core
+
+    .. warning::
+
+        The densities do not integrate exactly to the number of core/valence electrons.
+        in particular the valence charge in elements with large Z as valence electrons are
+        more delocalized and the finite radial mesh does not capture the contribution due to the tail.
+        Client code is responsible for extrapolating the valence charge if needed.
+        The error in the integral of the core charge is usually much smaller and should be ok
+        for qualitative analysis.
+    """
+    # From 64_psp/psp8in.F90
+    # (1) title (character) line
+    # (2) znucl,zion,pspdat
+    # (3) pspcod,pspxc,lmax,lloc,mmax,r2well  (r2well not used)
+    # (4) rchrg,fchrg,qchrg  (fchrg /=0 if core charge, qchrg not used)
+    # (5) nproj(0:lmax)  (several projectors allowed for each l)
+    # Then, for ll=0,lmax:
+    # if nproj(ll)>0
+    #   1/<u1|vbkb1>, 1/<u2|vbkb2>, ...
+    #   for irad=1,mmax: irad, r(irad), vbkb1(irad,ll), vbkb2(irad,ll), ...
+    # elif ll=lloc
+    #   for  irad=1,mmax: irad, r(irad), vloc(irad)
+    # end if
+    #
+    # If (lloc>lmax)
+    # for  irad=1,mmax: irad, r(irad), vloc(irad)
+    # end if
+    #
+    # vbkb are Bloechl-Kleinman-Bylander projectors,(vpsp(r,ll)-vloc(r))*u(r,ll),
+    # unnormalized
+    # Note that an arbitrary local potential is allowed.  Set lloc>lmax, and
+    # provide projectors for all ll<=lmax
+    #
+    # Finally, if fchrg>0,
+    # for  irad=1,mmax: irad, r(irad), xccc(irad),
+    # xccc'(irac), xccc''(irad), xccc'''(irad), xccc''''(irad)
+    #
+    # Model core charge for nonlinear core xc correction, and 4 derivatives
+    from pseudo_dojo.core.pseudos import Pseudo
+    pseudo = Pseudo.from_file(path)
+
+    from pymatgen.io.abinit.pseudos import _dict_from_lines
+    with open(path, "rt") as fh:
+        lines = [fh.readline() for _ in range(6)]
+        header = _dict_from_lines(lines[1:3], [3, 6])
+
+        # Number of points on the linear mesh.
+        mmax = int(header["mmax"])
+
+        # Non-linear core correction parameters.
+        rchrg, fchrg, qchrg = [float(t) for t in lines[3].split()[:3]]
+
+        # Read Number of projectors(l) and extension switch
+        nproj = [int(t) for t in lines[4].split()[:5]]
+        assert len(nproj) == 5
+        tokens = lines[5].split()
+        extension_switch = int(tokens[0])
+
+        # Old format, Densities are not available.
+        if len(tokens) == 1 or tokens[1] == "extension_switch":
+            raise RuntimeError("psp8 file does not contain density records")
+
+        den_flag = int(tokens[1])
+        if den_flag != 1:
+            raise ValueError("Expecting den_flag 1 but got %s" % den_flag)
+
+        # Read SOC projectors
+        has_soc = extension_switch in (2, 3)
+        if has_soc:
+            line = fh.readline()
+            # Start at l=1
+            nproj_soc = [int(t) for t in line.split()[:4]]
+            nproj_soc.insert(0, 0)
+            print("nproj_soc", nproj_soc)
+            raise NotImplementedError("SOC not tested")
+
+        lmax = int(header["lmax"])
+        lloc = int(header["lloc"])
+        nso = 1 if not has_soc else 2
+
+        # Will now proceed at the reading of pots and projectors
+        # rad(:)=radial grid r(i)
+        # vpspll(:,1),...,vpspll(:,lnmax)=nonlocal projectors
+        # vloc(:)=local potential
+
+        #for nn in range(nso):
+        # Skip projectors (scalar relativistic, always present).
+        for l, npl in enumerate(nproj):
+            #if npl == 0 and l != lloc: continue
+            if npl == 0: continue
+            line = fh.readline() # l, ekb[:npl]
+            l_file = int(line.split()[0])
+            if l != l_file:
+                print("For l=%s, npl=%s" % (l, npl), "wrong line", line)
+                raise RuntimeError("l != l_file (%s != %s)" % (l, l_file))
+
+            for ir in range(mmax):
+                line = fh.readline()
+                assert int(line.split()[0]) == ir + 1
+
+        # Skip local potential.
+        if lloc == 4:
+            lloc_file = int(fh.readline())
+            assert lloc_file == lloc
+            for ir in range(mmax):
+                fh.readline()
+
+        # Skip model core charge function and derivatives, if present.
+        if fchrg > 1e-15:
+            for ir in range(mmax):
+                fh.readline()
+
+        # Read pseudo valence charge in real space on the linear mesh.
+        # [i, r, PS_val, AE_val, AE_core]
+        rmesh, psval, aeval, aecore= [np.empty(mmax) for _ in range(4)]
+        for ir in range(mmax):
+            l = fh.readline()
+            #print("denline", l)
+            findx, rad, v1, v2, v3 = l.split()
+            assert ir + 1 == int(findx)
+            rmesh[ir] = float(rad.replace("D", "E"))
+            psval[ir] = float(v1.replace("D", "E"))
+            aeval[ir] = float(v2.replace("D", "E"))
+            aecore[ir] = float(v3.replace("D", "E"))
+
+        #fact = 1 / (4 * np.pi)
+        #aeval *= fact
+        #psval *= fact
+        #aecore *= fact
+        from scipy.integrate import simps
+        r2 = rmesh ** 2
+
+        meta = dict(
+            aeval_integral=simps(aeval * r2, x=rmesh),
+            psval_integral=simps(psval * r2, x=rmesh),
+            aecore_integral=simps(aecore * r2, x=rmesh),
+            aeden_integral=simps((aecore + aeval) * r2, x=rmesh),
+            symbol=pseudo.symbol,
+            Z=pseudo.Z,
+            Z_val=pseudo.Z_val,
+            l_max=pseudo.l_max,
+            md5=pseudo.md5,
+        )
+
+        import json
+        if fc_file is not None:
+            # Write results to file in "fc" format. The files contains:
+            # header with number of points and unknown parameter (not used)
+            # for each point in the radial mesh:
+            #    4 columns with the radial r coordinate, the core density at r,
+            #    and the first and second derivatives of the core density.
+            # See http://www.abinit.org/downloads/core_electron
+            from scipy.interpolate import UnivariateSpline
+            #aeval_spline = UnivariateSpline(rmesh, aeval)
+            #psval_spline = UnivariateSpline(rmesh, psval)
+            aecore_spline = UnivariateSpline(rmesh, aecore)
+            f1 = aecore_spline.derivative(1)
+            f2 = aecore_spline.derivative(2)
+            header = "%d 0.0 %s %s %s # nr, dummy, symbol, Z, Z_val" % (
+                mmax, pseudo.symbol, pseudo.Z, pseudo.Z_val)
+            print(header, file=fc_file)
+            for ir in range(mmax):
+                r = rmesh[ir]
+                print(4 * "%.14E  " % (r, aecore[ir], f1(r), f2(r)), file=fc_file)
+
+            print("\n\n<JSON>", file=fc_file)
+            print(json.dumps(meta, indent=4), file=fc_file)
+            print("</JSON>")
+
+        if ae_file is not None:
+            # Write results to file in "AE" format
+            # The files contain
+            # header with number of points and unknown parameter (not used)
+            # then 2 columns with the radial r coordinate and the AE density at r
+            # See http://www.abinit.org/downloads/all_core_electron
+            header = "%d 0.0 %s %s %s # nr, dummy, symbol, Z, Z_val" % (
+                mmax, pseudo.symbol, pseudo.Z, pseudo.Z_val)
+            print(header, file=ae_file)
+            for ir in range(mmax):
+                print(2 * "%.14E  " % (rmesh[ir], aecore[ir] + aeval[ir]), file=ae_file)
+
+            print("\n\n<JSON>", file=ae_file)
+            print(json.dumps(meta, indent=4), file=ae_file)
+            print("</JSON>")
+
+        if plot:
+            import matplotlib.pyplot as plt
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            ax.plot(rmesh, r2 * aecore, label="AE core * r**2")
+            ax.plot(rmesh, r2 * psval, label="PS valence * r**2")
+            ax.plot(rmesh, r2 * aeval, label="AE valence * r**2")
+            ax.grid(True)
+            ax.legend(loc="best")
+            plt.show()
+
+        return dict2namedtuple(rmesh=rmesh, psval=psval, aeval=aeval, aecore=aecore)
