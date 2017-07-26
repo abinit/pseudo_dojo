@@ -19,6 +19,7 @@ from abipy import abilab
 from pseudo_dojo.core.dojoreport import DojoReport, dojo_dfact_results, dojo_gbrv_results
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.deltafactor import df_database
+from pseudo_dojo.refdata.lantanides.database import raren_database
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +79,8 @@ class DojoWork(Work):
             # Check that we are not going to overwrite data.
             if dojo_ecut in file_report[dojo_trial]:
                 if not overwrite_data:
-                    raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
+                    raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" %
+                            (dojo_ecut, dojo_trial))
                 else:
                     file_report[dojo_trial].pop(dojo_ecut)
 
@@ -909,29 +911,25 @@ class PhononDojoWork(PhononWork, DojoWork):
 
 class RocksaltRelaxationFactory(object):
     """
-    Factory producing work objects for the calculation of Nitrogen Lantanide rocksalt lattice parameters .
+    Factory producing work objects for the structural relaxation of
+    lantanide + nitrogen in rocksalt structure
     """
-
     def __init__(self, xc):
         """xc is the exchange-correlation functional e.g. PBE, PW."""
         self.xc = XcFunc.asxc(xc)
 
-    def work_for_pseudo(self, pseudo, ecut_list=None, pawecutdg=None,
-                        spin_mode="unpolarized", include_soc=False,
-                        tolwfr=1.e-12, smearing="fermi_dirac:0.1 eV", workdir=None, manager=None, **kwargs):
+    def work_for_pseudo(self, pseudo, ecut_list, pawecutdg=None, ngkpt=(8, 8, 8),
+                        include_soc=False, workdir=None, manager=None):
         """
         Returns a :class:`Work` object from the given pseudopotential.
 
         Args:
             pseudo: :class:`Pseudo` object.
-            ecut: Cutoff energy in Hartree
+            ecut_list: List of cutoff energies in Hartree
             pawecutdg: Cutoff energy of the fine grid (PAW only)
-            spin_mode: Spin polarization option
-            tolwfr: Tolerance on the residuals.
-            smearing: Smearing technique.
+            include_soc: True to include SOC.
             workdir: Working directory.
             manager: :class:`TaskManager` object.
-            kwargs: Extra variables passed to Abinit.
         """
         if pseudo.ispaw and pawecutdg is None:
             raise ValueError("pawecutdg must be specified for PAW calculations.")
@@ -941,68 +939,53 @@ class RocksaltRelaxationFactory(object):
                 "Pseudo xc differs from the XC used to instantiate the factory\n"
                 "Pseudo: %s, Factory: %s" % (pseudo.xc, self.xc))
 
-        # Build structure.
-        a = 9.26 * bohr_to_ang # * 2
+        if not ecut_list:
+            return None
+
+        # Build rocksalt structure.
+        db = raren_database(pseudo.xc)
+        a = db.table["ref"][pseudo.symbol]
         species = [pseudo.symbol, "N"]
         structure = Structure.rocksalt(a, species)
-
-        n_pseudo = "../pseudo_dojo/pseudos/ONCVPSP-PBE-PDv0.3/N/N.psp8"
+        n_pseudo = db.get_n_pseudo(pseudo)
 
         # Build input template.
         template = abilab.AbinitInput(structure, pseudos=[pseudo, n_pseudo])
 
-        # input for EuN Rocksalt
+        # Input for EuN Rocksalt
         template.set_vars(
-            #ntypat  2
-            #znucl   63 7
-            #natom   2
-            #typat   1 2
-            #acell   3*9.26
-            #rprim   0.0  0.5  0.5
-            #        0.5  0.0  0.5
-            #        0.5  0.5  0.0
-            #xred    0.00000  0.00000  0.00000
-            #        0.50000  0.50000  0.50000
             occopt=7,
             tsmear=0.001,
-            #ndtset   6
-            #ecut:    30
-            #ecut+    5
             ecutsm=0.5,
-
-            kptopt=1,
-            ngkpt=[8, 8, 8],
+            #kptopt=1,
+            ngkpt=ngkpt,
             nshiftk=4,
             shiftk=[0.0, 0.0, 0.5,
                     0.0, 0.5, 0.0,
                     0.5, 0.0, 0.0,
                     0.5, 0.5, 0.5],
+            fband=2,
             nstep=60,
             ionmov=2,
             optcell=1,
             dilatmx=1.14,
             tolvrs=1.0E-16,
             tolmxf=1.0E-06,
-            ntime=40,
+            ntime=50,
             prtden=0,
             prteig=0,
             prtwf=-1,
         )
 
         work = RocksaltRelaxationWork()
-        work._dojo_pseudo = pseudo
+        work._pseudo = pseudo
         for ecut in ecut_list:
             task = RelaxTask(template.new_with_vars(ecut=ecut))
-            print(task.input)
+            #print(task.input)
             work.register(task)
 
+        work.include_soc = include_soc
         return work
-
-        #return GhostsWork(
-        #    structure, pseudo, kppa, maxene,
-        #    spin_mode=spin_mode, include_soc=include_soc, tolwfr=tolwfr, smearing=smearing,
-        #    ecut=ecut, pawecutdg=pawecutdg, ecutsm=0.5,
-        #    workdir=workdir, manager=manager, **kwargs)
 
 
 class RocksaltRelaxationWork(DojoWork):
@@ -1010,9 +993,9 @@ class RocksaltRelaxationWork(DojoWork):
     @property
     def dojo_trial(self):
         if not self.include_soc:
-            return "lanthanides_relax"
+            return "raren_relax"
         else:
-            return "lanthanides_relax_soc"
+            return "raren_relax_soc"
 
     @property
     def dojo_pseudo(self):
@@ -1022,23 +1005,30 @@ class RocksaltRelaxationWork(DojoWork):
         """
         Results are written to the dojoreport.
         """
-        results = super(PhononDojoWork, self).on_all_ok()
+        def vol2a(vol):
+            """Function to compute cubic a0 from primitive v0 (depends on struct_type)"""
+            return (4 * vol) ** (1/3.)
 
         entries = {}
         for task in self:
             ecut = task.input["ecut"]
-            final_structure = task.get_final_structure()
+            #final_structure = task.get_final_structure()
+            with task.open_hist() as hist:
+                final_structure = hist.final_structure
+                initial_energy = hist.etotals[0]
 
-            # Convert float to string with 1 decimal digit.
-            dojo_ecut = "%.1f" % ecut
-            entries[dojo_ecut] = final_structure.lattice.as_dict()
+                # Convert float to string with 1 decimal digit.
+                dojo_ecut = "%.1f" % ecut
+                entries[dojo_ecut] = {
+                        "relaxed_a": vol2a(final_structure.volume),
+                        "initial_energy_ev_per_atom": float(initial_energy) / len(final_structure),
+                }
 
+        #print(entries)
         # Convert to JSON and add results to the dojo report.
         #entry = dict(ecut=self.ecut, pawecutdg=self.dojo_pawecutdg, kppa=self.dojo_kppa)
         #self.add_entry_to_dojoreport(entry)
-
-        return results
-
+        #return results
         djrepo = self.djrepo_path
 
         # Update file content with Filelock.
@@ -1056,21 +1046,24 @@ class RocksaltRelaxationWork(DojoWork):
                 file_report[dojo_trial] = {}
 
             # Convert float to string with 1 decimal digit.
-            dojo_ecut = "%.1f" % self.ecut
-
+            #dojo_ecut = "%.1f" % self.ecut
             # Check that we are not going to overwrite data.
-            if dojo_ecut in file_report[dojo_trial]:
-                if not overwrite_data:
-                    raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" % (dojo_ecut, dojo_trial))
-                else:
-                    file_report[dojo_trial].pop(dojo_ecut)
+            #if dojo_ecut in file_report[dojo_trial]:
+            #    if not overwrite_data:
+            #        raise RuntimeError("dojo_ecut %s already exists in %s. Cannot overwrite data" %
+            #                (dojo_ecut, dojo_trial))
+            #    else:
+            #        file_report[dojo_trial].pop(dojo_ecut)
 
             # Update file_report by adding the new entry and write new file
-            file_report[dojo_trial][dojo_ecut] = entry
+            for dojo_ecut, entry in entries.items():
+                file_report[dojo_trial][dojo_ecut] = entry
 
             # Write new dojo report and update the pseudo attribute
             file_report.json_write()
             self._pseudo.dojo_report = file_report
+
+        return dict(returncode=0, message="Lattice paramenters computed and stored in djrepo file")
 
 
 class RelaxWithGbrvParamsWork(Work):
@@ -1150,7 +1143,7 @@ class RelaxWithGbrvParamsWork(Work):
         for task, ecut in zip(self, self.ecut_list):
             structure = task.get_final_structure()
             a0 = vol2a(structure.volume)
-            print("ecut:", ecut, "a0:", a0)
+            #print("ecut:", ecut, "a0:", a0)
             results.append(dict(ecut=ecut, a0=a0))
 
         import json

@@ -20,6 +20,7 @@ from pymatgen.core.periodic_table import Element
 from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 from pseudo_dojo.refdata.gbrv import gbrv_database
+from pseudo_dojo.refdata.lantanides.database import raren_database
 from pseudo_dojo.util.dojo_eos import EOS
 
 
@@ -916,7 +917,7 @@ class DojoReport(dict):
         Plot the convergence of the deltafactor parameters wrt ecut.
 
         Args:
-            xc: String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE"
+            xc: String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE")
             code: Reference code.
             with_soc: If True, the results obtained with SOC are plotted (if available).
             what:
@@ -1212,6 +1213,60 @@ class DojoReport(dict):
                 print("[%d]" % i, s)
 
         return ebands.plot_with_edos(edos, show=False, **kwargs)
+
+    @add_fig_kwargs
+    def plot_raren_convergence(self, xc, with_soc=False, **kwargs):
+        """
+        Plot the convergence of the total energy wrt ecut using (etotal obtained with the initial value
+        of the lattice paramenter used to start the structural relaxation) as well as the convergence of the
+        lattice parameter wrt to ecut.
+
+        Args:
+            xc: String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE")
+            with_soc: If True, the results obtained with SOC are plotted (if available).
+
+        Returns:
+            `matplotlib` figure. None if the ebands test is not present.
+        """
+        trial = "raren_relax" if not with_soc else "raren_relax_soc"
+        if trial not in self:
+            cprint("dojo report does not contain trial: %s" % str(trial), "red")
+            return None
+
+        # Energy is in eV/atom.
+        key2ylabel = {"initial_energy_ev_per_atom": r"$\Delta E$ [meV/natom]", "relaxed_a": "$a$ [Angstrom]"}
+
+        keys = list(key2ylabel.keys())
+        data = self.get_pdframe(trial, *keys)
+
+        import matplotlib.pyplot as plt
+        fig, ax_list = plt.subplots(nrows=len(keys), ncols=1, sharex=True, squeeze=False)
+        ax_list = ax_list.ravel()
+
+        table = raren_database(xc).table
+
+        ecuts = np.array(data["ecut"])
+        xmin, xmax = min(ecuts), max(ecuts)
+        for i, (ax, key) in enumerate(zip(ax_list, keys)):
+            values = np.array(data[key])
+            if key == "initial_energy_ev_per_atom":
+                values = values * 1000
+                ediffs = values - values[-1]
+
+            ax.plot(ecuts, values, "o-")
+            if key == "relaxed_a":
+                y = table["ref"][self.symbol]
+                ax.hlines(y=y, xmin=xmin, xmax=xmax, colors="b", linewidth=1.5, linestyles='dashed')
+            ax.grid(True)
+            ax.set_ylabel(key2ylabel[key])
+            if i == len(keys) - 1: ax.set_xlabel("Ecut [Ha]")
+
+        return fig
+
+    #def get_raren_dataframe(self):
+    #    db = raren_database(self.xc)
+    #    return db.table.loc[self.symbol]
+
 
 ######################
 ## Pandas DataFrame ##

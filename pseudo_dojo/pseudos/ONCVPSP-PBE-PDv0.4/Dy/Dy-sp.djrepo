@@ -31,6 +31,60 @@
 }
 }, 
 "pseudo_type": "NC", 
+"raren_relax": {
+"45.0": {
+"initial_energy_ev_per_atom": -4517.431204981866, 
+"relaxed_a": 4.8466112169900866
+}, 
+"47.0": {
+"initial_energy_ev_per_atom": -4517.809718423021, 
+"relaxed_a": 4.8431536857376738
+}, 
+"49.0": {
+"initial_energy_ev_per_atom": -4517.973175583241, 
+"relaxed_a": 4.8369910518659331
+}, 
+"51.0": {
+"initial_energy_ev_per_atom": -4518.037663575993, 
+"relaxed_a": 4.8371861988463412
+}, 
+"53.0": {
+"initial_energy_ev_per_atom": -4518.0603306621715, 
+"relaxed_a": 4.8384839079381559
+}, 
+"55.0": {
+"initial_energy_ev_per_atom": -4518.066819151508, 
+"relaxed_a": 4.8384176148488862
+}, 
+"57.0": {
+"initial_energy_ev_per_atom": -4518.068140596638, 
+"relaxed_a": 4.8383281224511867
+}, 
+"59.0": {
+"initial_energy_ev_per_atom": -4518.068291055108, 
+"relaxed_a": 4.8383203118032014
+}, 
+"61.0": {
+"initial_energy_ev_per_atom": -4518.068376520361, 
+"relaxed_a": 4.8383230872364562
+}, 
+"63.0": {
+"initial_energy_ev_per_atom": -4518.068501960675, 
+"relaxed_a": 4.8383262589914846
+}, 
+"65.0": {
+"initial_energy_ev_per_atom": -4518.068604894836, 
+"relaxed_a": 4.8383268782656783
+}, 
+"73.0": {
+"initial_energy_ev_per_atom": -4518.068813007745, 
+"relaxed_a": 4.8383292764304331
+}, 
+"75.0": {
+"initial_energy_ev_per_atom": -4518.068920073954, 
+"relaxed_a": 4.8383340898994014
+}
+}, 
 "symbol": "Dy", 
 "version": "1.0", 
 "xc": {

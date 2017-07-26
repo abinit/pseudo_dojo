@@ -31,6 +31,60 @@
 }
 }, 
 "pseudo_type": "NC", 
+"raren_relax": {
+"14.0": {
+"initial_energy_ev_per_atom": -1319.4959854417048, 
+"relaxed_a": 5.1622130881297075
+}, 
+"16.0": {
+"initial_energy_ev_per_atom": -1321.4952274413324, 
+"relaxed_a": 5.1627267523609497
+}, 
+"18.0": {
+"initial_energy_ev_per_atom": -1322.7903890785879, 
+"relaxed_a": 5.1678265113102952
+}, 
+"20.0": {
+"initial_energy_ev_per_atom": -1323.6313721188785, 
+"relaxed_a": 5.1613070894914292
+}, 
+"22.0": {
+"initial_energy_ev_per_atom": -1324.167304137445, 
+"relaxed_a": 5.1631646639077697
+}, 
+"24.0": {
+"initial_energy_ev_per_atom": -1324.5076283188532, 
+"relaxed_a": 5.1582203616355686
+}, 
+"26.0": {
+"initial_energy_ev_per_atom": -1324.7130993543674, 
+"relaxed_a": 5.1564829981840887
+}, 
+"28.0": {
+"initial_energy_ev_per_atom": -1324.8347683740653, 
+"relaxed_a": 5.1571994370278809
+}, 
+"30.0": {
+"initial_energy_ev_per_atom": -1324.9038681430393, 
+"relaxed_a": 5.1571080605369932
+}, 
+"32.0": {
+"initial_energy_ev_per_atom": -1324.940271054451, 
+"relaxed_a": 5.1568242358505634
+}, 
+"34.0": {
+"initial_energy_ev_per_atom": -1324.958344541858, 
+"relaxed_a": 5.1569294497217824
+}, 
+"42.0": {
+"initial_energy_ev_per_atom": -1324.9717588480705, 
+"relaxed_a": 5.1570053726904801
+}, 
+"44.0": {
+"initial_energy_ev_per_atom": -1324.971811958986, 
+"relaxed_a": 5.1570067374734379
+}
+}, 
 "symbol": "Nd", 
 "version": "1.0", 
 "xc": {

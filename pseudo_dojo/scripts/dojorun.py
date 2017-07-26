@@ -14,8 +14,8 @@ from monty.termcolor import cprint
 from monty.functools import prof_main
 from pymatgen.io.abinit.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
-from pseudo_dojo.dojo.works import DeltaFactory, GbrvFactory, GhostsFactory, GammaPhononFactory
-
+from pseudo_dojo.dojo.works import (DeltaFactory, GbrvFactory, GhostsFactory, GammaPhononFactory,
+        RocksaltRelaxationFactory)
 
 logger = logging.getLogger(__name__)
 
@@ -174,6 +174,26 @@ def build_flow(pseudo, options):
             else:
                 cprint('Cannot create phgamma work for ecut %s, factory returned None' % str(ecut), "magenta")
 
+    if "raren_relax" in options.trials:
+        nirer_factory = RocksaltRelaxationFactory(pseudo.xc)
+        dojo_trial = "raren_relax" if not options.soc else "raren_relax_soc"
+        l = []
+        for ecut in ecut_list:
+            if report.has_trial(dojo_trial, ecut=ecut):
+                cprint("[%s]: ignoring ecut=%s because it's already in the DOJO_REPORT" % (dojo_trial, ecut), "magenta")
+                continue
+            l.append(ecut)
+        ecut_list = l
+
+        # Build and register the work.
+        pawecutdg = 2 * ecut if pseudo.ispaw else None
+        work = nirer_factory.work_for_pseudo(pseudo, ecut_list, pawecutdg=pawecutdg,
+                                             include_soc=options.soc)
+        if work is not None:
+            flow.register_work(work)
+        else:
+            cprint('Cannot create nirer work, factory returned None', "magenta")
+
     if len(flow) > 0:
         return flow.allocate()
     else:
@@ -186,7 +206,7 @@ def main():
     def str_examples():
         return """\
 Usage Example:
-    ppdojo_run.py Si.psp8  => Build pseudo_dojo flow for Si.psp8 pseudo
+    dojo_run.py Si.psp8  => Build pseudo_dojo flow for Si.psp8 pseudo
 """
 
     def show_examples_and_exit(error_code=1):
@@ -211,12 +231,13 @@ Usage Example:
         if s == "all": return ["df", "gbrv"]
         return s.split(",")
 
-    parser.add_argument('--trials', default="all",  type=parse_trials,
-                        help=("List of tests e.g --trials=ghosts,df,gbrv\n"
-                              "  ghosts:  tests ghost states in the conduction region.\n"
-                              "  df:      test delta factor against all electron reference.\n"
-                              "  gbrv:    test fcc and bcc lattice parameters against AE reference.\n"
-                              "  phgamma: test violation of the acoustic sum rule\n"))
+    parser.add_argument('--trials', default="all",  type=parse_trials, help="""\
+List of tests e.g --trials=ghosts,df,gbrv.
+    ghosts:  tests ghost states in the conduction region.
+    df:      test delta factor against all electron reference.
+    gbrv:    test fcc and bcc lattice parameters against AE reference.
+    phgamma: test violation of the acoustic sum rule
+    raren_relax: Structural relaxation for lantanide + nitrogen in rocksalt structure""")
 
     parser.add_argument('--loglevel', default="ERROR", type=str,
                         help="set the loglevel. Possible values: CRITICAL, ERROR (default), WARNING, INFO, DEBUG")

@@ -56,6 +56,7 @@ def find_package_data():
     package_data = {
         'pseudo_dojo.refdata.deltafactor.data': ['*.txt', 'CIFs/*', 'history/*'],
         'pseudo_dojo.refdata.gbrv.data': ['*.csv'],
+        'pseudo_dojo.refdata.lantanides.data': ['*'],
         'pseudo_dojo.pseudos': ["ONCVPSP-PBE/*/*",],
     }
     return package_data
