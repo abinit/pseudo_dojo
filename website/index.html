@@ -1578,45 +1578,20 @@ Format
                         return a;
               }, {});
 
-  function get_bgcolor(el_type, bgori) {
-      if(el_type=="bg_hydrogen"){
-        bgori = "#d16969";
-      }
-      else if(el_type=="bg_alkali"){
-        bgori = "#d19292";
-      }
-      else if(el_type=="bg_alkaline"){
-        bgori = "#d1bd92";
-      }
-      else if(el_type=="bg_transition_metal"){
-        bgori = "#a9c4d4";
-      }
-      else if(el_type=="bg_post_transition_metal"){
-        bgori = "#a3b2d6";
-      }
-      else if(el_type=="bg_metalloid"){
-        bgori = "#bdd6a3";
-      }
-      else if(el_type=="bg_nonmetal"){
-        bgori = "#d6a3be";
-      }
-      else if(el_type=="bg_halogen"){
-        bgori = "#d2d6a3";
-      }
-      else if(el_type=="bg_noble_gas"){
-        bgori = "#c4cdff";
-      }
-      else if(el_type=="bg_lanthanoid"){
-        bgori = "#edb8ff";
-      }
-      else if(el_type=="bg_actinoid"){
-        bgori = "#bf96ff";
-      }
-      else if(el_type=="bg_unknown"){
-        bgori = "#dcdcdc";
-      }
-      return bgori;
-}
+  colors = {
+  "bg_hydrogen": "#d16969",
+  "bg_alkali": "#d19292",
+  "bg_alkaline": "#d1bd92",
+  "bg_transition_metal":"#a9c4d4",
+  "bg_post_transition_metal": "#a3b2d6",
+  "bg_metalloid": "#bdd6a3",
+  "bg_nonmetal": "#d6a3be",
+  "bg_halogen": "#d2d6a3",
+  "bg_noble_gas": "#c4cdff",
+  "bg_lanthanoid": "#edb8ff",
+  "bg_actinoid": "#bf96ff",
+  "bg_unknown": "#dcdcdc"
+  };
 
   jQuery(document).ready(function($) {
     $(".plugin:nth-of-type(2)").addClass('nth-of-type-float');
@@ -1626,8 +1601,8 @@ Format
     $('.plugin').hover(function(){
       var str = $(this).attr("class");
       var res = str.split(" ");
-      var dum = res[2]
-      var color = get_bgcolor(res[1])
+      var dum = res[2];
+      var color = colors[res[1]];
       var res = dum.split("_");
       var trunk = "pseudos/"
       var elm = res[1];
@@ -1655,7 +1630,7 @@ Format
       var str = $(this).attr("class");
       var res = str.split(" ");
       var bgori = "";
-      bgori = get_bgcolor(res[1]);
+      bgori = colors[res[1]];
       var mythis = $(this);
       mythis.css("background-color", bgori);
       mythis.css("color", "#4B4B4D");
