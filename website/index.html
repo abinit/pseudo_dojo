@@ -81,6 +81,7 @@
     <div class="intro">
       <h1 class="logo"><a href="index.html" title="The Pseudo Dojo">The Pseudo Dojo</a></h1>
     </div>
+    <div class="atom_number_detail" id="N"></div>
     <div class="detail" id="X_n">
       <div class="element" id="X_el">X</div>
       <div class="l_top">hints</div>
@@ -1602,11 +1603,12 @@ Format
       var str = $(this).attr("class");
       var res = str.split(" ");
       var dum = res[2];
+      var n = parseInt(dum.split("_")[0]);
       var color = colors[res[1]];
       var res = dum.split("_");
       var trunk = "pseudos/"
       var elm = res[1];
-      set_X(elm, color);
+      set_X(elm, color, n);
       var typ = $("#TYP").val();
       var xcf = $("#XCF").val();
       var acc = $("#ACC").val();

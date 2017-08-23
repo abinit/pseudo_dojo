@@ -59,6 +59,20 @@ img
 {
   display:none;
 }
+.atom_number_detail
+{
+  position:absolute;
+  font-size:16px;
+  z-index:20;
+  top:106px;
+  left:426px;
+  width:30px;
+  height:12px;
+  float:left;
+  margin:0 0 20px 20px;
+  padding:4px;
+}
+
 .detail
 {
   content:none;
