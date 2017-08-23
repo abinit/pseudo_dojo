@@ -1578,6 +1578,46 @@ Format
                         return a;
               }, {});
 
+  function get_bgcolor(el_type, bgori) {
+      if(el_type=="bg_hydrogen"){
+        bgori = "#d16969";
+      }
+      else if(el_type=="bg_alkali"){
+        bgori = "#d19292";
+      }
+      else if(el_type=="bg_alkaline"){
+        bgori = "#d1bd92";
+      }
+      else if(el_type=="bg_transition_metal"){
+        bgori = "#a9c4d4";
+      }
+      else if(el_type=="bg_post_transition_metal"){
+        bgori = "#a3b2d6";
+      }
+      else if(el_type=="bg_metalloid"){
+        bgori = "#bdd6a3";
+      }
+      else if(el_type=="bg_nonmetal"){
+        bgori = "#d6a3be";
+      }
+      else if(el_type=="bg_halogen"){
+        bgori = "#d2d6a3";
+      }
+      else if(el_type=="bg_noble_gas"){
+        bgori = "#c4cdff";
+      }
+      else if(el_type=="bg_lanthanoid"){
+        bgori = "#edb8ff";
+      }
+      else if(el_type=="bg_actinoid"){
+        bgori = "#bf96ff";
+      }
+      else if(el_type=="bg_unknown"){
+        bgori = "#dcdcdc";
+      }
+      return bgori;
+}
+
   jQuery(document).ready(function($) {
     $(".plugin:nth-of-type(2)").addClass('nth-of-type-float');
     $(".plugin:nth-of-type(5), .plugin:nth-of-type(13)").addClass('nth-of-type-margin');
@@ -1587,10 +1627,11 @@ Format
       var str = $(this).attr("class");
       var res = str.split(" ");
       var dum = res[2]
+      var color = get_bgcolor(res[1])
       var res = dum.split("_");
       var trunk = "pseudos/"
       var elm = res[1];
-      set_X(elm);
+      set_X(elm, color);
       var typ = $("#TYP").val();
       var xcf = $("#XCF").val();
       var acc = $("#ACC").val();
@@ -1614,47 +1655,12 @@ Format
       var str = $(this).attr("class");
       var res = str.split(" ");
       var bgori = "";
-      if(res[1]=="bg_hydrogen"){
-        bgori = "#d16969";
-      }
-      else if(res[1]=="bg_alkali"){
-        bgori = "#d19292";
-      }
-      else if(res[1]=="bg_alkaline"){
-        bgori = "#d1bd92";
-      }
-      else if(res[1]=="bg_transition_metal"){
-        bgori = "#a9c4d4";
-      }
-      else if(res[1]=="bg_post_transition_metal"){
-        bgori = "#a3b2d6";
-      }
-      else if(res[1]=="bg_metalloid"){
-        bgori = "#bdd6a3";
-      }
-      else if(res[1]=="bg_nonmetal"){
-        bgori = "#d6a3be";
-      }
-      else if(res[1]=="bg_halogen"){
-        bgori = "#d2d6a3";
-      }
-      else if(res[1]=="bg_noble_gas"){
-        bgori = "#c4cdff";
-      }
-      else if(res[1]=="bg_lanthanoid"){
-        bgori = "#edb8ff";
-      }
-      else if(res[1]=="bg_actinoid"){
-        bgori = "#bf96ff";
-      }
-      else if(res[1]=="bg_unknown"){
-        bgori = "#dcdcdc";
-      }
+      bgori = get_bgcolor(res[1]);
       var mythis = $(this);
       mythis.css("background-color", bgori);
       mythis.css("color", "#4B4B4D");
       setTimeout(function(){
-        mythis.css("background-color", bgori);
+        mythis.css("background-color", '');
         mythis.css("color", "#4B4B4D");
       },500);
     });
@@ -1671,6 +1677,7 @@ Format
       var acc = $("#ACC").val();
       var fmt = $("#FMT").val();
       var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt)
+      console.log(url)
       $.get(url)
         .done(function() {
             // exists code

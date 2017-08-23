@@ -77,8 +77,10 @@ function load_set_info() {
     });
 }
 
-function set_X(elm){
+function set_X(elm, color){
     if (els.indexOf(elm)>=0){
+        var x = document.getElementById('X_n');
+        x.style.backgroundColor = color;
         var x = document.getElementById('X_el');
         x.innerHTML = elm;
         for (key in keys){
@@ -94,6 +96,7 @@ function set_X(elm){
 
 function reset_X(){
     document.getElementById('X_el').innerHTML = 'Mean'
+    document.getElementById('X_n').style.backgroundColor = "#ffffff";
     for (key in keys){
         document.getElementById("X_" + keys[key]).innerHTML = document.getElementById("av_" + keys[key]).innerHTML
     }
