@@ -56,6 +56,37 @@
 <script src="dojo-tools.js">
 </script>
 
+<script language="javascript" type="text/javascript">
+  function dynamicdropdown(listindex){
+    document.getElementById("ACC").length = 0;
+    document.getElementById("XCF").length = 0;
+    document.getElementById("FMT").length = 0;
+    switch (listindex)
+    {
+      case "nc-sr" :
+        document.getElementById("ACC").options[0]=new Option("standard","standard");
+        document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+        document.getElementById("XCF").options[0]=new Option("LDA","pw");
+        document.getElementById("XCF").options[1]=new Option("PBE","pbe");
+        document.getElementById("XCF").options[2]=new Option("PBEsol","pbesol");
+        document.getElementById("FMT").options[0]=new Option("psp8","psp8");
+        document.getElementById("FMT").options[1]=new Option("upf","upf");
+        document.getElementById("FMT").options[2]=new Option("html","html");
+        document.getElementById("FMT").options[3]=new Option("djrepo","djrepo");
+        break;
+
+      case "paw" :
+        document.getElementById("ACC").options[0]=new Option("standard","standard");
+        document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+        document.getElementById("XCF").options[0]=new Option("LDA","pw");
+        document.getElementById("XCF").options[1]=new Option("PBE","pbe");
+        document.getElementById("FMT").options[0]=new Option("xml","xml");
+        break;
+    }
+    return true;
+  }
+
+</script>
 
 
 <div class="detail detail_position 000_X" id="av">
@@ -141,43 +172,66 @@ Format
 </div>
 </td>
 <td>
-<div class="styled-select" onchange="load_set_info();">
-  <script type="text/javascript" language="JavaScript">
-    document.write('<select id="XCF"><option value="pw" selected>LDA</option><option value="pbe">PBE</option><option value="pbesol">PBEsol</option></select>');
-  </script>
-  <noscript>
+<div class="styled-select" onchange="localStorage.setItem('selectedXCF', document.getElementById('XCF').value); load_set_info();">
     <select id="XCF" >
     </select>
-  </noscript>
 </div>
 </td>
 <td>
-<div class="styled-select" onchange="load_set_info();">
-  <script type="text/javascript" language="JavaScript">
-    document.write('<select id="ACC"><option value="standard" selected>standard</option><option value="stringent">stringent</option></select>');
-    load_set_info();
-  </script>
-  <noscript>
+<div class="styled-select" onchange="localStorage.setItem('selectedACC', document.getElementById('ACC').value); load_set_info();">
     <select id="ACC" >
     </select>
-  </noscript>
 </div>
 </td>
 <td>
 <div class="styled-select">
-  <script type="text/javascript" language="JavaScript" onchange="load_set_info();">
-    document.write('<select id="FMT"><option value="psp8" selected>psp8</option><option value="upf">upf</option><option value="html">html</option><option value="djrepo">djrepo</option></select>')
-  </script>
-  <noscript>
-    <select id="FMT" >
+    <select id="FMT" onchange="localStorage.setItem('selectedFMT', document.getElementById('FMT').value);" >
     </select>
-  </noscript>
 </div>
 </td>
 </tr>
-        </table>
-    </div>
-  </aside>
+</table>
+
+</div>
+</aside>
+
+
+<!-- fill the options for XCF ACC and FMT based on the type-->
+<script>
+  dynamicdropdown(document.getElementById('TYP').value);
+</script>
+
+<!-- if  XCF ACC and FMT have been changed previously set them back to those selections-->
+<script>
+if (localStorage.getItem('selectedXCF')) {
+  var options = document.getElementById('XCF').options
+  for (i in options){
+     if (options[i].value == localStorage.getItem('selectedXCF')){
+       options[i].selected = true;
+     }
+  }
+}
+if (localStorage.getItem('selectedACC')) {
+  var options = document.getElementById('ACC').options
+  for (i in options){
+     if (options[i].value == localStorage.getItem('selectedACC')){
+       options[i].selected = true;
+     }
+  }
+}
+if (localStorage.getItem('selectedFMT')) {
+  var options = document.getElementById('FMT').options
+  for (i in options){
+     if (options[i].value == localStorage.getItem('selectedFMT')){
+       options[i].selected = true;
+     }
+  }
+}
+</script>
+
+
+
+
   <div class="plugin bg_hydrogen 001_H">
     <div class="element">H</div>
     <div class="l_top" id="H_hl">hl</div>
@@ -1539,36 +1593,6 @@ Format
 
 <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
 
-<script language="javascript" type="text/javascript">
-  function dynamicdropdown(listindex){
-    document.getElementById("ACC").length = 0;
-    document.getElementById("XCF").length = 0;
-    document.getElementById("FMT").length = 0;
-    switch (listindex)
-    {
-      case "nc-sr" :
-        document.getElementById("ACC").options[0]=new Option("standard","standard");
-        document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-        document.getElementById("XCF").options[0]=new Option("LDA","pw");
-        document.getElementById("XCF").options[1]=new Option("PBE","pbe");
-        document.getElementById("XCF").options[2]=new Option("PBEsol","pbesol");
-        document.getElementById("FMT").options[0]=new Option("psp8","psp8");
-        document.getElementById("FMT").options[1]=new Option("upf","upf");
-        document.getElementById("FMT").options[2]=new Option("html","html");
-        document.getElementById("FMT").options[3]=new Option("djrepo","djrepo");
-        break;
-
-      case "paw" :
-        document.getElementById("ACC").options[0]=new Option("standard","standard");
-        document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-        document.getElementById("XCF").options[0]=new Option("LDA","pw");
-        document.getElementById("XCF").options[1]=new Option("PBE","pbe");
-        document.getElementById("FMT").options[0]=new Option("xml","xml");
-        break;
-    }
-    return true;
-  }
-</script>
 
 <script>
   var params = decodeURIComponent(window.location.search.slice(1))
