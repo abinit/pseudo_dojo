@@ -35,8 +35,36 @@
       </div>
     </div>
 
-<div class="generaltext">
+<lu class="generaltext">
 <h1>General</h1>
+
+<h2>&#9670; What are all these numbers?</h2>
+<div class="relative_position detail"    id="legend">
+      <div class="element" id="X_el">X</div>
+      <div class="l_top">hints</div>
+      <div class="l_follow" id="X_hl" title="low cutoff energy hint (Ha)">low</div>
+      <div class="l_follow" id="X_hn" title="normal cutoff energy hint (Ha)">normal</div>
+      <div class="l_follow" id="X_hh" title="high cutoff energy hint (Ha)">high</div>
+      <div class="valence" id="X_nv" title="number of valence shells">nv</div>
+      <div class="r_top" >tests</div>
+      <div class="r_follow" id="X_d" title="delta gauge (meV):&#013;Integral between the equation of state calculated using the pseudo potential &#013;and a reference all electron equation of state.">delta</div>
+      <div class="r_follow" id="X_dp" title="normalized delta gauge:&#013;Normalized version of the delta gauge.">delta1</div>
+      <div class="r_follow" id="X_gb" title="gbrv fcc bcc average (%):&#013;Relative error in the lattice parameter with respect to reference&#013;all electron results for elemental fcc and bcc structures.">gbrv</div>
+</div>
+The number in the upper right corner of the element boxes (nv) give how many valence shells are includes in this pseudopotential.
+For instance a 4 for Copper means that 1s, 2s, and 2p are frozen in the core but 3s, 3p, 3d, and 4s are treated as valence.<BR />
+<BR />
+The numbers in lower left corner (hints) represent the cutoff hints in Hartree.
+  The exact meaning of the hints can be found in the corresponding paper suggeste below. In general low is a good
+  starting point for you own convergence studies. Normal should be a safe guess for just a quick calculations.
+  High is for testing for convergence.<BR />
+<BR />
+The numbers in the lower right corner are the results of various tests performed on this pseudo potential.<BR />
+  <Table cellpadding="4">
+ <tr><td valign="top">delta</td><td valign="top">Delta gauge (meV)</td><td valign="top">Measures the agreement of the equation of state for an elemental solid in the ground state with respect to all electron reference calculations. <a target="blank" href='https://dx.doi.org/10.1126/science.aad3000'>full description</a></td></tr>
+ <tr><td valign="top">delta1</td><td valign="top">Renormalized Delta gauge</td><td valign="top">Renormalized version of the Delta gauge, especially usefull for very soft materials. <a target="blank" href="https://doi.org/10.1016/j.cpc.2013.12.023">full description</a></td></tr>
+ <tr><td valign="top">gbrv</td><td valign="top">Average FCC BCC GBRV test (%)</td><td valign="top">Measures the agreement of the lattice parameter for an elemental FCC and BCC solid with respect to all electron reference calculations. <a target="blank" href="https://doi.org/10.1016/j.commatsci.2013.08.053">full description</a></td></tr>
+ </Table>
 
 <h2>&#9670; How do I cite the PseudoDojo?</h2>
 
@@ -51,6 +79,13 @@ When using ONCVPSP type pseudo potentials please cite:<BR />
 Optimized norm-conserving Vanderbilt pseudopotentials<BR />
 D. R. Hamann, Phys. Rev. B 88, 085117 <a href='https://doi.org/10.1103/PhysRevB.88.085117'>10.1103/PhysRevB.88.085117</a>
 </blockquote>
+When using PAW type pseudo potentials please cite:<BR />
+<blockquote>
+Generation of Projector Augmented-Wave atomic data: A 71 element validated table in the XML format.<BR />
+F. Jollet, M. Torrent, and Holzwarth, Computer Physics Communications 185, 1246 <a href="https://doi.org/10.1016/j.cpc.2013.12.023">10.1016/j.cpc.2013.12.023</a>
+</blockquote>
+
+
 <H1>Concerning the ONCVPSP pseudopotentials</H1>
 
 <h2>&#9670; Do you also have the pseudo for my favorite GGA or LDA functional?</h2>

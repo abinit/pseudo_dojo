@@ -72,22 +72,27 @@ img
   margin:0 0 20px 20px;
   padding:4px;
 }
-
-.detail
+.relative_position
 {
-  content:none;
-  background:#FFFFFF;
+  position: relative;
+  left: 30px;
+}
+.detail_position
+{
   position:absolute;
   z-index:10;
   top:107px;
   left:426px;
+}
+.detail
+{
+  content:none;
+  background:#FFFFFF;
   width:99px;
   height:117px;
-  float:left;
   margin:0 0 20px 20px;
   padding:4px;
   counter-increment:none;
-  float:left;
   border:1px solid #A2A4A5;
   -webkit-border-top-right-radius:2px;
   -webkit-border-bottom-right-radius:2px;
