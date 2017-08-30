@@ -1641,6 +1641,22 @@ if (localStorage.getItem('selectedFMT')) {
       var fmt = $("#FMT").val();
       var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt)
       var mythis = $(this);
+      console.log(url)
+      if (localStorage.getItem('files').indexOf(url) >= 0) {
+         console.log('is there')
+          bgcheck="#44AA44";
+          mythis.css("background-color", bgcheck);
+          mythis.css("color", "#FFFFFF");
+      }
+      else{
+         console.log('is not there')
+          bgcheck="#CC4444";
+          mythis.css("background-color", bgcheck);
+          mythis.css("color", "#FFFFFF");
+      }
+
+
+      /*
       $.ajax({
         url: url,
         type: 'HEAD',
@@ -1660,6 +1676,8 @@ if (localStorage.getItem('selectedFMT')) {
           mythis.css("background-color", bgcheck);
           mythis.css("color", "#FFFFFF");
         }})
+      */
+
       }, function(){
       reset_X()
       var str = $(this).attr("class");
@@ -1706,6 +1724,20 @@ if (localStorage.getItem('selectedFMT')) {
       var fmt = $("#FMT").val();
       var url = trunk.concat(typ,"_",xcf,"_",acc,"_",fmt,".tgz")
       var mythis = $(this);
+            console.log(url)
+      if (localStorage.getItem('files').indexOf(url) >= 0) {
+         console.log('is there')
+          bgcheck="#44AA44";
+          mythis.css("background-color", bgcheck);
+          mythis.css("color", "#FFFFFF");
+      }
+      else{
+         console.log('is not there')
+          bgcheck="#CC4444";
+          mythis.css("background-color", bgcheck);
+          mythis.css("color", "#FFFFFF");
+      }
+      /*
       $.ajax({
         url: url,
         type: 'HEAD',
@@ -1725,6 +1757,8 @@ if (localStorage.getItem('selectedFMT')) {
           mythis.css("background-color", bgcheck);
           mythis.css("color", "#FFFFFF");
         }})
+
+      */
       }, function(){
       var mythis = $(this);
       mythis.css("background-color", "#4D4D4D");
