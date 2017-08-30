@@ -5,7 +5,7 @@ import glob
 import json
 
 jsons = glob.glob('*.json')
-tgzs = glob.glob('*.tgz')
+tgzs = glob.glob('pseudos/*.tgz')
 pseudos = glob.glob('pseudos/*/*')
 
 files = jsons+tgzs+pseudos
