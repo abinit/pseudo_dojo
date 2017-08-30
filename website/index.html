@@ -1642,11 +1642,15 @@ if (localStorage.getItem('selectedFMT')) {
       $.ajax({
         url: url,
         type: 'HEAD',
-        success: function() {
+        cache: 'false',
+        success: function(data) {
             // exists code
           bgcheck="#44AA44";
           mythis.css("background-color", bgcheck);
           mythis.css("color", "#FFFFFF");
+        },
+        complete: function(data) {
+        console.log(humanize(data.getResponseHeader('Content-Length')));
         },
         error: function() {
             // not exists code
@@ -1703,11 +1707,15 @@ if (localStorage.getItem('selectedFMT')) {
       $.ajax({
         url: url,
         type: 'HEAD',
+        cache: 'false',
         success: function() {
             // exists code
           bgcheck="#44AA44";
           mythis.css("background-color", bgcheck);
           mythis.css("color", "#FFFFFF");
+        },
+        complete: function(data) {
+        console.log(humanize(data.getResponseHeader('Content-Length')));
         },
         error: function() {
             // not exists code
