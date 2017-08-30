@@ -86,6 +86,7 @@
     return true;
   }
 
+  store_available_files();
 </script>
 
 
@@ -1595,6 +1596,7 @@ if (localStorage.getItem('selectedFMT')) {
 
 
 <script>
+  console.log(localStorage.getItem('files'))
   var params = decodeURIComponent(window.location.search.slice(1))
               .split('&')
               .reduce(function _reduce (/*Object*/ a, /*String*/ b) {

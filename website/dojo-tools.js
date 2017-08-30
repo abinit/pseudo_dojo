@@ -63,7 +63,15 @@ function loadJSON(file, callback) {
           }
     };
     xobj.send(null);
- }
+ }i
+
+function store_available_files() {
+    loadJSON('files.json', function(response) {
+    var info = JSON.parse(response);
+    localStorage.setItem('files', info);
+    });
+
+}
 
 function load_set_info() {
     acc = document.getElementById('ACC').value;
