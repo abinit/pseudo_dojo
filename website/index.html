@@ -1639,18 +1639,21 @@ if (localStorage.getItem('selectedFMT')) {
       var fmt = $("#FMT").val();
       var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt)
       var mythis = $(this);
-      $.get(url)
-        .done(function() { 
+      $.ajax({
+        url: url,
+        type: 'HEAD',
+        success: function() {
             // exists code
           bgcheck="#44AA44";
           mythis.css("background-color", bgcheck);
           mythis.css("color", "#FFFFFF");
-        }).fail(function() { 
+        },
+        error: function() {
             // not exists code
           bgcheck="#CC4444";
           mythis.css("background-color", bgcheck);
           mythis.css("color", "#FFFFFF");
-        })
+        }})
       }, function(){
       reset_X()
       var str = $(this).attr("class");
@@ -1697,18 +1700,21 @@ if (localStorage.getItem('selectedFMT')) {
       var fmt = $("#FMT").val();
       var url = trunk.concat(typ,"_",xcf,"_",acc,"_",fmt,".tgz")
       var mythis = $(this);
-      $.get(url)
-        .done(function() {
+      $.ajax({
+        url: url,
+        type: 'HEAD',
+        success: function() {
             // exists code
           bgcheck="#44AA44";
           mythis.css("background-color", bgcheck);
           mythis.css("color", "#FFFFFF");
-        }).fail(function() {
+        },
+        error: function() {
             // not exists code
           bgcheck="#CC4444";
           mythis.css("background-color", bgcheck);
           mythis.css("color", "#FFFFFF");
-        })
+        }})
       }, function(){
       var mythis = $(this);
       mythis.css("background-color", "#4D4D4D");
