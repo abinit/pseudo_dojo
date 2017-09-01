@@ -1596,7 +1596,6 @@ if (localStorage.getItem('selectedFMT')) {
 
 
 <script>
-  console.log(localStorage.getItem('files'))
   var params = decodeURIComponent(window.location.search.slice(1))
               .split('&')
               .reduce(function _reduce (/*Object*/ a, /*String*/ b) {
@@ -1674,7 +1673,6 @@ if (localStorage.getItem('selectedFMT')) {
       var acc = $("#ACC").val();
       var fmt = $("#FMT").val();
       var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt)
-      console.log(url)
       $.get(url)
         .done(function() {
             // exists code
