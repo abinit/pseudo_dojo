@@ -182,6 +182,7 @@ class PseudoGenerator(object):
         Run the calculation in a sub-process (non-blocking interface)
         Return 1 if calculations started, 0 otherwise.
         """
+        print(self.executable)
         if self.status >= self.S_RUN:
             return 0
 
