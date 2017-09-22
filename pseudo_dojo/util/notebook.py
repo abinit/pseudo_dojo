@@ -237,7 +237,7 @@ The calculation is performed with the Wien2k relaxed parameters obtained from th
 
     nb.cells.extend([
             nbf.new_markdown_cell("## "),
-            nbf.new_code_cell("""fig = report.plot_raren_convergence()"""),
+            nbf.new_code_cell("""fig = report.plot_raren_convergence(pseudo.xc)"""),
     ])
 
     if not tmpfile:

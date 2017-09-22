@@ -96,7 +96,7 @@ def main():
                         copyfile(os.path.join(pseudo_set, p).replace('psp8', extension),
                                  os.path.join(website, name, os.path.split(p)[1].replace('psp8', extension)))
                     try:
-                        write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), tmpfile=False, mock=True)
+                        write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), tmpfile=False, mock=False)
                     except:
                         pass
                     try:
@@ -147,7 +147,7 @@ def main():
                     print('missing %s %s ' % (pseudo_set, p))
                     pass
             with open(os.path.join(website, name + '.json'), 'w') as fp:
-                json.dump(pseudo_data, fp=fp)
+                json.dump(pseudo_data, fp=fp, indent=2)
 
     return
 

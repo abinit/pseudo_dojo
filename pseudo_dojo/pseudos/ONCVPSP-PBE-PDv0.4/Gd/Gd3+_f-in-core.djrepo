@@ -33,55 +33,55 @@
 "pseudo_type": "NC", 
 "raren_relax": {
 "14.0": {
-"initial_energy_ev": -1411.3784421432997, 
+"initial_energy_ev_per_atom": -1411.3784421432997, 
 "relaxed_a": 4.9991359444530179
 }, 
 "16.0": {
-"initial_energy_ev": -1413.8948063061505, 
+"initial_energy_ev_per_atom": -1413.8948063061505, 
 "relaxed_a": 4.9707738787813653
 }, 
 "18.0": {
-"initial_energy_ev": -1415.3245270157533, 
+"initial_energy_ev_per_atom": -1415.3245270157533, 
 "relaxed_a": 4.9832515498724543
 }, 
 "20.0": {
-"initial_energy_ev": -1416.2181074710566, 
+"initial_energy_ev_per_atom": -1416.2181074710566, 
 "relaxed_a": 4.9809548927249887
 }, 
 "22.0": {
-"initial_energy_ev": -1416.767784799252, 
+"initial_energy_ev_per_atom": -1416.767784799252, 
 "relaxed_a": 4.976581208266909
 }, 
 "24.0": {
-"initial_energy_ev": -1417.110692832114, 
+"initial_energy_ev_per_atom": -1417.110692832114, 
 "relaxed_a": 4.9788736328499086
 }, 
 "26.0": {
-"initial_energy_ev": -1417.3215870230176, 
+"initial_energy_ev_per_atom": -1417.3215870230176, 
 "relaxed_a": 4.975501092371883
 }, 
 "28.0": {
-"initial_energy_ev": -1417.4428034426392, 
+"initial_energy_ev_per_atom": -1417.4428034426392, 
 "relaxed_a": 4.974433114299611
 }, 
 "30.0": {
-"initial_energy_ev": -1417.5110723466046, 
+"initial_energy_ev_per_atom": -1417.5110723466046, 
 "relaxed_a": 4.9750393807557591
 }, 
 "32.0": {
-"initial_energy_ev": -1417.5480145610543, 
+"initial_energy_ev_per_atom": -1417.5480145610543, 
 "relaxed_a": 4.9748556377629463
 }, 
 "34.0": {
-"initial_energy_ev": -1417.5661346742497, 
+"initial_energy_ev_per_atom": -1417.5661346742497, 
 "relaxed_a": 4.9748277597060193
 }, 
 "42.0": {
-"initial_energy_ev": -1417.5792480474427, 
+"initial_energy_ev_per_atom": -1417.5792480474427, 
 "relaxed_a": 4.9749818339477594
 }, 
 "44.0": {
-"initial_energy_ev": -1417.5793350069614, 
+"initial_energy_ev_per_atom": -1417.5793350069614, 
 "relaxed_a": 4.9749791030834185
 }
 }, 
