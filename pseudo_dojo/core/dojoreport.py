@@ -1231,7 +1231,7 @@ class DojoReport(dict):
             cprint("dojo report does not contain trial: %s" % str(trial), "red")
             return None
 
-        keys = ["initial_energy_ev", "relaxed_a"]
+        keys = ["initial_energy_ev_per_atom", "relaxed_a"]
         data = self.get_pdframe(trial, *keys)
 
         import matplotlib.pyplot as plt
