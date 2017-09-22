@@ -59,21 +59,40 @@ img
 {
   display:none;
 }
-.detail
+.atom_number_detail
 {
-  content:none;
-  background:#FFFFFF;
+  position:absolute;
+  font-size:16px;
+  z-index:20;
+  top:106px;
+  left:426px;
+  width:30px;
+  height:12px;
+  float:left;
+  margin:0 0 20px 20px;
+  padding:4px;
+}
+.relative_position
+{
+  position: relative;
+  left: 30px;
+}
+.detail_position
+{
   position:absolute;
   z-index:10;
   top:107px;
   left:426px;
+}
+.detail
+{
+  content:none;
+  background:#FFFFFF;
   width:99px;
   height:117px;
-  float:left;
   margin:0 0 20px 20px;
   padding:4px;
   counter-increment:none;
-  float:left;
   border:1px solid #A2A4A5;
   -webkit-border-top-right-radius:2px;
   -webkit-border-bottom-right-radius:2px;

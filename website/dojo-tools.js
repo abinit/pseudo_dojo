@@ -63,7 +63,15 @@ function loadJSON(file, callback) {
           }
     };
     xobj.send(null);
- }
+ }i
+
+function store_available_files() {
+    loadJSON('files.json', function(response) {
+    var info = JSON.parse(response);
+    localStorage.setItem('files', info);
+    });
+
+}
 
 function load_set_info() {
     acc = document.getElementById('ACC').value;
@@ -77,8 +85,11 @@ function load_set_info() {
     });
 }
 
-function set_X(elm){
+function set_X(elm, color, n){
     if (els.indexOf(elm)>=0){
+        document.getElementById('N').innerHTML = n;
+        var x = document.getElementById('X_n');
+        x.style.backgroundColor = color;
         var x = document.getElementById('X_el');
         x.innerHTML = elm;
         for (key in keys){
@@ -94,6 +105,8 @@ function set_X(elm){
 
 function reset_X(){
     document.getElementById('X_el').innerHTML = 'Mean'
+    document.getElementById('N').innerHTML = '';
+    document.getElementById('X_n').style.backgroundColor = "#ffffff";
     for (key in keys){
         document.getElementById("X_" + keys[key]).innerHTML = document.getElementById("av_" + keys[key]).innerHTML
     }
@@ -151,4 +164,12 @@ function product(x,y) {
     var p = x * y;
     var r = document.getElementById('result-1');
     r.innerHTML = 'the product of ' + x + ' and ' + y + ' is ' + p
+}
+
+function humanize(size) {
+	var units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+	var ord = Math.floor(Math.log(size) / Math.log(1024));
+	ord = Math.min(Math.max(0, ord), units.length - 1);
+	var s = Math.round((size / Math.pow(1024, ord)) * 100) / 100;
+	return s + ' ' + units[ord];
 }

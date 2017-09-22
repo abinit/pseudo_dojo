@@ -148,14 +148,14 @@ def main():
                         gb_s = "%0.2f" % round((gb + gf)/2, 1)
                     except KeyError:
                         gb_s = 'na'
-                    print("%s %s %s" % (nv, normal_hint, delta_s))
+                    print("%s %s %s %s %s %s %s" % (nv, low_hint, normal_hint, high_hint, delta_s, deltap_s, gb_s))
                     pseudo_data[el] = {'nv': nv, 'hh': high_hint, 'hl': low_hint, 'hn': normal_hint, 'd': delta_s,
                                        'dp': deltap_s, 'gb': gb_s}
                 except (IOError, ValueError, CellExecutionError, OSError):
                     print('missing %s %s ' % (pseudo_set, p))
                     pass
             with open(os.path.join(website, name + '.json'), 'w') as fp:
-                json.dump(pseudo_data, fp=fp)
+                json.dump(pseudo_data, fp=fp, indent=2)
 
     return
 
