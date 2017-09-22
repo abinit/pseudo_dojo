@@ -32,21 +32,23 @@ def _get_database(xc):
     #La 57 5.29 5.265 5.252 na na  56
     data = []
     for i, line in enumerate(lines):
+        line = line.strip().lstrip()
+        if line.startswith("#"): line = line[1:]
         if i == 1:
-            columns = []
-            for item in line.split(' '):
-                if item not in ['', '#', '\n']:
-                    columns.append(item)
-        if '#' not in line:
-            data.append(line.strip().split(' '))
+            columns = [t for t in line.split(" ") if t]
+        else:
+            data.append([t for t in line.split(" ") if t])
 
+    print(len(data))
+    print(len(columns))
     table = pd.DataFrame(data, columns=columns)
     table.set_index('atom', inplace=True)
     table.index.name = None
     table = table.apply(pd.to_numeric, errors='coerce')
 
     # Compute reference value here.
-    table['ref'] = table[['VASP', 'VLab']].mean(1)
+    #table['ref'] = table[['VASP', 'VLab']].mean(1)
+    table['ref'] = table['VASP']
     return RareEarthNDatabase(xc, table)
 
 
