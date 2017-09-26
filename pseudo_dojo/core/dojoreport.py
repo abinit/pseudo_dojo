@@ -1235,7 +1235,6 @@ class DojoReport(dict):
 
         # Energy is in eV/atom.
         key2ylabel = {"initial_energy_ev_per_atom": r"$\Delta E$ [meV/natom]", "relaxed_a": "$a$ [Angstrom]"}
-
         keys = list(key2ylabel.keys())
         data = self.get_pdframe(trial, *keys)
 

@@ -598,8 +598,9 @@ def dojo_check(options):
     retcode = 0
     for p in options.pseudos:
 
-        if p.element.is_lanthanoid or p.element.is_actinoid:
-            print("Ignoring lanthanoid or actinoid:", os.path.relpath(p.filepath))
+        #if p.element.is_lanthanoid or p.element.is_actinoid:
+        if p.element.is_actinoid:
+            print("Ignoring actinoid:", os.path.relpath(p.filepath))
             continue
 
         rc = check_pseudo(p, check_trials=options.check_trials, verbose=options.verbose)
@@ -612,6 +613,42 @@ def dojo_check(options):
         cprint("dojo_check [OK]", "green")
 
     return retcode
+
+
+def dojo_raren(options):
+    """
+    Analyze results for lantanides.
+    """
+    from pseudo_dojo.refdata.lantanides.database import raren_database
+    import pandas as pd
+    retcode = 0
+    with_soc = False
+    for i, pseudo in enumerate([p for p in options.pseudos if p.element.is_lanthanoid]):
+        db = raren_database(pseudo.xc)
+        trial = "raren_relax" if not with_soc else "raren_relax_soc"
+        try:
+            data = pseudo.dojo_report.get_pdframe(trial)
+        except:
+            cprint("[%s] dojo_trial raren_relax not present!" % pseudo.basename, "red")
+            continue
+        ecut, a = np.array(data["ecut"])[-1], np.array(data["relaxed_a"])[-1]
+        try:
+            dvals = {code: db.table[code][pseudo.symbol] for code in db.table.keys()}
+        except KeyError:
+            cprint("Cannot find %s in pandas table!" % pseudo.symbol, "red")
+            continue
+
+        print("%s:" % pseudo.basename, "a_relax:", a, "exp: %s" % dvals["exp"])
+        for k in ("ref", "Wien2k"):
+            ref = dvals[k]
+            if pd.isnull(ref) is None:
+                cprint("Null ref for %s!" % pseudo.basename, "red")
+                continue
+            print("   rel_err: %.3f%% " % ( 100 * (a - ref) / ref), "wrt `%s` %.3f" % (k, ref))
+        #print(dvals)
+
+    return retcode
+
 
 
 
@@ -628,6 +665,7 @@ Usage example:
     dojodata.py figures .                  ==> Plot periodic table figures
     dojodata.py notebook H.psp8            ==> Generate ipython notebook and open it in the browser
     dojodata.py check table/*/*.psp8 -v --check-trials=gbrv_fcc,gbrv_bcc
+    dojodata.py raren .
 """
 
     def show_examples_and_exit(err_msg=None, error_code=1):
@@ -729,6 +767,9 @@ Usage example:
 
     # Subparser for validate command.
     #p_validate = subparsers.add_parser('validate', parents=[copts_parser], help=dojo_validate.__doc__)
+
+    # Subparser for raren command.
+    p_raren = subparsers.add_parser('raren', parents=[copts_parser], help=dojo_raren.__doc__)
 
     # Parse command line.
     try:

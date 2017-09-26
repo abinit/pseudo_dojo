@@ -18,7 +18,7 @@ class TestLaNDatabase(PseudoDojoTest):
         db = raren_database(xc="PBE")
         assert db.xc == "PBE"
         table = db.table
-        assert 	set(table.keys()) == set("Z exp VASP ONCVPSP VLab JTH ref".split())
+        assert set(table.keys()) == set("Z exp VASP VASP@600eV VASP@800eV VASP@1000eV ref".split())
 
         # Cached?
         assert db is raren_database(xc="PBE")
