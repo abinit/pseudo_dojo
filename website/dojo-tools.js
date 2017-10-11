@@ -205,8 +205,8 @@ function dojoTour_guidedtour() {
           element: '#FMT',
           intro:  "In this selector you can pick the format of the pseudopotential file. " +
                   "PSP8 for ABINIT, UPF (UPF2) for quantum espresso. " +
-                  "HTML will give you a full report on the tests. " +
-                  "djrepo will give you the full numerical results of the tests."
+                  "When you select HTML clicking the elements will display a full report on all the tests we performed. " +
+                  "Finally djrepo will give you the full numerical results, in json format, of the tests."
         },
         {
           element: '#X_n',
@@ -215,35 +215,35 @@ function dojoTour_guidedtour() {
         },
         {
           element: "#X_hl",
-          intro:  "low cutoff energy hint (Ha)"
+          intro:  "This is the low cutoff energy hint (Ha) good for a quick first calculation or as a starting point for your convergence studies."
         },
         {
           element: "#X_hn",
-          intro:  "normal cutoff energy hint (Ha)"
+          intro:  "This is the normal cutoff energy hint (Ha) a good guess for high through put calculations."
         },
         {
           element: "#X_hh",
-          intro:  "high cutoff energy hint (Ha)"
+          intro:  "This is the high cutoff energy hint (Ha), beyond this value you should not observe any real changes to the results anymore."
         },
         {
           element: "#X_nv",
-          intro:  "number of valence shells"
+          intro:  "The number of valence shells."
         },
         {
           element: "#X_d",
-          intro:  "delta gauge (meV):&#013;Integral between the equation of state calculated using the pseudo potential &#013;and a reference all electron equation of state."
+          intro:  "The results of the delta gauge test (meV). This is the integral between the equation of state calculated using the pseudo potential and a reference all electron equation of state."
         },
         {
           element: "#X_dp",
-          intro:  "normalized delta gauge:&#013;Normalized version of the delta gauge."
+          intro:  "The normalized delta gauge."
         },
         {
           element: "#X_gb",
-          intro:  "gbrv fcc bcc average (%):&#013;Relative error in the lattice parameter with respect to reference."
+          intro:  "The gbrv fcc and bcc average (%). This is the relative error in the lattice parameter with respect to reference all electrons results."
         },
         {
           element: "#silicon",
-          intro:  "You can now click all the elements in the table to download single elements. If the box turns green the file is available, if it turns red.... "
+          intro:  "You can now click all the elements in the table to download or view the selected file for a single element. If the box turns green the file is available, if it turns red we are still working on it."
         },
         {
           element: ".download_button",
@@ -251,7 +251,7 @@ function dojoTour_guidedtour() {
         },
         {
           element: ".logo",
-          intro:  "Finally, if you want to learn the periodic table by hard, click here."
+          intro:  "Finally, if you want to learn the periodic table by hard try clicking here."
         }
       ],
       showProgress: true,
