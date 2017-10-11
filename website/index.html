@@ -20,7 +20,8 @@
 <meta property="og:title" content="The Periodic Table with tested pseudopotentials" />
 <meta property="og:url" content="http://pseudodojo.org" />
 <meta property="og:description" content="This site collates tested pseudopotentials and PAW atomic data sets, ranks them according to type, accuracy and efficiency, shows statistics and provides download options." />
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
 </head>
 <body>
 <!--script type="text/javascript">
@@ -87,6 +88,8 @@
   }
 
   store_available_files();
+
+
 </script>
 
 
@@ -129,6 +132,9 @@
     <div class="download_button">
      Download
     </div>
+    <div class="help_button" onclick="dojoTour_guidedtour()" id="guided-tour-button" title="Guided Tour" >
+      Help me
+    </div>
     <div class="description">
       <p>
         Select the flavor and <a href="./about.html">format</a>, then click "Download" to
@@ -164,7 +170,7 @@ Format
 </tr>
 <tr>
 <td>
-<div class="styled-longselect" onchange="load_set_info();">
+<div class="styled-longselect" onchange="load_set_info(animate=1);">
   <select id="TYP" onchange="javascript: dynamicdropdown(this.options[this.selectedIndex].value);">
     <option value="nc-sr" selected>NC (ONCVPSP v0.3)</option>
 <!--  <option value="nc-soc">NC + SOC (ONCVPSP v0.3)</option> -->
@@ -173,13 +179,13 @@ Format
 </div>
 </td>
 <td>
-<div class="styled-select" onchange="localStorage.setItem('selectedXCF', document.getElementById('XCF').value); load_set_info();">
+<div class="styled-select" onchange="localStorage.setItem('selectedXCF', document.getElementById('XCF').value); load_set_info(animate=0);">
     <select id="XCF" >
     </select>
 </div>
 </td>
 <td>
-<div class="styled-select" onchange="localStorage.setItem('selectedACC', document.getElementById('ACC').value); load_set_info();">
+<div class="styled-select" onchange="localStorage.setItem('selectedACC', document.getElementById('ACC').value); load_set_info(animate=0);">
     <select id="ACC" >
     </select>
 </div>
@@ -402,7 +408,7 @@ if (localStorage.getItem('selectedFMT')) {
       <div class="name">Aluminium</div>
     </div>
   </div>
-  <div class="plugin bg_metalloid 014_Si">
+  <div id="silicon" class="plugin bg_metalloid 014_Si">
     <div class="element">Si</div>
     <div class="l_top" id="Si_hl">hl</div>
     <div class="l_follow" id="Si_hn">hn</div>
@@ -1589,7 +1595,7 @@ if (localStorage.getItem('selectedFMT')) {
 </div>
 
 <script>
-  load_set_info();
+  load_set_info(0);
 </script>
 
 <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
@@ -1776,6 +1782,13 @@ if (localStorage.getItem('selectedFMT')) {
   ga('create', 'UA-97858927-1', 'auto');
   ga('send', 'pageview');
 </script>
+
+
+
+
+<!-- Introjs for Guided Tour -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.7.0/intro.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.7.0/introjs.min.css" />
 
 </body>
 </html>
