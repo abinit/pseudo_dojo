@@ -857,5 +857,5 @@ img
  }
 
 .anim {
-    animation: flipOutY 0.8s 1;
+    animation: fadeInUpBig 0.5s 1;
 }
