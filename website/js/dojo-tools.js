@@ -11,9 +11,10 @@ var els = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne','Na', 'Mg', "Al"
 function set_info(info, animate) {
     var averages = [0,0,0,0,0,0,0];
     var sums = [0,0,0,0,0,0,0];
-    if (animate === 1){
+    if (animate*localStorage.getItem('animate') === 1){
         console.log('added animating');
         $('.plugin').removeClass('anim');
+        $('.plugin').removeClass('chaos');
         setTimeout("$('.plugin').addClass('anim')",10)
     }
     for (el in els) {
@@ -250,7 +251,7 @@ function dojoTour_guidedtour() {
         },
         {
           element: ".logo",
-          intro:  "Finally, if you want to learn the periodic table by hard try clicking here."
+          intro:  "Finally, if you want to learn the periodic table by hard try clicking here. (p.s. Don't try to download Oganesson bad things may happen."
         }
       ],
       showProgress: true,
@@ -321,4 +322,55 @@ if (localStorage.getItem('selectedFMT')) {
        options[i].selected = true;
      }
   }
+}
+
+localStorage.setItem('animate', 0)
+
+
+
+function chaos() {
+    localStorage.setItem('animate', 1)
+    $('.plugin').removeClass('anim');
+    $('.plugin').removeClass('chaos');
+    setTimeout("$('.plugin').addClass('chaos')",10)
+    var plugins = document.querySelectorAll(".plugin");
+    for (var i = 0; i < 118; i++) {
+      var plugin = plugins[i];
+      animatePlugin(plugin);
+    }
+    function animatePlugin(plugin) {
+      var xMax = 500;
+      var yMax = 500;
+
+
+      var x1 = Math.random() - 0.5;
+      x1 = x1 * xMax;
+      var x2 = Math.random() - 0.5;
+      x2 = x2 * xMax;
+      var y1 = Math.random() - 0.5;
+      y1 = y1 * yMax;
+      var y2 = Math.random() - 0.5;
+      y2 = y2 * yMax;
+
+      plugin.keyframes = [{
+        opacity: 1,
+        transform: "translate3d(" + x1 + "px, " + y1 + "px, 0px)"
+      }, {
+        opacity: 0.2,
+        transform: "translate3d(" + x2 + "px, " + y2 + "px, 0px)"
+      }, {
+        opacity: 0.2,
+        transform: "translate3d(" + -x1 + "px, " + -y1 + "px, 0px)"
+      }, {
+        opacity: 1,
+        transform: "translate3d(" + -x2 + "px, " + -y2 + "px, 0px)"
+      }];
+
+      plugin.animProps = {
+        duration: 2000 + Math.random() * 4000,
+        easing: "ease-out",
+        iterations: 1
+      }
+    var animationPlayer = plugin.animate(plugin.keyframes, plugin.animProps);
+    }
 }
