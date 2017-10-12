@@ -1,0 +1,1596 @@
+{
+ "dojo_info": {
+  "pp_type": "NC",
+  "description": "Stringent table designed for GS applications",
+  "xc_name": "PBE",
+  "references": ["Dojo paper"],
+  "authors": ["M. J. van Setten", "M. Giantomassi"],
+  "dojo_dir": "ONCVPSP-PBE-PDv0.4"
+ }, 
+ "pseudos_metadata": {
+  "H": {
+   "basename": "H.psp8",
+   "Z_val": 1.0,
+   "l_max": 1,
+   "md5": "20698c48a21fe3532638b4d685fd1c8b",
+   "dfact_meV": 0.1482343468675847,
+   "dfactprime_meV": 2.493958175994675,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 42.0
+    },
+    "low": {
+     "ecut": 32.0
+    },
+    "normal": {
+     "ecut": 36.0
+    }
+   }
+  },
+  "He": {
+   "basename": "He.psp8",
+   "Z_val": 2.0,
+   "l_max": 1,
+   "md5": "e3a551848b3cb7a0429b5bb3793283d7",
+   "dfact_meV": 0.021819145104623287,
+   "dfactprime_meV": 4.166607575134473,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 49.0
+    },
+    "low": {
+     "ecut": 39.0
+    },
+    "normal": {
+     "ecut": 45.0
+    }
+   }
+  },
+  "Li": {
+   "basename": "Li-s-high.psp8",
+   "Z_val": 3.0,
+   "l_max": 1,
+   "md5": "e71fa37d2bd735bcbac244c9d505edb9",
+   "dfact_meV": 0.14003064997772796,
+   "dfactprime_meV": 1.5054059495132934,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 52.0
+    },
+    "low": {
+     "ecut": 44.0
+    },
+    "normal": {
+     "ecut": 48.0
+    }
+   }
+  },
+  "Be": {
+   "basename": "Be-s-high.psp8",
+   "Z_val": 4.0,
+   "l_max": 1,
+   "md5": "523cfaa2674056ce06f5a3cf23a184e7",
+   "dfact_meV": 0.9135019577801781,
+   "dfactprime_meV": 2.7915778115833936,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 59.0
+    },
+    "low": {
+     "ecut": 49.0
+    },
+    "normal": {
+     "ecut": 53.0
+    }
+   }
+  },
+  "B": {
+   "basename": "B.psp8",
+   "Z_val": 3.0,
+   "l_max": 1,
+   "md5": "33584e3c449dab07fef6d5ec47c17801",
+   "dfact_meV": 0.3480310177013985,
+   "dfactprime_meV": 0.6094785789802505,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 44.0
+    },
+    "low": {
+     "ecut": 34.0
+    },
+    "normal": {
+     "ecut": 38.0
+    }
+   }
+  },
+  "C": {
+   "basename": "C.psp8",
+   "Z_val": 4.0,
+   "l_max": 1,
+   "md5": "8af239e6261c16367070328997070877",
+   "dfact_meV": 0.11860849423445317,
+   "dfactprime_meV": 0.14667751499468204,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 45.0
+    },
+    "low": {
+     "ecut": 37.0
+    },
+    "normal": {
+     "ecut": 41.0
+    }
+   }
+  },
+  "N": {
+   "basename": "N.psp8",
+   "Z_val": 5.0,
+   "l_max": 1,
+   "md5": "01bdf84d59ae6bc236a02b05a98ec0f5",
+   "dfact_meV": 0.1866692051116448,
+   "dfactprime_meV": 0.36535455678329615,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 48.0
+    },
+    "low": {
+     "ecut": 36.0
+    },
+    "normal": {
+     "ecut": 42.0
+    }
+   }
+  },
+  "O": {
+   "basename": "O-high.psp8",
+   "Z_val": 6.0,
+   "l_max": 2,
+   "md5": "0809a764092335b3e47855c0f93d8a2b",
+   "dfact_meV": 1.2560607157786003,
+   "dfactprime_meV": 4.040285582324057,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 52.0
+    },
+    "low": {
+     "ecut": 42.0
+    },
+    "normal": {
+     "ecut": 46.0
+    }
+   }
+  },
+  "F": {
+   "basename": "F.psp8",
+   "Z_val": 7.0,
+   "l_max": 2,
+   "md5": "c3f03d3c8bfaed8014dda45a8fc49c9b",
+   "dfact_meV": 0.12988114924441563,
+   "dfactprime_meV": 0.6018041750953976,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 48.0
+    },
+    "low": {
+     "ecut": 36.0
+    },
+    "normal": {
+     "ecut": 42.0
+    }
+   }
+  },
+  "Ne": {
+   "basename": "Ne-high.psp8",
+   "Z_val": 8.0,
+   "l_max": 1,
+   "md5": "6653ac30bd4fb6df5c832bc4a0491545",
+   "dfact_meV": 0.04537304554544683,
+   "dfactprime_meV": 5.164141122286749,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 50.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 44.0
+    }
+   }
+  },
+  "Na": {
+   "basename": "Na-sp.psp8",
+   "Z_val": 9.0,
+   "l_max": 1,
+   "md5": "151aa953e348175c0ff4315363a42302",
+   "dfact_meV": 0.43535000922297334,
+   "dfactprime_meV": 4.582853895900893,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 48.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 44.0
+    }
+   }
+  },
+  "Mg": {
+   "basename": "Mg-sp.psp8",
+   "Z_val": 10.0,
+   "l_max": 1,
+   "md5": "d65d9c3e5a38003fc995d0911d5c6f77",
+   "dfact_meV": 0.4235240825700512,
+   "dfactprime_meV": 1.5410244238232365,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 48.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 42.0
+    }
+   }
+  },
+  "Al": {
+   "basename": "Al.psp8",
+   "Z_val": 3.0,
+   "l_max": 2,
+   "md5": "57224185a50eb565dff7432e4aa35376",
+   "dfact_meV": 0.5415764904603724,
+   "dfactprime_meV": 1.2693657960935043,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 26.0
+    },
+    "low": {
+     "ecut": 16.0
+    },
+    "normal": {
+     "ecut": 20.0
+    }
+   }
+  },
+  "Si": {
+   "basename": "Si.psp8",
+   "Z_val": 4.0,
+   "l_max": 2,
+   "md5": "45c393525680abc7b25445b8ec62bf83",
+   "dfact_meV": 0.14564468100850006,
+   "dfactprime_meV": 0.24230171913924484,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 24.0
+    },
+    "low": {
+     "ecut": 14.0
+    },
+    "normal": {
+     "ecut": 18.0
+    }
+   }
+  },
+  "P": {
+   "basename": "P.psp8",
+   "Z_val": 5.0,
+   "l_max": 2,
+   "md5": "35592df3bc13b6b759c1537803003316",
+   "dfact_meV": 0.14214001236980747,
+   "dfactprime_meV": 0.29291384117786673,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 28.0
+    },
+    "low": {
+     "ecut": 18.0
+    },
+    "normal": {
+     "ecut": 22.0
+    }
+   }
+  },
+  "S": {
+   "basename": "S.psp8",
+   "Z_val": 6.0,
+   "l_max": 2,
+   "md5": "bfa270bf1631b0df1a1d98e9ab044d60",
+   "dfact_meV": 0.04012769043290424,
+   "dfactprime_meV": 0.08398481476206236,
+   "tags": [
+    ""
+   ],
+   "hints": {
+    "high": {
+     "ecut": 32.0
+    },
+    "low": {
+     "ecut": 20.0
+    },
+    "normal": {
+     "ecut": 26.0
+    }
+   }
+  },
+  "Cl": {
+   "basename": "Cl.psp8",
+   "Z_val": 7.0,
+   "l_max": 2,
+   "md5": "a99ff832005f996c014846e25d8c3f0d",
+   "dfact_meV": 0.7526972498942983,
+   "dfactprime_meV": 3.073181402498368,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 33.0
+    },
+    "low": {
+     "ecut": 25.0
+    },
+    "normal": {
+     "ecut": 29.0
+    }
+   }
+  },
+  "Ar": {
+   "basename": "Ar.psp8",
+   "Z_val": 8.0,
+   "l_max": 2,
+   "md5": "7a121790f17eb3e17b14dc6115be26c9",
+   "dfact_meV": 0.015713293330161915,
+   "dfactprime_meV": 1.1981421377527532,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 37.0
+    },
+    "low": {
+     "ecut": 29.0
+    },
+    "normal": {
+     "ecut": 33.0
+    }
+   }
+  },
+  "K": {
+   "basename": "K-sp.psp8",
+   "Z_val": 9.0,
+   "l_max": 2,
+   "md5": "9b4846a554d2721f6419834272679039",
+   "dfact_meV": 0.17682054810973563,
+   "dfactprime_meV": 2.0266118053625246,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 43.0
+    },
+    "low": {
+     "ecut": 33.0
+    },
+    "normal": {
+     "ecut": 37.0
+    }
+   }
+  },
+  "Ca": {
+   "basename": "Ca-sp.psp8",
+   "Z_val": 10.0,
+   "l_max": 2,
+   "md5": "465a3a044f2c7a72aff2b3fb3f797e8d",
+   "dfact_meV": 0.0633635064042691,
+   "dfactprime_meV": 0.2588629485046953,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 38.0
+    },
+    "low": {
+     "ecut": 28.0
+    },
+    "normal": {
+     "ecut": 34.0
+    }
+   }
+  },
+  "Sc": {
+   "basename": "Sc-sp.psp8",
+   "Z_val": 11.0,
+   "l_max": 2,
+   "md5": "ebb96bd9f11e0e883c467cef5216d780",
+   "dfact_meV": 1.2580978121424387,
+   "dfactprime_meV": 2.8455414909888272,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 45.0
+    },
+    "low": {
+     "ecut": 35.0
+    },
+    "normal": {
+     "ecut": 39.0
+    }
+   }
+  },
+  "Ti": {
+   "basename": "Ti-sp.psp8",
+   "Z_val": 12.0,
+   "l_max": 2,
+   "md5": "ea4ed3d71d7ed9998c7c8ddd5e23a4a6",
+   "dfact_meV": 0.8573084108369632,
+   "dfactprime_meV": 1.328917793125217,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 46.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 42.0
+    }
+   }
+  },
+  "V": {
+   "basename": "V-sp.psp8",
+   "Z_val": 13.0,
+   "l_max": 2,
+   "md5": "e985175337f6bb13d488a378b00c5826",
+   "dfact_meV": 1.336668558487859,
+   "dfactprime_meV": 1.643417614480769,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 48.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 42.0
+    }
+   }
+  },
+  "Cr": {
+   "basename": "Cr-sp-high.psp8",
+   "Z_val": 14.0,
+   "l_max": 2,
+   "md5": "5d9fda448000c8c3f20c48905ce57ea0",
+   "dfact_meV": 1.1202373156826997,
+   "dfactprime_meV": 1.6572101040424403,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 66.0
+    },
+    "low": {
+     "ecut": 56.0
+    },
+    "normal": {
+     "ecut": 60.0
+    }
+   }
+  },
+  "Mn": {
+   "basename": "Mn-sp-high.psp8",
+   "Z_val": 15.0,
+   "l_max": 2,
+   "md5": "4a555b1a58fc7694b9659d21d599a9a6",
+   "dfact_meV": 1.0612416985361395,
+   "dfactprime_meV": 2.3310269545044853,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 69.0
+    },
+    "low": {
+     "ecut": 61.0
+    },
+    "normal": {
+     "ecut": 65.0
+    }
+   }
+  },
+  "Fe": {
+   "basename": "Fe-sp-high.psp8",
+   "Z_val": 16.0,
+   "l_max": 2,
+   "md5": "f2747631c0e1355c32e3434d3bcc8f2b",
+   "dfact_meV": 2.09212558024094,
+   "dfactprime_meV": 3.0559749725257976,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 65.0
+    },
+    "low": {
+     "ecut": 55.0
+    },
+    "normal": {
+     "ecut": 59.0
+    }
+   }
+  },
+  "Co": {
+   "basename": "Co-sp-high.psp8",
+   "Z_val": 17.0,
+   "l_max": 2,
+   "md5": "7307a355d50776874a3cd83d902edc4a",
+   "dfact_meV": 0.5178579633769016,
+   "dfactprime_meV": 0.6755820694751482,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 56.0
+    },
+    "low": {
+     "ecut": 48.0
+    },
+    "normal": {
+     "ecut": 52.0
+    }
+   }
+  },
+  "Ni": {
+   "basename": "Ni-sp-high.psp8",
+   "Z_val": 18.0,
+   "l_max": 2,
+   "md5": "9dc62f771bd187329f802d638db4a510",
+   "dfact_meV": 1.0392477360159078,
+   "dfactprime_meV": 1.4570997626991886,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 58.0
+    },
+    "low": {
+     "ecut": 48.0
+    },
+    "normal": {
+     "ecut": 52.0
+    }
+   }
+  },
+  "Cu": {
+   "basename": "Cu-sp-high.psp8",
+   "Z_val": 19.0,
+   "l_max": 2,
+   "md5": "b13e4f4e3df416fdb614f300aceaf09f",
+   "dfact_meV": 0.5101636037579094,
+   "dfactprime_meV": 0.8994154161176561,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 60.0
+    },
+    "low": {
+     "ecut": 48.0
+    },
+    "normal": {
+     "ecut": 52.0
+    }
+   }
+  },
+  "Zn": {
+   "basename": "Zn-sp.psp8",
+   "Z_val": 20.0,
+   "l_max": 2,
+   "md5": "107a1bff54836171a556b2839dee4f22",
+   "dfact_meV": 0.2930315640074474,
+   "dfactprime_meV": 0.7801254944265317,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 48.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 42.0
+    }
+   }
+  },
+  "Ga": {
+   "basename": "Ga-spd-high.psp8",
+   "Z_val": 21.0,
+   "l_max": 2,
+   "md5": "28689269a7884280b937381656f39803",
+   "dfact_meV": 0.29412707474772926,
+   "dfactprime_meV": 0.8959278266431495,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 61.0
+    },
+    "low": {
+     "ecut": 53.0
+    },
+    "normal": {
+     "ecut": 57.0
+    }
+   }
+  },
+  "Ge": {
+   "basename": "Ge-spd-high.psp8",
+   "Z_val": 22.0,
+   "l_max": 2,
+   "md5": "0ff29dc9d91f1eb02f1bc752fa34978d",
+   "dfact_meV": 0.061068314231203534,
+   "dfactprime_meV": 0.13066984393856074,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 68.0
+    },
+    "low": {
+     "ecut": 56.0
+    },
+    "normal": {
+     "ecut": 62.0
+    }
+   }
+  },
+  "As": {
+   "basename": "As-spd-high.psp8",
+   "Z_val": 23.0,
+   "l_max": 2,
+   "md5": "5441228c77c0664dbf21c83019798440",
+   "dfact_meV": 0.06030513161260053,
+   "dfactprime_meV": 0.11761942007751733,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 58.0
+    },
+    "low": {
+     "ecut": 48.0
+    },
+    "normal": {
+     "ecut": 52.0
+    }
+   }
+  },
+  "Se": {
+   "basename": "Se-spd-high.psp8",
+   "Z_val": 24.0,
+   "l_max": 2,
+   "md5": "7b0c9fa0eaff8a70fd06089ae6498851",
+   "dfact_meV": 0.08475968681697546,
+   "dfactprime_meV": 0.18162227535962608,
+   "tags": [
+    "GW "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 56.0
+    },
+    "low": {
+     "ecut": 48.0
+    },
+    "normal": {
+     "ecut": 52.0
+    }
+   }
+  },
+  "Br": {
+   "basename": "Br-d.psp8",
+   "Z_val": 17.0,
+   "l_max": 2,
+   "md5": "b478adc9698e20060ca4306236e7e434",
+   "dfact_meV": 0.029966167248374084,
+   "dfactprime_meV": 0.10178083514518636,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 44.0
+    },
+    "low": {
+     "ecut": 34.0
+    },
+    "normal": {
+     "ecut": 38.0
+    }
+   }
+  },
+  "Kr": {
+   "basename": "Kr.psp8",
+   "Z_val": 8.0,
+   "l_max": 2,
+   "md5": "4c10bd087422699f140dba13035aa468",
+   "dfact_meV": 0.032974598824974936,
+   "dfactprime_meV": 2.3190770738062736,
+   "tags": [
+    ""
+   ],
+   "hints": {
+    "high": {
+     "ecut": 34.0
+    },
+    "low": {
+     "ecut": 22.0
+    },
+    "normal": {
+     "ecut": 26.0
+    }
+   }
+  },
+  "Rb": {
+   "basename": "Rb-sp.psp8",
+   "Z_val": 9.0,
+   "l_max": 2,
+   "md5": "a6e6071d28592e9fe7e3e0d0f60a39da",
+   "dfact_meV": 0.23994782633596018,
+   "dfactprime_meV": 2.875039211905101,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 29.0
+    },
+    "low": {
+     "ecut": 19.0
+    },
+    "normal": {
+     "ecut": 23.0
+    }
+   }
+  },
+  "Sr": {
+   "basename": "Sr-sp-high.psp8",
+   "Z_val": 10.0,
+   "l_max": 2,
+   "md5": "cb0903797ae1a2e7c08fe5e67335d4d3",
+   "dfact_meV": 1.3337836643185073,
+   "dfactprime_meV": 6.168263808515737,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 36.0
+    },
+    "low": {
+     "ecut": 28.0
+    },
+    "normal": {
+     "ecut": 32.0
+    }
+   }
+  },
+  "Y": {
+   "basename": "Y-sp.psp8",
+   "Z_val": 11.0,
+   "l_max": 2,
+   "md5": "a3018445faf9758c774c23d7dffb200c",
+   "dfact_meV": 1.0012473152663552,
+   "dfactprime_meV": 2.2603075046774057,
+   "tags": [
+    ""
+   ],
+   "hints": {
+    "high": {
+     "ecut": 42.0
+    },
+    "low": {
+     "ecut": 30.0
+    },
+    "normal": {
+     "ecut": 36.0
+    }
+   }
+  },
+  "Zr": {
+   "basename": "Zr-sp.psp8",
+   "Z_val": 12.0,
+   "l_max": 2,
+   "md5": "4edbc6af4ab78b1ef5a08b11a546c46c",
+   "dfact_meV": 0.7736395552634778,
+   "dfactprime_meV": 1.060194955916406,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 49.0
+    },
+    "low": {
+     "ecut": 29.0
+    },
+    "normal": {
+     "ecut": 33.0
+    }
+   }
+  },
+  "Nb": {
+   "basename": "Nb-sp.psp8",
+   "Z_val": 13.0,
+   "l_max": 2,
+   "md5": "c757912afc3509af55de8954c62c9199",
+   "dfact_meV": 1.292443401545392,
+   "dfactprime_meV": 1.2645025583764364,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 49.0
+    },
+    "low": {
+     "ecut": 37.0
+    },
+    "normal": {
+     "ecut": 41.0
+    }
+   }
+  },
+  "Mo": {
+   "basename": "Mo-sp.psp8",
+   "Z_val": 14.0,
+   "l_max": 2,
+   "md5": "228091cb5782e08cb8d68936b3c7e57b",
+   "dfact_meV": 1.4051971034665267,
+   "dfactprime_meV": 1.0301504518966715,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 46.0
+    },
+    "low": {
+     "ecut": 36.0
+    },
+    "normal": {
+     "ecut": 40.0
+    }
+   }
+  },
+  "Tc": {
+   "basename": "Tc-sp.psp8",
+   "Z_val": 15.0,
+   "l_max": 2,
+   "md5": "a9b331460393017fea58e9c2e7b4187f",
+   "dfact_meV": 1.634003025503606,
+   "dfactprime_meV": 1.1367927474940456,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 48.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 42.0
+    }
+   }
+  },
+  "Ru": {
+   "basename": "Ru-sp.psp8",
+   "Z_val": 16.0,
+   "l_max": 2,
+   "md5": "920316d78093f444577e850d5daca5d0",
+   "dfact_meV": 2.115790618862737,
+   "dfactprime_meV": 1.479840935110362,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 50.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 42.0
+    }
+   }
+  },
+  "Rh": {
+   "basename": "Rh-sp.psp8",
+   "Z_val": 17.0,
+   "l_max": 2,
+   "md5": "c443b0364029eb5cf0f073ead4f727d3",
+   "dfact_meV": 2.5640750590242716,
+   "dfactprime_meV": 2.1432187431636702,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 50.0
+    },
+    "low": {
+     "ecut": 40.0
+    },
+    "normal": {
+     "ecut": 44.0
+    }
+   }
+  },
+  "Pd": {
+   "basename": "Pd-sp.psp8",
+   "Z_val": 18.0,
+   "l_max": 2,
+   "md5": "4144628137bc01fa80f914e5e2c5b797",
+   "dfact_meV": 1.135003063892528,
+   "dfactprime_meV": 1.3164622101272703,
+   "tags": [
+    ""
+   ],
+   "hints": {
+    "high": {
+     "ecut": 49.0
+    },
+    "low": {
+     "ecut": 37.0
+    },
+    "normal": {
+     "ecut": 41.0
+    }
+   }
+  },
+  "Ag": {
+   "basename": "Ag-sp.psp8",
+   "Z_val": 19.0,
+   "l_max": 2,
+   "md5": "449d8df2e2c022cd2e160f6756b0ce2e",
+   "dfact_meV": 0.31503523499534364,
+   "dfactprime_meV": 0.577208809770756,
+   "tags": [
+    "GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 47.0
+    },
+    "low": {
+     "ecut": 37.0
+    },
+    "normal": {
+     "ecut": 41.0
+    }
+   }
+  },
+  "Cd": {
+   "basename": "Cd-sp-high.psp8",
+   "Z_val": 20.0,
+   "l_max": 2,
+   "md5": "af4c3fc22ec2e018b60bc73a2c277475",
+   "dfact_meV": 0.6457178364925972,
+   "dfactprime_meV": 1.9579938422909724,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 66.0
+    },
+    "low": {
+     "ecut": 54.0
+    },
+    "normal": {
+     "ecut": 60.0
+    }
+   }
+  },
+  "In": {
+   "basename": "In-spd-high.psp8",
+   "Z_val": 21.0,
+   "l_max": 2,
+   "md5": "aa9c2108e61045ddc15985838fbc1ab8",
+   "dfact_meV": 0.40261853932357783,
+   "dfactprime_meV": 1.2586440116407618,
+   "tags": [
+    "GW "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 49.0
+    },
+    "low": {
+     "ecut": 37.0
+    },
+    "normal": {
+     "ecut": 41.0
+    }
+   }
+  },
+  "Sn": {
+   "basename": "Sn-spd-high.psp8",
+   "Z_val": 22.0,
+   "l_max": 2,
+   "md5": "8e9c84a0b85b213f0d9b8a3305f0d84f",
+   "dfact_meV": 0.5973531009855754,
+   "dfactprime_meV": 1.3691902688422917,
+   "tags": [
+    "GW "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 57.0
+    },
+    "low": {
+     "ecut": 45.0
+    },
+    "normal": {
+     "ecut": 51.0
+    }
+   }
+  },
+  "Sb": {
+   "basename": "Sb-spd-high.psp8",
+   "Z_val": 23.0,
+   "l_max": 2,
+   "md5": "eef3cda7f0e09b877df40c427548c3a3",
+   "dfact_meV": 0.7021059741335159,
+   "dfactprime_meV": 1.3206985602794599,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 58.0
+    },
+    "low": {
+     "ecut": 46.0
+    },
+    "normal": {
+     "ecut": 50.0
+    }
+   }
+  },
+  "Te": {
+   "basename": "Te-spd-high.psp8",
+   "Z_val": 24.0,
+   "l_max": 2,
+   "md5": "e4d3af0abd02b1001eb2555f44179c0f",
+   "dfact_meV": 0.6172514367886818,
+   "dfactprime_meV": 1.1852699599027587,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 57.0
+    },
+    "low": {
+     "ecut": 47.0
+    },
+    "normal": {
+     "ecut": 51.0
+    }
+   }
+  },
+  "I": {
+   "basename": "I-d.psp8",
+   "Z_val": 17.0,
+   "l_max": 2,
+   "md5": "1bce9bdc850c42cf1bb6291bad6ff4b1",
+   "dfact_meV": 0.9011586644900776,
+   "dfactprime_meV": 2.8973119604608075,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 44.0
+    },
+    "low": {
+     "ecut": 34.0
+    },
+    "normal": {
+     "ecut": 38.0
+    }
+   }
+  },
+  "Xe": {
+   "basename": "Xe.psp8",
+   "Z_val": 8.0,
+   "l_max": 2,
+   "md5": "cec0a37a441329a4ffe3e19127c25b67",
+   "dfact_meV": 0.039505412206521796,
+   "dfactprime_meV": 2.526008827469416,
+   "tags": [
+    ""
+   ],
+   "hints": {
+    "high": {
+     "ecut": 42.0
+    },
+    "low": {
+     "ecut": 28.0
+    },
+    "normal": {
+     "ecut": 34.0
+    }
+   }
+  },
+  "Cs": {
+   "basename": "Cs-sp.psp8",
+   "Z_val": 9.0,
+   "l_max": 3,
+   "md5": "90ac4f38b4a380309a8b9ac899ea7a5c",
+   "dfact_meV": 0.11524211105725236,
+   "dfactprime_meV": 1.5300412092003866,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 29.0
+    },
+    "low": {
+     "ecut": 19.0
+    },
+    "normal": {
+     "ecut": 25.0
+    }
+   }
+  },
+  "Ba": {
+   "basename": "Ba-sp-high.psp8",
+   "Z_val": 10.0,
+   "l_max": 2,
+   "md5": "80a6a6fd89c92b7174eb941377951722",
+   "dfact_meV": 0.8860709831758246,
+   "dfactprime_meV": 4.807120714971274,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 28.0
+    },
+    "low": {
+     "ecut": 18.0
+    },
+    "normal": {
+     "ecut": 22.0
+    }
+   }
+  },
+  "La": {
+   "basename": "La-sp.psp8",
+   "Z_val": 11.0,
+   "l_max": 3,
+   "md5": "f24b1251fec3a6b34fed5c4724e895a0",
+   "dfact_meV": null,
+   "dfactprime_meV": null,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 65.0
+    },
+    "low": {
+     "ecut": 50.0
+    },
+    "normal": {
+     "ecut": 55.0
+    }
+   }
+  },
+  "Lu": {
+   "basename": "Lu-fsp.psp8",
+   "Z_val": 25.0,
+   "l_max": 3,
+   "md5": "08711af8312b6fda6adef07f194aef18",
+   "dfact_meV": 0.9860128520762341,
+   "dfactprime_meV": 2.2153160948008486,
+   "tags": [
+    ""
+   ],
+   "hints": {
+    "high": {
+     "ecut": 58.0
+    },
+    "low": {
+     "ecut": 46.0
+    },
+    "normal": {
+     "ecut": 50.0
+    }
+   }
+  },
+  "Hf": {
+   "basename": "Hf-fsp.psp8",
+   "Z_val": 26.0,
+   "l_max": 3,
+   "md5": "57c69fcf0cd588ad09aeae55b55a744d",
+   "dfact_meV": 0.32710314279939273,
+   "dfactprime_meV": 0.40780116048839804,
+   "tags": [
+    ""
+   ],
+   "hints": {
+    "high": {
+     "ecut": 72.0
+    },
+    "low": {
+     "ecut": 62.0
+    },
+    "normal": {
+     "ecut": 66.0
+    }
+   }
+  },
+  "Ta": {
+   "basename": "Ta-fsp.psp8",
+   "Z_val": 27.0,
+   "l_max": 3,
+   "md5": "86f7c5b17dce6f92bd7b0d669448c218",
+   "dfact_meV": 1.0319885864278957,
+   "dfactprime_meV": 0.8747816647915715,
+   "tags": [
+    ""
+   ],
+   "hints": {
+    "high": {
+     "ecut": 72.0
+    },
+    "low": {
+     "ecut": 62.0
+    },
+    "normal": {
+     "ecut": 66.0
+    }
+   }
+  },
+  "W": {
+   "basename": "W-sp.psp8",
+   "Z_val": 14.0,
+   "l_max": 3,
+   "md5": "d71e7510732621619b8e16c2a4f78034",
+   "dfact_meV": 0.18760223497198164,
+   "dfactprime_meV": 0.11516074300051145,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 41.0
+    },
+    "low": {
+     "ecut": 31.0
+    },
+    "normal": {
+     "ecut": 37.0
+    }
+   }
+  },
+  "Re": {
+   "basename": "Re-sp.psp8",
+   "Z_val": 15.0,
+   "l_max": 3,
+   "md5": "3ae8daf2a0357284a4e84b53b3efcc63",
+   "dfact_meV": 0.6916822070534183,
+   "dfactprime_meV": 0.38097252919422797,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 42.0
+    },
+    "low": {
+     "ecut": 30.0
+    },
+    "normal": {
+     "ecut": 36.0
+    }
+   }
+  },
+  "Os": {
+   "basename": "Os-sp.psp8",
+   "Z_val": 16.0,
+   "l_max": 3,
+   "md5": "cf10ae4985835d0c0f554fb60c152f96",
+   "dfact_meV": 1.736235592308238,
+   "dfactprime_meV": 0.917827967172758,
+   "tags": [
+    ""
+   ],
+   "hints": {
+    "high": {
+     "ecut": 43.0
+    },
+    "low": {
+     "ecut": 33.0
+    },
+    "normal": {
+     "ecut": 37.0
+    }
+   }
+  },
+  "Ir": {
+   "basename": "Ir-sp.psp8",
+   "Z_val": 17.0,
+   "l_max": 3,
+   "md5": "7cf07043c08321c9e513b00b408cf8a2",
+   "dfact_meV": 1.4519256030065208,
+   "dfactprime_meV": 0.8652637747250539,
+   "tags": [
+    ""
+   ],
+   "hints": {
+    "high": {
+     "ecut": 40.0
+    },
+    "low": {
+     "ecut": 30.0
+    },
+    "normal": {
+     "ecut": 34.0
+    }
+   }
+  },
+  "Pt": {
+   "basename": "Pt-sp.psp8",
+   "Z_val": 18.0,
+   "l_max": 3,
+   "md5": "c80a5384c80be681fdf7ede18231808c",
+   "dfact_meV": 0.6316139758784703,
+   "dfactprime_meV": 0.4897475660055429,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 50.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 42.0
+    }
+   }
+  },
+  "Au": {
+   "basename": "Au-sp.psp8",
+   "Z_val": 19.0,
+   "l_max": 3,
+   "md5": "7d6427f481b493a1058a30fb9e859afa",
+   "dfact_meV": 1.3489113210230546,
+   "dfactprime_meV": 1.6034055507697846,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 44.0
+    },
+    "low": {
+     "ecut": 32.0
+    },
+    "normal": {
+     "ecut": 38.0
+    }
+   }
+  },
+  "Hg": {
+   "basename": "Hg-sp-high.psp8",
+   "Z_val": 20.0,
+   "l_max": 3,
+   "md5": "9c41b68b36adc5b26d74c0359f7f6d09",
+   "dfact_meV": 0.5874721404473439,
+   "dfactprime_meV": 6.420387757335776,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 50.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 44.0
+    }
+   }
+  },
+  "Tl": {
+   "basename": "Tl-spd-high.psp8",
+   "Z_val": 21.0,
+   "l_max": 2,
+   "md5": "1125eb43529e0c69b2afb69c4302e5f2",
+   "dfact_meV": 0.22741020255376393,
+   "dfactprime_meV": 0.8247039135274632,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 50.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 44.0
+    }
+   }
+  },
+  "Pb": {
+   "basename": "Pb-spd-high.psp8",
+   "Z_val": 22.0,
+   "l_max": 2,
+   "md5": "943a2a29984d957099ef34c4e5d1ca9c",
+   "dfact_meV": 0.2581343412816385,
+   "dfactprime_meV": 0.6083167827529325,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 50.0
+    },
+    "low": {
+     "ecut": 36.0
+    },
+    "normal": {
+     "ecut": 44.0
+    }
+   }
+  },
+  "Bi": {
+   "basename": "Bi-spd-high.psp8",
+   "Z_val": 23.0,
+   "l_max": 2,
+   "md5": "3e5848bc8d023cdb4fa363718ab05fee",
+   "dfact_meV": 0.5827627491118578,
+   "dfactprime_meV": 1.115053192565281,
+   "tags": [
+    " GW"
+   ],
+   "hints": {
+    "high": {
+     "ecut": 50.0
+    },
+    "low": {
+     "ecut": 38.0
+    },
+    "normal": {
+     "ecut": 44.0
+    }
+   }
+  },
+  "Po": {
+   "basename": "Po-spd-high.psp8",
+   "Z_val": 24.0,
+   "l_max": 2,
+   "md5": "57c1c823d0085e4f4f989eca912ceecd",
+   "dfact_meV": 0.4113729824949353,
+   "dfactprime_meV": 0.7279698113910773,
+   "tags": [
+    "GW "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 50.0
+    },
+    "low": {
+     "ecut": 40.0
+    },
+    "normal": {
+     "ecut": 44.0
+    }
+   }
+  },
+  "Rn": {
+   "basename": "Rn-d.psp8",
+   "Z_val": 18.0,
+   "l_max": 2,
+   "md5": "b30216a24286d62ed9376d28f2306715",
+   "dfact_meV": 0.04109170950814346,
+   "dfactprime_meV": 2.438313799965712,
+   "tags": [
+    " "
+   ],
+   "hints": {
+    "high": {
+     "ecut": 42.0
+    },
+    "low": {
+     "ecut": 32.0
+    },
+    "normal": {
+     "ecut": 36.0
+    }
+   }
+  }
+ }
+}
