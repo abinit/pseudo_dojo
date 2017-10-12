@@ -796,7 +796,17 @@ img
 }
 
 .introjs-tooltip {
-  font-size: 16px;
+  background:#e3e3e3;
+  background-image:url('../img/pw_maze_white.png');
+  font-size: 14px;
+}
+
+.introjs-progress {
+    background-color:#dcdcdc;
+}
+
+.introjs-progressbar {
+    background-color:#bf96ff;
 }
 
 @keyframes pulse {
@@ -839,8 +849,8 @@ img
 {
   background:#FFFFFF;
   position:absolute;
-  z-index:20;
-  top:20px;
+  z-index:30;
+  top:34px;
   left:-155px;
   width:80px;
   color:#FFFFFF;
@@ -857,5 +867,9 @@ img
  }
 
 .anim {
+    animation: fadeInUpBig 0.5s 1;
+}
+
+.chaos {
     animation: fadeInUpBig 0.5s 1;
 }

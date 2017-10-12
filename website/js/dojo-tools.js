@@ -11,9 +11,10 @@ var els = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne','Na', 'Mg', "Al"
 function set_info(info, animate) {
     var averages = [0,0,0,0,0,0,0];
     var sums = [0,0,0,0,0,0,0];
-    if (animate === 1){
+    if (animate*localStorage.getItem('animate') === 1){
         console.log('added animating');
         $('.plugin').removeClass('anim');
+        $('.plugin').removeClass('chaos');
         setTimeout("$('.plugin').addClass('anim')",10)
     }
     for (el in els) {
@@ -51,7 +52,6 @@ function set_info(info, animate) {
     summary += "normalized delta\t\t: " + averages[5] + " \n"
     summary += "gbrv\t\t\t\t\t: " + averages[6] + " %\n"
     if (sums[0] > 0){
-            //alert(summary);
             set_av(averages);
             reset_X()
             }
@@ -251,7 +251,7 @@ function dojoTour_guidedtour() {
         },
         {
           element: ".logo",
-          intro:  "Finally, if you want to learn the periodic table by hard try clicking here."
+          intro:  "Finally, if you want to learn the periodic table by hard try clicking here. (p.s. Don't try to download Oganesson bad things may happen."
         }
       ],
       showProgress: true,
@@ -266,4 +266,111 @@ function dojoTour_guidedtour() {
     //intro.oncomplete(remove_glow);
 
     intro.start();
+}
+
+function dynamicdropdown(listindex){
+  document.getElementById("ACC").length = 0;
+  document.getElementById("XCF").length = 0;
+  document.getElementById("FMT").length = 0;
+  switch (listindex)
+  {
+    case "nc-sr" :
+      document.getElementById("ACC").options[0]=new Option("standard","standard");
+      document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+      document.getElementById("XCF").options[0]=new Option("LDA","pw");
+      document.getElementById("XCF").options[1]=new Option("PBE","pbe");
+      document.getElementById("XCF").options[2]=new Option("PBEsol","pbesol");
+      document.getElementById("FMT").options[0]=new Option("psp8","psp8");
+      document.getElementById("FMT").options[1]=new Option("upf","upf");
+      document.getElementById("FMT").options[2]=new Option("html","html");
+      document.getElementById("FMT").options[3]=new Option("djrepo","djrepo");
+      break;
+
+    case "paw" :
+      document.getElementById("ACC").options[0]=new Option("standard","standard");
+      document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+      document.getElementById("XCF").options[0]=new Option("LDA","pw");
+      document.getElementById("XCF").options[1]=new Option("PBE","pbe");
+      document.getElementById("FMT").options[0]=new Option("xml","xml");
+      break;
+  }
+  return true;
+}
+
+store_available_files();
+
+if (localStorage.getItem('selectedXCF')) {
+  var options = document.getElementById('XCF').options
+  for (i in options){
+     if (options[i].value == localStorage.getItem('selectedXCF')){
+       options[i].selected = true;
+     }
+  }
+}
+if (localStorage.getItem('selectedACC')) {
+  var options = document.getElementById('ACC').options
+  for (i in options){
+     if (options[i].value == localStorage.getItem('selectedACC')){
+       options[i].selected = true;
+     }
+  }
+}
+if (localStorage.getItem('selectedFMT')) {
+  var options = document.getElementById('FMT').options
+  for (i in options){
+     if (options[i].value == localStorage.getItem('selectedFMT')){
+       options[i].selected = true;
+     }
+  }
+}
+
+localStorage.setItem('animate', 0)
+
+
+
+function chaos() {
+    localStorage.setItem('animate', 1)
+    $('.plugin').removeClass('anim');
+    $('.plugin').removeClass('chaos');
+    setTimeout("$('.plugin').addClass('chaos')",10)
+    var plugins = document.querySelectorAll(".plugin");
+    for (var i = 0; i < 118; i++) {
+      var plugin = plugins[i];
+      animatePlugin(plugin);
+    }
+    function animatePlugin(plugin) {
+      var xMax = 500;
+      var yMax = 500;
+
+
+      var x1 = Math.random() - 0.5;
+      x1 = x1 * xMax;
+      var x2 = Math.random() - 0.5;
+      x2 = x2 * xMax;
+      var y1 = Math.random() - 0.5;
+      y1 = y1 * yMax;
+      var y2 = Math.random() - 0.5;
+      y2 = y2 * yMax;
+
+      plugin.keyframes = [{
+        opacity: 1,
+        transform: "translate3d(" + x1 + "px, " + y1 + "px, 0px)"
+      }, {
+        opacity: 0.2,
+        transform: "translate3d(" + x2 + "px, " + y2 + "px, 0px)"
+      }, {
+        opacity: 0.2,
+        transform: "translate3d(" + -x1 + "px, " + -y1 + "px, 0px)"
+      }, {
+        opacity: 1,
+        transform: "translate3d(" + -x2 + "px, " + -y2 + "px, 0px)"
+      }];
+
+      plugin.animProps = {
+        duration: 2000 + Math.random() * 4000,
+        easing: "ease-out",
+        iterations: 1
+      }
+    var animationPlayer = plugin.animate(plugin.keyframes, plugin.animProps);
+    }
 }
