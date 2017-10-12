@@ -48,7 +48,6 @@ def as_dojo_path(path):
     produced on a different machine and we want to get the corresponding
     path on the local host.
     """
-    print('as_dojo_path', path)
     if os.path.exists(path): return path
     # Use the final part of the path and change the root.
     head, base = os.path.split(path)
