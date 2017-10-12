@@ -10,8 +10,8 @@
 <!--<![endif]-->
 <head>
 <title>Pseudo Dojo</title>
+<meta charset="utf-8"/>
 <meta name="viewport" content="width=1360">
-<link rel="stylesheet" href="css/style.css" />
 <meta name="description" content="This site collates tested pseudo potentials sorted by type, accuracy, and efficiency, shows information on convergens of various tested properties and provides download options." />
 <meta name="keywords" content="Pseudopotential, PAW atomic data set, Periodic Table, Ab Initio, norm conserving, plane wave pseudo, PAW pseudo" />
 <meta name="robots" content="index, follow" />
@@ -20,8 +20,10 @@
 <meta property="og:title" content="The Periodic Table with tested pseudopotentials" />
 <meta property="og:url" content="http://pseudodojo.org" />
 <meta property="og:description" content="This site collates tested pseudopotentials and PAW atomic data sets, ranks them according to type, accuracy and efficiency, shows statistics and provides download options." />
+<link rel="stylesheet" href="css/style.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+<!--<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
 <!--script type="text/javascript">
@@ -53,45 +55,6 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
   })();
 </script-->
-
-<script src="dojo-tools.js">
-</script>
-
-<script language="javascript" type="text/javascript">
-  function dynamicdropdown(listindex){
-    document.getElementById("ACC").length = 0;
-    document.getElementById("XCF").length = 0;
-    document.getElementById("FMT").length = 0;
-    switch (listindex)
-    {
-      case "nc-sr" :
-        document.getElementById("ACC").options[0]=new Option("standard","standard");
-        document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-        document.getElementById("XCF").options[0]=new Option("LDA","pw");
-        document.getElementById("XCF").options[1]=new Option("PBE","pbe");
-        document.getElementById("XCF").options[2]=new Option("PBEsol","pbesol");
-        document.getElementById("FMT").options[0]=new Option("psp8","psp8");
-        document.getElementById("FMT").options[1]=new Option("upf","upf");
-        document.getElementById("FMT").options[2]=new Option("html","html");
-        document.getElementById("FMT").options[3]=new Option("djrepo","djrepo");
-        break;
-
-      case "paw" :
-        document.getElementById("ACC").options[0]=new Option("standard","standard");
-        document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-        document.getElementById("XCF").options[0]=new Option("LDA","pw");
-        document.getElementById("XCF").options[1]=new Option("PBE","pbe");
-        document.getElementById("FMT").options[0]=new Option("xml","xml");
-        break;
-    }
-    return true;
-  }
-
-  store_available_files();
-
-
-</script>
-
 
 <div class="detail detail_position 000_X" id="av">
       <div class="element_l" id="av_el">Mean</div>
@@ -202,6 +165,8 @@ Format
 </div>
 </aside>
 
+<script src="js/dojo-tools.js"></script>
+
 
 <!-- fill the options for XCF ACC and FMT based on the type-->
 <script>
@@ -235,9 +200,6 @@ if (localStorage.getItem('selectedFMT')) {
   }
 }
 </script>
-
-
-
 
   <div class="plugin bg_hydrogen 001_H">
     <div class="element">H</div>
@@ -1598,7 +1560,8 @@ if (localStorage.getItem('selectedFMT')) {
   load_set_info(0);
 </script>
 
-<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+<!--<script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 
 <script>

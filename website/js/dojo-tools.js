@@ -51,7 +51,6 @@ function set_info(info, animate) {
     summary += "normalized delta\t\t: " + averages[5] + " \n"
     summary += "gbrv\t\t\t\t\t: " + averages[6] + " %\n"
     if (sums[0] > 0){
-            //alert(summary);
             set_av(averages);
             reset_X()
             }
@@ -266,4 +265,60 @@ function dojoTour_guidedtour() {
     //intro.oncomplete(remove_glow);
 
     intro.start();
+}
+
+function dynamicdropdown(listindex){
+  document.getElementById("ACC").length = 0;
+  document.getElementById("XCF").length = 0;
+  document.getElementById("FMT").length = 0;
+  switch (listindex)
+  {
+    case "nc-sr" :
+      document.getElementById("ACC").options[0]=new Option("standard","standard");
+      document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+      document.getElementById("XCF").options[0]=new Option("LDA","pw");
+      document.getElementById("XCF").options[1]=new Option("PBE","pbe");
+      document.getElementById("XCF").options[2]=new Option("PBEsol","pbesol");
+      document.getElementById("FMT").options[0]=new Option("psp8","psp8");
+      document.getElementById("FMT").options[1]=new Option("upf","upf");
+      document.getElementById("FMT").options[2]=new Option("html","html");
+      document.getElementById("FMT").options[3]=new Option("djrepo","djrepo");
+      break;
+
+    case "paw" :
+      document.getElementById("ACC").options[0]=new Option("standard","standard");
+      document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+      document.getElementById("XCF").options[0]=new Option("LDA","pw");
+      document.getElementById("XCF").options[1]=new Option("PBE","pbe");
+      document.getElementById("FMT").options[0]=new Option("xml","xml");
+      break;
+  }
+  return true;
+}
+
+store_available_files();
+
+if (localStorage.getItem('selectedXCF')) {
+  var options = document.getElementById('XCF').options
+  for (i in options){
+     if (options[i].value == localStorage.getItem('selectedXCF')){
+       options[i].selected = true;
+     }
+  }
+}
+if (localStorage.getItem('selectedACC')) {
+  var options = document.getElementById('ACC').options
+  for (i in options){
+     if (options[i].value == localStorage.getItem('selectedACC')){
+       options[i].selected = true;
+     }
+  }
+}
+if (localStorage.getItem('selectedFMT')) {
+  var options = document.getElementById('FMT').options
+  for (i in options){
+     if (options[i].value == localStorage.getItem('selectedFMT')){
+       options[i].selected = true;
+     }
+  }
 }
