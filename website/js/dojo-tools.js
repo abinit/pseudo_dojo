@@ -251,7 +251,7 @@ function dojoTour_guidedtour() {
         },
         {
           element: ".logo",
-          intro:  "Finally, if you want to learn the periodic table by hard try clicking here. (p.s. Don't try to download Oganesson bad things may happen.)"
+          intro:  "Finally, if you want to learn the periodic table by heart try clicking here. (p.s. Don't try to download Oganesson bad things may happen.)"
         }
       ],
       showProgress: true,
