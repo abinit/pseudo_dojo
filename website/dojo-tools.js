@@ -152,3 +152,92 @@ function product(x,y) {
     var r = document.getElementById('result-1');
     r.innerHTML = 'the product of ' + x + ' and ' + y + ' is ' + p
 }
+
+function dojoTour_guidedtour() {
+    var intro = introJs();
+    intro.setOptions({
+      steps: [
+        {
+          intro: "Welcome to the PseudoDojo! Let me explain how to use the website."
+        },
+        {
+          element: '#TYP',
+          intro: 'Here you select the type of pseudopotential. '+
+                 'The options for xc, accuracy and format are adjusted based on your choice here.'
+        },
+        {
+          element: '#XCF',
+          intro:  "In this selector you can pick one of the available exchange correlation functionals. " +
+                  "Have a look at the F.A.Q. if your fuctional of choice is not there."
+        },
+        {
+          element: '#ACC',
+          intro:  "In this selector you can pick one of the accuracies. " +
+                  "Have a look at the F.A.Q. for a detailed description."
+        },
+        {
+          element: '#FMT',
+          intro:  "In this selector you can pick the format of the pseudopotential file. " +
+                  "PSP8 for ABINIT, UPF (UPF2) for quantum espresso. " +
+                  "HTML will give you a full report on the tests. " +
+                  "djrepo will give you the full numerical results of the tests."
+        },
+        {
+          element: '#X_n',
+          intro:  "As long as you don't hover one of the elements this box shows the average values for the table you selected. " +
+                  "Once you hover the elements it shows the values for that element. "
+        },
+        {
+          element: "#X_hl",
+          intro:  "low cutoff energy hint (Ha)"
+        },
+        {
+          element: "#X_hn",
+          intro:  "normal cutoff energy hint (Ha)"
+        },
+        {
+          element: "#X_hh",
+          intro:  "high cutoff energy hint (Ha)"
+        },
+        {
+          element: "#X_nv",
+          intro:  "number of valence shells"
+        },
+        {
+          element: "#X_d",
+          intro:  "delta gauge (meV):&#013;Integral between the equation of state calculated using the pseudo potential &#013;and a reference all electron equation of state."
+        },
+        {
+          element: "#X_dp",
+          intro:  "normalized delta gauge:&#013;Normalized version of the delta gauge."
+        },
+        {
+          element: "#X_gb",
+          intro:  "gbrv fcc bcc average (%):&#013;Relative error in the lattice parameter with respect to reference."
+        },
+        {
+          element: "#silicon",
+          intro:  "You can now click all the elements in the table to download single elements. If the box turns green the file is available, if it turns red.... "
+        },
+        {
+          element: "#download_button",
+          intro:  "Alternatively, with the download button you can now get a tar of the full table, always one pseudopotential per element."
+        },
+        {
+          element: ".logo",
+          intro:  "Finally, if you want to learn the periodic table by hard, click here."
+        }
+      ],
+      showProgress: true,
+      overlayOpacity: 0.3
+    });
+
+    //var remove_glow = function() {
+    //    console.log('exiting');
+    //    $("#guided-tour-button").removeClass("glow");
+    //};
+    //intro.onexit(remove_glow);
+    //intro.oncomplete(remove_glow);
+
+    intro.start();
+}
