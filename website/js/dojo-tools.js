@@ -189,41 +189,41 @@ function dojoTour_guidedtour() {
         {
           element: '#TYP',
           intro: 'Here you select the type of pseudopotential. '+
-                 'The options for xc, accuracy and format are adjusted based on your choice here.'
+                 'The options for xc, accuracy and format are adjusted based on your choice.'
         },
         {
           element: '#XCF',
-          intro:  "In this selector you can pick one of the available exchange correlation functionals. " +
+          intro:  "In this selector you can pick one of the available exchange-correlation functionals. " +
                   "Have a look at the F.A.Q. if your fuctional of choice is not there."
         },
         {
           element: '#ACC',
-          intro:  "In this selector you can pick one of the accuracies. " +
+          intro:  "In this selector you can select one of the available accuracy levels. " +
                   "Have a look at the F.A.Q. for a detailed description."
         },
         {
           element: '#FMT',
           intro:  "In this selector you can pick the format of the pseudopotential file. " +
                   "PSP8 for ABINIT, UPF (UPF2) for quantum espresso. " +
-                  "When you select HTML clicking the elements will display a full report on all the tests we performed. " +
-                  "Finally djrepo will give you the full numerical results, in json format, of the tests."
+                  "When you select HTML, clicking the elements will display a full report of all the tests we performed. " +
+                  "Finally djrepo will give you all the numerical results of the tests in json format."
         },
         {
           element: '#X_n',
-          intro:  "As long as you don't hover one of the elements this box shows the average values for the table you selected. " +
-                  "Once you hover the elements it shows the values for that element. "
+          intro:  "As long as you don't hover one of the elements, this box shows the average values for the table you selected. " +
+                  "Once you hover the elements, it shows the values for that element. "
         },
         {
           element: "#X_hl",
-          intro:  "This is the low cutoff energy hint (Ha) good for a quick first calculation or as a starting point for your convergence studies."
+          intro:  "This is the low cutoff energy hint (Ha). Good for a quick calculation or as a starting point for your convergence studies."
         },
         {
           element: "#X_hn",
-          intro:  "This is the normal cutoff energy hint (Ha) a good guess for high through put calculations."
+          intro:  "This is the normal cutoff energy hint (Ha). A good guess for high-throughput calculations."
         },
         {
           element: "#X_hh",
-          intro:  "This is the high cutoff energy hint (Ha), beyond this value you should not observe any real changes to the results anymore."
+          intro:  "This is the high cutoff energy hint (Ha), beyond this value you should not observe significant changes in the results anymore."
         },
         {
           element: "#X_nv",
@@ -247,11 +247,11 @@ function dojoTour_guidedtour() {
         },
         {
           element: ".download_button",
-          intro:  "Alternatively, with the download button you can now get a tar of the full table, always one pseudopotential per element."
+          intro:  "Alternatively, with the download button you can get a tar of the full table, always one pseudopotential per element."
         },
         {
           element: ".logo",
-          intro:  "Finally, if you want to learn the periodic table by hard try clicking here. (p.s. Don't try to download Oganesson bad things may happen."
+          intro:  "Finally, if you want to learn the periodic table by heart try clicking here. (p.s. Don't try to download Oganesson, bad things may happen."
         }
       ],
       showProgress: true,
