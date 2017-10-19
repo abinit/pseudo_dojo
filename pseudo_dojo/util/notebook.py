@@ -54,8 +54,14 @@ from __future__ import print_function, division, unicode_literals
         nb.cells.extend([
             nbf.new_code_cell("""\
 from IPython.display import HTML
-HTML('''<script>
-code_show = true;
+HTML('''
+<style>
+body {
+background-image: url('http://www.pseudo-dojo.org/img/pw_maze_white.png');
+}
+</style>
+<script>
+code_show=true;
 function code_toggle() {
  if (code_show) {
     $('div.input').hide();

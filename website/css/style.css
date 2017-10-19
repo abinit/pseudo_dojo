@@ -768,3 +768,42 @@ img
 .footer .info{
   float:right;
 }
+.glow{
+  display: inline-block;
+  animation: glow  0.8s 5;
+}
+.introjs-helperLayer {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.introjs-tooltip {
+  font-size: 16px;
+}
+.help_button
+{
+  background:#FFFFFF;
+  position:absolute;
+  z-index:20;
+  top:20px;
+  left:-155px;
+  width:80px;
+  color:#FFFFFF;
+  text-align:center;
+  font-size:14px;
+  font-weight:bold;
+  float:left;
+  margin:8px 8px 7px 7px;
+  padding:2px;
+  background:#4D4D4D;
+  border:1px solid #A2A4A5;
+  border-radius:5px;
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  -ms-border-radius:5px;
+  -o-border-radius:5px;
+  box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  -o-box-sizing:border-box;
+  cursor:pointer;
+}
