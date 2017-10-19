@@ -164,7 +164,7 @@ class GbrvOutdb(dict):
     struct_types = ["rocksalt", "ABO3", "hH"]
 
     # The name of the json database should start with prefix.
-    prefix = "gbrv_compouds_"
+    prefix = "gbrv_compounds_"
 
     @classmethod
     def new_from_table(cls, table, djson_path):

@@ -623,9 +623,11 @@ def dojo_raren(options):
     import pandas as pd
     retcode = 0
     with_soc = False
+    icmod1, icmod3 = {}, {}
     for i, pseudo in enumerate([p for p in options.pseudos if p.element.is_lanthanoid]):
         db = raren_database(pseudo.xc)
         trial = "raren_relax" if not with_soc else "raren_relax_soc"
+        if "3+" not in pseudo.basename: continue
         try:
             data = pseudo.dojo_report.get_pdframe(trial)
         except:
@@ -639,13 +641,25 @@ def dojo_raren(options):
             continue
 
         print("%s:" % pseudo.basename, "a_relax:", a, "exp: %s" % dvals["exp"])
-        for k in ("ref", "Wien2k"):
+        #for k in ("ref", "Wien2k"):
+        for k in ("ref",):
             ref = dvals[k]
             if pd.isnull(ref) is None:
                 cprint("Null ref for %s!" % pseudo.basename, "red")
                 continue
             print("   rel_err: %.3f%% " % ( 100 * (a - ref) / ref), "wrt `%s` %.3f" % (k, ref))
         #print(dvals)
+        if "icmod1" in pseudo.basename:
+            icmod1[pseudo.symbol] =  a
+        else:
+            icmod3[pseudo.symbol] =  a
+
+    table = db.table.copy()
+    table["icmod1"] = [icmod1.get(s, None) for s in table.index]
+    table["icmod3"] = [icmod3.get(s, None) for s in table.index]
+    import matplotlib.pyplot as plt
+    table[["exp", "VASP", "icmod1", "icmod3", "Wien2k"]].plot()
+    plt.show()
 
     return retcode
 
