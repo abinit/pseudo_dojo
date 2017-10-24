@@ -1349,7 +1349,7 @@ class DojoDataFrame(pd.DataFrame):
         for p in pseudos:
             names.append(p.basename)
             d = {"symbol": p.symbol, "Z": p.Z, "Z_val": p.Z_val, "l_max": p.l_max,
-                 "nlcc": p.has_nlcc} #"filepath": p.filepath}
+                 "nlcc": p.has_nlcc, 'lmax': p.l_max} #"filepath": p.filepath}
 
             if not p.has_dojo_report:
                 eapp("Cannot find dojo_report in %s" % p.basename)
