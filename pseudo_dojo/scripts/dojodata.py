@@ -481,7 +481,7 @@ def dojo_table(options):
 
     try:
         data["low_dfact_abserr"] = data["low_dfact_meV"] - data["high_dfact_meV"]
-        data["normal_dfact_abserr"] =  data["normal_dfact_meV"] - data["high_dfact_meV"]
+        data["normal_dfact_abserr"] = data["normal_dfact_meV"] - data["high_dfact_meV"]
         data["low_dfact_rerr"] = 100 * (data["low_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
         data["normal_dfact_rerr"] = 100 * (data["normal_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
 
