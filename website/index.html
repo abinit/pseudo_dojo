@@ -56,10 +56,10 @@
   })();
 </script-->
 
-<script src="dojo-tools.js">
+<script src="js/dojo-tools.js">
 </script>
 
-<div class="detail 000_X" id="av">
+<div class="detail detail_av" id="av">
       <div class="element_l" id="av_el">Mean</div>
     <div class="l_top_l">hints</div>
     <div class="l_follow_l" id="av_hl" title="low cutoff energy hint">l</div>
@@ -96,17 +96,14 @@
       <div class="r_follow" id="X_gb" title="gbrv fcc bcc average (%):&#013;Relative error in the lattice parameter with respect to reference&#013;all electron results for elemental fcc and bcc structures.">gbrv</div>
     </div>
 
-    <div class="help_button glow" onclick="dojoTour_guidedtour()" id="guided-tour-button" title="Guided Tour" >
-      Help me
-    </div>
-
-
     <div id="download_button" class="download_button">
      Download
     </div>
+
     <div class="help_button" onclick="dojoTour_guidedtour()" id="guided-tour-button" title="Guided Tour" >
       Help me
     </div>
+
     <div class="description">
       <p>
         Select the flavor and <a href="./about.html">format</a>, then click "Download" to
@@ -145,6 +142,7 @@ Format
 <div id="TYP-box" class="styled-longselect" onchange="load_set_info();">
   <select id="TYP" onchange="javascript: dynamicdropdown(this.options[this.selectedIndex].value);">
     <option value="nc-sr" selected>NC (ONCVPSP v0.3)</option>
+    <option value="nc-sr-04">NC (ONCVPSP v0.4)</option>
 <!--  <option value="nc-soc">NC + SOC (ONCVPSP v0.3)</option> -->
     <option value="paw">PAW (JTH v1.0)</option>
   </select>
@@ -158,6 +156,7 @@ Format
   <noscript>
     <select id="XCF" >
     </select>
+  </noscript>
 </div>
 </td>
 <td>
