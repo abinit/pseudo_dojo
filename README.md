@@ -1,19 +1,25 @@
 
 PseudoDojo is an open-source Python framework for generating and validating pseudopotentials.
-It uses the AbiPy package, for developing and systematically testing pseudopotentials. 
-At present it contains seven different batteries of tests executed with ABINIT (delta-factor, 
-revised delta factor, GBRV tests for fcc/bcc/compounds, phonons at the Gamma point and 
-tests for the presence of ghost-states below and above the Fermi level).
+It uses the [AbiPy](https://github.com/abinit/abipy) package, for developing and systematically 
+testing pseudopotentials. 
+At present it contains seven different batteries of tests executed with [ABINIT](https://github.com/abinit/abinit) 
+([delta-gauge](https://molmod.ugent.be/deltacodesdft), 
+revised delta gauge by [Jollet et al](http://www.sciencedirect.com/science/article/pii/S0010465513004359), 
+[GBRV](https://www.physics.rutgers.edu/gbrv/) tests for fcc/bcc/compounds, 
+phonons at the Gamma point and tests for the presence of ghost-states below and above the Fermi level).
 
 The tests are performed as a function of the energy cutoff (with the exception of ghosts and compounds) 
 and the results are then used to provide hints for the energy cutoff for actual production calculations. 
 We keep track of the results of the various validation tests for each pseudopotential with the `djrepo` file, 
 a text document in JSON format produced by the python code at the end of the test. 
+For further details, please consult our recent [cond-mat paper](https://arxiv.org/abs/1710.10138).
 
-The PseudoDojo code is hosted on github but we also provide a user web-interface at <http://www.pseudo-dojo.org>
+The PseudoDojo code is hosted on [github](https://github.com/abinit/pseudo_dojo) 
+but we also provide a user web-interface at <http://www.pseudo-dojo.org>
 There you will find pseudopotential files that can be used immediately, 
 as well as the corresponding input files if you need to change or tune or change some parameters 
 (e.g. the XC functional).
+
 The pseudopotential files are available on the web-site in the ABINIT `psp8` format, 
 in the `UPF2` format and in the `PSML` 1.1 XML format shared by SIESTA and ABINIT. 
 The input files, the results of the generation, and the test results are presented via jupyter notebooks 
