@@ -30,7 +30,7 @@ Cu/Cu-sp-high.psp8
 Zn/Zn-sp.psp8
 Ga/Ga-spd-high.psp8
 Ge/Ge-spd-high.psp8
-As/As-spd-high.psp8 
+As/As-spd-high.psp8
 Se/Se-spd-high.psp8
 Br/Br-d.psp8
 Kr/Kr.psp8
@@ -45,7 +45,7 @@ Ru/Ru-sp.psp8
 Rh/Rh-sp.psp8
 Pd/Pd-sp.psp8
 Ag/Ag-sp.psp8
-Cd/Cd-sp-high.psp8 
+Cd/Cd-sp-high.psp8
 In/In-spd-high.psp8
 Sn/Sn-spd-high.psp8
 Sb/Sb-spd-high.psp8
