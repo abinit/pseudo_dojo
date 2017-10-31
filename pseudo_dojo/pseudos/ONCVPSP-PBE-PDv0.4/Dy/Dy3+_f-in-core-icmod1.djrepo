@@ -1,0 +1,104 @@
+{
+"basename": "Dy3+_f-in-core-icmod1.psp8", 
+"ecuts": [
+32.0, 
+34.0, 
+36.0, 
+38.0, 
+40.0, 
+42.0, 
+44.0, 
+46.0, 
+48.0, 
+50.0, 
+52.0, 
+60.0, 
+62.0
+], 
+"md5": "a3b0e18ecdba063f95328d3d5774e864", 
+"ppgen_hints": {
+"high": {
+"ecut": 42.0, 
+"pawecutdg": 42.0
+}, 
+"low": {
+"ecut": 20.0, 
+"pawecutdg": 20.0
+}, 
+"normal": {
+"ecut": 22.0, 
+"pawecutdg": 22.0
+}
+}, 
+"pseudo_type": "NC", 
+"raren_relax": {
+"32.0": {
+"initial_energy_ev_per_atom": -1437.869999639076, 
+"relaxed_a": 4.9095125476531285
+}, 
+"34.0": {
+"initial_energy_ev_per_atom": -1437.8881259905056, 
+"relaxed_a": 4.9095066181317408
+}, 
+"36.0": {
+"initial_energy_ev_per_atom": -1437.8963392407818, 
+"relaxed_a": 4.9095222832314125
+}, 
+"38.0": {
+"initial_energy_ev_per_atom": -1437.8996517966411, 
+"relaxed_a": 4.9095583316019633
+}, 
+"40.0": {
+"initial_energy_ev_per_atom": -1437.9007994754827, 
+"relaxed_a": 4.9095513461579268
+}, 
+"42.0": {
+"initial_energy_ev_per_atom": -1437.901098966208, 
+"relaxed_a": 4.9095614743973623
+}, 
+"44.0": {
+"initial_energy_ev_per_atom": -1437.9011567071202, 
+"relaxed_a": 4.9095623876765142
+}, 
+"46.0": {
+"initial_energy_ev_per_atom": -1437.9011841074985, 
+"relaxed_a": 4.9095618444405726
+}, 
+"48.0": {
+"initial_energy_ev_per_atom": -1437.9012407504617, 
+"relaxed_a": 4.9095608369650554
+}, 
+"50.0": {
+"initial_energy_ev_per_atom": -1437.9013184387745, 
+"relaxed_a": 4.9095587637297982
+}, 
+"52.0": {
+"initial_energy_ev_per_atom": -1437.9013958275482, 
+"relaxed_a": 4.9095574413860668
+}, 
+"60.0": {
+"initial_energy_ev_per_atom": -1437.9015327874492, 
+"relaxed_a": 4.9095637148526166
+}, 
+"62.0": {
+"initial_energy_ev_per_atom": -1437.90154351619, 
+"relaxed_a": 4.9095630357143074
+}
+}, 
+"symbol": "Dy", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_C_PBE"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_X_PBE"
+}
+}
+}

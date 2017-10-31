@@ -179,16 +179,12 @@ class GbrvEntry(namedtuple("GbrvEntry", "symbol ae gbrv_uspp vasp pslib gbrv_paw
 
         if stype == "bcc":
             return Structure.bcc(a, species=[self.symbol])
-
         elif stype == "fcc":
             return Structure.fcc(a, species=[self.symbol])
-
         elif stype == "rocksalt":
             return Structure.rocksalt(a, self.species)
-
         elif stype == "ABO3":
             return Structure.ABO3(a, self.species)
-
         elif stype == "hH":
             return half_heusler(a, self.species)
 

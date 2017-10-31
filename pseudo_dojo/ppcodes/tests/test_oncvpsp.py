@@ -1,10 +1,13 @@
 """Unit tests for oncvpsp"""
 from __future__ import division, print_function, unicode_literals, absolute_import
 
+import sys
 import os
+import numpy as np
 
 from pseudo_dojo.core import PseudoDojoTest
-from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
+from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, psp8_get_densities
+import pseudo_dojo.data as pdj_data
 
 
 def filepath(basename):
@@ -13,7 +16,7 @@ def filepath(basename):
 
 class OncvOutputParserTest(PseudoDojoTest):
 
-    def test_nonrelativistica(self):
+    def test_nonrelativistic(self):
         """Parsing the non-relativistic output file produced by ONCVPSPS."""
         # Non-relativistic results
         p = OncvOutputParser(filepath("08_O_nr.out"))
@@ -170,3 +173,17 @@ class OncvOutputParserTest(PseudoDojoTest):
             assert plotter.plot_dens_and_pots(show=False)
             assert plotter.plot_waves_and_projs(show=False)
             assert plotter.plot_den_formfact(ecut=40, show=False)
+
+    def test_psp8_get_densities(self):
+        n = psp8_get_densities(pdj_data.pseudopath("Lu-sp.psp8"), fc_file=sys.stdout,
+                               ae_file=sys.stdout, plot=False)
+        assert len(n.rmesh) == 600
+        self.assert_almost_equal([n.rmesh[0], n.psval[0], n.aeval[0], n.aecore[0]],
+            np.fromstring("0.0000000000000E+00  5.9161585718320E-02  3.9966212837901E+03  3.9211427139394E+06", sep=" "))
+        self.assert_almost_equal([n.rmesh[-1], n.psval[-1], n.aeval[-1], n.aecore[-1]],
+            np.fromstring("5.9900000000000E+00  4.1502186898788E-03  4.1500999839310E-03  4.6618962684673E-06", sep=" "))
+
+        with self.assertRaises(RuntimeError):
+            psp8_get_densities(pdj_data.pseudopath("O.psp8"), plot=False)
+
+        # TODO: SOC

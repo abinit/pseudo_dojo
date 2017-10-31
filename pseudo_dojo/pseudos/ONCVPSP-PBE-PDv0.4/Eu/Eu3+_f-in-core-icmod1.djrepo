@@ -1,0 +1,104 @@
+{
+"basename": "Eu3+_f-in-core-icmod1.psp8",
+"ecuts": [
+34.0,
+36.0,
+38.0,
+40.0,
+42.0,
+44.0,
+46.0,
+48.0,
+50.0,
+52.0,
+54.0,
+62.0,
+64.0
+],
+"md5": "cf77c952eae59d1d5a731a171e0368b5",
+"ppgen_hints": {
+"high": {
+"ecut": 44.0,
+"pawecutdg": 44.0
+},
+"low": {
+"ecut": 20.0,
+"pawecutdg": 20.0
+},
+"normal": {
+"ecut": 22.0,
+"pawecutdg": 22.0
+}
+},
+"pseudo_type": "NC",
+"raren_relax": {
+"34.0": {
+"initial_energy_ev_per_atom": -1404.039917344043,
+"relaxed_a": 5.025665584967668
+},
+"36.0": {
+"initial_energy_ev_per_atom": -1404.0481681301524,
+"relaxed_a": 5.025758910142033
+},
+"38.0": {
+"initial_energy_ev_per_atom": -1404.051586181673,
+"relaxed_a": 5.025839999296507
+},
+"40.0": {
+"initial_energy_ev_per_atom": -1404.0528346860265,
+"relaxed_a": 5.025873906170858
+},
+"42.0": {
+"initial_energy_ev_per_atom": -1404.0532195451706,
+"relaxed_a": 5.025864188524203
+},
+"44.0": {
+"initial_energy_ev_per_atom": -1404.0533240281782,
+"relaxed_a": 5.025864258913792
+},
+"46.0": {
+"initial_energy_ev_per_atom": -1404.0533748829548,
+"relaxed_a": 5.025864236639556
+},
+"48.0": {
+"initial_energy_ev_per_atom": -1404.0534375018876,
+"relaxed_a": 5.025862351054575
+},
+"50.0": {
+"initial_energy_ev_per_atom": -1404.053510137967,
+"relaxed_a": 5.0258621258757366
+},
+"52.0": {
+"initial_energy_ev_per_atom": -1404.0535872781636,
+"relaxed_a": 5.025864222966744
+},
+"54.0": {
+"initial_energy_ev_per_atom": -1404.0536587837437,
+"relaxed_a": 5.02586675763993
+},
+"62.0": {
+"initial_energy_ev_per_atom": -1404.053769836225,
+"relaxed_a": 5.025866955908152
+},
+"64.0": {
+"initial_energy_ev_per_atom": -1404.053784004526,
+"relaxed_a": 5.025869387809331
+}
+},
+"symbol": "Eu",
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE"
+}
+}
+}

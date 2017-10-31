@@ -56,7 +56,10 @@
   })();
 </script-->
 
-<div class="detail detail_position 000_X" id="av">
+<script src="dojo-tools.js">
+</script>
+
+<div class="detail 000_X" id="av">
       <div class="element_l" id="av_el">Mean</div>
     <div class="l_top_l">hints</div>
     <div class="l_follow_l" id="av_hl" title="low cutoff energy hint">l</div>
@@ -92,7 +95,13 @@
       <div class="r_follow" id="X_dp" title="normalized delta gauge:&#013;Normalized version of the delta gauge.">delta1</div>
       <div class="r_follow" id="X_gb" title="gbrv fcc bcc average (%):&#013;Relative error in the lattice parameter with respect to reference&#013;all electron results for elemental fcc and bcc structures.">gbrv</div>
     </div>
-    <div class="download_button">
+
+    <div class="help_button glow" onclick="dojoTour_guidedtour()" id="guided-tour-button" title="Guided Tour" >
+      Help me
+    </div>
+
+
+    <div id="download_button" class="download_button">
      Download
     </div>
     <div class="help_button" onclick="dojoTour_guidedtour()" id="guided-tour-button" title="Guided Tour" >
@@ -133,7 +142,7 @@ Format
 </tr>
 <tr>
 <td>
-<div class="styled-longselect" onchange="load_set_info(animate=1);">
+<div id="TYP-box" class="styled-longselect" onchange="load_set_info();">
   <select id="TYP" onchange="javascript: dynamicdropdown(this.options[this.selectedIndex].value);">
     <option value="nc-sr" selected>NC (ONCVPSP v0.3)</option>
 <!--  <option value="nc-soc">NC + SOC (ONCVPSP v0.3)</option> -->
@@ -142,7 +151,11 @@ Format
 </div>
 </td>
 <td>
-<div class="styled-select" onchange="localStorage.setItem('selectedXCF', document.getElementById('XCF').value); load_set_info(animate=0);">
+<div id="XCF-box" class="styled-select" onchange="load_set_info();">
+  <script type="text/javascript" language="JavaScript">
+    document.write('<select id="XCF"><option value="pw" selected>LDA</option><option value="pbe">PBE</option><option value="pbesol">PBEsol</option></select>');
+  </script>
+  <noscript>
     <select id="XCF" >
     </select>
 </div>
