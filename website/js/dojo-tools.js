@@ -132,45 +132,6 @@ function hide_X(){
     document.getElementById('X_n').style.visibility="hidden";
 }
 
-
-var x = 5;
-
-var p_text = '';
-p_text += 'hello world first';
-
-function to_red() {
-    var x = document.getElementById("par-1");
-    x.style.color = "red";
-    x.innerHTML = "test changed to red"
-}
-
-function to_black() {
-    var x = document.getElementById("par-1");
-    x.style.color = "black";
-    x.innerHTML = "test changed to black"
-}
-
-function to_color() {
-    var color = document.getElementById("color_in").value
-    //alert('setting paragraph to ' + color);
-    var x = document.getElementById("par-1");
-    x.style.color = color;
-    x.innerHTML = "test changed to custom color"
-}
-
-function to_color_arg(cc) {
-    //alert('setting paragraph to ' + cc);
-    var x = document.getElementById("par-2");
-    x.style.color = cc;
-    x.innerHTML = "test changed to custom color via argument"
-}
-
-function product(x,y) {
-    var p = x * y;
-    var r = document.getElementById('result-1');
-    r.innerHTML = 'the product of ' + x + ' and ' + y + ' is ' + p
-}
-
 function humanize(size) {
 	var units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
 	var ord = Math.floor(Math.log(size) / Math.log(1024));
@@ -251,7 +212,7 @@ function dojoTour_guidedtour() {
         },
         {
           element: ".logo",
-          intro:  "Finally, if you want to learn the periodic table by heart try clicking here. (p.s. Don't try to download Oganesson, bad things may happen."
+          intro:  "Finally, if you want to learn the periodic table by heart try clicking here. (p.s. Don't try to download Oganesson, bad things may happen.)"
         }
       ],
       showProgress: true,
@@ -280,6 +241,18 @@ function dynamicdropdown(listindex){
       document.getElementById("XCF").options[0]=new Option("LDA","pw");
       document.getElementById("XCF").options[1]=new Option("PBE","pbe");
       document.getElementById("XCF").options[2]=new Option("PBEsol","pbesol");
+      document.getElementById("FMT").options[0]=new Option("psp8","psp8");
+      document.getElementById("FMT").options[1]=new Option("upf","upf");
+      document.getElementById("FMT").options[2]=new Option("html","html");
+      document.getElementById("FMT").options[3]=new Option("djrepo","djrepo");
+      break;
+
+    case "nc-sr-04" :
+      document.getElementById("ACC").options[0]=new Option("standard","standard");
+      document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+      // document.getElementById("XCF").options[]=new Option("LDA","pw");
+      document.getElementById("XCF").options[0]=new Option("PBE","pbe");
+      // document.getElementById("XCF").options[]=new Option("PBEsol","pbesol");
       document.getElementById("FMT").options[0]=new Option("psp8","psp8");
       document.getElementById("FMT").options[1]=new Option("upf","upf");
       document.getElementById("FMT").options[2]=new Option("html","html");

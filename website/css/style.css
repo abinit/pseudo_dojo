@@ -84,6 +84,13 @@ img
   top:107px;
   left:426px;
 }
+.detail_av
+{
+  position:absolute;
+  z-index:-10;
+  top:107px;
+  left:426px;
+}
 .detail
 {
   content:none;
