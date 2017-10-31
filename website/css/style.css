@@ -796,61 +796,14 @@ img
 }
 
 .introjs-tooltip {
-  background:#e3e3e3;
-  background-image:url('../img/pw_maze_white.png');
-  font-size: 14px;
+  font-size: 16px;
 }
-
-.introjs-progress {
-    background-color:#dcdcdc;
-}
-
-.introjs-progressbar {
-    background-color:#bf96ff;
-}
-
-@keyframes pulse {
-  0% {
-    background-color: #d16969;
-  }
-  10% {
-    background-color: #d19292;
-  }
-  20% {
-    background-color: #d6a3be;
-  }
-  30% {
-    background-color: #edb8ff;
-  }
-  40% {
-    background-color: #bf96ff;
-  }
-  50% {
-    background-color: #a3b2d6;
-  }
-  60% {
-    background-color: #c4cdff;
-  }
-  70% {
-    background-color: #a9c4d4;
-  }
-  80% {
-    background-color: #bdd6a3;
-  }
-  90% {
-    background-color: #d2d6a3;
-  }
-  90% {
-    background-color: #d19292;
-  }
-}
-
 .help_button
 {
   background:#FFFFFF;
   position:absolute;
-  z-index:30;
-  top:34px;
+  z-index:20;
+  top:20px;
   left:-155px;
   width:80px;
   color:#FFFFFF;
@@ -863,13 +816,13 @@ img
   background:#4D4D4D;
   border:1px solid #A2A4A5;
   border-radius:5px;
-  animation: zoomIn 4s 1;
- }
-
-.anim {
-    animation: fadeInUpBig 0.5s 1;
-}
-
-.chaos {
-    animation: fadeInUpBig 0.5s 1;
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  -ms-border-radius:5px;
+  -o-border-radius:5px;
+  box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  -o-box-sizing:border-box;
+  cursor:pointer;
 }

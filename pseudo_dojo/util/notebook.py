@@ -26,9 +26,6 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=Tr
 
     Returns:
         The path to the ipython notebook.
-
-    See also:
-        http://nbviewer.jupyter.org/github/maxalbert/auto-exec-notebook/blob/master/how-to-programmatically-generate-and-execute-an-ipython-notebook.ipynb
     """
     import nbformat
     nbf = nbformat.v4
@@ -40,14 +37,15 @@ def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=Tr
 
                          nbf.new_code_cell("""\
 from __future__ import print_function, division, unicode_literals
+#import seaborn
 %matplotlib inline"""),
-
                          ])
     else:
         nb.cells.extend([nbf.new_markdown_cell("# PseudoDojo notebook for %s" % name),  # os.path.basename(pseudopath)),
 
                          nbf.new_code_cell("""\
 from __future__ import print_function, division, unicode_literals
+#import seaborn
 %matplotlib notebook"""),
                          ])
 
@@ -56,35 +54,26 @@ from __future__ import print_function, division, unicode_literals
         nb.cells.extend([
             nbf.new_code_cell("""\
 from IPython.display import HTML
-HTML('''<script>
+HTML('''
+<style>
+body {
+background-image: url('http://www.pseudo-dojo.org/img/pw_maze_white.png');
+}
+</style>
+<script>
 code_show=true;
 function code_toggle() {
- if (code_show){
- $('div.input').hide();
+ if (code_show) {
+    $('div.input').hide();
  } else {
- $('div.input').show();
+    $('div.input').show();
  }
- code_show = !code_show
+ code_show = !code_show;
 }
-$( document ).ready(code_toggle);
+$(document).ready(code_toggle);
 </script>
 The raw code for this IPython notebook is by default hidden for easier reading.
 To toggle on/off the raw code, click <a href="javascript:code_toggle()">here</a>.''')"""),
-
-#            nbf.new_code_cell("""\
-#HTML('''<script>
-#    require(
-#        ['base/js/namespace', 'jquery'],
-#            function(jupyter, $) {
-#            $(jupyter.events).on("kernel_ready.Kernel", function(){
-#                console.log("Auto-running all cells-below...");
-#                jupyter.actions.call('jupyter-notebook:run-all-cells-below');
-#                jupyter.actions.call('jupyter-notebook:save-notebook');
-#            });
-#        }
-#    );
-#</script>''')"""),
-
         ])
 
     else:
@@ -115,7 +104,7 @@ plotter = onc_parser.make_plotter()"""),
 
         nbf.new_markdown_cell("""## Arctan of the logarithmic derivatives
 
-From oncvpsp documentation:
+From the oncvpsp documentation:
 The plots show $\phi(E) = \\arctan(R * d \psi(r)/dr |_R)$ for some $R$
 greater than the core radius, where $\psi$ is the solution of the non-local
 radial equation regular at the origin (i.e., the outward-integrated solution).
@@ -152,7 +141,6 @@ In this case, `fcfact` mainly determines the height of the model core charge whi
         ])
 
     if with_validation:
-
         #nbf.new_markdown_cell("## 1-st order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
         #nbf.new_code_cell("""fig = plotter.plot_der_potentials(order=1)"""),
         #nbf.new_markdown_cell("## 2-nd order derivative of $v_l$ and $v_{loc}$ computed via finite differences:"),
@@ -235,6 +223,12 @@ The calculation is performed with the Wien2k relaxed parameters obtained from th
             nbf.new_markdown_cell("## GBRV EOS for the BCC structure"),
             nbf.new_code_cell("""fig = report.plot_gbrv_eos(struct_type="bcc")"""),
         ])
+
+    #if pseudo.element.is_lanthanoid:
+    nb.cells.extend([
+            nbf.new_markdown_cell("## Convergence of rocksalt lattice parameter."),
+            nbf.new_code_cell("fig = report.plot_raren_convergence(pseudo.xc)"),
+    ])
 
     if not tmpfile:
         root, ext = os.path.splitext(pseudopath)

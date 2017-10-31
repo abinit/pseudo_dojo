@@ -346,6 +346,17 @@ class DojoTable(PseudoTable):
         from pseudo_dojo.core.dojoreport import DfGbrvDataFrame
         return DfGbrvDataFrame.from_pseudos(self, raise_if_none_dojoreport=raise_if_none_dojoreport)
 
+    #def get_raren_dataframe(self):
+    #    from pseudo_dojo.refdata.lantanides.database import raren_database
+    #    xc = self
+    #    for i, pseudo in enumerate(self):
+    #        if i == 0:
+    #            table = raren_database(pseudo.xc).table.copy()
+    #        else
+    #            assert table.xc == pseudo.xc
+
+    #    return table
+
     def dojo_compare(self, what="all", **kwargs):
         """
         Compare ecut convergence and Deltafactor, GBRV results

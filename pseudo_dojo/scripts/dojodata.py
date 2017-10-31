@@ -481,7 +481,7 @@ def dojo_table(options):
 
     try:
         data["low_dfact_abserr"] = data["low_dfact_meV"] - data["high_dfact_meV"]
-        data["normal_dfact_abserr"] =  data["normal_dfact_meV"] - data["high_dfact_meV"]
+        data["normal_dfact_abserr"] = data["normal_dfact_meV"] - data["high_dfact_meV"]
         data["low_dfact_rerr"] = 100 * (data["low_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
         data["normal_dfact_rerr"] = 100 * (data["normal_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
 
@@ -597,11 +597,13 @@ def dojo_check(options):
     """
     retcode = 0
     for p in options.pseudos:
+
+        #if p.element.is_lanthanoid or p.element.is_actinoid:
+        if p.element.is_actinoid:
+            print("Ignoring actinoid:", os.path.relpath(p.filepath))
+            continue
+
         rc = check_pseudo(p, check_trials=options.check_trials, verbose=options.verbose)
-        #if rc != 0:
-        #    os.system("mvim %s" % p.filepath)
-        #    ans = prompt("Do you want to continue? [Y/n]")
-        #    if ans.lower() in ["n", "no"]: break
         retcode += rc
         if rc != 0: print(80*"=")
 
@@ -613,92 +615,55 @@ def dojo_check(options):
     return retcode
 
 
-#def dojo_validate(options):
-#    """Validate the pseudo."""
-#    pseudos = options.pseudos
-#    data, errors = pseudos.get_dojo_dataframe()
-#
-#    for p in pseudos:
-#        try:
-#            # test if report is present
-#            if not p.has_dojo_report:
-#                cprint("[%s] No DojoReport. Ignoring pseudo" % p.basename, "red")
-#                continue
-#            report = p.dojo_report
-#
-#            # test if already validated
-#            if 'validation' in report:
-#                cprint('this pseudo was validated by %s on %s.' % (
-#                       report['validation']['validated_by'], report['validation']['validated_on']), "red")
-#                if not ask_yesno('Would you like to validate it again? [Y/n]'):
-#                    continue
-#
-#            # test for ghosts
-#            print('\n= GHOSTS TEST ===========================================\n')
-#            if report.has_trial('ghosts'):
-#                for ecut in report['ghosts']:
-#                    if "ghost_free_upto_eV" in report["ghosts"][ecut]:
-#                        print('%s: Pseudo is reported to be ghost free up to %s eV' % (
-#                          ecut, report["ghosts"][ecut]["ghost_free_upto_eV"]))
-#                    else:
-#                        report.plot_ebands(ecut=ecut)
-#                        ans = float(prompt('Please enter the energy (eV) up until there is no sign of ghosts:\n'))
-#                        if ans > 0:
-#                            report["ghosts"][ecut]["ghost_free_upto_eV"] = ans
-#                            report.json_write()
-#            else:
-#                cprint('no ghosts trial present, pseudo cannot be validated', "red")
-#                continue
-#
-#            # test trials
-#            print('\n= TRIALS TEST ===========================================\n')
-#            try:
-#                error = report.check(check_trials=None)
-#                if error:
-#                    cprint("[%s] Validation problem" % p.basename, "red")
-#                    if options.verbose:
-#                        print(error)
-#                        print()
-#
-#            except Exception as exc:
-#                cprint("[%s] Python exception: %s" % (p.basename, type(exc)), "red")
-#                if options.verbose:
-#                    print(exc)
-#                    print("")
-#
-#            accuracies = ["low", "normal", "high"]
-#            keys = ['hint', 'deltafactor', 'gbrv_bcc', 'gbrv_fcc', 'phonon']
-#
-#            tablefmt = "grid"
-#            floatfmt=".2f"
-#
-#            print('\n= ECUTS  TEST ===========================================\n')
-#            for acc in accuracies:
-#                columns = ["symbol"]
-#                headers = ["symbol"]
-#                for k in keys:
-#                    entry = acc + "_ecut_" + k
-#                    if entry in data:
-#                        columns.append(entry)
-#                        headers.append(k)
-#                print('ECUTS for accuracy %s:' % acc)
-#                print(tabulate(data[columns], headers=headers, tablefmt=tablefmt, floatfmt=floatfmt))
-#
-#            # TODO
-#            # test hash
-#            # plot the model core charge
-#
-#        except Exception as exc:
-#            cprint("[%s] python exception" % p.basename, "red")
-#            if options.verbose: print(straceback())
-#
-#        # ask the final question
-#        if ask_yesno('Will you validate this pseudo? [n]'):
-#            name = prompt("Please enter your name for later reference: ")
-#            report['validation'] = {'validated_by': name, 'validated_on': strftime("%Y-%m-%d %H:%M:%S", gmtime())}
-#            report.json_write()
-#
-#    return 0
+def dojo_raren(options):
+    """
+    Analyze results for lantanides.
+    """
+    from pseudo_dojo.refdata.lantanides.database import raren_database
+    import pandas as pd
+    retcode = 0
+    with_soc = False
+    icmod1, icmod3 = {}, {}
+    for i, pseudo in enumerate([p for p in options.pseudos if p.element.is_lanthanoid]):
+        db = raren_database(pseudo.xc)
+        trial = "raren_relax" if not with_soc else "raren_relax_soc"
+        if "3+" not in pseudo.basename: continue
+        try:
+            data = pseudo.dojo_report.get_pdframe(trial)
+        except:
+            cprint("[%s] dojo_trial raren_relax not present!" % pseudo.basename, "red")
+            continue
+        ecut, a = np.array(data["ecut"])[-1], np.array(data["relaxed_a"])[-1]
+        try:
+            dvals = {code: db.table[code][pseudo.symbol] for code in db.table.keys()}
+        except KeyError:
+            cprint("Cannot find %s in pandas table!" % pseudo.symbol, "red")
+            continue
+
+        print("%s:" % pseudo.basename, "a_relax:", a, "exp: %s" % dvals["exp"])
+        #for k in ("ref", "Wien2k"):
+        for k in ("ref",):
+            ref = dvals[k]
+            if pd.isnull(ref) is None:
+                cprint("Null ref for %s!" % pseudo.basename, "red")
+                continue
+            print("   rel_err: %.3f%% " % ( 100 * (a - ref) / ref), "wrt `%s` %.3f" % (k, ref))
+        #print(dvals)
+        if "icmod1" in pseudo.basename:
+            icmod1[pseudo.symbol] =  a
+        else:
+            icmod3[pseudo.symbol] =  a
+
+    table = db.table.copy()
+    table["icmod1"] = [icmod1.get(s, None) for s in table.index]
+    table["icmod3"] = [icmod3.get(s, None) for s in table.index]
+    import matplotlib.pyplot as plt
+    table[["exp", "VASP", "icmod1", "icmod3", "Wien2k"]].plot()
+    plt.show()
+
+    return retcode
+
+
 
 
 @prof_main
@@ -714,6 +679,7 @@ Usage example:
     dojodata.py figures .                  ==> Plot periodic table figures
     dojodata.py notebook H.psp8            ==> Generate ipython notebook and open it in the browser
     dojodata.py check table/*/*.psp8 -v --check-trials=gbrv_fcc,gbrv_bcc
+    dojodata.py raren .
 """
 
     def show_examples_and_exit(err_msg=None, error_code=1):
@@ -815,6 +781,9 @@ Usage example:
 
     # Subparser for validate command.
     #p_validate = subparsers.add_parser('validate', parents=[copts_parser], help=dojo_validate.__doc__)
+
+    # Subparser for raren command.
+    p_raren = subparsers.add_parser('raren', parents=[copts_parser], help=dojo_raren.__doc__)
 
     # Parse command line.
     try:

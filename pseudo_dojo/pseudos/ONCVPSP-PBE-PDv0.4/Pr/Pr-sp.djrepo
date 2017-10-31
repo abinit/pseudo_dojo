@@ -1,0 +1,104 @@
+{
+"basename": "Pr-sp.psp8", 
+"ecuts": [
+45.0, 
+47.0, 
+49.0, 
+51.0, 
+53.0, 
+55.0, 
+57.0, 
+59.0, 
+61.0, 
+63.0, 
+65.0, 
+73.0, 
+75.0
+], 
+"md5": "7f65e120fbdbdf38e9d849d2b4c10162", 
+"ppgen_hints": {
+"high": {
+"ecut": 55.0, 
+"pawecutdg": 55.0
+}, 
+"low": {
+"ecut": 51.0, 
+"pawecutdg": 51.0
+}, 
+"normal": {
+"ecut": 53.0, 
+"pawecutdg": 53.0
+}
+}, 
+"pseudo_type": "NC", 
+"raren_relax": {
+"45.0": {
+"initial_energy_ev_per_atom": -1804.5372564176075, 
+"relaxed_a": 4.974105063487789
+}, 
+"47.0": {
+"initial_energy_ev_per_atom": -1804.5957022637006, 
+"relaxed_a": 4.9736401538802237
+}, 
+"49.0": {
+"initial_energy_ev_per_atom": -1804.621868834268, 
+"relaxed_a": 4.9751605189892754
+}, 
+"51.0": {
+"initial_energy_ev_per_atom": -1804.6330164821534, 
+"relaxed_a": 4.975614339636409
+}, 
+"53.0": {
+"initial_energy_ev_per_atom": -1804.636703695681, 
+"relaxed_a": 4.9754242680224747
+}, 
+"55.0": {
+"initial_energy_ev_per_atom": -1804.6377384500179, 
+"relaxed_a": 4.9755325840441289
+}, 
+"57.0": {
+"initial_energy_ev_per_atom": -1804.6380572376, 
+"relaxed_a": 4.9755359473788756
+}, 
+"59.0": {
+"initial_energy_ev_per_atom": -1804.637786092919, 
+"relaxed_a": 4.9755314427432813
+}, 
+"61.0": {
+"initial_energy_ev_per_atom": -1804.6382562015344, 
+"relaxed_a": 4.9755253233991041
+}, 
+"63.0": {
+"initial_energy_ev_per_atom": -1804.638020403532, 
+"relaxed_a": 4.9755241323422945
+}, 
+"65.0": {
+"initial_energy_ev_per_atom": -1804.6380117565568, 
+"relaxed_a": 4.9755248346059036
+}, 
+"73.0": {
+"initial_energy_ev_per_atom": -1804.6383870432358, 
+"relaxed_a": 4.9755161626563122
+}, 
+"75.0": {
+"initial_energy_ev_per_atom": -1804.6388515492995, 
+"relaxed_a": 4.9755166438986516
+}
+}, 
+"symbol": "Pr", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_C_PBE"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_X_PBE"
+}
+}
+}

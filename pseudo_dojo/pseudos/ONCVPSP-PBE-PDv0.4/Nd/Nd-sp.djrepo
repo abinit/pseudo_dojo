@@ -1,0 +1,104 @@
+{
+"basename": "Nd-sp.psp8", 
+"ecuts": [
+45.0, 
+47.0, 
+49.0, 
+51.0, 
+53.0, 
+55.0, 
+57.0, 
+59.0, 
+61.0, 
+63.0, 
+65.0, 
+73.0, 
+75.0
+], 
+"md5": "09d803e17a2bb5a611709d4ae7f3c5f4", 
+"ppgen_hints": {
+"high": {
+"ecut": 55.0, 
+"pawecutdg": 55.0
+}, 
+"low": {
+"ecut": 51.0, 
+"pawecutdg": 51.0
+}, 
+"normal": {
+"ecut": 53.0, 
+"pawecutdg": 53.0
+}
+}, 
+"pseudo_type": "NC", 
+"raren_relax": {
+"45.0": {
+"initial_energy_ev_per_atom": -2086.4626125057675, 
+"relaxed_a": 4.9534168905638101
+}, 
+"47.0": {
+"initial_energy_ev_per_atom": -2086.569064112895, 
+"relaxed_a": 4.9529171630512403
+}, 
+"49.0": {
+"initial_energy_ev_per_atom": -2086.620047385605, 
+"relaxed_a": 4.9536900717135186
+}, 
+"51.0": {
+"initial_energy_ev_per_atom": -2086.6409562048784, 
+"relaxed_a": 4.9540708543387453
+}, 
+"53.0": {
+"initial_energy_ev_per_atom": -2086.6487637176965, 
+"relaxed_a": 4.9543388890950881
+}, 
+"55.0": {
+"initial_energy_ev_per_atom": -2086.6767329671147, 
+"relaxed_a": 4.954184800756499
+}, 
+"57.0": {
+"initial_energy_ev_per_atom": -2086.651933150159, 
+"relaxed_a": 4.9541977092726812
+}, 
+"59.0": {
+"initial_energy_ev_per_atom": -2086.6517035513853, 
+"relaxed_a": 4.9541938518356314
+}, 
+"61.0": {
+"initial_energy_ev_per_atom": -2086.651625447312, 
+"relaxed_a": 4.9541934329742876
+}, 
+"63.0": {
+"initial_energy_ev_per_atom": -2086.6516278061013, 
+"relaxed_a": 4.9541964722500555
+}, 
+"65.0": {
+"initial_energy_ev_per_atom": -2086.651698854397, 
+"relaxed_a": 4.9541980573557627
+}, 
+"73.0": {
+"initial_energy_ev_per_atom": -2086.6510924886384, 
+"relaxed_a": 4.9541974213561595
+}, 
+"75.0": {
+"initial_energy_ev_per_atom": -2086.6516196091547, 
+"relaxed_a": 4.9542004031591533
+}
+}, 
+"symbol": "Nd", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_C_PBE"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "GGA_X_PBE"
+}
+}
+}

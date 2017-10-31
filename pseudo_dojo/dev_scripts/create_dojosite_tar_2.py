@@ -11,7 +11,7 @@ import json
 from shutil import copyfile
 from pseudo_dojo.util.notebook import write_notebook_html
 from pseudo_dojo.core.dojoreport import DojoReport
-#from pseudo_dojo.util.convert import make_upf
+# from pseudo_dojo.util.convert import make_upf
 from pseudo_dojo.ppcodes.ppgen import OncvGenerator
 from nbconvert.preprocessors.execute import CellExecutionError
 
@@ -49,9 +49,7 @@ def make_upf(pseudo_path, calctype, mock=False):
     return nv
 
 
-#PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
 PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
-#PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.3']
 
 
 ACCURACIES = ['standard', 'high']
@@ -67,11 +65,6 @@ def main():
     if "--help" in sys.argv or "-h" in sys.argv:
         print(usage)
         return 1
-    try:
-        path = sys.argv[1]
-    except:
-        print(usage)
-        return 1
 
     mock = False
 
@@ -85,16 +78,15 @@ def main():
 
     #  walk the current tree, create the directory structure and copy the .in, .psp8, and .djrepo files
     print('copying selected pseudos:\n%s' % PSEUDOS_TO_INCLUDE)
-    a = 0
 
     for pseudo_set in PSEUDOS_TO_INCLUDE:
         xc = pseudo_set.split('-')[1].lower()
         for acc in ACCURACIES:
-            with open(os.path.join(pseudo_set, acc)) as f:
+            with open(os.path.join(pseudo_set, acc+'.txt')) as f:
                 pseudos = f.readlines()
+
             name = "nc-sr_%s_%s" % (xc, rnACC[acc])
-            #for fmt in ['psp8', 'upf', 'html', 'djrepo']:
-            #    os.makedirs(os.path.join(website, '%s_%s' % (name, fmt)))
+
             os.makedirs(os.path.join(website, name))
             pseudo_data = {}
             for pseudo in pseudos:
@@ -104,7 +96,7 @@ def main():
                         copyfile(os.path.join(pseudo_set, p).replace('psp8', extension),
                                  os.path.join(website, name, os.path.split(p)[1].replace('psp8', extension)))
                     try:
-                        write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), tmpfile=False, mock=True)
+                        write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), tmpfile=False, mock=False)
                     except:
                         pass
                     try:
