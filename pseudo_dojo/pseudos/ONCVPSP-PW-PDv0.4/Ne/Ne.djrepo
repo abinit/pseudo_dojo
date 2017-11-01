@@ -1,0 +1,50 @@
+{
+"basename": "Ne.psp8", 
+"ecuts": [
+24.0, 
+26.0, 
+28.0, 
+30.0, 
+32.0, 
+34.0, 
+36.0, 
+38.0, 
+40.0, 
+42.0, 
+44.0, 
+52.0, 
+54.0
+], 
+"md5": "6c04a5ec3236494822194ed07d41c73c", 
+"ppgen_hints": {
+"high": {
+"ecut": 34.0, 
+"pawecutdg": 34.0
+}, 
+"low": {
+"ecut": 30.0, 
+"pawecutdg": 30.0
+}, 
+"normal": {
+"ecut": 32.0, 
+"pawecutdg": 32.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Ne", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_C_PW"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_X"
+}
+}
+}
