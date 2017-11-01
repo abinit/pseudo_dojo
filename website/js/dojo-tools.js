@@ -255,8 +255,9 @@ function dynamicdropdown(listindex){
       // document.getElementById("XCF").options[]=new Option("PBEsol","pbesol");
       document.getElementById("FMT").options[0]=new Option("psp8","psp8");
       document.getElementById("FMT").options[1]=new Option("upf","upf");
-      document.getElementById("FMT").options[2]=new Option("html","html");
-      document.getElementById("FMT").options[3]=new Option("djrepo","djrepo");
+      document.getElementById("FMT").options[2]=new Option("psml","psml");
+      document.getElementById("FMT").options[3]=new Option("html","html");
+      document.getElementById("FMT").options[4]=new Option("djrepo","djrepo");
       break;
 
     case "paw" :

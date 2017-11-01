@@ -28,6 +28,7 @@ def make_upf(pseudo_path, calctype, mock=False):
     """
     in_path = pseudo_path.split('.')[0] + '.in'
     upf_path = pseudo_path.split('.')[0] + '.upf'
+    psml_path = pseudo_path.split('.')[0] + '.psml'
 
     if mock:
         with open(upf_path, 'w') as f:
@@ -45,14 +46,17 @@ def make_upf(pseudo_path, calctype, mock=False):
     nv = parser.nv
     with open(upf_path, 'w') as f:
         f.write(parser.get_pseudo_str())
+    print(os.listdir(os.path.dirname(generator.stdout_path)))
+    copyfile(os.path.join(os.path.dirname(generator.stdout_path), 'ONCVPSPPSML'), psml_path)
 
     return nv
 
 
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.3', 'ONCVPSP-PW-PDv0.3', 'ONCVPSP-PBEsol-PDv0.3']
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4', 'ONCVPSP-PW-PDv0.4', 'ONCVPSP-PBEsol-PDv0.4']
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4']
 
 
-ACCURACIES = ['standard', 'high']
+ACCURACIES = ['high']
 rnACC = {'standard': 'standard', 'high': 'stringent'}
 
 def main():
@@ -82,10 +86,11 @@ def main():
     for pseudo_set in PSEUDOS_TO_INCLUDE:
         xc = pseudo_set.split('-')[1].lower()
         for acc in ACCURACIES:
-            with open(os.path.join(pseudo_set, acc+'.txt')) as f:
+            with open(os.path.join(pseudo_set, rnACC[acc]+'.txt')) as f:
                 pseudos = f.readlines()
+            print(pseudos)
 
-            name = "nc-sr_%s_%s" % (xc, rnACC[acc])
+            name = "nc-sr-04_%s_%s" % (xc, rnACC[acc])
 
             os.makedirs(os.path.join(website, name))
             pseudo_data = {}
@@ -106,7 +111,7 @@ def main():
                         nv = 'NA'
                     p_name = os.path.split(p)[1]
                     el = p_name.split('-')[0].split('.')[0]
-                    for extension in ['psp8', 'upf', 'djrepo', 'html']:
+                    for extension in ['psp8', 'upf', 'djrepo', 'html', 'psml']:
                         os.rename(os.path.join(website, name, p_name.replace('psp8', extension)),
                                   os.path.join(website, name, el + '.' + extension))
                     os.remove(os.path.join(website, name, os.path.split(p)[1].replace('psp8', 'out')))
