@@ -1,0 +1,50 @@
+{
+"basename": "O-high.psp8", 
+"ecuts": [
+34.0, 
+36.0, 
+38.0, 
+40.0, 
+42.0, 
+44.0, 
+46.0, 
+48.0, 
+50.0, 
+52.0, 
+54.0, 
+62.0, 
+64.0
+], 
+"md5": "6c2cdfc070712d2ac0fce59df913b723", 
+"ppgen_hints": {
+"high": {
+"ecut": 44.0, 
+"pawecutdg": 44.0
+}, 
+"low": {
+"ecut": 38.0, 
+"pawecutdg": 38.0
+}, 
+"normal": {
+"ecut": 41.0, 
+"pawecutdg": 41.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "O", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_C_PW"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_X"
+}
+}
+}
