@@ -1,0 +1,50 @@
+{
+"basename": "Al.psp8", 
+"ecuts": [
+10.0, 
+12.0, 
+14.0, 
+16.0, 
+18.0, 
+20.0, 
+22.0, 
+24.0, 
+26.0, 
+28.0, 
+30.0, 
+38.0, 
+40.0
+], 
+"md5": "fef18c0c4c106244421000999f2c9383", 
+"ppgen_hints": {
+"high": {
+"ecut": 20.0, 
+"pawecutdg": 20.0
+}, 
+"low": {
+"ecut": 16.0, 
+"pawecutdg": 16.0
+}, 
+"normal": {
+"ecut": 18.0, 
+"pawecutdg": 18.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Al", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_C_PW"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_X"
+}
+}
+}
