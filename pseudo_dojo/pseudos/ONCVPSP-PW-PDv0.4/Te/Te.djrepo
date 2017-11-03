@@ -1,0 +1,50 @@
+{
+"basename": "Te.psp8", 
+"ecuts": [
+9.0, 
+11.0, 
+13.0, 
+15.0, 
+17.0, 
+19.0, 
+21.0, 
+23.0, 
+25.0, 
+27.0, 
+29.0, 
+37.0, 
+39.0
+], 
+"md5": "f98adc886f8a996facb1d83479e07576", 
+"ppgen_hints": {
+"high": {
+"ecut": 19.0, 
+"pawecutdg": 19.0
+}, 
+"low": {
+"ecut": 10.0, 
+"pawecutdg": 10.0
+}, 
+"normal": {
+"ecut": 11.0, 
+"pawecutdg": 11.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Te", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_C_PW"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_X"
+}
+}
+}

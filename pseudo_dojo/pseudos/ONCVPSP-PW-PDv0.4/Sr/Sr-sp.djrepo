@@ -1,0 +1,50 @@
+{
+"basename": "Sr-sp.psp8", 
+"ecuts": [
+26.0, 
+28.0, 
+30.0, 
+32.0, 
+34.0, 
+36.0, 
+38.0, 
+40.0, 
+42.0, 
+44.0, 
+46.0, 
+54.0, 
+56.0
+], 
+"md5": "b915f3f8b6026e865b6cd3f157913728", 
+"ppgen_hints": {
+"high": {
+"ecut": 36.0, 
+"pawecutdg": 36.0
+}, 
+"low": {
+"ecut": 27.0, 
+"pawecutdg": 27.0
+}, 
+"normal": {
+"ecut": 29.0, 
+"pawecutdg": 29.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Sr", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_C_PW"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_X"
+}
+}
+}
