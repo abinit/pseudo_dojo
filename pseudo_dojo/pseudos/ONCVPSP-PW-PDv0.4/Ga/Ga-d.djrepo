@@ -1,0 +1,50 @@
+{
+"basename": "Ga-d.psp8", 
+"ecuts": [
+28.0, 
+30.0, 
+32.0, 
+34.0, 
+36.0, 
+38.0, 
+40.0, 
+42.0, 
+44.0, 
+46.0, 
+48.0, 
+56.0, 
+58.0
+], 
+"md5": "8daeab69a92b4aea3018b761d479334a", 
+"ppgen_hints": {
+"high": {
+"ecut": 38.0, 
+"pawecutdg": 38.0
+}, 
+"low": {
+"ecut": 35.0, 
+"pawecutdg": 35.0
+}, 
+"normal": {
+"ecut": 36.0, 
+"pawecutdg": 36.0
+}
+}, 
+"pseudo_type": "NC", 
+"symbol": "Ga", 
+"version": "1.0", 
+"xc": {
+"@class": "XcFunc", 
+"@module": "pymatgen.core.xcfunc", 
+"c": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_C_PW"
+}, 
+"x": {
+"@class": "LibxcFunc", 
+"@module": "pymatgen.core.libxcfunc", 
+"name": "LDA_X"
+}
+}
+}
