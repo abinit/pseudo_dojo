@@ -1,0 +1,50 @@
+{
+"basename": "Hg-sp.psp8",
+"ecuts": [
+20.0,
+22.0,
+24.0,
+26.0,
+28.0,
+30.0,
+32.0,
+34.0,
+36.0,
+38.0,
+40.0,
+48.0,
+50.0
+],
+"md5": "e2f0766dff6a7b640e5a53d8e403ab19",
+"ppgen_hints": {
+"high": {
+"ecut": 30.0,
+"pawecutdg": 30.0
+},
+"low": {
+"ecut": 27.0,
+"pawecutdg": 27.0
+},
+"normal": {
+"ecut": 28.0,
+"pawecutdg": 28.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Hg",
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "LDA_C_PW"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "LDA_X"
+}
+}
+}
