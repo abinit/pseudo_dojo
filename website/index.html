@@ -1654,14 +1654,18 @@ if (localStorage.getItem('selectedFMT')) {
       var fmt = $("#FMT").val();
       if (fmt === 'html'){
         var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt);
-        window.location.href = url
-        }
+        $.get(url)
+          .done(function() {
+            // exists code
+            window.location.href = url
+          }).fail(function() {
+            // not exists code
+          })}
       else {
         var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt,'.gz')
         $.get(url)
           .done(function() {
             // exists code
-//            window.location.href = url;
             window.downloadFile(url);
           }).fail(function() {
             // not exists code
