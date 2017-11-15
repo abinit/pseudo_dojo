@@ -1653,19 +1653,19 @@ if (localStorage.getItem('selectedFMT')) {
       var acc = $("#ACC").val();
       var fmt = $("#FMT").val();
       if (fmt === 'html'){
-        var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt)
+        var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt);
+        window.location.href = url
         }
       else {
         var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt,'.gz')
-      }
-      $.get(url)
-        .done(function() {
+        $.get(url)
+          .done(function() {
             // exists code
-//          window.location.href = url;
+//            window.location.href = url;
             window.downloadFile(url);
-        }).fail(function() {
+          }).fail(function() {
             // not exists code
-        })
+          })}
     });
 
 
