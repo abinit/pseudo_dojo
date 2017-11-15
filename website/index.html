@@ -1652,7 +1652,12 @@ if (localStorage.getItem('selectedFMT')) {
       var xcf = $("#XCF").val();
       var acc = $("#ACC").val();
       var fmt = $("#FMT").val();
-      var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt)
+      if (fmt === 'html'){
+        var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt)
+        }
+      else {
+        var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt,'.gz')
+      }
       $.get(url)
         .done(function() {
             // exists code
@@ -1662,6 +1667,11 @@ if (localStorage.getItem('selectedFMT')) {
             // not exists code
         })
     });
+
+
+
+
+
 
     $('.download_button').hover(function(){
       var trunk = "pseudos/"
