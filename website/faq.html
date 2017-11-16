@@ -36,7 +36,7 @@
       </div>
     </div>
 
-<lu class="generaltext">
+< class="generaltext">
 <h1>General</h1>
 
 <h2>&#9670; What are all these numbers?</h2>
@@ -69,25 +69,35 @@ The numbers in the lower right corner are the results of various tests performed
 
 <h2>&#9670; How do I cite the PseudoDojo?</h2>
 
-A preprint of a detailed paper on the pseudo dojo and the NC pseudopotentials has just been released on arxiv:<BR />
+    A preprint of a detailed paper on the pseudo dojo and the NC pseudopotentials has just been released on arxiv:<BR />
 <blockquote>
 The PseudoDojo: Training and grading a 85 element optimized norm-conserving pseudopotential table<BR />
 M. J. van Setten, M. Giantomassi, E. Bousquet, M. J. Verstraete, D. R. Hamann, X. Gonze, G.-M. Rignanese  <BR />
 <a href="https://arxiv.org/abs/1710.10138">arxiv:1710.10138</a>
 </blockquote>
-An important paper concerning the delta gauge is:
+
+    An important paper concerning the delta gauge is:
 <blockquote>
 Reproducibility in density functional theory calculations of solids.<BR />
 K. Lejaeghere et. all, Science  25 Mar 2016, Vol. 351, Issue 6280 <BR />
 <a href='https://dx.doi.org/10.1126/science.aad3000'>10.1126/science.aad3000</a>
 </blockquote>
-When using ONCVPSP type pseudo potentials please cite:<BR />
+
+      When using ONCVPSP type pseudo potentials please cite:<BR />
 <blockquote>
 Optimized norm-conserving Vanderbilt pseudopotentials<BR />
 D. R. Hamann, Phys. Rev. B 88, 085117<BR />
 <a href='https://doi.org/10.1103/PhysRevB.88.085117'>10.1103/PhysRevB.88.085117</a>
 </blockquote>
-When using PAW type pseudopotentials please cite:<BR />
+
+      When using PSML format pseudo potentials please cite:<BR />
+<blockquote>
+The PSML format and library for norm-conserving pseudopotential data curation and interoperability<BR />
+A. García, M. Verstraete, Y. Pouillon, J. Junquera, arXiv:1707.08938<BR />
+<a href='https://arxiv.org/abs/1707.08938'>arXiv:1707.08938</a>
+</blockquote>
+
+    When using PAW type pseudopotentials please cite:<BR />
 <blockquote>
 Generation of Projector Augmented-Wave atomic data: A 71 element validated table in the XML format.<BR />
 F. Jollet, M. Torrent, and Holzwarth, Computer Physics Communications 185, 1246<BR />
@@ -98,6 +108,12 @@ F. Jollet, M. Torrent, and Holzwarth, Computer Physics Communications 185, 1246<
 
 <H1>Concerning the ONCVPSP pseudopotentials</H1>
 
+In general, the pseudo's you find here are ready to use.
+If you have special needs you are also free to use the inputs we provide as a staring point to generate your own
+      pseudopotentials.
+
+
+
 <h2>&#9670; Do you also have the pseudo for my favorite GGA or LDA functional?</h2>
 We provide PBE, PBEsol, and one LDA set of pseudo potentials.<BR />
 The input files can be obtained from the dojo reports in the HTML files.<BR />
@@ -106,10 +122,10 @@ We could reuse most of out PBE inputs to generate the PBEsol potentials.<BR />
 Using <a href="http://octopus-code.org/wiki/Libxc_functionals">LibXC</a>, which is linked to ONCVPSP, almost all functionals can be used.
 
 <h2>&#9670; All the ONCVPSP potentials are with non-linear core correction I need some without.</h2>
-We usually observe better convergenc with so indeed all are generated with nlcc.<BR />
-I yo really need one without take the input from the HTML page on the pseudo (select format : html and click the element).<BR />
+We usually observe better convergence with so, indeed, all are generated with nlcc.<BR />
+If you really need one without take the input from the HTML page on the pseudo (select format : html and click the element).<BR />
 Install <a href="http://www.mat-simresearch.com/">ONCVPSP</a>.
-Turn icmod to 0 in the input and generate the pseudo.
+Turn icmod to 0 in the input and generate the pseudopotential.
 
 <h2>&#9670; What about hybrids and meta functionals?</h2>
 These are currently under development.<BR />
@@ -118,9 +134,10 @@ These are currently under development.<BR />
 We are currently working on the Lanthanides.<BR />
 
 <h2>&#9670; Is it also possible to get the pseudos in other formats?</h2>
-ONCVPSP currently supports psp8 and upf.<BR />
-These are available for download.<BR />
-We are looking at the possibility to also provide them in the psml format.<BR />
+ONCVPSP currently supports psp8 and upf natively.<BR />
+Using the <a href="https://launchpad.net/pspgenpatch">psml patch</a> we also generated psml files
+      for use with <a href="https://launchpad.net/siesta/psml-support">Siesta</a><BR />
+The psml format is available from version 0.4.<BR />
 
 <h2>&#9670; Will the fully relativistic versions of the potentials be available as well?</h2>
 Yes, this is another project we are finishing at the moment.<BR />
