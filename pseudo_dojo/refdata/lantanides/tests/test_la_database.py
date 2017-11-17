@@ -1,4 +1,4 @@
-"""Unit tests for gbrv database."""
+"""Unit tests for lanthanides database."""
 from __future__ import division, print_function, unicode_literals, absolute_import
 
 from pymatgen.core.xcfunc import XcFunc
@@ -18,7 +18,7 @@ class TestLaNDatabase(PseudoDojoTest):
         db = raren_database(xc="PBE")
         assert db.xc == "PBE"
         table = db.table
-        assert set(table.keys()) == set("Z exp VASP VASP@600eV VASP@800eV VASP@1000eV ref".split())
+        assert set(table.keys()) == set("Z exp VASP VASP@600eV VASP@800eV VASP@1000eV ref Wien2k Vlab ".split())
 
         # Cached?
         assert db is raren_database(xc="PBE")
