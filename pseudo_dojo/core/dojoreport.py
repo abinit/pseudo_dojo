@@ -862,6 +862,8 @@ class DojoReport(dict):
             ax.set_yscale("log")
             ax.set_xlim(xs[0]-1, xs[-2]+1)
 
+        plt.tight_layout()
+
         return fig
 
     @add_fig_kwargs
@@ -908,6 +910,8 @@ class DojoReport(dict):
             # Use same fit as the one employed for the deltafactor.
             eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
             eos_fit.plot(ax=ax, text=False, label="ecut %.1f" % ecut, color=cmap(i/len(ecuts), alpha=1), show=False)
+
+        plt.tight_layout()
 
         return fig
 
@@ -993,6 +997,8 @@ class DojoReport(dict):
             else:
                 ax.hlines(y=0., xmin=xmin, xmax=xmax, colors="black", linewidth=2, linestyles='dashed')
 
+        plt.tight_layout()
+
         return fig
 
     @add_fig_kwargs
@@ -1040,6 +1046,8 @@ class DojoReport(dict):
             label = "ecut %.1f" % ecut if i % 2 == 0 else ""
             label = "ecut %.1f" % ecut
             eos_fit.plot(ax=ax, text=False, label=label, color=cmap(i/len(ecuts), alpha=1), show=False)
+
+        plt.tight_layout()
 
         return fig
 
@@ -1097,6 +1105,8 @@ class DojoReport(dict):
                 for acc in self.ALL_ACCURACIES:
                     ax.vlines(self["hints"][acc]["ecut"], vmin, vmax,
                               colors=self.ACC2COLOR[acc], linestyles="dashed")
+
+        plt.tight_layout()
 
         return fig
 
@@ -1172,6 +1182,9 @@ class DojoReport(dict):
         ax_list[-1].set_xlabel("Ecut [Ha]")
 
         fig.suptitle("Phonons in cm-1")
+
+        plt.tight_layout()
+
         return fig
 
     @add_fig_kwargs
@@ -1259,6 +1272,8 @@ class DojoReport(dict):
             ax.grid(True)
             ax.set_ylabel(key2ylabel[key])
             if i == len(keys) - 1: ax.set_xlabel("Ecut [Ha]")
+
+        plt.tight_layout()
 
         return fig
 

@@ -53,7 +53,7 @@ def make_upf(pseudo_path, calctype, mock=False):
 
 
 PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4', 'ONCVPSP-PW-PDv0.4', 'ONCVPSP-PBEsol-PDv0.4']
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4']
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-FR-PDv0.4']
 
 
 ACCURACIES = ['high']
