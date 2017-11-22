@@ -1457,7 +1457,7 @@ def psp8_get_densities(path, fc_file=None, ae_file=None, plot=False):
 
             print("\n\n<JSON>", file=fc_file)
             print(json.dumps(meta, indent=4), file=fc_file)
-            print("</JSON>")
+            print("</JSON>", file=fc_file)
 
         if ae_file is not None:
             # Write results to file in "AE" format
@@ -1473,7 +1473,7 @@ def psp8_get_densities(path, fc_file=None, ae_file=None, plot=False):
 
             print("\n\n<JSON>", file=ae_file)
             print(json.dumps(meta, indent=4), file=ae_file)
-            print("</JSON>")
+            print("</JSON>", file=ae_file)
 
         if plot:
             import matplotlib.pyplot as plt
