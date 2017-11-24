@@ -53,11 +53,13 @@ def make_upf(pseudo_path, calctype, mock=False):
 
 
 PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4', 'ONCVPSP-PW-PDv0.4', 'ONCVPSP-PBEsol-PDv0.4']
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-FR-PDv0.4']
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
 
 
-ACCURACIES = ['high']
-rnACC = {'standard': 'standard', 'high': 'stringent'}
+ACCURACIES = ['standard']
+#ACCURACIES = ['la3+']
+rnACC = {'la3+':'la3+', 'standard': 'standard', 'high': 'stringent'}
+
 
 def main():
     website = 'website'
@@ -107,10 +109,11 @@ def main():
                     try:
                         nv = make_upf(os.path.join(website, name, os.path.split(p)[1]), mock=mock,
                                       calctype="scalar-relativistic")
-                    except None:
+                    except RuntimeError:
                         nv = 'NA'
                     p_name = os.path.split(p)[1]
                     el = p_name.split('-')[0].split('.')[0]
+                    el.replace('3+_f', '')
                     for extension in ['psp8', 'upf', 'djrepo', 'html', 'psml']:
                         os.rename(os.path.join(website, name, p_name.replace('psp8', extension)),
                                   os.path.join(website, name, el + '.' + extension))
@@ -132,7 +135,7 @@ def main():
                         delta_s = "%1.1f" % round(delta, 1)
                         deltap = dojoreport["deltafactor"][delta_ecut]["dfactprime_meV"]
                         deltap_s = "%1.1f" % round(deltap, 1)
-                    except KeyError:
+                    except (KeyError, TypeError):
                         delta_s = 'na'
                         deltap_s = 'na'
                     try:
@@ -148,7 +151,7 @@ def main():
                     print("%s %s %s %s %s %s %s" % (nv, low_hint, normal_hint, high_hint, delta_s, deltap_s, gb_s))
                     pseudo_data[el] = {'nv': nv, 'hh': high_hint, 'hl': low_hint, 'hn': normal_hint, 'd': delta_s,
                                        'dp': deltap_s, 'gb': gb_s}
-                except (IOError, ValueError, CellExecutionError, OSError):
+                except RuntimeError: # (IOError, ValueError, CellExecutionError, OSError):
                     print('missing %s %s ' % (pseudo_set, p))
                     pass
             with open(os.path.join(website, name + '.json'), 'w') as fp:
