@@ -8,6 +8,17 @@ function.prototype.method = function (name func) {
 var keys = ['hh', 'hl', 'hn', 'nv', 'd', 'dp', 'gb'];
 var els = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne','Na', 'Mg', "Al", "Si", 'P', 'S', 'Cl', 'Ar','K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe','Co','Ni','Cu','Zn','Ga','Ge','As','Se','Br','Kr','Rb','Sr','Y','Zr','Nb','Mo','Tc','Ru','Rh','Pd','Ag','Cd','In','Sn','Sb','Te','I','Xe','Cs','Ba','La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu','Hf','Ta','W','Re','Os','Ir','Pt','Au','Hg','Tl','Pb','Bi','Po','At','Rn'];
 
+function set_warning(txt) {
+  var warningbox = document.getElementById('warning_box');
+  warningbox.innerHTML = "<div class='alert warning'><span id='cbn' class='closebtn'>&times;</span><strong>Warning!</strong> ".concat(txt, "</div>");
+  var close = document.getElementById("cbn");
+  close.onclick = function(){
+     var div = document.getElementById('warning_box');
+     setTimeout(function(){ div.innerHTML = ""; }, 100);
+  }
+}
+
+
 function set_info(info, animate) {
     var averages = [0,0,0,0,0,0,0];
     var sums = [0,0,0,0,0,0,0];
@@ -236,6 +247,8 @@ function dynamicdropdown(listindex){
   switch (listindex)
   {
     case "nc-sr" :
+      document.getElementById('warning_box').innerHTML = "";
+      set_warning(' this version is outdated')
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       document.getElementById("ACC").options[1]=new Option("stringent","stringent");
       document.getElementById("XCF").options[0]=new Option("LDA","pw");
@@ -248,6 +261,7 @@ function dynamicdropdown(listindex){
       break;
 
     case "nc-sr-04" :
+      document.getElementById('warning_box').innerHTML = "";
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       document.getElementById("ACC").options[1]=new Option("stringent","stringent");
       // document.getElementById("XCF").options[]=new Option("LDA","pw");
@@ -260,7 +274,23 @@ function dynamicdropdown(listindex){
       document.getElementById("FMT").options[4]=new Option("djrepo","djrepo");
       break;
 
+    case "nc-sr-04_3+" :
+      set_warning(" this table contains Lanthanide potentials for use in the 3+ configuration only. They all have the f-electrons frozen in the core.");
+      document.getElementById("ACC").options[0]=new Option("standard","standard");
+      // document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+      // document.getElementById("XCF").options[]=new Option("LDA","pw");
+      document.getElementById("XCF").options[0]=new Option("PBE","pbe");
+      // document.getElementById("XCF").options[]=new Option("PBEsol","pbesol");
+      document.getElementById("FMT").options[0]=new Option("psp8","psp8");
+      document.getElementById("FMT").options[1]=new Option("upf","upf");
+      document.getElementById("FMT").options[2]=new Option("psml","psml");
+      // document.getElementById("FMT").options[3]=new Option("html","html");
+      // document.getElementById("FMT").options[4]=new Option("djrepo","djrepo");
+      break;
+
+
     case "paw" :
+      document.getElementById('warning_box').innerHTML = "";
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       document.getElementById("ACC").options[1]=new Option("stringent","stringent");
       document.getElementById("XCF").options[0]=new Option("LDA","pw");
