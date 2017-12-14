@@ -8,6 +8,16 @@ function.prototype.method = function (name func) {
 var keys = ['hh', 'hl', 'hn', 'nv', 'd', 'dp', 'gb'];
 var els = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne','Na', 'Mg', "Al", "Si", 'P', 'S', 'Cl', 'Ar','K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe','Co','Ni','Cu','Zn','Ga','Ge','As','Se','Br','Kr','Rb','Sr','Y','Zr','Nb','Mo','Tc','Ru','Rh','Pd','Ag','Cd','In','Sn','Sb','Te','I','Xe','Cs','Ba','La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu','Hf','Ta','W','Re','Os','Ir','Pt','Au','Hg','Tl','Pb','Bi','Po','At','Rn'];
 
+function getParameterByName(name) {
+    url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 function set_warning(txt) {
   var warningbox = document.getElementById('warning_box');
   warningbox.innerHTML = "<div class='alert warning'><span id='cbn' class='closebtn'>&times;</span><strong>Warning!</strong> ".concat(txt, "</div>");
@@ -18,6 +28,34 @@ function set_warning(txt) {
   }
 }
 
+
+function make_light() {
+    hide_clases = ["hide", "name", 'intro'];
+    for (var j = 0; j < hide_clases.length; j++) {
+        var tohide = document.getElementsByClassName(hide_clases[j]);
+        for (var i =0; i < tohide.length; i++) {
+            tohide[i].style.visibility="hidden";
+        }
+    }
+    document.getElementById('X_n').setAttribute("style","left:326px; top:41px; height:170px; width:140px;");
+    document.getElementById('N').setAttribute("style","left:326px; top:41px; height:170px; width:140px; font-size=20px");
+    document.getElementById("download_button").setAttribute("style","left:70px; top:101px; width:200px; height:55px; padding:15px");
+    elements = document.getElementsByClassName('element')
+    for (var i; i < elements.length; i++){
+       elements[i].setAttribute('style', 'font-size:24px; margin-top:12px; line-height:1; text-align:center;');
+       console.log(elements[i].innerHTML)
+    }
+    document.getElementById("X_el").setAttribute('style', 'margin-top:20px;');
+    document.getElementById("X_hl").setAttribute('style', 'font-size:20px; padding:2px');
+    document.getElementById("X_hn").setAttribute('style', 'font-size:20px; padding:2px');
+    document.getElementById("X_hh").setAttribute('style', 'font-size:20px; padding:2px');
+    document.getElementById("X_nv").setAttribute('style', 'font-size:20px; margin-top:-158px; padding:2px');
+    document.getElementById("det_test").setAttribute('style', 'font-size:20px; padding:2px');
+    document.getElementById("det_hints").setAttribute('style', 'font-size:20px; margin-top:5px; padding:2px');
+    document.getElementById("X_d").setAttribute('style', 'font-size:20px; padding:2px');
+    document.getElementById("X_dp").setAttribute('style', 'font-size:20px; padding:2px');
+    document.getElementById("X_gb").setAttribute('style', 'font-size:20px; padding:2px');
+}
 
 function set_info(info, animate) {
     var averages = [0,0,0,0,0,0,0];
@@ -241,11 +279,21 @@ function dojoTour_guidedtour() {
 }
 
 function dynamicdropdown(listindex){
+  console.log('dynamic dropdown: setting', listindex)
   document.getElementById("ACC").length = 0;
   document.getElementById("XCF").length = 0;
   document.getElementById("FMT").length = 0;
   switch (listindex)
   {
+    case "paw" :
+      document.getElementById('warning_box').innerHTML = "";
+      document.getElementById("ACC").options[0]=new Option("standard","standard");
+      document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+      document.getElementById("XCF").options[0]=new Option("LDA","pw");
+      document.getElementById("XCF").options[1]=new Option("PBE","pbe");
+      document.getElementById("FMT").options[0]=new Option("xml","xml");
+      break;
+
     case "nc-sr" :
       document.getElementById('warning_box').innerHTML = "";
       set_warning(' this version is outdated')
@@ -274,7 +322,7 @@ function dynamicdropdown(listindex){
       document.getElementById("FMT").options[4]=new Option("djrepo","djrepo");
       break;
 
-    case "nc-sr-04_3+" :
+    case "nc-sr-04-3plus" :
       set_warning(" this table contains Lanthanide potentials for use in the 3+ configuration only. They all have the f-electrons frozen in the core.");
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       // document.getElementById("ACC").options[1]=new Option("stringent","stringent");
@@ -288,49 +336,16 @@ function dynamicdropdown(listindex){
       // document.getElementById("FMT").options[4]=new Option("djrepo","djrepo");
       break;
 
-
-    case "paw" :
+    case "core" :
       document.getElementById('warning_box').innerHTML = "";
+      document.getElementById("ACC").options[0]=new Option("","standard");
       document.getElementById("ACC").options[0]=new Option("standard","standard");
-      document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-      document.getElementById("XCF").options[0]=new Option("LDA","pw");
-      document.getElementById("XCF").options[1]=new Option("PBE","pbe");
-      document.getElementById("FMT").options[0]=new Option("xml","xml");
-      break;
+      document.getElementById("ACC").options[0]=new Option("standard","standard");
+      document.getElementById("XCF").options[0]=new Option("PBE","pbe");
+      document.getElementById("FMT").options[2]=new Option("FC","fc");
   }
   return true;
 }
-
-store_available_files();
-
-if (localStorage.getItem('selectedXCF')) {
-  var options = document.getElementById('XCF').options
-  for (i in options){
-     if (options[i].value == localStorage.getItem('selectedXCF')){
-       options[i].selected = true;
-     }
-  }
-}
-if (localStorage.getItem('selectedACC')) {
-  var options = document.getElementById('ACC').options
-  for (i in options){
-     if (options[i].value == localStorage.getItem('selectedACC')){
-       options[i].selected = true;
-     }
-  }
-}
-if (localStorage.getItem('selectedFMT')) {
-  var options = document.getElementById('FMT').options
-  for (i in options){
-     if (options[i].value == localStorage.getItem('selectedFMT')){
-       options[i].selected = true;
-     }
-  }
-}
-
-localStorage.setItem('animate', 0)
-
-
 
 function chaos() {
     localStorage.setItem('animate', 1)
