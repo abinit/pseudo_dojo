@@ -1,0 +1,50 @@
+{
+"basename": "Se.psp8",
+"ecuts": [
+9.0,
+11.0,
+13.0,
+15.0,
+17.0,
+19.0,
+21.0,
+23.0,
+25.0,
+27.0,
+29.0,
+37.0,
+39.0
+],
+"md5": "05b99c0d95e9fc3aeb1e4490530065d6",
+"ppgen_hints": {
+"high": {
+"ecut": 19.0,
+"pawecutdg": 19.0
+},
+"low": {
+"ecut": 15.0,
+"pawecutdg": 15.0
+},
+"normal": {
+"ecut": 17.0,
+"pawecutdg": 17.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Se",
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE_SOL"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE_SOL"
+}
+}
+}
