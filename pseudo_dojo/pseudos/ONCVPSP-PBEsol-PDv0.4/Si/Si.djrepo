@@ -15,6 +15,17 @@
 36.0,
 38.0
 ],
+"hints": {
+"high": {
+"ecut": 24.0
+},
+"low": {
+"ecut": 14.0
+},
+"normal": {
+"ecut": 18.0
+}
+},
 "md5": "926731724df1b06af70b3ef370bdc1e4",
 "ppgen_hints": {
 "high": {
@@ -32,6 +43,9 @@
 },
 "pseudo_type": "NC",
 "symbol": "Si",
+"tags": [
+" "
+],
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",

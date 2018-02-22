@@ -9,10 +9,11 @@ var keys = ['hh', 'hl', 'hn', 'nv', 'd', 'dp', 'gb'];
 var els = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne','Na', 'Mg', "Al", "Si", 'P', 'S', 'Cl', 'Ar','K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe','Co','Ni','Cu','Zn','Ga','Ge','As','Se','Br','Kr','Rb','Sr','Y','Zr','Nb','Mo','Tc','Ru','Rh','Pd','Ag','Cd','In','Sn','Sb','Te','I','Xe','Cs','Ba','La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu','Hf','Ta','W','Re','Os','Ir','Pt','Au','Hg','Tl','Pb','Bi','Po','At','Rn'];
 
 function getParameterByName(name) {
-    url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
+    var url = window.location.href;
+    console.log(url);
+    var name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+    var results = regex.exec(url);
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
@@ -43,7 +44,6 @@ function make_light() {
     elements = document.getElementsByClassName('element')
     for (var i; i < elements.length; i++){
        elements[i].setAttribute('style', 'font-size:24px; margin-top:12px; line-height:1; text-align:center;');
-       console.log(elements[i].innerHTML)
     }
     document.getElementById("X_el").setAttribute('style', 'margin-top:20px;');
     document.getElementById("X_hl").setAttribute('style', 'font-size:20px; padding:2px');
