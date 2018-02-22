@@ -15,6 +15,17 @@
 82.0,
 84.0
 ],
+"hints": {
+"high": {
+"ecut": 72.0
+},
+"low": {
+"ecut": 62.0
+},
+"normal": {
+"ecut": 66.0
+}
+},
 "md5": "6db83f0320fcafe0526007e8aabb77ab",
 "ppgen_hints": {
 "high": {
@@ -32,6 +43,9 @@
 },
 "pseudo_type": "NC",
 "symbol": "Ta",
+"tags": [
+""
+],
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",
