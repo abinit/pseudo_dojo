@@ -3,13 +3,13 @@ from __future__ import division, print_function, unicode_literals
 import numpy as np
 import matplotlib.pyplot as plt
 
-from matplotlib.collections import PatchCollection 
+from matplotlib.collections import PatchCollection
 from ptplotter.plotter import ElementDataPlotter
 
 
 class ElementDataPlotterRangefixer(ElementDataPlotter):
     """
-    modify plotter to alow setting the clim for the plot
+    modify plotter to allow setting the clim for the plot
     """
 
     def draw(self, colorbars=True, **kwargs):

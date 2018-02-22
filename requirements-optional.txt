@@ -1,0 +1,10 @@
+ipython
+jupyter
+nbformat
+# Unit tests
+pytest
+pytest-cov
+pytest-xdist
+pytest-sugar
+scripttest
+python-coveralls
