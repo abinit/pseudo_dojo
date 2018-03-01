@@ -52,11 +52,12 @@ def make_upf(pseudo_path, calctype, mock=False):
     return nv
 
 
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4', 'ONCVPSP-PW-PDv0.4', 'ONCVPSP-PBEsol-PDv0.4']
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
+# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4', 'ONCVPSP-PW-PDv0.4', 'ONCVPSP-PBEsol-PDv0.4']
+# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBEsol-PDv0.4']
 
 
-ACCURACIES = ['standard']
+ACCURACIES = ['high']
 #ACCURACIES = ['la3+']
 rnACC = {'la3+':'la3+', 'standard': 'standard', 'high': 'stringent'}
 
