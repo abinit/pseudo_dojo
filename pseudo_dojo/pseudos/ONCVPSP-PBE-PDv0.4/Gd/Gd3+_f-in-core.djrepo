@@ -1,103 +1,120 @@
 {
-"basename": "Gd3+_f-in-core.psp8", 
+"basename": "Gd3+_f-in-core.psp8",
 "ecuts": [
-14.0, 
-16.0, 
-18.0, 
-20.0, 
-22.0, 
-24.0, 
-26.0, 
-28.0, 
-30.0, 
-32.0, 
-34.0, 
-42.0, 
+14.0,
+16.0,
+18.0,
+20.0,
+22.0,
+24.0,
+26.0,
+28.0,
+30.0,
+32.0,
+34.0,
+42.0,
 44.0
-], 
-"md5": "30e5e4bf9124302c5c6d6b4541070536", 
+],
+"hints": {
+"high": {
+"ecut": 28.0
+},
+"low": {
+"ecut": 22.0
+},
+"normal": {
+"ecut": 26.0
+}
+},
+"md5": "30e5e4bf9124302c5c6d6b4541070536",
 "ppgen_hints": {
 "high": {
-"ecut": 24.0, 
+"ecut": 24.0,
 "pawecutdg": 24.0
-}, 
+},
 "low": {
-"ecut": 20.0, 
+"ecut": 20.0,
 "pawecutdg": 20.0
-}, 
+},
 "normal": {
-"ecut": 22.0, 
+"ecut": 22.0,
 "pawecutdg": 22.0
 }
-}, 
-"pseudo_type": "NC", 
+},
+"pseudo_type": "NC",
 "raren_relax": {
 "14.0": {
-"initial_energy_ev_per_atom": -1411.3784421432997, 
-"relaxed_a": 4.9991359444530179
-}, 
+"initial_energy_ev_per_atom": -1411.3784421432997,
+"relaxed_a": 4.999135944453018
+},
 "16.0": {
-"initial_energy_ev_per_atom": -1413.8948063061505, 
-"relaxed_a": 4.9707738787813653
-}, 
+"initial_energy_ev_per_atom": -1413.8948063061505,
+"relaxed_a": 4.970773878781365
+},
 "18.0": {
-"initial_energy_ev_per_atom": -1415.3245270157533, 
-"relaxed_a": 4.9832515498724543
-}, 
+"initial_energy_ev_per_atom": -1415.3245270157533,
+"relaxed_a": 4.983251549872454
+},
 "20.0": {
-"initial_energy_ev_per_atom": -1416.2181074710566, 
-"relaxed_a": 4.9809548927249887
-}, 
+"initial_energy_ev_per_atom": -1416.2181074710566,
+"relaxed_a": 4.980954892724989
+},
 "22.0": {
-"initial_energy_ev_per_atom": -1416.767784799252, 
+"initial_energy_ev_per_atom": -1416.767784799252,
 "relaxed_a": 4.976581208266909
-}, 
+},
 "24.0": {
-"initial_energy_ev_per_atom": -1417.110692832114, 
-"relaxed_a": 4.9788736328499086
-}, 
+"initial_energy_ev_per_atom": -1417.110692832114,
+"relaxed_a": 4.978873632849909
+},
 "26.0": {
-"initial_energy_ev_per_atom": -1417.3215870230176, 
+"initial_energy_ev_per_atom": -1417.3215870230176,
 "relaxed_a": 4.975501092371883
-}, 
+},
 "28.0": {
-"initial_energy_ev_per_atom": -1417.4428034426392, 
+"initial_energy_ev_per_atom": -1417.4428034426392,
 "relaxed_a": 4.974433114299611
-}, 
+},
 "30.0": {
-"initial_energy_ev_per_atom": -1417.5110723466046, 
-"relaxed_a": 4.9750393807557591
-}, 
+"initial_energy_ev_per_atom": -1417.5110723466046,
+"relaxed_a": 4.975039380755759
+},
 "32.0": {
-"initial_energy_ev_per_atom": -1417.5480145610543, 
-"relaxed_a": 4.9748556377629463
-}, 
+"initial_energy_ev_per_atom": -1417.5480145610543,
+"relaxed_a": 4.974855637762946
+},
 "34.0": {
-"initial_energy_ev_per_atom": -1417.5661346742497, 
-"relaxed_a": 4.9748277597060193
-}, 
+"initial_energy_ev_per_atom": -1417.5661346742497,
+"relaxed_a": 4.974827759706019
+},
 "42.0": {
-"initial_energy_ev_per_atom": -1417.5792480474427, 
-"relaxed_a": 4.9749818339477594
-}, 
+"initial_energy_ev_per_atom": -1417.5792480474427,
+"relaxed_a": 4.974981833947759
+},
 "44.0": {
-"initial_energy_ev_per_atom": -1417.5793350069614, 
+"initial_energy_ev_per_atom": -1417.5793350069614,
 "relaxed_a": 4.9749791030834185
 }
-}, 
-"symbol": "Gd", 
-"version": "1.0", 
+},
+"symbol": "Gd",
+"tags": [
+"3+"
+],
+"validation": {
+"validated_on": "2018-03-02 09:57:47"
+},
+"version": "1.0",
 "xc": {
-"@class": "XcFunc", 
-"@module": "pymatgen.core.xcfunc", 
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
 "c": {
-"@class": "LibxcFunc", 
-"@module": "pymatgen.core.libxcfunc", 
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
 "name": "GGA_C_PBE"
-}, 
+},
 "x": {
-"@class": "LibxcFunc", 
-"@module": "pymatgen.core.libxcfunc", 
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
 "name": "GGA_X_PBE"
 }
 }

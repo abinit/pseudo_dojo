@@ -15,6 +15,17 @@
 41.0,
 43.0
 ],
+"hints": {
+"high": {
+"ecut": 29.0
+},
+"low": {
+"ecut": 21.0
+},
+"normal": {
+"ecut": 25.0
+}
+},
 "md5": "b13451990a04f833b6402e04f182896b",
 "ppgen_hints": {
 "high": {
@@ -86,6 +97,12 @@
 }
 },
 "symbol": "Eu",
+"tags": [
+"3+"
+],
+"validation": {
+"validated_on": "2018-03-02 09:54:44"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",

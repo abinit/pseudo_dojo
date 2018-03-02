@@ -323,7 +323,7 @@ function dynamicdropdown(listindex){
       break;
 
     case "nc-sr-04-3plus" :
-      set_warning(" this table contains Lanthanide potentials for use in the 3+ configuration only. They all have the f-electrons frozen in the core.");
+      set_warning(" this table contains Lanthanide potentials for use in the 3+ configuration only. <b>They all have the f-electrons frozen in the core.</b> The hints are based on the convergence of the nitride lattice parameter, see the report under format:html for details.");
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       // document.getElementById("ACC").options[1]=new Option("stringent","stringent");
       // document.getElementById("XCF").options[]=new Option("LDA","pw");
@@ -332,8 +332,8 @@ function dynamicdropdown(listindex){
       document.getElementById("FMT").options[0]=new Option("psp8","psp8");
       document.getElementById("FMT").options[1]=new Option("upf","upf");
       document.getElementById("FMT").options[2]=new Option("psml","psml");
-      // document.getElementById("FMT").options[3]=new Option("html","html");
-      // document.getElementById("FMT").options[4]=new Option("djrepo","djrepo");
+      document.getElementById("FMT").options[3]=new Option("html","html");
+      document.getElementById("FMT").options[4]=new Option("djrepo","djrepo");
       break;
 
     case "core" :
