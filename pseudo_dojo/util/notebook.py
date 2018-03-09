@@ -149,8 +149,11 @@ In this case, `fcfact` mainly determines the height of the model core charge whi
         nb.cells.extend([
         nbf.new_markdown_cell("## Model core charge and form factors computed by ABINIT"),
         nbf.new_code_cell("""\
-with pseudo.open_pspsfile() as psps:
-    fform_fig = psps.plot(); fform_fig"""),
+try:
+    with pseudo.open_pspsfile() as psps:
+        fform_fig = psps.plot(); fform_fig
+except AttributeError:
+    pass"""),
         ])
 
     nb.cells.extend([
