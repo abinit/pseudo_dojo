@@ -820,7 +820,7 @@ class DojoReport(dict):
         num_sites = num_sites[0]
 
         # Energies per atom in meV and difference wrt 'converged' value
-        etotals_mev = minenes * 1000  / num_sites
+        etotals_mev = minenes * 1000 / num_sites
         ediffs = etotals_mev - etotals_mev[-1]
 
         ax, fig, plt = get_ax_fig_plt(ax)
@@ -835,11 +835,12 @@ class DojoReport(dict):
 
         # Add vertical lines at hints.
         if self.has_hints:
-            vmin, vmax = ys.min(), ys.max()
+            vmax = ys.max()
+            vmin = ys.min() if inv_ecut else np.min([y for y in ys if y > 0])
             for acc in self.ALL_ACCURACIES:
                 x0 = self["hints"][acc]["ecut"]
                 if inv_ecut: x0 = 1/x0
-                ax.vlines(x0, vmin, vmax, colors=self.ACC2COLOR[acc], linestyles="dashed")
+                ax.vlines(x0, vmin+0.001, vmax, colors=self.ACC2COLOR[acc], linestyles="dashed")
 
         if label is not None: ax.legend(lines, [label], loc='best', shadow=True)
 
