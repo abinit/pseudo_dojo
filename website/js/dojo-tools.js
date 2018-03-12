@@ -289,8 +289,8 @@ function dynamicdropdown(listindex){
       document.getElementById('warning_box').innerHTML = "";
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-      document.getElementById("XCF").options[0]=new Option("LDA","pw");
-      document.getElementById("XCF").options[1]=new Option("PBE","pbe");
+      document.getElementById("XCF").options[1]=new Option("LDA","pw");
+      document.getElementById("XCF").options[0]=new Option("PBE","pbe");
       document.getElementById("FMT").options[0]=new Option("xml","xml");
       break;
 
@@ -299,9 +299,9 @@ function dynamicdropdown(listindex){
       set_warning(' this version is outdated')
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-      document.getElementById("XCF").options[0]=new Option("LDA","pw");
-      document.getElementById("XCF").options[1]=new Option("PBE","pbe");
-      document.getElementById("XCF").options[2]=new Option("PBEsol","pbesol");
+      document.getElementById("XCF").options[2]=new Option("LDA","pw");
+      document.getElementById("XCF").options[0]=new Option("PBE","pbe");
+      document.getElementById("XCF").options[1]=new Option("PBEsol","pbesol");
       document.getElementById("FMT").options[0]=new Option("psp8","psp8");
       document.getElementById("FMT").options[1]=new Option("upf","upf");
       document.getElementById("FMT").options[2]=new Option("html","html");
@@ -312,7 +312,7 @@ function dynamicdropdown(listindex){
       document.getElementById('warning_box').innerHTML = "";
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-      // document.getElementById("XCF").options[]=new Option("LDA","pw");
+      document.getElementById("XCF").options[2]=new Option("LDA","pw");
       document.getElementById("XCF").options[0]=new Option("PBE","pbe");
       document.getElementById("XCF").options[1]=new Option("PBEsol","pbesol");
       document.getElementById("FMT").options[0]=new Option("psp8","psp8");
