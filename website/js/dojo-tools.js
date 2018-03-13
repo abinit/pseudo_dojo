@@ -260,6 +260,10 @@ function dojoTour_guidedtour() {
           intro:  "Alternatively, with the download button you can get a tar of the full table, always one pseudopotential per element."
         },
         {
+          element: "#papers",
+          intro:  "A list of papers usging PseudoDojo pseudopotentials. Did you use them? Send us the DOI and we'll add yours as well."
+        },
+        {
           element: ".logo",
           intro:  "Finally, if you want to learn the periodic table by heart try clicking here. (p.s. Don't try to download Oganesson, bad things may happen.)"
         }
