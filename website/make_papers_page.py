@@ -3,7 +3,8 @@
 """
 create the input for the paper page from the papers_using_pseudodojo.tex list of DOIs
 """
-
+import json
+import pandas
 from operator import itemgetter
 from betterbib.crossref import Crossref, pybtex_to_dict
 
@@ -43,17 +44,26 @@ def make_ref(entry_dict):
 
             if 'pages' in entry_dict:
                 ref += ', <i>%s</i>' % entry_dict['pages'].replace('--', '-')
+            else:
+                ref += ', <i>%s</i>' % entry_dict['doi'].split('.')[-1]
+
     ref += ' (%s)' % entry_dict['year']
     ref += ' <a href="https://doi.org/%s">crossref</a>' % entry_dict['doi']
     return ref
 
-html = ''
-
 cr = Crossref()
 sorted_entry_dicts = sorted([pybtex_to_dict(cr.get_by_doi(doi)) for doi in dois], key=itemgetter('year'), reverse=True)
+df = pandas.DataFrame(sorted_entry_dicts)
+ax = df['year'].groupby(df["year"]).count().plot(kind="bar")
+ax.set_ylabel('publications per year')
+fig = ax.get_figure()
+fig.set_size_inches(8, 4)
+fig.tight_layout()
+fig.savefig('year.png')
+ax.get_figure().savefig('year.png', transparent=True)
 
-for entry_dict in sorted_entry_dicts:
-    html += '<blockquote>' + make_ref(entry_dict) + '</blockquote>'
+print(json.dumps(sorted_entry_dicts, indent=2))
+html = ''.join(['<blockquote>' + make_ref(entry_dict) + '</blockquote>' for entry_dict in sorted_entry_dicts])
 
 with open('papers.html', 'w') as page:
     page.write(html)

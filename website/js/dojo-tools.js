@@ -31,16 +31,17 @@ function set_warning(txt) {
 
 
 function make_light() {
-    hide_clases = ["hide", "name", 'intro'];
+    document.getElementById('FMT').value = 'psp8'
+    hide_clases = ["hide", "name", 'intro', "styled-longselect", "selection_bar", "help_button", "description", "menubar"];
     for (var j = 0; j < hide_clases.length; j++) {
         var tohide = document.getElementsByClassName(hide_clases[j]);
         for (var i =0; i < tohide.length; i++) {
             tohide[i].style.visibility="hidden";
         }
     }
-    document.getElementById('X_n').setAttribute("style","left:326px; top:41px; height:170px; width:140px;");
-    document.getElementById('N').setAttribute("style","left:326px; top:41px; height:170px; width:140px; font-size=20px");
-    document.getElementById("download_button").setAttribute("style","left:70px; top:101px; width:200px; height:55px; padding:15px");
+    document.getElementById('X_n').setAttribute("style","left:326px; top:91px; height:170px; width:140px;");
+    document.getElementById('N').setAttribute("style","left:326px; top:91px; height:170px; width:140px; font-size=20px");
+    document.getElementById("download_button").setAttribute("style","left:70px; top:151px; width:200px; height:55px; padding:15px");
     elements = document.getElementsByClassName('element')
     for (var i; i < elements.length; i++){
        elements[i].setAttribute('style', 'font-size:24px; margin-top:12px; line-height:1; text-align:center;');
