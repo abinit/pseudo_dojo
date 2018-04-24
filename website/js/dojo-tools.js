@@ -199,7 +199,7 @@ function dojoTour_guidedtour() {
         },
         {
           element: '#TYP',
-          intro: 'Here you select the type of pseudopotential. '+
+          intro: 'Here you select the type of pseudopotential. SR stands for scalar relativistic, FR for fully relativistic (including SOC). '+
                  'The options for xc, accuracy and format are adjusted based on your choice.'
         },
         {
@@ -215,7 +215,7 @@ function dojoTour_guidedtour() {
         {
           element: '#FMT',
           intro:  "In this selector you can pick the format of the pseudopotential file. " +
-                  "PSP8 for ABINIT, UPF (UPF2) for quantum espresso. " +
+                  "PSP8 for ABINIT, UPF2 for Quantum Espresso, PSML1.1 is supported by Siesta. " +
                   "When you select HTML, clicking the elements will display a full report of all the tests we performed. " +
                   "Finally djrepo will give you all the numerical results of the tests in json format."
         },
@@ -320,6 +320,20 @@ function dynamicdropdown(listindex){
       document.getElementById("XCF").options[2]=new Option("LDA","pw");
       document.getElementById("XCF").options[0]=new Option("PBE","pbe");
       document.getElementById("XCF").options[1]=new Option("PBEsol","pbesol");
+      document.getElementById("FMT").options[0]=new Option("psp8","psp8");
+      document.getElementById("FMT").options[1]=new Option("upf","upf");
+      document.getElementById("FMT").options[2]=new Option("psml","psml");
+      document.getElementById("FMT").options[3]=new Option("html","html");
+      document.getElementById("FMT").options[4]=new Option("djrepo","djrepo");
+      break;
+
+    case "nc-fr-04" :
+      document.getElementById('warning_box').innerHTML = "";
+      document.getElementById("ACC").options[0]=new Option("standard","standard");
+//      document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+//      document.getElementById("XCF").options[2]=new Option("LDA","pw");
+      document.getElementById("XCF").options[0]=new Option("PBE","pbe");
+//      document.getElementById("XCF").options[1]=new Option("PBEsol","pbesol");
       document.getElementById("FMT").options[0]=new Option("psp8","psp8");
       document.getElementById("FMT").options[1]=new Option("upf","upf");
       document.getElementById("FMT").options[2]=new Option("psml","psml");
