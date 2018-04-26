@@ -52,13 +52,15 @@ def make_upf(pseudo_path, calctype, mock=False):
     return nv
 
 
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4', 'ONCVPSP-PW-PDv0.4', 'ONCVPSP-PBEsol-PDv0.4']
+# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4', 'ONCVPSP-PW-PDv0.4', 'ONCVPSP-PBEsol-PDv0.4']
+# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
+# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4']
 PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
 
 
-ACCURACIES = ['standard']
-#ACCURACIES = ['la3+']
-rnACC = {'la3+':'la3+', 'standard': 'standard', 'high': 'stringent'}
+#ACCURACIES = ['high']
+ACCURACIES = ['standard', 'high']
+rnACC = {'la3+': 'la3+', 'standard': 'standard', 'high': 'stringent'}
 
 
 def main():
@@ -98,6 +100,8 @@ def main():
             pseudo_data = {}
             for pseudo in pseudos:
                 p = pseudo.strip()
+                if not os.path.isfile(os.path.join(pseudo_set, p)):
+                    continue
                 try:
                     for extension in ['in', 'psp8', 'djrepo', 'out']:
                         copyfile(os.path.join(pseudo_set, p).replace('psp8', extension),
@@ -129,13 +133,14 @@ def main():
                         normal_hint = 'na'
                         low_hint = 'na'
                     try:
-                        delta_ecuts = dojoreport["deltafactor"].keys()
+                        delta_ecuts = list(dojoreport["deltafactor"].keys())
+                        print(delta_ecuts)
                         delta_ecut = delta_ecuts[-1]
                         delta = dojoreport["deltafactor"][delta_ecut]["dfact_meV"]
                         delta_s = "%1.1f" % round(delta, 1)
                         deltap = dojoreport["deltafactor"][delta_ecut]["dfactprime_meV"]
                         deltap_s = "%1.1f" % round(deltap, 1)
-                    except (KeyError, TypeError):
+                    except RuntimeError: # (KeyError, TypeError):
                         delta_s = 'na'
                         deltap_s = 'na'
                     try:

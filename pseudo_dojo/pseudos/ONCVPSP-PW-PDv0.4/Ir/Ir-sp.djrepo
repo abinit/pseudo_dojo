@@ -26035,6 +26035,17 @@ null
 "pawecutdg": null
 }
 },
+"hints": {
+"high": {
+"ecut": 32.0
+},
+"low": {
+"ecut": 24.0
+},
+"normal": {
+"ecut": 28.0
+}
+},
 "md5": "e62bdb6065d75a5a84c2572f504652c3",
 "phgamma": {
 "20.0": {
@@ -26483,6 +26494,12 @@ null
 },
 "pseudo_type": "NC",
 "symbol": "Ir",
+"tags": [
+" "
+],
+"validation": {
+"validated_on": "2018-03-06 09:55:38"
+},
 "version": "1.0",
 "xc": {
 "@class": "XcFunc",

@@ -1,0 +1,64 @@
+{
+"basename": "Li-s_r.psp8",
+"ecuts": [
+25.0,
+27.0,
+29.0,
+31.0,
+33.0,
+35.0,
+37.0,
+39.0,
+41.0,
+43.0,
+45.0,
+53.0,
+55.0
+],
+"hints": {
+"high": {
+"ecut": 41.0
+},
+"low": {
+"ecut": 33.0
+},
+"normal": {
+"ecut": 37.0
+}
+},
+"md5": "7c56211e2ccd124f6565b0dee2320c73",
+"ppgen_hints": {
+"high": {
+"ecut": 35.0,
+"pawecutdg": 35.0
+},
+"low": {
+"ecut": 32.0,
+"pawecutdg": 32.0
+},
+"normal": {
+"ecut": 33.0,
+"pawecutdg": 33.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Li",
+"tags": [
+"GW"
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE"
+}
+}
+}
