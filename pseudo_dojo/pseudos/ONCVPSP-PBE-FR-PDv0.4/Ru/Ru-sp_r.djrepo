@@ -1,0 +1,64 @@
+{
+"basename": "Ru-sp_r.psp8",
+"ecuts": [
+30.0,
+32.0,
+34.0,
+36.0,
+38.0,
+40.0,
+42.0,
+44.0,
+46.0,
+48.0,
+50.0,
+58.0,
+60.0
+],
+"hints": {
+"high": {
+"ecut": 50.0
+},
+"low": {
+"ecut": 38.0
+},
+"normal": {
+"ecut": 42.0
+}
+},
+"md5": "cf9ee0d0129e897307236df5ac566b1c",
+"ppgen_hints": {
+"high": {
+"ecut": 40.0,
+"pawecutdg": 40.0
+},
+"low": {
+"ecut": 35.0,
+"pawecutdg": 35.0
+},
+"normal": {
+"ecut": 38.0,
+"pawecutdg": 38.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Ru",
+"tags": [
+"GW"
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE"
+}
+}
+}

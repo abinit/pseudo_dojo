@@ -1,0 +1,64 @@
+{
+"basename": "Sc-sp_r.psp8",
+"ecuts": [
+29.0,
+31.0,
+33.0,
+35.0,
+37.0,
+39.0,
+41.0,
+43.0,
+45.0,
+47.0,
+49.0,
+57.0,
+59.0
+],
+"hints": {
+"high": {
+"ecut": 45.0
+},
+"low": {
+"ecut": 35.0
+},
+"normal": {
+"ecut": 39.0
+}
+},
+"md5": "1887b32a970ead2fcc35b056c267744b",
+"ppgen_hints": {
+"high": {
+"ecut": 39.0,
+"pawecutdg": 39.0
+},
+"low": {
+"ecut": 34.0,
+"pawecutdg": 34.0
+},
+"normal": {
+"ecut": 36.0,
+"pawecutdg": 36.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Sc",
+"tags": [
+"GW"
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE"
+}
+}
+}

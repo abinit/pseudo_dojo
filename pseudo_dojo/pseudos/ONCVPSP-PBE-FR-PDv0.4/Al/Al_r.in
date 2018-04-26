@@ -11,7 +11,7 @@ Al 13 3 2 4 both
 # l rc ep ncon nbas qcut
 0 1.75 0.0 4 9 6.0
 1 1.75 0.0 4 9 6.4
-2 1.7 0.05 4 9 5.2
+2 1.7 0.05 4 9 6.5
 # lloc lpopt rc5 dvloc0
 4 5 1.4 0.0
 # l nproj debl

@@ -1,0 +1,64 @@
+{
+"basename": "Zr-sp_r.psp8",
+"ecuts": [
+21.0,
+23.0,
+25.0,
+27.0,
+29.0,
+31.0,
+33.0,
+35.0,
+37.0,
+39.0,
+41.0,
+49.0,
+51.0
+],
+"hints": {
+"high": {
+"ecut": 49.0
+},
+"low": {
+"ecut": 29.0
+},
+"normal": {
+"ecut": 33.0
+}
+},
+"md5": "ce9c7f54a966fc5c465657d4b8063231",
+"ppgen_hints": {
+"high": {
+"ecut": 31.0,
+"pawecutdg": 31.0
+},
+"low": {
+"ecut": 27.0,
+"pawecutdg": 27.0
+},
+"normal": {
+"ecut": 29.0,
+"pawecutdg": 29.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Zr",
+"tags": [
+"GW"
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE"
+}
+}
+}

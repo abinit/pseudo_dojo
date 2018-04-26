@@ -1,0 +1,64 @@
+{
+"basename": "O_r.psp8",
+"ecuts": [
+30.0,
+32.0,
+34.0,
+36.0,
+38.0,
+40.0,
+42.0,
+44.0,
+46.0,
+48.0,
+50.0,
+58.0,
+60.0
+],
+"hints": {
+"high": {
+"ecut": 48.0
+},
+"low": {
+"ecut": 36.0
+},
+"normal": {
+"ecut": 42.0
+}
+},
+"md5": "347596307985aac46874cce81198decf",
+"ppgen_hints": {
+"high": {
+"ecut": 40.0,
+"pawecutdg": 40.0
+},
+"low": {
+"ecut": 36.0,
+"pawecutdg": 36.0
+},
+"normal": {
+"ecut": 38.0,
+"pawecutdg": 38.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "O",
+"tags": [
+"GW"
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE"
+}
+}
+}

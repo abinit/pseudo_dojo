@@ -1,0 +1,64 @@
+{
+"basename": "Kr_r.psp8",
+"ecuts": [
+13.0,
+15.0,
+17.0,
+19.0,
+21.0,
+23.0,
+25.0,
+27.0,
+29.0,
+31.0,
+33.0,
+41.0,
+43.0
+],
+"hints": {
+"high": {
+"ecut": 34.0
+},
+"low": {
+"ecut": 22.0
+},
+"normal": {
+"ecut": 26.0
+}
+},
+"md5": "4ba80a9f04efdbcae087e2830de3d208",
+"ppgen_hints": {
+"high": {
+"ecut": 23.0,
+"pawecutdg": 23.0
+},
+"low": {
+"ecut": 20.0,
+"pawecutdg": 20.0
+},
+"normal": {
+"ecut": 22.0,
+"pawecutdg": 22.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Kr",
+"tags": [
+""
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE"
+}
+}
+}

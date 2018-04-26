@@ -1,0 +1,64 @@
+{
+"basename": "Fe-sp_r.psp8",
+"ecuts": [
+35.0,
+37.0,
+39.0,
+41.0,
+43.0,
+45.0,
+47.0,
+49.0,
+51.0,
+53.0,
+55.0,
+63.0,
+65.0
+],
+"hints": {
+"high": {
+"ecut": 53.0
+},
+"low": {
+"ecut": 41.0
+},
+"normal": {
+"ecut": 45.0
+}
+},
+"md5": "383646c43cea6b7adaf4c925b0239376",
+"ppgen_hints": {
+"high": {
+"ecut": 45.0,
+"pawecutdg": 45.0
+},
+"low": {
+"ecut": 40.0,
+"pawecutdg": 40.0
+},
+"normal": {
+"ecut": 42.0,
+"pawecutdg": 42.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Fe",
+"tags": [
+" GW"
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE"
+}
+}
+}

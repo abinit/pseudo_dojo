@@ -1,0 +1,64 @@
+{
+"basename": "Bi-d_r.psp8",
+"ecuts": [
+21.0,
+23.0,
+25.0,
+27.0,
+29.0,
+31.0,
+33.0,
+35.0,
+37.0,
+39.0,
+41.0,
+49.0,
+51.0
+],
+"hints": {
+"high": {
+"ecut": 37.0
+},
+"low": {
+"ecut": 29.0
+},
+"normal": {
+"ecut": 33.0
+}
+},
+"md5": "cad5f017ceb3213dcf4efd820eba718e",
+"ppgen_hints": {
+"high": {
+"ecut": 31.0,
+"pawecutdg": 31.0
+},
+"low": {
+"ecut": 28.0,
+"pawecutdg": 28.0
+},
+"normal": {
+"ecut": 29.0,
+"pawecutdg": 29.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Bi",
+"tags": [
+" "
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE"
+}
+}
+}
