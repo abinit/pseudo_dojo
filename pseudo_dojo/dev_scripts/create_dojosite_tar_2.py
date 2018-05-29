@@ -54,12 +54,12 @@ def make_upf(pseudo_path, calctype, mock=False):
 
 # PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4', 'ONCVPSP-PW-PDv0.4', 'ONCVPSP-PBEsol-PDv0.4']
 # PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
-# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4']
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
-
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBEsol-FR-PDv0.4']
+#PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
 
 #ACCURACIES = ['high']
 ACCURACIES = ['standard', 'high']
+#ACCURACIES = ['standard']
 rnACC = {'la3+': 'la3+', 'standard': 'standard', 'high': 'stringent'}
 
 
@@ -94,7 +94,7 @@ def main():
                 pseudos = f.readlines()
             print(pseudos)
 
-            name = "nc-sr-04_%s_%s" % (xc, rnACC[acc])
+            name = "nc-fr-04_%s_%s" % (xc, rnACC[acc])
 
             os.makedirs(os.path.join(website, name))
             pseudo_data = {}
@@ -112,7 +112,7 @@ def main():
                         pass
                     try:
                         nv = make_upf(os.path.join(website, name, os.path.split(p)[1]), mock=mock,
-                                      calctype="scalar-relativistic")
+                                      calctype="fully-relativistic")
                     except RuntimeError:
                         nv = 'NA'
                     p_name = os.path.split(p)[1]
@@ -121,7 +121,7 @@ def main():
                     for extension in ['psp8', 'upf', 'djrepo', 'html', 'psml']:
                         os.rename(os.path.join(website, name, p_name.replace('psp8', extension)),
                                   os.path.join(website, name, el + '.' + extension))
-                    os.remove(os.path.join(website, name, os.path.split(p)[1].replace('psp8', 'out')))
+#                    os.remove(os.path.join(website, name, os.path.split(p)[1].replace('psp8', 'out')))
                     print('%s %s %s %s ' % ('mocked' if mock else 'done', xc, acc, p))
                     dojoreport = DojoReport.from_file(os.path.join(website, name, el + '.djrepo'))
                     try:
@@ -140,7 +140,7 @@ def main():
                         delta_s = "%1.1f" % round(delta, 1)
                         deltap = dojoreport["deltafactor"][delta_ecut]["dfactprime_meV"]
                         deltap_s = "%1.1f" % round(deltap, 1)
-                    except RuntimeError: # (KeyError, TypeError):
+                    except (KeyError, TypeError):
                         delta_s = 'na'
                         deltap_s = 'na'
                     try:

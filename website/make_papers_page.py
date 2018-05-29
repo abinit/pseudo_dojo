@@ -9,8 +9,8 @@ from operator import itemgetter
 from betterbib.crossref import Crossref, pybtex_to_dict
 
 with open('papers_using_pseudodojo.txt', 'r') as ps:
-    dois = set([line.strip() for line in ps.readlines()])
-
+    dois = [doi for doi in set([line.strip() for line in ps.readlines()]) if '#' not in doi]
+    
 
 def get_person_str(p):
     out = ' '.join(filter(None, [
