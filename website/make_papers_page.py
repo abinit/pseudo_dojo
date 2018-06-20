@@ -65,7 +65,8 @@ ax.get_figure().savefig('year.png', transparent=True)
 
 print(json.dumps(sorted_entry_dicts, indent=2))
 
-t1 = '<table><tr><td width="100" align="center" valign="top"><div class="altmetric-embed" data-badge-type="donut" ' \
+t1 = '<table><tr><td width="100" align="center" valign="top"><div data-badge-popover="right" ' \
+     'class="altmetric-embed" data-badge-type="donut" ' \
      'data-doi="'
 t2 = '" /></td><td>'
 t3 = '</td></tr></table><BR />'
