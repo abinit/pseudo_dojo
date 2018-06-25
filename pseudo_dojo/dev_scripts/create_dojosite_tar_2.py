@@ -54,7 +54,7 @@ def make_upf(pseudo_path, calctype, mock=False):
 
 # PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4', 'ONCVPSP-PW-PDv0.4', 'ONCVPSP-PBEsol-PDv0.4']
 # PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBEsol-FR-PDv0.4']
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBEsol-PDv0.4']
 #PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
 
 #ACCURACIES = ['high']
@@ -109,13 +109,15 @@ def main():
                     try:
                         write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), tmpfile=False, mock=False)
                     except:
-                        pass
+                        print('write notebook failed for {}'.format(pseudo))
                     try:
                         nv = make_upf(os.path.join(website, name, os.path.split(p)[1]), mock=mock,
                                       calctype="fully-relativistic")
                     except RuntimeError:
                         nv = 'NA'
                     p_name = os.path.split(p)[1]
+                    # todo see if this works
+                    el.replace('_r', '')
                     el = p_name.split('-')[0].split('.')[0]
                     el.replace('3+_f', '')
                     for extension in ['psp8', 'upf', 'djrepo', 'html', 'psml']:
