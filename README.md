@@ -27,6 +27,11 @@ as static HTML pages.
 One can hence easily compare pseudopotentials for a given element and then select the most appropriate 
 one according to a chosen criterion (e.g. efficiency vs accuracy).  
 
+How to cite the PseudoDojo project
+----------------------------------
+
+If you use the PseudoDojo pseudopotentials in your research, 
+please consider citing the works mentioned in [this page](http://www.pseudo-dojo.org/faq.html).
 
 Getting PseudoDojo
 ------------------
