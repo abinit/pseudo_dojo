@@ -9,8 +9,8 @@ from operator import itemgetter
 from betterbib.crossref import Crossref, pybtex_to_dict
 
 with open('papers_using_pseudodojo.txt', 'r') as ps:
-    dois = set([line.strip() for line in ps.readlines()])
-
+    dois = [doi for doi in set([line.strip() for line in ps.readlines()]) if '#' not in doi]
+    
 
 def get_person_str(p):
     out = ' '.join(filter(None, [
@@ -51,6 +51,7 @@ def make_ref(entry_dict):
     ref += ' <a href="https://doi.org/%s">crossref</a>' % entry_dict['doi']
     return ref
 
+
 cr = Crossref()
 sorted_entry_dicts = sorted([pybtex_to_dict(cr.get_by_doi(doi)) for doi in dois], key=itemgetter('year'), reverse=True)
 df = pandas.DataFrame(sorted_entry_dicts)
@@ -63,7 +64,14 @@ fig.savefig('year.png')
 ax.get_figure().savefig('year.png', transparent=True)
 
 print(json.dumps(sorted_entry_dicts, indent=2))
-html = ''.join(['<blockquote>' + make_ref(entry_dict) + '</blockquote>' for entry_dict in sorted_entry_dicts])
+
+t1 = '<table><tr><td width="100" align="center" valign="top"><div data-badge-popover="right" ' \
+     'class="altmetric-embed" data-badge-type="donut" ' \
+     'data-doi="'
+t2 = '" /></td><td>'
+t3 = '</td></tr></table><BR />'
+
+html = ''.join([t1 + entry_dict['doi'] + t2 + make_ref(entry_dict) + t3 for entry_dict in sorted_entry_dicts])
 
 with open('papers.html', 'w') as page:
     page.write(html)

@@ -190,7 +190,7 @@ def djrepo_copyhints(options):
             relpath = os.path.relpath(src_path, src)
             dest_path = os.path.join(dest, relpath)
             # This to copy from SR --> FR
-            #dest_path = os.path.join(dest, relpath.replace(".djrepo", "_r.djrepo"))
+            dest_path = os.path.join(dest, relpath.replace(".djrepo", "_r.djrepo"))
             if not os.path.exists(dest_path):
                 print("Ignoring non-existent target ", dest_path)
                 continue

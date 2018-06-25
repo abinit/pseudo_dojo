@@ -330,10 +330,10 @@ function dynamicdropdown(listindex){
     case "nc-fr-04" :
       document.getElementById('warning_box').innerHTML = "";
       document.getElementById("ACC").options[0]=new Option("standard","standard");
-//      document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+      document.getElementById("ACC").options[1]=new Option("stringent","stringent");
 //      document.getElementById("XCF").options[2]=new Option("LDA","pw");
       document.getElementById("XCF").options[0]=new Option("PBE","pbe");
-//      document.getElementById("XCF").options[1]=new Option("PBEsol","pbesol");
+      document.getElementById("XCF").options[1]=new Option("PBEsol","pbesol");
       document.getElementById("FMT").options[0]=new Option("psp8","psp8");
       document.getElementById("FMT").options[1]=new Option("upf","upf");
       document.getElementById("FMT").options[2]=new Option("psml","psml");
