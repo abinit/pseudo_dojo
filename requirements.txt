@@ -1,0 +1,15 @@
+six
+numpy
+scipy
+tabulate
+pandas
+jsonschema
+atomicfile
+periodic_table_plotter
+monty
+ipython
+nbformat
+matplotlib
+seaborn
+pymatgen
+abipy

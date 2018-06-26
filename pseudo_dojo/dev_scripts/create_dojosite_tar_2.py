@@ -52,13 +52,15 @@ def make_upf(pseudo_path, calctype, mock=False):
     return nv
 
 
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4', 'ONCVPSP-PW-PDv0.4', 'ONCVPSP-PBEsol-PDv0.4']
-PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
+# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBE-PDv0.4', 'ONCVPSP-PW-PDv0.4', 'ONCVPSP-PBEsol-PDv0.4']
+# PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
+PSEUDOS_TO_INCLUDE = ['ONCVPSP-PBEsol-PDv0.4']
+#PSEUDOS_TO_INCLUDE = ['ONCVPSP-PW-PDv0.4']
 
-
-ACCURACIES = ['standard']
-#ACCURACIES = ['la3+']
-rnACC = {'la3+':'la3+', 'standard': 'standard', 'high': 'stringent'}
+#ACCURACIES = ['high']
+ACCURACIES = ['standard', 'high']
+#ACCURACIES = ['standard']
+rnACC = {'la3+': 'la3+', 'standard': 'standard', 'high': 'stringent'}
 
 
 def main():
@@ -92,12 +94,14 @@ def main():
                 pseudos = f.readlines()
             print(pseudos)
 
-            name = "nc-sr-04_%s_%s" % (xc, rnACC[acc])
+            name = "nc-fr-04_%s_%s" % (xc, rnACC[acc])
 
             os.makedirs(os.path.join(website, name))
             pseudo_data = {}
             for pseudo in pseudos:
                 p = pseudo.strip()
+                if not os.path.isfile(os.path.join(pseudo_set, p)):
+                    continue
                 try:
                     for extension in ['in', 'psp8', 'djrepo', 'out']:
                         copyfile(os.path.join(pseudo_set, p).replace('psp8', extension),
@@ -105,19 +109,21 @@ def main():
                     try:
                         write_notebook_html(os.path.join(website, name, os.path.split(p)[1]), tmpfile=False, mock=False)
                     except:
-                        pass
+                        print('write notebook failed for {}'.format(pseudo))
                     try:
                         nv = make_upf(os.path.join(website, name, os.path.split(p)[1]), mock=mock,
-                                      calctype="scalar-relativistic")
+                                      calctype="fully-relativistic")
                     except RuntimeError:
                         nv = 'NA'
                     p_name = os.path.split(p)[1]
+                    # todo see if this works
+                    el.replace('_r', '')
                     el = p_name.split('-')[0].split('.')[0]
                     el.replace('3+_f', '')
                     for extension in ['psp8', 'upf', 'djrepo', 'html', 'psml']:
                         os.rename(os.path.join(website, name, p_name.replace('psp8', extension)),
                                   os.path.join(website, name, el + '.' + extension))
-                    os.remove(os.path.join(website, name, os.path.split(p)[1].replace('psp8', 'out')))
+#                    os.remove(os.path.join(website, name, os.path.split(p)[1].replace('psp8', 'out')))
                     print('%s %s %s %s ' % ('mocked' if mock else 'done', xc, acc, p))
                     dojoreport = DojoReport.from_file(os.path.join(website, name, el + '.djrepo'))
                     try:
@@ -129,7 +135,8 @@ def main():
                         normal_hint = 'na'
                         low_hint = 'na'
                     try:
-                        delta_ecuts = dojoreport["deltafactor"].keys()
+                        delta_ecuts = list(dojoreport["deltafactor"].keys())
+                        print(delta_ecuts)
                         delta_ecut = delta_ecuts[-1]
                         delta = dojoreport["deltafactor"][delta_ecut]["dfact_meV"]
                         delta_s = "%1.1f" % round(delta, 1)

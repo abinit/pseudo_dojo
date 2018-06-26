@@ -1,103 +1,120 @@
 {
-"basename": "Ce3+_f-in-core.psp8", 
+"basename": "Ce3+_f-in-core.psp8",
 "ecuts": [
-14.0, 
-16.0, 
-18.0, 
-20.0, 
-22.0, 
-24.0, 
-26.0, 
-28.0, 
-30.0, 
-32.0, 
-34.0, 
-42.0, 
+14.0,
+16.0,
+18.0,
+20.0,
+22.0,
+24.0,
+26.0,
+28.0,
+30.0,
+32.0,
+34.0,
+42.0,
 44.0
-], 
-"md5": "d203407f6cdfc73278e195a6921090eb", 
+],
+"hints": {
+"high": {
+"ecut": 28.0
+},
+"low": {
+"ecut": 20.0
+},
+"normal": {
+"ecut": 24.0
+}
+},
+"md5": "d203407f6cdfc73278e195a6921090eb",
 "ppgen_hints": {
 "high": {
-"ecut": 24.0, 
+"ecut": 24.0,
 "pawecutdg": 24.0
-}, 
+},
 "low": {
-"ecut": 20.0, 
+"ecut": 20.0,
 "pawecutdg": 20.0
-}, 
+},
 "normal": {
-"ecut": 22.0, 
+"ecut": 22.0,
 "pawecutdg": 22.0
 }
-}, 
-"pseudo_type": "NC", 
+},
+"pseudo_type": "NC",
 "raren_relax": {
 "14.0": {
-"initial_energy_ev_per_atom": -1251.554493642913, 
+"initial_energy_ev_per_atom": -1251.554493642913,
 "relaxed_a": 5.293774866341173
-}, 
+},
 "16.0": {
-"initial_energy_ev_per_atom": -1253.519399924818, 
-"relaxed_a": 5.3044007933820296
-}, 
+"initial_energy_ev_per_atom": -1253.519399924818,
+"relaxed_a": 5.30440079338203
+},
 "18.0": {
-"initial_energy_ev_per_atom": -1254.807832229282, 
-"relaxed_a": 5.3022525444759223
-}, 
+"initial_energy_ev_per_atom": -1254.807832229282,
+"relaxed_a": 5.302252544475922
+},
 "20.0": {
-"initial_energy_ev_per_atom": -1255.6408853400976, 
-"relaxed_a": 5.2978060476651541
-}, 
+"initial_energy_ev_per_atom": -1255.6408853400976,
+"relaxed_a": 5.297806047665154
+},
 "22.0": {
-"initial_energy_ev_per_atom": -1256.1776732068543, 
+"initial_energy_ev_per_atom": -1256.1776732068543,
 "relaxed_a": 5.2927769031936815
-}, 
+},
 "24.0": {
-"initial_energy_ev_per_atom": -1256.5130727538346, 
+"initial_energy_ev_per_atom": -1256.5130727538346,
 "relaxed_a": 5.290131790161114
-}, 
+},
 "26.0": {
-"initial_energy_ev_per_atom": -1256.7182665643209, 
-"relaxed_a": 5.2902893586322746
-}, 
+"initial_energy_ev_per_atom": -1256.7182665643209,
+"relaxed_a": 5.290289358632275
+},
 "28.0": {
-"initial_energy_ev_per_atom": -1256.8410855014972, 
-"relaxed_a": 5.2893733351994792
-}, 
+"initial_energy_ev_per_atom": -1256.8410855014972,
+"relaxed_a": 5.289373335199479
+},
 "30.0": {
-"initial_energy_ev_per_atom": -1256.9095250749363, 
-"relaxed_a": 5.2888385374048106
-}, 
+"initial_energy_ev_per_atom": -1256.9095250749363,
+"relaxed_a": 5.288838537404811
+},
 "32.0": {
-"initial_energy_ev_per_atom": -1256.9459384370646, 
-"relaxed_a": 5.2889507099781969
-}, 
+"initial_energy_ev_per_atom": -1256.9459384370646,
+"relaxed_a": 5.288950709978197
+},
 "34.0": {
-"initial_energy_ev_per_atom": -1256.9640916848282, 
-"relaxed_a": 5.2890946827255689
-}, 
+"initial_energy_ev_per_atom": -1256.9640916848282,
+"relaxed_a": 5.289094682725569
+},
 "42.0": {
-"initial_energy_ev_per_atom": -1256.9775343469466, 
-"relaxed_a": 5.2891716886194136
-}, 
+"initial_energy_ev_per_atom": -1256.9775343469466,
+"relaxed_a": 5.289171688619414
+},
 "44.0": {
-"initial_energy_ev_per_atom": -1256.9775848213546, 
+"initial_energy_ev_per_atom": -1256.9775848213546,
 "relaxed_a": 5.289172746651186
 }
-}, 
-"symbol": "Ce", 
-"version": "1.0", 
+},
+"symbol": "Ce",
+"tags": [
+"3+"
+],
+"validation": {
+"validated_on": "2018-03-02 09:38:38"
+},
+"version": "1.0",
 "xc": {
-"@class": "XcFunc", 
-"@module": "pymatgen.core.xcfunc", 
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
 "c": {
-"@class": "LibxcFunc", 
-"@module": "pymatgen.core.libxcfunc", 
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
 "name": "GGA_C_PBE"
-}, 
+},
 "x": {
-"@class": "LibxcFunc", 
-"@module": "pymatgen.core.libxcfunc", 
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
 "name": "GGA_X_PBE"
 }
 }

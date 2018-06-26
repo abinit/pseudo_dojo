@@ -15,6 +15,9 @@
 </head>
 
 <body>
+
+<script type="text/javascript" src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+
 <div class="wrapper">
 <div class="table">
   <aside class="infobox">
@@ -28,9 +31,9 @@
       <div class="menutext">
         <p>
           <a href="index.html"><span>Home</span></a>
-          <a href="faq.html"><span>F.A.Q.</span></a>
           <a href="contribute.html"><span>Contribute</span></a>
-          <span style="padding-left: 6em">
+          <a href="paperlist.html"><span>Papers</span></a>
+          <span style="padding-left: 5em">
           <span><a href="about.html">About</a></span></span>
         </p>
       </div>
@@ -56,9 +59,10 @@ The number in the upper right corner of the element boxes (nv) give how many val
 For instance a 4 for Copper means that 1s, 2s, and 2p are frozen in the core but 3s, 3p, 3d, and 4s are treated as valence.<BR />
 <BR />
 The numbers in lower left corner (hints) represent the cutoff hints in Hartree.
-  The exact meaning of the hints can be found in the corresponding paper suggeste below. In general low is a good
-  starting point for you own convergence studies. Normal should be a safe guess for just a quick calculations.
-  High is for testing for convergence.<BR />
+  The exact meaning of the hints can be found in the corresponding <a href="https://doi.org/10.1016/j.cpc.2018.01.012">paper</a> suggested below.
+  In general, low is a good starting point for you own convergence studies.
+  Normal should be a safe guess for just a quick calculation or for automated high-throughput calculations.
+  High is for testing convergence.<BR />
 <BR />
 The numbers in the lower right corner are the results of various tests performed on this pseudo potential.<BR />
   <Table cellpadding="4">
@@ -68,43 +72,81 @@ The numbers in the lower right corner are the results of various tests performed
  </Table>
 
 <h2>&#9670; How do I cite the PseudoDojo?</h2>
+A detailed paper on the PseudoDojo and the NC pseudopotentials has been published in Computer Physics Communications:<BR />
 
-    A preprint of a detailed paper on the pseudo dojo and the NC pseudopotentials has just been released on arxiv:<BR />
-<blockquote>
-The PseudoDojo: Training and grading a 85 element optimized norm-conserving pseudopotential table<BR />
-M. J. van Setten, M. Giantomassi, E. Bousquet, M. J. Verstraete, D. R. Hamann, X. Gonze, G.-M. Rignanese  <BR />
-<a href="https://arxiv.org/abs/1710.10138">arxiv:1710.10138</a>
-</blockquote>
+<table><tr><td width="100" align="center">
+<div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1016/j.cpc.2018.01.012" />
+</td><td>
+    The PseudoDojo: Training and grading a 85 element optimized norm-conserving pseudopotential table<BR />
+    M. J. van Setten, M. Giantomassi, E. Bousquet, M. J. Verstraete, D. R. Hamann, X. Gonze, G.-M. Rignanese<BR />
+    Computer Physics Communications 226, 39-54 (2018)<BR />
+<a href="https://doi.org/10.1016/j.cpc.2018.01.012">10.1016/j.cpc.2018.01.012</a>
+<a href="https://arxiv.org/abs/1710.10138">arxiv preprint</a>
+</td></tr></table><BR />
 
-    An important paper concerning the delta gauge is:
-<blockquote>
-Reproducibility in density functional theory calculations of solids.<BR />
-K. Lejaeghere et. all, Science  25 Mar 2016, Vol. 351, Issue 6280 <BR />
+An important paper concerning the delta gauge is:
+
+<table><tr><td width="100" align="center">
+<div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1126/science.aad3000" />
+</td><td>
+Reproducibility in density functional theory calculations of solids<BR />
+K. Lejaeghere et. all<BR />
+Science  25 Mar 2016, Vol. 351, Issue 6280<BR />
 <a href='https://dx.doi.org/10.1126/science.aad3000'>10.1126/science.aad3000</a>
-</blockquote>
+</td></tr></table><BR />
 
-      When using ONCVPSP type pseudo potentials please cite:<BR />
-<blockquote>
+The GBRV tests used in the PseudoDojo are introduced in:
+
+<table><tr><td width="100" align="center">
+<div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1016/j.commatsci.2013.08.053" />
+</td><td>
+Pseudopotentials for high-throughput DFT calculations<BR />
+K. F. Garrity, J. W. Bennett, K. M. Rabe, D. Vanderbilt<BR />
+Computational Materials Science 81, 446-452 (2013)<BR />
+<a href='https://dx.doi.org/10.1016/j.commatsci.2013.08.053'>10.1016/j.commatsci.2013.08.053</a>
+</td></tr></table><BR />
+
+When using ONCVPSP type pseudopotentials please cite:<BR />
+
+<table><tr><td width="100" align="center">
+<div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1103/PhysRevB.88.085117" />
+</td><td>
 Optimized norm-conserving Vanderbilt pseudopotentials<BR />
-D. R. Hamann, Phys. Rev. B 88, 085117<BR />
+D. R. Hamann<BR />
+Phys. Rev. B 88, 085117 (2013)<BR />
 <a href='https://doi.org/10.1103/PhysRevB.88.085117'>10.1103/PhysRevB.88.085117</a>
-</blockquote>
+</td></tr></table><BR />
 
-      When using PSML format pseudo potentials please cite:<BR />
-<blockquote>
+When using the PSML format pseudopotentials please cite:<BR />
+
+    <table><tr><td width="100" align="center">
+<div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1016/j.cpc.2018.02.011" />
+</td><td>
 The PSML format and library for norm-conserving pseudopotential data curation and interoperability<BR />
-A. García, M. Verstraete, Y. Pouillon, J. Junquera, arXiv:1707.08938<BR />
-<a href='https://arxiv.org/abs/1707.08938'>arXiv:1707.08938</a>
-</blockquote>
+A. García, M. Verstraete, Y. Pouillon, J. Junquera<BR />
+Computer Physics Communications 227, 51-71 (2018)<BR />
+<a href='https://doi.org/10.1016/j.cpc.2018.02.011'>10.1016/j.cpc.2018.02.011</a>
+</td></tr></table><BR />
 
-    When using PAW type pseudopotentials please cite:<BR />
-<blockquote>
+When using the PAW type 'pseudopotentials' please cite:<BR />
+
+<table><tr><td width="100" align="center">
+<div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1016/j.cpc.2013.12.023" />
+</td><td>
 Generation of Projector Augmented-Wave atomic data: A 71 element validated table in the XML format.<BR />
-F. Jollet, M. Torrent, and Holzwarth, Computer Physics Communications 185, 1246<BR />
+F. Jollet, M. Torrent, Holzwarth<BR />
+Computer Physics Communications 185, 1246 (2013)<BR />
 <a href="https://doi.org/10.1016/j.cpc.2013.12.023">10.1016/j.cpc.2013.12.023</a>
-</blockquote>
+</td></tr></table><BR />
 
 <a href="pseudo-dojo.bib">bibtex entries</a>
+
+<h2>&#9670; Can I use the logo in my presentations and grand applications?</h2>
+
+Yes, please feel free to do so, you can download it here:
+
+<table cellpadding="10"><tr><td><img src="logo/logo.svg"></td><td>or</td><td><img src="logo/logo_small.svg"></td></tr></table>
+
 
 <H1>Concerning the ONCVPSP pseudopotentials</H1>
 
@@ -121,7 +163,7 @@ Using these you can generate potentials for most LDA and GGA functionals using <
 We could reuse most of out PBE inputs to generate the PBEsol potentials.<BR />
 Using <a href="http://octopus-code.org/wiki/Libxc_functionals">LibXC</a>, which is linked to ONCVPSP, almost all functionals can be used.
 
-<h2>&#9670; All the ONCVPSP potentials are with non-linear core correction I need some without.</h2>
+    <h2>&#9670; All the ONCVPSP potentials are with non-linear core correction, I need some without.</h2>
 We usually observe better convergence with so, indeed, all are generated with nlcc.<BR />
 If you really need one without take the input from the HTML page on the pseudo (select format : html and click the element).<BR />
 Install <a href="http://www.mat-simresearch.com/">ONCVPSP</a>.
@@ -139,10 +181,6 @@ Using the <a href="https://launchpad.net/pspgenpatch">psml patch</a> we also gen
       for use with <a href="https://launchpad.net/siesta/psml-support">Siesta</a><BR />
 The psml format is available from version 0.4.<BR />
 
-<h2>&#9670; Will the fully relativistic versions of the potentials be available as well?</h2>
-Yes, this is another project we are finishing at the moment.<BR />
-Most of the current PBE inputs also generate well using the fully relativistic version of ONCVPSP.<BR />
-When we have finished the final polishing we will also provide the last tuned special cases.<BR />
 </lu>
 </aside>
 </div>

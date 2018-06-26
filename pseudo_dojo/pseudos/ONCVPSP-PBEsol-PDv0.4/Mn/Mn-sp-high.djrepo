@@ -1,0 +1,64 @@
+{
+"basename": "Mn-sp-high.psp8",
+"ecuts": [
+53.0,
+55.0,
+57.0,
+59.0,
+61.0,
+63.0,
+65.0,
+67.0,
+69.0,
+71.0,
+73.0,
+81.0,
+83.0
+],
+"hints": {
+"high": {
+"ecut": 69.0
+},
+"low": {
+"ecut": 61.0
+},
+"normal": {
+"ecut": 65.0
+}
+},
+"md5": "72f700895b28dac5e0073dabb15adcf8",
+"ppgen_hints": {
+"high": {
+"ecut": 63.0,
+"pawecutdg": 63.0
+},
+"low": {
+"ecut": 57.0,
+"pawecutdg": 57.0
+},
+"normal": {
+"ecut": 60.0,
+"pawecutdg": 60.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Mn",
+"tags": [
+" GW"
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE_SOL"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE_SOL"
+}
+}
+}

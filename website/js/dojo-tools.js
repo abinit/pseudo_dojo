@@ -9,10 +9,11 @@ var keys = ['hh', 'hl', 'hn', 'nv', 'd', 'dp', 'gb'];
 var els = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne','Na', 'Mg', "Al", "Si", 'P', 'S', 'Cl', 'Ar','K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe','Co','Ni','Cu','Zn','Ga','Ge','As','Se','Br','Kr','Rb','Sr','Y','Zr','Nb','Mo','Tc','Ru','Rh','Pd','Ag','Cd','In','Sn','Sb','Te','I','Xe','Cs','Ba','La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu','Hf','Ta','W','Re','Os','Ir','Pt','Au','Hg','Tl','Pb','Bi','Po','At','Rn'];
 
 function getParameterByName(name) {
-    url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
+    var url = window.location.href;
+    console.log(url);
+    var name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+    var results = regex.exec(url);
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
@@ -30,20 +31,20 @@ function set_warning(txt) {
 
 
 function make_light() {
-    hide_clases = ["hide", "name", 'intro'];
+    document.getElementById('FMT').value = 'psp8'
+    hide_clases = ["hide", "name", 'intro', "styled-longselect", "selection_bar", "help_button", "description", "menubar"];
     for (var j = 0; j < hide_clases.length; j++) {
         var tohide = document.getElementsByClassName(hide_clases[j]);
         for (var i =0; i < tohide.length; i++) {
             tohide[i].style.visibility="hidden";
         }
     }
-    document.getElementById('X_n').setAttribute("style","left:326px; top:41px; height:170px; width:140px;");
-    document.getElementById('N').setAttribute("style","left:326px; top:41px; height:170px; width:140px; font-size=20px");
-    document.getElementById("download_button").setAttribute("style","left:70px; top:101px; width:200px; height:55px; padding:15px");
+    document.getElementById('X_n').setAttribute("style","left:326px; top:91px; height:170px; width:140px;");
+    document.getElementById('N').setAttribute("style","left:326px; top:91px; height:170px; width:140px; font-size=20px");
+    document.getElementById("download_button").setAttribute("style","left:70px; top:151px; width:200px; height:55px; padding:15px");
     elements = document.getElementsByClassName('element')
     for (var i; i < elements.length; i++){
        elements[i].setAttribute('style', 'font-size:24px; margin-top:12px; line-height:1; text-align:center;');
-       console.log(elements[i].innerHTML)
     }
     document.getElementById("X_el").setAttribute('style', 'margin-top:20px;');
     document.getElementById("X_hl").setAttribute('style', 'font-size:20px; padding:2px');
@@ -198,7 +199,7 @@ function dojoTour_guidedtour() {
         },
         {
           element: '#TYP',
-          intro: 'Here you select the type of pseudopotential. '+
+          intro: 'Here you select the type of pseudopotential. SR stands for scalar relativistic, FR for fully relativistic (including SOC). '+
                  'The options for xc, accuracy and format are adjusted based on your choice.'
         },
         {
@@ -214,7 +215,7 @@ function dojoTour_guidedtour() {
         {
           element: '#FMT',
           intro:  "In this selector you can pick the format of the pseudopotential file. " +
-                  "PSP8 for ABINIT, UPF (UPF2) for quantum espresso. " +
+                  "PSP8 for ABINIT, UPF2 for Quantum Espresso, PSML1.1 is supported by Siesta. " +
                   "When you select HTML, clicking the elements will display a full report of all the tests we performed. " +
                   "Finally djrepo will give you all the numerical results of the tests in json format."
         },
@@ -260,6 +261,10 @@ function dojoTour_guidedtour() {
           intro:  "Alternatively, with the download button you can get a tar of the full table, always one pseudopotential per element."
         },
         {
+          element: "#papers",
+          intro:  "A list of papers usging PseudoDojo pseudopotentials. Did you use them? Send us the DOI and we'll add yours as well."
+        },
+        {
           element: ".logo",
           intro:  "Finally, if you want to learn the periodic table by heart try clicking here. (p.s. Don't try to download Oganesson, bad things may happen.)"
         }
@@ -289,8 +294,8 @@ function dynamicdropdown(listindex){
       document.getElementById('warning_box').innerHTML = "";
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-      document.getElementById("XCF").options[0]=new Option("LDA","pw");
-      document.getElementById("XCF").options[1]=new Option("PBE","pbe");
+      document.getElementById("XCF").options[1]=new Option("LDA","pw");
+      document.getElementById("XCF").options[0]=new Option("PBE","pbe");
       document.getElementById("FMT").options[0]=new Option("xml","xml");
       break;
 
@@ -299,9 +304,9 @@ function dynamicdropdown(listindex){
       set_warning(' this version is outdated')
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-      document.getElementById("XCF").options[0]=new Option("LDA","pw");
-      document.getElementById("XCF").options[1]=new Option("PBE","pbe");
-      document.getElementById("XCF").options[2]=new Option("PBEsol","pbesol");
+      document.getElementById("XCF").options[2]=new Option("LDA","pw");
+      document.getElementById("XCF").options[0]=new Option("PBE","pbe");
+      document.getElementById("XCF").options[1]=new Option("PBEsol","pbesol");
       document.getElementById("FMT").options[0]=new Option("psp8","psp8");
       document.getElementById("FMT").options[1]=new Option("upf","upf");
       document.getElementById("FMT").options[2]=new Option("html","html");
@@ -312,9 +317,23 @@ function dynamicdropdown(listindex){
       document.getElementById('warning_box').innerHTML = "";
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-      // document.getElementById("XCF").options[]=new Option("LDA","pw");
+      document.getElementById("XCF").options[2]=new Option("LDA","pw");
       document.getElementById("XCF").options[0]=new Option("PBE","pbe");
-      // document.getElementById("XCF").options[]=new Option("PBEsol","pbesol");
+      document.getElementById("XCF").options[1]=new Option("PBEsol","pbesol");
+      document.getElementById("FMT").options[0]=new Option("psp8","psp8");
+      document.getElementById("FMT").options[1]=new Option("upf","upf");
+      document.getElementById("FMT").options[2]=new Option("psml","psml");
+      document.getElementById("FMT").options[3]=new Option("html","html");
+      document.getElementById("FMT").options[4]=new Option("djrepo","djrepo");
+      break;
+
+    case "nc-fr-04" :
+      document.getElementById('warning_box').innerHTML = "";
+      document.getElementById("ACC").options[0]=new Option("standard","standard");
+      document.getElementById("ACC").options[1]=new Option("stringent","stringent");
+//      document.getElementById("XCF").options[2]=new Option("LDA","pw");
+      document.getElementById("XCF").options[0]=new Option("PBE","pbe");
+      document.getElementById("XCF").options[1]=new Option("PBEsol","pbesol");
       document.getElementById("FMT").options[0]=new Option("psp8","psp8");
       document.getElementById("FMT").options[1]=new Option("upf","upf");
       document.getElementById("FMT").options[2]=new Option("psml","psml");
@@ -323,7 +342,7 @@ function dynamicdropdown(listindex){
       break;
 
     case "nc-sr-04-3plus" :
-      set_warning(" this table contains Lanthanide potentials for use in the 3+ configuration only. They all have the f-electrons frozen in the core.");
+      set_warning(" this table contains Lanthanide potentials for use in the 3+ configuration only. <b>They all have the f-electrons frozen in the core.</b> The hints are based on the convergence of the nitride lattice parameter, see the report under format:html for details.");
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       // document.getElementById("ACC").options[1]=new Option("stringent","stringent");
       // document.getElementById("XCF").options[]=new Option("LDA","pw");
@@ -332,8 +351,8 @@ function dynamicdropdown(listindex){
       document.getElementById("FMT").options[0]=new Option("psp8","psp8");
       document.getElementById("FMT").options[1]=new Option("upf","upf");
       document.getElementById("FMT").options[2]=new Option("psml","psml");
-      // document.getElementById("FMT").options[3]=new Option("html","html");
-      // document.getElementById("FMT").options[4]=new Option("djrepo","djrepo");
+      document.getElementById("FMT").options[3]=new Option("html","html");
+      document.getElementById("FMT").options[4]=new Option("djrepo","djrepo");
       break;
 
     case "core" :

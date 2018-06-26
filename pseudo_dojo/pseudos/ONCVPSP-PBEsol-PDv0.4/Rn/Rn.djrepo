@@ -1,0 +1,64 @@
+{
+"basename": "Rn.psp8",
+"ecuts": [
+4.0,
+6.0,
+8.0,
+10.0,
+12.0,
+14.0,
+16.0,
+18.0,
+20.0,
+22.0,
+24.0,
+32.0,
+34.0
+],
+"hints": {
+"high": {
+"ecut": 22.0
+},
+"low": {
+"ecut": 12.0
+},
+"normal": {
+"ecut": 16.0
+}
+},
+"md5": "362503a4e798277345b3e6563ff4e4ec",
+"ppgen_hints": {
+"high": {
+"ecut": 14.0,
+"pawecutdg": 14.0
+},
+"low": {
+"ecut": 11.0,
+"pawecutdg": 11.0
+},
+"normal": {
+"ecut": 12.0,
+"pawecutdg": 12.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Rn",
+"tags": [
+""
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE_SOL"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE_SOL"
+}
+}
+}

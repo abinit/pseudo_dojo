@@ -820,7 +820,7 @@ class DojoReport(dict):
         num_sites = num_sites[0]
 
         # Energies per atom in meV and difference wrt 'converged' value
-        etotals_mev = minenes * 1000  / num_sites
+        etotals_mev = minenes * 1000 / num_sites
         ediffs = etotals_mev - etotals_mev[-1]
 
         ax, fig, plt = get_ax_fig_plt(ax)
@@ -835,11 +835,12 @@ class DojoReport(dict):
 
         # Add vertical lines at hints.
         if self.has_hints:
-            vmin, vmax = ys.min(), ys.max()
+            vmax = ys.max()
+            vmin = ys.min() if inv_ecut else np.min([y for y in ys if y > 0])
             for acc in self.ALL_ACCURACIES:
                 x0 = self["hints"][acc]["ecut"]
                 if inv_ecut: x0 = 1/x0
-                ax.vlines(x0, vmin, vmax, colors=self.ACC2COLOR[acc], linestyles="dashed")
+                ax.vlines(x0, vmin+0.001, vmax, colors=self.ACC2COLOR[acc], linestyles="dashed")
 
         if label is not None: ax.legend(lines, [label], loc='best', shadow=True)
 
@@ -1228,7 +1229,7 @@ class DojoReport(dict):
         return ebands.plot_with_edos(edos, show=False, **kwargs)
 
     @add_fig_kwargs
-    def plot_raren_convergence(self, xc, with_soc=False, **kwargs):
+    def plot_raren_convergence(self, xc, with_soc=False, plot_diffs=False, **kwargs):
         """
         Plot the convergence of the total energy wrt ecut using (etotal obtained with the initial value
         of the lattice paramenter used to start the structural relaxation) as well as the convergence of the
@@ -1237,6 +1238,7 @@ class DojoReport(dict):
         Args:
             xc: String or XcFunc object specifying the XC functional. E.g "PBE" or XcFunc.from_name("PBE")
             with_soc: If True, the results obtained with SOC are plotted (if available).
+            plot_diffs: plot the difference with respect to the last value is stead of absolute values
 
         Returns:
             `matplotlib` figure. None if the ebands test is not present.
@@ -1263,12 +1265,25 @@ class DojoReport(dict):
             values = np.array(data[key])
             if key == "initial_energy_ev_per_atom":
                 values = values * 1000
-                ediffs = values - values[-1]
+            diffs = values - values[-1]
+            if plot_diffs:
+                ax.plot(ecuts, diffs, "o-")
+                vmin, vmax = diffs.min(), diffs.max()
+                prec_list = [0.01, 0.005, 0.001] if key == "relaxed_a" else [1000, 200, 10]
+                for prec in prec_list:
+                    ax.hlines(y=prec, xmin=xmin, xmax=xmax, linewidth=1.5, linestyles='dashed')
+                    ax.hlines(y=-prec, xmin=xmin, xmax=xmax, linewidth=1.5, linestyles='dashed')
+            else:
+                ax.plot(ecuts, values, "o-")
+                vmin, vmax = values.min(), values.max()
+                if key == "relaxed_a":
+                    y = table["ref"][self.symbol]
+                    ax.hlines(y=y, xmin=xmin, xmax=xmax, colors="b", linewidth=1.5, linestyles='dashed')
+            # Add vertical lines at hints.
+            if self.has_hints:
+                for acc in self.ALL_ACCURACIES:
+                    ax.vlines(self["hints"][acc]["ecut"], vmin, vmax, colors=self.ACC2COLOR[acc], linestyles="dashed")
 
-            ax.plot(ecuts, values, "o-")
-            if key == "relaxed_a":
-                y = table["ref"][self.symbol]
-                ax.hlines(y=y, xmin=xmin, xmax=xmax, colors="b", linewidth=1.5, linestyles='dashed')
             ax.grid(True)
             ax.set_ylabel(key2ylabel[key])
             if i == len(keys) - 1: ax.set_xlabel("Ecut [Ha]")

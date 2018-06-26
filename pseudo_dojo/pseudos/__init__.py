@@ -16,6 +16,8 @@ DOJOTABLE_BASEDIRS = [
     # 
     # Tables for the paper
     "ONCVPSP-PBE-PDv0.4",
+    "ONCVPSP-PW-PDv0.4",
+    "ONCVPSP-PBEsol-PDv0.4"
 ]
 
 here = os.path.dirname(__file__)

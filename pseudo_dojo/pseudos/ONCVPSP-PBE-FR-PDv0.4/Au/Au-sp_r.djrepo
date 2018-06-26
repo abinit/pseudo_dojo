@@ -1,0 +1,64 @@
+{
+"basename": "Au-sp_r.psp8",
+"ecuts": [
+26.0,
+28.0,
+30.0,
+32.0,
+34.0,
+36.0,
+38.0,
+40.0,
+42.0,
+44.0,
+46.0,
+54.0,
+56.0
+],
+"hints": {
+"high": {
+"ecut": 44.0
+},
+"low": {
+"ecut": 32.0
+},
+"normal": {
+"ecut": 38.0
+}
+},
+"md5": "db8bbb120a1341d95c1bedea377dabda",
+"ppgen_hints": {
+"high": {
+"ecut": 36.0,
+"pawecutdg": 36.0
+},
+"low": {
+"ecut": 32.0,
+"pawecutdg": 32.0
+},
+"normal": {
+"ecut": 34.0,
+"pawecutdg": 34.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Au",
+"tags": [
+" "
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE"
+}
+}
+}

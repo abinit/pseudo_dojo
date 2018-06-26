@@ -1,0 +1,64 @@
+{
+"basename": "Ca-sp_r.psp8",
+"ecuts": [
+22.0,
+24.0,
+26.0,
+28.0,
+30.0,
+32.0,
+34.0,
+36.0,
+38.0,
+40.0,
+42.0,
+50.0,
+52.0
+],
+"hints": {
+"high": {
+"ecut": 38.0
+},
+"low": {
+"ecut": 28.0
+},
+"normal": {
+"ecut": 34.0
+}
+},
+"md5": "df83e3ff4bee83cd75bf5f05a4817abd",
+"ppgen_hints": {
+"high": {
+"ecut": 32.0,
+"pawecutdg": 32.0
+},
+"low": {
+"ecut": 28.0,
+"pawecutdg": 28.0
+},
+"normal": {
+"ecut": 30.0,
+"pawecutdg": 30.0
+}
+},
+"pseudo_type": "NC",
+"symbol": "Ca",
+"tags": [
+"GW"
+],
+"version": "1.0",
+"xc": {
+"@class": "XcFunc",
+"@module": "pymatgen.core.xcfunc",
+"c": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_C_PBE"
+},
+"x": {
+"@class": "LibxcFunc",
+"@module": "pymatgen.core.libxcfunc",
+"name": "GGA_X_PBE"
+}
+}
+}
