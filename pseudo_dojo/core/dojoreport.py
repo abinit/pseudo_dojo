@@ -218,7 +218,7 @@ class DojoReport(dict):
         "gbrv_bcc",
         "gbrv_fcc",
         "phgamma",
-        #"ghosts",
+        "ghosts",
     ]
 
     # Add trials done with SOC.
