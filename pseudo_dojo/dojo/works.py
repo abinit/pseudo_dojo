@@ -366,6 +366,10 @@ class DeltaFactory(object):
         # TODO: Not sure spinat is ok if LDA.
         kwargs["spinat"], spin_mode = self._dfdb.spinat_spinmode_for_symbol(symbol)
         if include_soc: spin_mode = "spinor"
+        # This is needed for LDA
+        if symbol in ("O", "Mn"):
+            print("Got Oxygen or Mn")
+            spin_mode = "polarized"
 
         # Magnetic elements:
         # Start from previous SCF run to avoid getting trapped in local minima
