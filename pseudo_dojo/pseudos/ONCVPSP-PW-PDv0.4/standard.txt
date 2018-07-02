@@ -5,7 +5,7 @@ Be/Be-s.psp8
 B/B.psp8
 C/C.psp8
 N/N.psp8
-#O/O.psp8
+O/O.psp8
 F/F.psp8
 Ne/Ne.psp8
 Na/Na-sp.psp8
@@ -22,14 +22,14 @@ Sc/Sc-sp.psp8
 Ti/Ti-sp.psp8
 V/V-sp.psp8
 Cr/Cr-sp.psp8
-#Mn/Mn-sp.psp8
+Mn/Mn-sp.psp8
 Fe/Fe-sp.psp8
-#Co/Co-sp.psp8
-#Ni/Ni-sp.psp8
+Co/Co-sp.psp8
+Ni/Ni-sp.psp8
 Cu/Cu-sp.psp8
 Zn/Zn-sp.psp8
 Ga/Ga-d.psp8
-#Ge/Ge-d.psp8
+Ge/Ge-d.psp8
 As/As-d.psp8
 Se/Se-d.psp8
 Br/Br.psp8
