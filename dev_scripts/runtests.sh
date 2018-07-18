@@ -1,16 +1,19 @@
 #!/bin/bash
-set -ev  # exit on first error, print each command
+set -e  # exit on first error
 
-abicheck.py #--with-flow
+abinit --version
+abinit --build
+abicheck.py --with-flow
 
 nosetests -v --with-coverage --cover-package=pseudo_dojo --logging-level=INFO
 
 # This is to run the integration tests (slow)
-# pytest -v --cov=abipy --doctest-modules --durations=10 --ignore=./docs/ abipy/integration_tests
+# pytest -v --cov=abipy --doctest-modules --ignore=./docs/ abipy/integration_tests
 # pytest abipy/integration_tests --ignore=./docs/
 
 # Generate documentation
-#if [[ "${PYTHON_VERSION}" == "2.7" && "${TRAVIS_OS_NAME}" == "linux" ]]; then
+#if [[ "${ABIPY_SPHINX}" == "yes" ]]; then
+#    pip install -r ./docs/requirements.txt
 #    ./docs/install_reqs.sh;
-#    cd ./docs && make && cd ..;
+#    cd ./docs && make && cd ..
 #fi

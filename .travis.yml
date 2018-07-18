@@ -1,6 +1,16 @@
 language: python
+cache: pip
 
-# We don't actually use the Travis Python but conda
+#dist: precise
+sudo: false
+
+env:
+  global:
+    - ABINIT_VERSION=8.8.2
+    - ABIPY_PYTEST=yes
+    - OPENBLAS_NUM_THREADS=1
+    - OMP_NUM_THREADS=1
+
 matrix:
   include:
     - os: linux
@@ -8,24 +18,22 @@ matrix:
       env: ABINIT_VERSION=8.6.1
     - os: linux
       python: 3.6
-      env: ABINIT_VERSION=8.6.1
-
-sudo: false
+      env: ABINIT_VERSION=8.6.1 ABIPY_COVERALLS=yes
 
 install:
-  #- sudo apt-get update
-  - env
   #- set -ev  # exit on first error, print each command
-  #
+  - env
+  - ulimit -s unlimited
+
   # pip-based installation.
   #- travis_wait pip install -r requirements.txt
   #- travis_wait pip install -r requirements-optional.txt
   #
   # Install conda https://conda.io/docs/travis.html
   - source dev_scripts/conda_get.sh
-  #- source dev_scripts/conda_install.sh
-  - conda uninstall -y pymatgen
-  - conda uninstall -y abipy
+  - source dev_scripts/conda_install.sh
+  #- conda uninstall -y pymatgen
+  #- conda uninstall -y abipy
 
   # Install abinit from abinit conda channel.
   #- conda config --add channels conda-forge
@@ -37,8 +45,8 @@ install:
   # pymatgen master
   #- git clone https://github.com/materialsproject/pymatgen.git && cd pymatgen && pip install -q -r requirements.txt && pip install -q -r requirements-optional.txt && python setup.py install && cd ../
 
-  - git clone --depth=50 https://github.com/gmatteo/pymatgen.git && cd pymatgen && python setup.py install && cd ../
-  - git clone --depth=50 https://github.com/abinit/abipy.git && cd abipy && python setup.py install && cd ../
+  #- git clone --depth=50 https://github.com/gmatteo/pymatgen.git && cd pymatgen && python setup.py install && cd ../
+  #- git clone --depth=50 https://github.com/abinit/abipy.git && cd abipy && python setup.py install && cd ../
 
   - python setup.py install
   - mkdir -p ${HOME}/.abinit/abipy 
@@ -55,8 +63,7 @@ branches:
     - develop
 
 after_success:
-- if [[ "${TRAVIS_PYTHON_VERSION}" == "2.7" && "${TRAVIS_OS_NAME}" == "linux" ]]; then coveralls; fi
-
+    - if [[ "${ABIPY_COVERALLS}" == "yes" ]]; then coveralls; fi
 
 notifications:
   email:
