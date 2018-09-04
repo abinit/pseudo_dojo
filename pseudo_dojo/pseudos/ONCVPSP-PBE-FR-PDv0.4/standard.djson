@@ -1,11 +1,11 @@
 {
  "dojo_info": {
-  "pp_type": "{'type': 'string', 'enum': ['NC', 'PAW']}",
-  "xc_name": "{'type': 'string', 'enum': ['PW', 'PW_MOD', 'PZ', 'W', 'HL', 'GL', 'VWN', 'PW91', 'PBE', 'RPBE', 'revPBE', 'PBEsol', 'AM05', 'BLYP']}",
-  "authors": "{'type': 'array'}",
-  "description": "{'type': 'string'}",
-  "references": "{'type': 'array'}",
-  "dojo_dir": "{'type': 'string'}"
+  "pp_type": "NC",
+  "xc_name": "PBE",
+  "description": "Standard table designed for GS applications",
+  "references": ["Dojo paper"],
+  "authors": ["M. J. van Setten", "M. Giantomassi"],
+  "dojo_dir": "ONCVPSP-PBE-FR-PDv0.4"
  },
  "pseudos_metadata": {
   "H": {
