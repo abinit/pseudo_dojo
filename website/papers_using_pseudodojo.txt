@@ -3,9 +3,9 @@
 #https://arxiv.org/abs/1806.05609
 #https://arxiv.org/abs/1806.00124
 #https://arxiv.org/abs/1804.06573
-#https://arxiv.org/abs/1804.02196
 #https://arxiv.org/abs/1804.01517
-#https://arxiv.org/abs/1803.11184
+10.1103/PhysRevMaterials.2.063608
+10.1039/C8NR03102A
 10.1038/sdata.2018.65
 10.1126/science.aad3000
 10.1021/acs.jctc.6b00114
@@ -19,8 +19,11 @@
 10.1103/PhysRevB.96.134113
 10.1103/PhysRevB.97.115145
 10.1103/PhysRevB.97.115203
+10.1103/PhysRevB.97.245427
+10.1103/PhysRevLett.121.086402
 10.1038/s41565-017-0035-5
 10.1016/j.cpc.2018.02.011
-10.1021/acs.jpclett.7b01042
+10.1016/j.jlumin.2018.08.039
 10.1016/j.cej.2018.06.138
 10.1021/acs.nanolett.8b02406
+10.1021/acs.jpclett.7b01042
