@@ -716,14 +716,15 @@ class OfficialDojoTable(DojoTable):
     @classmethod
     def from_dojodir(cls,dojodir,accuracy='standard'):
         """Use a dojodir string to get a djson file and initialize the class"""
+        import glob
         from pseudo_dojo.pseudos import dojotable_absdir
         dojodir_path = dojotable_absdir(dojodir)
         djson_path = os.path.join(dojodir_path,accuracy+'.djson')
         if not os.path.isfile(djson_path):
-            filenames = glob.glob(dojodir_path+"*.djson")
-            accuracies = [filename.replace('.djson','') for filename in filenames] 
-            raise FileNotFoundError("File {} does not exist."
-                                    "Try accuracy = {}".format(djson_path,accuracies))
+            filenames = glob.glob(os.path.join(dojodir_path,"*.djson"))
+            accuracies = [os.path.basename(filename).replace('.djson','') for filename in filenames] 
+            raise FileNotFoundError("File {} does not exist. "
+                                    "Found djson files for accuracy = {}".format(djson_path,accuracies))
         return cls.from_djson_file(djson_path)
     
     @classmethod
