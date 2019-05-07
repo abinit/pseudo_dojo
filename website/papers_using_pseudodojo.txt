@@ -1,9 +1,5 @@
 #test
-#https://arxiv.org/abs/1809.03381
 #https://arxiv.org/abs/1809.00058
-#https://arxiv.org/abs/1806.05775
-#https://arxiv.org/abs/1806.05609
-#https://arxiv.org/abs/1806.00124
 #https://arxiv.org/abs/1804.01517
 #https://arxiv.org/abs/1903.11963
 10.1140/epjb/e2018-90247-9
@@ -25,7 +21,10 @@
 10.1103/PhysRevB.97.245427
 10.1103/PhysRevB.98.155309
 10.1103/PhysRevB.98.155131
+10.1103/PhysRevB.99.144309
+10.1103/PhysRevB.99.155143
 10.1103/PhysRevLett.121.086402
+10.1103/PhysRevLett.121.226603
 10.1103/PhysRevMaterials.3.022401
 10.1103/PhysRevMaterials.3.044601
 10.1038/s41565-017-0035-5
@@ -39,3 +38,5 @@
 10.1088/1674-4926/40/3/032801
 10.1142/S0217984919500891
 10.1088/2053-1591/ab059c
+10.1038/s41524-018-0127-2
+10.1038/s41563-018-0280-5
