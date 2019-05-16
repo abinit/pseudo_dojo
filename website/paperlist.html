@@ -81,8 +81,8 @@ function includeHTML() {
 // Random encryption key feature coded by Andrew Moulden
 // This code is freeware provided these four comment lines remain intact
 // A wizard to generate this code is at http://www.jottings.com/obfuscator/
-{ coded = "gyKWydT.o74Pd88d4@xKTcxo7y4.hd"
-  key = "759T0NGqdsyKjorHngtOE1up2h3MUASRafzlXZFPeIicLv4w8mC6xYBWDbQVJk"
+{ coded = "gMQzO3HTTHO@igzJj.x1g"
+  key = "zj67okD2NfmJyT0UWqbKGrMhV1Y5cEvgASenFuPRsalwdIL8pxCQiXtHO9BZ43"
   shift=coded.length
   link=""
   for (i=0; i<coded.length; i++) {
@@ -90,7 +90,7 @@ function includeHTML() {
       ltr = coded.charAt(i)
       link += (ltr)
     }
-    else {
+    else {     
       ltr = (key.indexOf(coded.charAt(i))-shift+key.length) % key.length
       link += (key.charAt(ltr))
     }
@@ -99,8 +99,6 @@ document.write("<a href='mailto:"+link+"'>contact us</a>")
 }
 //-->
 </script><noscript>Sorry, you need Javascript on to email me.</noscript>
-
-
 
 <center>
 <div> <img src="year.png"></div>
