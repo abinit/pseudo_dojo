@@ -12,11 +12,14 @@
 #https://arxiv.org/abs/1907.04646
 #https://arxiv.org/abs/1907.04766
 #https://arxiv.org/abs/1906.06942
+#https://arxiv.org/abs/1908.02707
+#https://arxiv.org/abs/1908.08334
 10.1016/j.jmgm.2019.07.004
 10.1039/C8NR03102A
 10.1038/sdata.2018.65
 10.1126/science.aad3000
 10.1021/acs.jctc.6b00114
+10.1021/acsnano.9b03419
 10.1038/ncomms12585
 10.1063/1.5018186
 10.1021/jacs.5b13192
@@ -34,6 +37,8 @@
 10.1103/PhysRevB.99.155143
 10.1103/PhysRevB.99.184302
 10.1103/PhysRevB.99.201114
+10.1103/PhysRevB.100.085204
+10.1103/PhysRevX.9.031019
 10.1103/PhysRevLett.121.086402
 10.1103/PhysRevLett.121.226603
 10.1103/PhysRevMaterials.3.022401
