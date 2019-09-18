@@ -1,7 +1,9 @@
 #https://arxiv.org/abs/1804.01517
 #https://arxiv.org/abs/1809.00058
 #https://arxiv.org/abs/1903.11963
+#https://arxiv.org/abs/1905.02794
 #https://arxiv.org/abs/1905.06693
+#https://arxiv.org/abs/1905.08328
 #https://arxiv.org/abs/1906.01109
 #https://arxiv.org/abs/1906.06942
 #https://arxiv.org/abs/1907.04532
@@ -14,8 +16,6 @@
 #https://arxiv.org/abs/1909.00623
 #https://arxiv.org/abs/1909.03942
 #https://arxiv.org/abs/1909.05050
-#https://arxiv.org/abs/1909.05051
-#https://arxiv.org/abs/1909.05051
 #https://arxiv.org/abs/1909.05051
 10.1002/aelm.201800892
 10.1016/j.cej.2018.06.138
@@ -38,6 +38,7 @@
 10.1038/s41565-017-0035-5
 10.1038/sdata.2018.65
 10.1039/C8NR03102A
+10.1039/C9CP04407H
 10.1063/1.5018186
 10.1080/1536383X.2019.1637341
 10.1088/1674-4926/40/3/032801
@@ -60,9 +61,11 @@
 10.1103/PhysRevB.99.201114
 10.1103/PhysRevLett.121.086402
 10.1103/PhysRevLett.121.226603
+10.1103/PhysRevLett.122.186402
 10.1103/PhysRevMaterials.2.063608
 10.1103/PhysRevMaterials.3.022401
 10.1103/PhysRevMaterials.3.044601
+10.1103/PhysRevMaterials.3.074003
 10.1103/PhysRevMaterials.3.074003
 10.1103/PhysRevX.9.031019
 10.1117/12.2525115
@@ -70,3 +73,5 @@
 10.1126/science.aad3000
 10.1140/epjb/e2018-90247-9
 10.1142/S0217984919500891
+10.1364/OME.9.004050
+10.3389/fchem.2019.00377
