@@ -52,6 +52,14 @@ def make_ref(entry_dict):
     return ref
 
 
+def make_tweet(doi):
+    cr = Crossref()
+    entry = pybtex_to_dict(cr.get_by_doi(doi))
+    
+    tweet = f'New #compchem work using #PseudoDojo pseudopotentials: {entry["title"]} by {entry["author"][0]["last"][0]} et al. https://doi.org/{doi}'
+    
+    return tweet
+
 cr = Crossref()
 sorted_entry_dicts = sorted([pybtex_to_dict(cr.get_by_doi(doi)) for doi in dois], key=itemgetter('year'), reverse=True)
 df = pandas.DataFrame(sorted_entry_dicts)
