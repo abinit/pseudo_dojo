@@ -2,18 +2,15 @@
 """
 Script to create a tar with the downloadable files and html for the pseudo-dojo.org website.
 """
-
-from __future__ import unicode_literals, division, print_function, absolute_import
-
 import sys
 import os
 import json
+
 from shutil import copyfile
+from nbconvert.preprocessors.execute import CellExecutionError
 from pseudo_dojo.util.notebook import write_notebook_html
 from pseudo_dojo.core.dojoreport import DojoReport
-# from pseudo_dojo.util.convert import make_upf
 from pseudo_dojo.ppcodes.ppgen import OncvGenerator
-from nbconvert.preprocessors.execute import CellExecutionError
 
 
 def make_upf(pseudo_path, calctype, mock=False):

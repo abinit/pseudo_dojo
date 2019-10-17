@@ -1,16 +1,14 @@
 # coding: utf-8
 """Workflows to perform GBRV tests for binary and ternary compunds"""
-from __future__ import division, print_function, unicode_literals
-
 import numpy as np
 import pandas as pd
 import json
 
 from abipy import abilab
-from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
-from pymatgen.io.abinit.works import Work
-from pymatgen.io.abinit.flows import Flow
+from abipy.flowtk.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
 from abipy.core.structure import Structure
+from abipy.flowtk.works import Work
+from abipy.flowtk.flows import Flow
 from pseudo_dojo.core.pseudos import DojoTable
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb

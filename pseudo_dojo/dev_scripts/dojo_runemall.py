@@ -2,8 +2,6 @@
 """
 Script to rename pseudodojo files under revision control (git)
 """
-from __future__ import unicode_literals, division, print_function, absolute_import
-
 import sys
 import os
 import json

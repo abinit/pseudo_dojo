@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 """Script to run the GBRV tests for binary and ternary compunds."""
-from __future__ import division, print_function, unicode_literals
-
 import sys
 import os
 import argparse
@@ -11,7 +9,6 @@ import hashlib
 from monty.termcolor import cprint
 from monty.functools import prof_main
 from monty.io import FileLock
-#from abipy import abilab
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, species_from_formula
 from pseudo_dojo.dojo.gbrv_outdb import GbrvOutdb

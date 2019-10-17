@@ -1,11 +1,9 @@
 # coding: utf-8
 """This module provides objects and helper functions for atomic calculations."""
-from __future__ import division, print_function, unicode_literals
-
 import collections
 import numpy as np
 
-from six.moves import cStringIO
+from io import StringIO
 from pseudo_dojo.refdata.nist import database as nist_database
 from scipy.interpolate import UnivariateSpline
 from scipy.integrate import cumtrapz
@@ -277,7 +275,7 @@ class RadialFunction(object):
         return "<%s, name=%s at %s>" % (self.__class__.__name__, self.name, id(self))
 
     def __str__(self):
-        stream = cStringIO()
+        stream = StringIO()
         self.pprint(stream=stream)
         return stream.getvalue()
 

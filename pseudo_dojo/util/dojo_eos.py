@@ -6,16 +6,13 @@ Note: Most of the code is adapted from ASE and the deltafactor package
 in order to facilitate the comparison between results produced with different
 ab-initio codes and/or different python frameworks.
 """
-
-from __future__ import unicode_literals, division, print_function
-
 import collections
 import numpy as np
 import pymatgen.core.units as units
 
 from monty.functools import return_none_if_raise
 from pymatgen.core.units import FloatWithUnit
-from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
+from abipy.tools.plotting import add_fig_kwargs, get_ax_fig_plt
 
 import logging
 logger = logging.getLogger(__file__)

@@ -1,6 +1,5 @@
 # coding: utf-8
 """Release data for the pseudo_dojo project."""
-from __future__ import division, print_function, unicode_literals
 
 # Name of the package for release purposes.  This is the name which labels
 # the tarballs and RPMs made by distutils, so it's best to lowercase it.

@@ -1,6 +1,4 @@
 """Tools to produce jupyter notebooks """
-from __future__ import print_function, division, unicode_literals
-
 import os
 import io
 
@@ -99,10 +97,10 @@ onc_parser = OncvOutputParser(pseudo.filepath.replace(".psp8", ".out"))
 onc_parser.scan()
 plotter = onc_parser.make_plotter()"""),
 
-        nbf.new_markdown_cell("## AE and PS radial wavefunctions $\phi(r)$"),
+        nbf.new_markdown_cell(r"## AE and PS radial wavefunctions $\phi(r)$"),
         nbf.new_code_cell("fig = plotter.plot_radial_wfs()"),
 
-        nbf.new_markdown_cell("""## Arctan of the logarithmic derivatives
+        nbf.new_markdown_cell(r"""## Arctan of the logarithmic derivatives
 
 From the oncvpsp documentation:
 The plots show $\phi(E) = \\arctan(R * d \psi(r)/dr |_R)$ for some $R$
@@ -194,7 +192,7 @@ A comparison using the Delta-gauge between many codes and many pseudo tables can
        ])
 
     nb.cells.extend([
-        nbf.new_markdown_cell("## Convergence of $\Delta v_0$, $\Delta b_0$, and $\Delta b_1$ (deltafactor tests)"),
+        nbf.new_markdown_cell(r"## Convergence of $\Delta v_0$, $\Delta b_0$, and $\Delta b_1$ (deltafactor tests)"),
         nbf.new_code_cell("""\
 # Absolute difference with respect to Wien2k results.
 fig = report.plot_deltafactor_convergence(xc=pseudo.xc, what=("-dfact_meV", "-dfactprime_meV"))"""),
@@ -212,7 +210,7 @@ developing th GBRV pseudo potential table. More information can be found in [Com
 
         nbf.new_code_cell("fig = report.plot_gbrv_convergence()"),
 
-        nbf.new_markdown_cell("""## Convergence of the phonon frequencies at $\Gamma$
+        nbf.new_markdown_cell(r"""## Convergence of the phonon frequencies at $\Gamma$
 The calculation is performed with the Wien2k relaxed parameters obtained from the deltafactor CIF files.
 """),
         nbf.new_code_cell("fig = report.plot_phonon_convergence()"),

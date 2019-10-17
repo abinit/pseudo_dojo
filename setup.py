@@ -6,12 +6,6 @@ import os
 from glob import glob
 from setuptools import find_packages
 
-# This check is also made in pseudo_dojo/__init__, don't forget to update both when
-# changing Python version requirements.
-if sys.version[0:3] < '2.7':
-    sys.stderr.write("ERROR: pseudo_dojo requires Python Version 2.7 or above. Exiting.")
-    sys.exit(1)
-
 
 def file_doesnt_end_with(test, endings):
     """
@@ -37,7 +31,7 @@ def file_doesnt_end_with(test, endings):
 #    long_desc = long_desc[ind + 1:]
 
 # release.py contains version, authors, license, url, keywords, etc.
-release_file = os.path.join('pseudo_dojo','core','release.py')
+release_file = os.path.join('pseudo_dojo', 'core', 'release.py')
 
 with open(release_file) as f:
     code = compile(f.read(), release_file, 'exec')
@@ -66,7 +60,7 @@ def find_scripts():
     """Find pseudo_dojo scripts."""
     scripts = []
     # All python files in abipy/scripts
-    pyfiles = glob(os.path.join('pseudo_dojo','scripts',"*.py") )
+    pyfiles = glob(os.path.join('pseudo_dojo', 'scripts', "*.py") )
     scripts.extend(pyfiles)
 
     return scripts

@@ -1,15 +1,13 @@
 # coding: utf-8
 """Test PseudoDojo command line scripts."""
-from __future__ import print_function, division, unicode_literals, absolute_import
 
 import os
+import pseudo_dojo.data as pdj_data
 
 from scripttest import TestFileEnvironment
 from monty.inspect import all_subclasses
 from pseudo_dojo.core.testing import PseudoDojoTest
 from pseudo_dojo.pseudos import dojotable_absdir
-import pseudo_dojo.data as pdj_data
-
 
 script_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "scripts"))
 

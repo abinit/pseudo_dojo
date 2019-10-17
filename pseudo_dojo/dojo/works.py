@@ -1,7 +1,5 @@
 # coding: utf-8
 """Base class for Dojo Workkflows."""
-from __future__ import division, print_function, unicode_literals
-
 import abc
 import os
 import logging
@@ -10,11 +8,11 @@ import numpy as np
 from monty.io import FileLock
 from pymatgen.core.units import bohr_to_ang
 from pymatgen.core.xcfunc import XcFunc
-from pymatgen.io.abinit.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
-from pymatgen.io.abinit.tasks import RelaxTask
-from pymatgen.io.abinit.works import Work, RelaxWork, PhononWork
 from abipy.core.structure import Structure
 from abipy.abio.factories import ion_ioncell_relax_input
+from abipy.flowtk.abiobjects import SpinMode, Smearing, KSampling, RelaxationMethod
+from abipy.flowtk.tasks import RelaxTask
+from abipy.flowtk.works import Work, RelaxWork, PhononWork
 from abipy import abilab
 from pseudo_dojo.core.dojoreport import DojoReport, dojo_dfact_results, dojo_gbrv_results
 from pseudo_dojo.refdata.gbrv import gbrv_database

@@ -1,6 +1,4 @@
 """Integration tests for deltafactor calculations with Abinit and AbiPy."""
-from __future__ import print_function, division, unicode_literals, absolute_import
-
 import pytest
 import pseudo_dojo.data as pdj_data
 import abipy.abilab as abilab

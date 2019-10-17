@@ -1,7 +1,5 @@
 # coding: utf-8
 """Classes and functions for post-processing the results produced by ONCVPSP."""
-from __future__ import division, print_function, unicode_literals
-
 import io
 import sys
 import os
@@ -14,9 +12,9 @@ from monty.os.path import which
 from monty.functools import lazy_property
 from monty.collections import AttrDict, dict2namedtuple
 from monty.termcolor import cprint
-from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
-from pseudo_dojo.core import NlkState, RadialFunction, RadialWaveFunction
+from abipy.tools.plotting import add_fig_kwargs, get_ax_fig_plt
 from abipy.tools.derivatives import finite_diff
+from pseudo_dojo.core import NlkState, RadialFunction, RadialWaveFunction
 
 import logging
 logger = logging.getLogger(__name__)
@@ -157,7 +155,7 @@ class PseudoGenDataPlotter(object):
             else:
                 legends.extend(["AE l=%s, k=%s" % (l, k), "PS l=%s, k=%s" % (l, k)])
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$\phi(r)$", title="Wave Functions",
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel=r"$\phi(r)$", title="Wave Functions",
                     lines=lines, legends=legends)
 
         return fig
@@ -276,7 +274,7 @@ class PseudoGenDataPlotter(object):
             else:
                 legends.append("$s-order derivative PS l=%s" % str(l))
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \phi(r)$" % order,
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel=r"$D^%s \phi(r)$" % order,
                     title="Derivative of the ion Pseudopotentials",
                     lines=lines, legends=legends)
         return fig
@@ -292,7 +290,7 @@ class PseudoGenDataPlotter(object):
             lines.append(line)
             legends.append("Conv l=%s" % str(l))
 
-        decorate_ax(ax, xlabel="Ecut [Ha]", ylabel="$\Delta E$", title="Energy error per electron [Ha]",
+        decorate_ax(ax, xlabel="Ecut [Ha]", ylabel=r"$\Delta E$", title="Energy error per electron [Ha]",
                     lines=lines, legends=legends)
 
         ax.set_yscale("log")
@@ -431,7 +429,7 @@ class MultiPseudoGenDataPlotter(object):
 
     @add_fig_kwargs
     def plot_key(self, key, **kwargs):
-        """
+        r"""
         Plot the band structure and the DOS.
 
         Args:
@@ -1231,7 +1229,7 @@ if not onc_parser.run_completed:
 
 plotter = onc_parser.make_plotter()"""),
 
-        nbf.new_markdown_cell("# AE and PS radial wavefunctions $\phi(r)$:"),
+        nbf.new_markdown_cell(r"# AE and PS radial wavefunctions $\phi(r)$:"),
         nbf.new_code_cell("fig = plotter.plot_radial_wfs(show=False)"),
 
         nbf.new_markdown_cell("# Arctan of the logarithmic derivatives:"),

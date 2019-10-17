@@ -1,12 +1,10 @@
 """
 Functions providing access to file data. Mainly used to build the public APIs and write unit tests.
 """
-from __future__ import print_function, division, unicode_literals
+import os
 
 from monty.termcolor import cprint
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
-
-import os
 
 DOJOTABLE_BASEDIRS = [
     "ONCVPSP-PBE-PDv0.2",

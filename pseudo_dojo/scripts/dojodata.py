@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 """Script to analyze/plot data reported in the DOJO_REPORT section."""
-from __future__ import division, print_function, unicode_literals
-
 import sys
 import os
 import glob
@@ -30,13 +28,7 @@ def straceback():
 
 
 def prompt(question):
-    import six
-    # Fix python 2.x.
-    if six.PY2:
-        my_input = raw_input
-    else:
-        my_input = input
-
+    my_input = input
     return my_input(question)
 
 

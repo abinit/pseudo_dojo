@@ -3,8 +3,6 @@
 Generate new directory for new XC by copying all input files
 and by changing the XC flag in the input files.
 """
-from __future__ import unicode_literals, division, print_function, absolute_import
-
 import sys
 import os
 import shutil

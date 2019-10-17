@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 """Script to extract the DOJO_REPORT from psp8 files and create external file."""
-from __future__ import division, print_function, unicode_literals
-
 import sys
 import os
 import argparse
 import json
 
 from monty.os.path import find_exts
-from pymatgen.io.abinit.pseudos import Pseudo
+from abipy.flowtk.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 
 

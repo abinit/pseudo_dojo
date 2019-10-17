@@ -1,7 +1,5 @@
 """
 """
-from __future__ import unicode_literals, division, print_function
-
 import sys
 import os
 import json
@@ -17,7 +15,7 @@ from monty.string import list_strings, is_string
 from monty.termcolor import cprint
 from monty.bisect import find_le
 from pymatgen.core.periodic_table import Element
-from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
+from abipy.tools.plotting import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.lantanides.database import raren_database

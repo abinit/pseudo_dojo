@@ -1,7 +1,5 @@
 # coding: utf-8
 """Pseudopotential Generators."""
-from __future__ import division, print_function, unicode_literals
-
 import abc
 import os
 import tempfile
@@ -11,8 +9,8 @@ import time
 
 from itertools import product
 from monty.os.path import which
+from abipy.flowtk.pseudos import Pseudo
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
-from pymatgen.io.abinit.pseudos import Pseudo
 
 import logging
 logger = logging.getLogger(__name__)

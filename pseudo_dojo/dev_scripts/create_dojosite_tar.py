@@ -27,9 +27,6 @@ http://protips.maxmasnick.com/ipython-notebooks-automatically-export-py-and-html
 ipython nbconvert --to html
 
 """
-
-from __future__ import unicode_literals, division, print_function, absolute_import
-
 import sys
 import os
 from shutil import copyfile

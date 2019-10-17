@@ -1,6 +1,4 @@
 """Integration tests for pseudodojo."""
-from __future__ import print_function, division, unicode_literals, absolute_import
-
 import pytest
 import abipy.abilab as abilab
 import pseudo_dojo.data as pdj_data

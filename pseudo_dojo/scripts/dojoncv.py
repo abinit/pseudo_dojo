@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 """Script to generate/analyze/plot ONCVPSP pseudopotentials."""
-from __future__ import division, print_function, unicode_literals
-
 import sys
 import os
 import collections
@@ -11,7 +9,7 @@ import shutil
 
 from monty.termcolor import cprint
 from monty.os.path import which
-from pymatgen.io.abinit.pseudos import Pseudo
+from abipy.flowtk.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from pseudo_dojo.core.dojoreport import DojoReport
 from pseudo_dojo.ppcodes.ppgen import OncvGenerator

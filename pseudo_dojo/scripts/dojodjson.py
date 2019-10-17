@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 """Script to validate/regenerate djson files."""
-from __future__ import division, print_function, unicode_literals
-
 import sys
 import os
 import argparse

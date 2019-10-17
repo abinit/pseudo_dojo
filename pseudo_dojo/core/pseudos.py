@@ -1,7 +1,5 @@
 # coding: utf-8
 """Public API to access the pseudopotential tables."""
-from __future__ import division, print_function, unicode_literals
-
 import os
 import json
 import tempfile
@@ -17,8 +15,8 @@ from monty.termcolor import cprint
 from monty.os.path import which
 from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
-from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
-from pymatgen.io.abinit.pseudos import Pseudo, PseudoTable
+from abipy.tools.plotting import add_fig_kwargs, get_ax_fig_plt
+from abipy.flowtk.pseudos import Pseudo, PseudoTable
 from pseudo_dojo.core.dojoreport import DojoReport
 
 

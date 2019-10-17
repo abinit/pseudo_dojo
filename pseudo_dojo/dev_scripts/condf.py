@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import division, print_function, unicode_literals
 
 __author__ = 'setten'
 
@@ -10,8 +9,8 @@ import numpy as np
 import pprint
 
 from pymatgen.util.convergence import determine_convergence
-from pymatgen.io.abinit.netcdf import NetcdfReader
-from pymatgen.io.abinit.pseudos import Pseudo
+from abipy.flowtk.netcdf import NetcdfReader
+from abipy.flowtk.pseudos import Pseudo
 
 
 class DeltaFactorData(object):

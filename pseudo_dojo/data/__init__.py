@@ -4,8 +4,6 @@ Preferred way to import the module is via the import syntax:
 
 import pseudo_dojo.data as pdj_data
 """
-from __future__ import print_function, division, unicode_literals, absolute_import
-
 import os
 
 from pseudo_dojo.core.pseudos import dojopseudo_from_file, DojoTable

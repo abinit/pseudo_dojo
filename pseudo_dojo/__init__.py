@@ -2,7 +2,8 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 
-from collections import defaultdict, OrderedDict, Mapping
+from collections import defaultdict, OrderedDict
+from collections import abc
 from monty.dev import deprecated
 from monty.functools import lazy_property
 from monty.design_patterns import singleton
@@ -48,7 +49,7 @@ class TableMetadata(object):
 
 
 @singleton
-class OfficialTables(Mapping):
+class OfficialTables(abc.Mapping):
     """
     Official tables provided by the PseudoDojo project.
 

@@ -2,8 +2,8 @@
 """
 Script to create html version of the notebook for a give pseudo for the pseudo-dojo.org website.
 """
-
 import sys
+
 from pseudo_dojo.util.notebook import write_notebook_html
 
 

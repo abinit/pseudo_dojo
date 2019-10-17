@@ -1,7 +1,5 @@
 # coding: utf-8
 """The GBRV results for binary and ternary compunds"""
-from __future__ import division, print_function, unicode_literals
-
 import os
 import json
 import numpy as np
@@ -16,7 +14,7 @@ from monty.collections import dict2namedtuple
 from monty.functools import lazy_property
 from monty.os.path import which
 from pymatgen.core.periodic_table import Element
-from pymatgen.util.plotting import add_fig_kwargs, get_ax_fig_plt
+from abipy.tools.plotting import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
 from pseudo_dojo.refdata.gbrv.database import gbrv_database, gbrv_code_names, species_from_formula
 from pseudo_dojo.pseudos import as_dojo_path

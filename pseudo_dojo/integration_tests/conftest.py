@@ -1,6 +1,4 @@
 """Configuration file for pytest."""
-from __future__ import print_function, division, unicode_literals
-
 import os
 import pytest
 import yaml
@@ -18,7 +16,7 @@ from monty.collections import AttrDict
 
 # Read the base configuration from file
 with open(os.path.join(os.path.dirname(__file__), "manager.yml")) as fh:
-    base_conf = yaml.load(fh)
+    base_conf = yaml.safe_load(fh)
 
 # Build list of configurations.
 _manager_confs = []
