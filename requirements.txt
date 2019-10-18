@@ -10,5 +10,4 @@ ipython
 nbformat
 matplotlib
 seaborn
-pymatgen
-abipy
+abipy>=0.7
