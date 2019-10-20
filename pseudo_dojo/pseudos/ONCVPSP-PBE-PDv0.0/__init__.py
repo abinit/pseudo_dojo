@@ -2,4 +2,3 @@
 xc_name = "PBE"
 pseudo_type = "NC"
 pseudo_ext = "psp8"
-

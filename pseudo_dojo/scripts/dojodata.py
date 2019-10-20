@@ -6,18 +6,15 @@ import glob
 import argparse
 import numpy as np
 
-from time import gmtime, strftime
-from warnings import warn
 from pprint import pprint
 from tabulate import tabulate
-from pandas import DataFrame, concat
+#from pandas import DataFrame, concat
 from monty.os.path import find_exts
 from monty.functools import prof_main
 from monty import termcolor
 from monty.termcolor import cprint
-from pymatgen.util.io_utils import ask_yesno
 from pseudo_dojo.core.pseudos import dojopseudo_from_file, DojoTable
-from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
+#from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser
 from pseudo_dojo.pseudos import check_pseudo
 
 
@@ -622,7 +619,7 @@ def dojo_raren(options):
         if "3+" not in pseudo.basename: continue
         try:
             data = pseudo.dojo_report.get_pdframe(trial)
-        except:
+        except Exception:
             cprint("[%s] dojo_trial raren_relax not present!" % pseudo.basename, "red")
             continue
         ecut, a = np.array(data["ecut"])[-1], np.array(data["relaxed_a"])[-1]
@@ -642,9 +639,9 @@ def dojo_raren(options):
             print("   rel_err: %.3f%% " % ( 100 * (a - ref) / ref), "wrt `%s` %.3f" % (k, ref))
         #print(dvals)
         if "icmod1" in pseudo.basename:
-            icmod1[pseudo.symbol] =  a
+            icmod1[pseudo.symbol] = a
         else:
-            icmod3[pseudo.symbol] =  a
+            icmod3[pseudo.symbol] = a
 
     table = db.table.copy()
     table["icmod1"] = [icmod1.get(s, None) for s in table.index]
@@ -654,8 +651,6 @@ def dojo_raren(options):
     plt.show()
 
     return retcode
-
-
 
 
 @prof_main

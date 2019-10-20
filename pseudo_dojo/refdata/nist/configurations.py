@@ -1193,8 +1193,7 @@ parameters_extra = {
  'Li': {'name': 'hard', 'rcut': 1.5, 'extra': {1: [-0.0413]}}, # No core
  'Be': {'name': 'soft', 'core': '[He]', 'rcut': 1.9},
  'N' : {'name': 'v08',  'core': '[He]', 'rcut': 1.1},  # ver. 0.8
- 'O' : {'name': 'v08',  'core': '[He]', 'rcut': 1.4,
-        'filter': (0.5, 1.75)},   # ver. 0.8
+ #'O' : {'name': 'v08',  'core': '[He]', 'rcut': 1.4, 'filter': (0.5, 1.75)},   # ver. 0.8
  'O' : {'name': 'hard', 'core': '[He]', 'rcut': 1.2},
  'Na': {'name': '1',    'core': '[Ne]', 'rcut': 2.55},  # ver. 0.8
  'Mg': {'name': '2',    'core': '[Ne]', 'rcut': [1.9, 2.0]},  # ver. 0.8
@@ -1227,9 +1226,8 @@ parameters_extra = {
  'Os': {'name': '8',    'core': '[Xe]4f', 'rcut': [2.5, 2.7, 2.5]},  # ver. 0.8
  'Ir': {'name': '9',    'core': '[Xe]4f', 'rcut': [2.3, 2.6, 2.0],
         'vbar': ('poly', 2.1), 'rcutcomp': 2.3},  # ver. 0.8
- 'Pt': {'name': '10',   'core': '[Xe]4f', 'rcut': [2.5, 2.7, 2.3]},  # ver. 0.8
- 'Pt': {'name': 'soft', 'core': '[Xe]4f', 'rcut': [2.5, 2.7, 2.3],
-        'rcutcomp': 2.5},  # ver. 0.8
+ #'Pt': {'name': '10',   'core': '[Xe]4f', 'rcut': [2.5, 2.7, 2.3]},  # ver. 0.8
+ 'Pt': {'name': 'soft', 'core': '[Xe]4f', 'rcut': [2.5, 2.7, 2.3], 'rcutcomp': 2.5},  # ver. 0.8
  'Pb': {'name': 'v08',  'core': '[Xe]4f', 'rcut': [2.4, 2.6, 2.4]},  # ver. 0.8
  'Bi': {'name': 'v08',  'core': '[Xe]4f', 'rcut': [2.2, 2.4, 2.2]},  # ver. 0.8
  }

@@ -25,8 +25,8 @@ description = "Set of python modules and scripts to automate pseudopotential gen
 
 long_description = \
 """
-The goal of pseudo_dojo is to create a environment for interactive and exploratory 
-generation of pseudopotetianls.  
+The goal of pseudo_dojo is to create a environment for interactive and exploratory
+generation of pseudopotetianls.
 To support this goal, pseudo_dojo provides:
 
 * A set of pythons objects that automates the creation of input files.
@@ -43,7 +43,7 @@ authors = {
           'Matteo': ('Matteo Giantomassi','gmatteo at gmail.com'),
           }
 
-author = 'Matteo Giantomass'
+author = 'Matteo Giantomassi'
 
 author_email = 'gmatteo at gmail com'
 

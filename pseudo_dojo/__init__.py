@@ -2,12 +2,12 @@ from __future__ import division, print_function, unicode_literals
 
 import os
 
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict
 from collections import abc
 from monty.dev import deprecated
 from monty.functools import lazy_property
 from monty.design_patterns import singleton
-from pymatgen.core.periodic_table import Element
+#from pymatgen.core.periodic_table import Element
 from pseudo_dojo.core.pseudos import OfficialDojoTable
 from pseudo_dojo.pseudos import dojotable_absdir
 

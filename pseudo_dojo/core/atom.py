@@ -59,7 +59,7 @@ def states_from_string(confstr):
 
 def parse_orbtoken(orbtoken):
     import re
-    m = re.match("(\d+)([spdfghi]+)(\d+)", orbtoken.strip())
+    m = re.match(r"(\d+)([spdfghi]+)(\d+)", orbtoken.strip())
     if m:
         return QState(n=m.group(1), l=m.group(2), occ=m.group(3))
 
@@ -352,7 +352,7 @@ class RadialFunction(object):
         return self.spline.derivatives(r)
 
     def integral(self):
-        """
+        r"""
         Cumulatively integrate y(x) using the composite trapezoidal rule.
 
         Returns:
@@ -439,7 +439,7 @@ class RadialFunction(object):
         for i, q in enumerate(qmesh[1:]):
             twopiqr = 2 * np.pi * q * self.rmesh
             f = 4 * np.pi * (np.sin(twopiqr) / twopiqr) * self.rmesh**2 * self.values
-            outs[i+1]= cumtrapz(f, x=self.rmesh)[-1]
+            outs[i+1] = cumtrapz(f, x=self.rmesh)[-1]
 
         from abipy.core.func1d import Function1D
         ecuts = 2 * np.pi**2 * qmesh**2

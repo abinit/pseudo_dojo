@@ -3,7 +3,6 @@
 import sys
 import os
 import argparse
-import logging
 import hashlib
 
 from monty.termcolor import cprint
@@ -43,7 +42,7 @@ def gbrv_gendb(options):
     # Init database and dump it
     db = GbrvOutdb.new_from_table(table, djson_path)
     if os.path.exists(db.path):
-        cprint("File %s already exists. New file won't be created. Remove it and try again"  % db.path, "red")
+        cprint("File %s already exists. New file won't be created. Remove it and try again" % db.path, "red")
         return 1
 
     db.json_write()
@@ -54,8 +53,8 @@ def gbrv_gendb(options):
 def gbrv_update(options):
     """Update the databases in dojo_dir."""
     raise NotImplementedError()
-    filepath = os.path.join(options.dojo_dir, cls.basename)
-    outdb = GbrvOutfb.from_file(filepath)
+    filepath = os.path.join(options.dojo_dir, options.basename)
+    outdb = GbrvOutdb.from_file(filepath)
 
     print("Checking:", outdb.basename)
     u = outdb.check_update()
@@ -90,8 +89,8 @@ def gbrv_rundb(options):
 
     for job in jobs:
         #for accuracy in ("low", "normal", "high"):
-        for accuracy in ("normal", "high"):
         #for accuracy in ("high",):
+        for accuracy in ("normal", "high"):
             ecut = max(p.hint_for_accuracy(accuracy).ecut for p in job.pseudos)
             pawecutdg = max(p.hint_for_accuracy(accuracy).pawecutdg for p in job.pseudos)
             if ecut <= 0.0: raise RuntimeError("Pseudos do not have hints")
@@ -140,7 +139,11 @@ def gbrv_plot(options):
     frame.plot_errors_for_elements()
     return 0
 
+    # Use seaborn settings.
     import seaborn as sns
+    sns.set(context=options.seaborn, style='darkgrid', palette='deep',
+            font='sans-serif', font_scale=1, color_codes=False, rc=None)
+
     for struct_type in frame.struct_types():
         frame.plot_errors_for_structure(struct_type)
         frame.plot_hist(struct_type)

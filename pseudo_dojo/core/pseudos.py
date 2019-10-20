@@ -8,7 +8,6 @@ import numpy as np
 
 from collections import OrderedDict
 from monty.collections import AttrDict
-from monty.functools import lazy_property
 from monty.string import list_strings
 from monty.fnmatch import WildCard
 from monty.termcolor import cprint
@@ -167,7 +166,7 @@ class DojoTable(PseudoTable):
         if not os.path.isfile(module_name):
             raise RuntimeError("__init_.py file is missing in dir: %s" % top)
 
-        meta = imp.load_source(module_name, os.path.join(top, "__init__.py") )
+        meta = imp.load_source(module_name, os.path.join(top, "__init__.py"))
 
         # Gather all pseudos starting from the current working directory
         all_symbols = set(e.symbol for e in Element)
@@ -337,8 +336,8 @@ class DojoTable(PseudoTable):
 
         where `gbrv_bcc` and `gbrv_fcc` are the relative errors (in percentage) wrt the AE calculations.
 
-	Args:
-	    raise_if_none_dojoreport: If True, a ValueError is raised if one of the pseudo does not
+        Args:
+            raise_if_none_dojoreport: If True, a ValueError is raised if one of the pseudo does not
                 have the dojo_report else a warning is emitted.
         """
         from pseudo_dojo.core.dojoreport import DfGbrvDataFrame
@@ -483,7 +482,6 @@ pseudos = DojoTable(%s)""" % str(paths)),
         if what == "df":
             fig, ax_list = plt.subplots(nrows=2, ncols=2, sharex=True, squeeze=False)
             ax_list = ax_list.ravel()
-
 
             # Compute absolute differences SOC - SR
             for i, vname in enumerate(["dfact_meV", "dfactprime_meV",
@@ -720,11 +718,11 @@ class OfficialDojoTable(DojoTable):
         djson_path = os.path.join(dojodir_path,accuracy+'.djson')
         if not os.path.isfile(djson_path):
             filenames = glob.glob(os.path.join(dojodir_path,"*.djson"))
-            accuracies = [os.path.basename(filename).replace('.djson','') for filename in filenames] 
+            accuracies = [os.path.basename(filename).replace('.djson','') for filename in filenames]
             raise FileNotFoundError("File {} does not exist. "
                                     "Found djson files for accuracy = {}".format(djson_path,accuracies))
         return cls.from_djson_file(djson_path)
-    
+
     @classmethod
     def from_djson_file(cls, json_path):
         """

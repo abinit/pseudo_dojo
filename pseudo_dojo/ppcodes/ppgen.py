@@ -276,7 +276,7 @@ class PseudoGenerator(object):
         try:
             shutil.rmtree(self.workdir)
             return 0
-        except:
+        except Exception:
             return 1
 
     #def on_ok(self):
@@ -388,7 +388,7 @@ class OncvGenerator(PseudoGenerator):
                 time.sleep(2)
                 try:
                     self._results = parser.get_results()
-                except:
+                except Exception:
                     raise
 
             self._plotter = parser.make_plotter()

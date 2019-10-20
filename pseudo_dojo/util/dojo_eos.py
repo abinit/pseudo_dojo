@@ -113,7 +113,6 @@ def deltafactor_polyfit(volumes, energies):
     return n(v0, b0, b1, fitdata[0])
 
 
-
 class EOSError(Exception):
     """Exceptions raised by EOS."""
 
@@ -205,7 +204,6 @@ class EOS(object):
         energies = units.EnergyArray(energies, ene_unit).to("eV")
 
         return EOS_Fit(volumes, energies, self._func, self._eos_name)
-
 
 
 class EOS_Fit(object):
@@ -373,7 +371,7 @@ class EOS_Fit(object):
 
         # Set xticks and labels.
         ax.grid(True)
-        ax.set_xlabel("Volume $\AA^3$")
+        ax.set_xlabel(r"Volume $\AA^3$")
         ax.set_ylabel("Energy (eV)")
 
         ax.legend(loc="best", shadow=True)
@@ -381,8 +379,8 @@ class EOS_Fit(object):
         # Add text with fit parameters.
         if kwargs.pop("text", True):
             text = []; app = text.append
-            app("Min Volume = %1.2f $\AA^3$" % self.v0)
-            app("Bulk modulus = %1.2f eV/$\AA^3$ = %1.2f GPa" % (self.b0, self.b0_GPa))
+            app(r"Min Volume = %1.2f $\AA^3$" % self.v0)
+            app(r"Bulk modulus = %1.2f eV/$\AA^3$ = %1.2f GPa" % (self.b0, self.b0_GPa))
             app("B1 = %1.2f" % self.b1)
             fig.text(0.4, 0.5, "\n".join(text), transform=ax.transAxes)
 

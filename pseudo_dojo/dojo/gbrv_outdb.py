@@ -4,15 +4,13 @@ import os
 import json
 import numpy as np
 
-from collections import OrderedDict, defaultdict, Counter
+from collections import defaultdict, Counter
 from monty.io import FileLock
 from monty.string import list_strings
 from monty.termcolor import cprint
 from atomicfile import AtomicFile
 from pandas import DataFrame
 from monty.collections import dict2namedtuple
-from monty.functools import lazy_property
-from monty.os.path import which
 from pymatgen.core.periodic_table import Element
 from abipy.tools.plotting import add_fig_kwargs, get_ax_fig_plt
 from pseudo_dojo.core.pseudos import DojoTable, OfficialDojoTable
@@ -305,7 +303,7 @@ class GbrvOutdb(dict):
 
             # Remove stale records (if any)
             num_found = len(recidx_found)
-            if  num_found != len(records):
+            if num_found != len(records):
                 num_stale = len(records) - num_found
                 print("Found %s stale records" % num_stale)
                 nrec_removed += num_stale
@@ -651,7 +649,7 @@ class GbrvCompoundDataFrame(DataFrame):
         ticks2 = range(min(ticks)+1, max(ticks)+1, 2)
         labels1 = [labels[i] for i in ticks1]
         labels2 = [labels[i] for i in ticks2]
- #       ax.tick_params(which='both', direction='out')
+        #ax.tick_params(which='both', direction='out')
         #ax.set_ylim(-1, 1)
         ax.set_xticks(ticks1)
         ax.set_xticklabels(labels1, rotation=90)
@@ -736,7 +734,7 @@ class GbrvCompoundDataFrame(DataFrame):
         labels1 = [labels[i].get_text() for i in ticks1]
         labels2 = [labels[i].get_text() for i in ticks2]
 
-        #       ax.tick_params(which='both', direction='out')
+        #ax.tick_params(which='both', direction='out')
         #ax.set_ylim(-1, 1)
         ax.set_xticks(ticks1)
         ax.set_xticklabels(labels1, rotation=90)

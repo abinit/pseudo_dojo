@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function, division, unicode_literals
-
 import os.path
 import sys
 
@@ -8,7 +6,6 @@ from pprint import pprint
 
 import nist_database
 
-##########################################################################################
 
 def sort_dict(d, key=None, reverse=False):
     """
@@ -40,7 +37,7 @@ def sort_dict(d, key=None, reverse=False):
 #class AtomicData(dict):
 #
 #     _mandatory_keys = [
-#         "Etot", 
+#         "Etot",
 #         "Ekin",
 #         "Ecoul",
 #         "Eenuc",
@@ -57,7 +54,6 @@ def sort_dict(d, key=None, reverse=False):
 #        #self.Z = Z
 #        #self.configurations = configurations
 
-##########################################################################################
 
 def make_nist_configurations(path):
 
@@ -77,6 +73,7 @@ def make_nist_configurations(path):
     print("symb2Z = ")
     pprint(symb2Z)
     print("")
+
 
 def parse_nist_configurations(path):
     """Read and parse the file with the configurations."""
@@ -105,7 +102,6 @@ def parse_nist_configurations(path):
 
         return neutral, cations, symb2Z
 
-##########################################################################################
 
 def occupations_from_symbol(symbol):
     Z = symb2Z[symbol]
@@ -119,6 +115,7 @@ def occupations_from_symbol(symbol):
     for s in configuration:
         occupations.append((s[:2], int(s[3:])))
     return occupations
+
 
 def extract_nistdata(path, nist_xctype, iontype):
     # http://www.physics.nist.gov/PhysRefData/DFTdata/
@@ -196,6 +193,7 @@ def extract_nistdata(path, nist_xctype, iontype):
 
     return nistdata
 
+
 def make_nistmodule(path, nist_xctype):
     #for iontype in ["neutrals", "cations",]:
     for iontype in ["neutrals",]:
@@ -206,7 +204,6 @@ def make_nistmodule(path, nist_xctype):
         pprint(data)
         #print(json.dumps(data, indent=4))
 
-##########################################################################################
 
 if __name__ == '__main__':
     import sys

@@ -1,4 +1,5 @@
 # coding: utf-8
+# flake8: noqa
 """
 Common test support for pseudo_dojo.
 
@@ -9,7 +10,6 @@ from monty.os.path import which
 from pymatgen.util.testing import PymatgenTest
 
 import numpy.testing.utils as nptu
-import os
 import subprocess
 import tempfile
 
@@ -47,7 +47,7 @@ def has_abinit(version=None, op=">="):
             try:
                 abinit_version = subprocess.check_output(["mpiexec", "-n", "1", "abinit", "-v"])
             except subprocess.CalledProcessError as exc:
-                logger.warning(exc.output)
+                #logger.warning(exc.output)
                 return False
 
     return cmp_version(abinit_version, version, op=op)

@@ -24,7 +24,7 @@ class ElementDataPlotterRangefixer(ElementDataPlotter):
         else:
             raise RuntimeError('incorrect number of clims provided in draw')
 
-        for coll, cmap, label, clim  in zip(self.collections, self.cmaps, self.cbar_labels, clims):
+        for coll, cmap, label, clim in zip(self.collections, self.cmaps, self.cbar_labels, clims):
             #print(clim)
             pc = PatchCollection(coll, cmap=cmap)
             pc.set_clim(vmin=clim[0],vmax=clim[1])

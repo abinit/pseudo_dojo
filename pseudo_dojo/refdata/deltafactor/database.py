@@ -98,10 +98,10 @@ def read_tables_from_file(filepath, xc):
             #print(line)
 
             if line.startswith("#"):
-                if title is not None:
-                    table = pd.DataFrame(rows, index=symbols, columns=columns)
-                    table.title, table.info = title, info
-                    tables.append(table)
+                #if title is not None:
+                #    table = pd.DataFrame(rows, index=symbols, columns=columns)
+                #    table.title, table.info = title, info
+                #    tables.append(table)
 
                 title, info = line.split("--")
                 symbols, rows = [], []
@@ -162,7 +162,6 @@ class DeltaFactorDatabase(object):
     for xclda in ["PW_MOD",]:
         _FILES4XC[xclda] = _FILES4XC["PW"]
         _CIFDIR4XC[xclda] = _CIFDIR4XC["PW"]
-
 
     # Hack needed to support PBEsol.
     for xcgga in ["PBEsol",]:
@@ -522,6 +521,6 @@ def df_compute(v0w, b0w, b1w, v0f, b0f, b1f, b0_GPa=False, v=3, useasymm=False):
 
 
 if __name__ == "__main__":
-    import sys
+    #import sys
     #read_tables_from_file(sys.argv[1], xc)
     check_cif_wien2k_consistency()

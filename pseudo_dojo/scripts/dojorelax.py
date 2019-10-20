@@ -114,7 +114,7 @@ Usage example:
     ecut_list = [ecut, ecut+10, ecut+20]
 
     work = RelaxWithGbrvParamsWork(
-                 a_guess, "fcc", pseudo, ecut_list=ecut_list, pawecutdg=None, 
+                 a_guess, "fcc", pseudo, ecut_list=ecut_list, pawecutdg=None,
                  ngkpt=(8, 8, 8))
                  #ngkpt=(12, 12, 12))
                  #spin_mode="unpolarized", include_soc=False, tolvrs=1.e-10, smearing="fermi_dirac:0.001 Ha",

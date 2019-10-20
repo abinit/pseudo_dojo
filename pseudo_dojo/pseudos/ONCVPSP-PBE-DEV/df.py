@@ -3,10 +3,9 @@ from __future__ import division, print_function, unicode_literals
 
 import sys
 import os
-import pandas as pd
+#import pandas as pd
 
 from tabulate import tabulate
-from collections import OrderedDict, namedtuple
 from pprint import pprint
 from pymatgen.io.abinitio import Pseudo
 
@@ -24,7 +23,7 @@ def main():
         if os.path.basename(dirpath) == "_inputs": continue
 
         #print(filenames)
-        pseudos.extend([Pseudo.from_file(os.path.join(dirpath, f)) for f in filenames 
+        pseudos.extend([Pseudo.from_file(os.path.join(dirpath, f)) for f in filenames
             if f.endswith(".psp8")])
             #if f.endswith(".psp8") and "-" not in f])
             #if f.endswith(".psp8") and "-" in f])
@@ -52,7 +51,7 @@ def main():
     def calc_rerrors(data):
         # Relative error
         data["low_dfact_abserr"] = data["low_dfact_meV"] - data["high_dfact_meV"]
-        data["normal_dfact_abserr"] =  data["normal_dfact_meV"] - data["high_dfact_meV"]
+        data["normal_dfact_abserr"] = data["normal_dfact_meV"] - data["high_dfact_meV"]
         data["low_dfact_rerr"] = 100 * (data["low_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
         data["normal_dfact_rerr"] = 100 * (data["normal_dfact_meV"] - data["high_dfact_meV"]) / data["high_dfact_meV"]
 
@@ -72,7 +71,7 @@ def main():
     #    "low_dfact_meV",
     #    #"normal_ecut",
     #    #"low_dfact_meV",
-    #    #"high_dfact_meV", 
+    #    #"high_dfact_meV",
     #    #"low_v0_rerr", "low_b0_GPa_rerr", "low_b1_rerr",
     #    ]
     #) #, hue="smoker")
@@ -84,9 +83,9 @@ def main():
     #data["high_bcc_a0_rel_err"].hist(bins=200)
 
     keys = [
-        "dfact_meV", 
-        #"dfactprime_meV", 
-        "bcc_a0_rel_err", "fcc_a0_rel_err", 
+        "dfact_meV",
+        #"dfactprime_meV",
+        "bcc_a0_rel_err", "fcc_a0_rel_err",
         #"ecut",
     ]
 
@@ -118,8 +117,8 @@ def main():
     ]
 
     print("\nONCVPSP TABLE:\n") #.center(80, "="))
-    columns = [acc + "_dfact_meV" for acc in accuracies] 
-    columns += [acc + "_ecut" for acc in accuracies] 
+    columns = [acc + "_dfact_meV" for acc in accuracies]
+    columns += [acc + "_ecut" for acc in accuracies]
     #print(data.to_string(columns=columns))
     tablefmt = "grid"
     print(tabulate(data[columns], headers="keys", tablefmt=tablefmt))
@@ -132,7 +131,7 @@ def main():
     print("\nPSEUDOS with high_dfact > mean:\n") # ".center(80, "*"))
     print(tabulate(bad, headers="keys", tablefmt=tablefmt))
 
-    #import matplotlib.pyplot as plt 
+    #import matplotlib.pyplot as plt
     #bad.plot(kind="barh")
     #bad.plot(kind="kde")
     #bad.plot(kind="density")

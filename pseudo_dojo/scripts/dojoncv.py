@@ -8,9 +8,7 @@ import json
 import shutil
 
 from monty.termcolor import cprint
-from monty.os.path import which
 from abipy.flowtk.pseudos import Pseudo
-from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from pseudo_dojo.core.dojoreport import DojoReport
 from pseudo_dojo.ppcodes.ppgen import OncvGenerator
 from pseudo_dojo.ppcodes.oncvpsp import OncvOutputParser, PseudoGenDataPlotter, oncv_make_open_notebook
@@ -156,8 +154,8 @@ def oncv_run(options):
     retcode = oncv_ppgen.wait()
 
     if oncv_ppgen.status != oncv_ppgen.S_OK:
-       cprint("oncvpsp returned %s. Exiting" % retcode, "red")
-       return 1
+        cprint("oncvpsp returned %s. Exiting" % retcode, "red")
+        return 1
 
     # Tranfer final output file.
     shutil.copy(oncv_ppgen.stdout_path, out_path)

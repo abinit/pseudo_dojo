@@ -1,14 +1,12 @@
 # coding: utf-8
 """Classes and functions for post-processing the results produced by ONCVPSP."""
 import io
-import sys
 import os
 import abc
 import tempfile
 import numpy as np
 
 from collections import namedtuple, OrderedDict
-from monty.os.path import which
 from monty.functools import lazy_property
 from monty.collections import AttrDict, dict2namedtuple
 from monty.termcolor import cprint
@@ -684,7 +682,7 @@ class OncvOutputParser(PseudoGenOutputParser):
                         f = str(int(float(f)))
                     else:
                         f = "%.1f" % f
-                    core.append(n + _l2char[l] + "^%s" %f)
+                    core.append(n + _l2char[l] + "^%s" % f)
                 self.core = "$" + " ".join(core) + "$"
 
                 beg, valence = i + nc + 1, []
@@ -1023,7 +1021,7 @@ class OncvOutputParser(PseudoGenOutputParser):
         """
         start, stop = None, None
         for i, line in enumerate(self.lines):
-            if  "Begin PSP_UPF" in line: start = i
+            if "Begin PSP_UPF" in line: start = i
             if start is not None and 'END_PSP' in line:
                 stop = i
                 break
@@ -1402,7 +1400,7 @@ def psp8_get_densities(path, fc_file=None, ae_file=None, plot=False):
 
         # Read pseudo valence charge in real space on the linear mesh.
         # [i, r, PS_val, AE_val, AE_core]
-        rmesh, psval, aeval, aecore= [np.empty(mmax) for _ in range(4)]
+        rmesh, psval, aeval, aecore = [np.empty(mmax) for _ in range(4)]
         for ir in range(mmax):
             l = fh.readline()
             #print("denline", l)

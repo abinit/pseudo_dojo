@@ -125,7 +125,7 @@ class OncvOutputParserTest(PseudoDojoTest):
         assert ps0.energies[-1], ps0.energies[-1] == (-2.000000, 3.906357)
 
         ae1, ps1 = p.atan_logders.ae[1], p.atan_logders.ps[1]
-        assert ae1.energies[0], ae1.values[0]  == (2.000000, -2.523018)
+        assert ae1.energies[0], ae1.values[0] == (2.000000, -2.523018)
         assert ps1.values[0] == -2.521334
 
         # Build the plotter

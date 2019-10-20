@@ -18,6 +18,7 @@ __all__ = [
 
 dirpath = os.path.dirname(__file__)
 
+
 def pseudopath(filename):
     """Returns the absolute pathname of a pseudo."""
     return os.path.join(dirpath, filename)
@@ -29,5 +30,5 @@ def pseudo(filename):
 
 
 def pseudos(*filenames):
-     """Returns a PseudoTable constructed from the input filenames  located in tests/data/pseudos."""
-     return DojoTable([dojopseudo_from_file(os.path.join(dirpath, f)) for f in filenames])
+    """Returns a PseudoTable constructed from the input filenames  located in tests/data/pseudos."""
+    return DojoTable([dojopseudo_from_file(os.path.join(dirpath, f)) for f in filenames])

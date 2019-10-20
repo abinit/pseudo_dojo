@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 """Script to prepare and run different PseudoDojo tests for a given pseudopotential."""
-from __future__ import division, print_function, unicode_literals
-
 import sys
 import os
 import argparse
@@ -12,7 +10,7 @@ import abipy.abilab as abilab
 
 from monty.termcolor import cprint
 from monty.functools import prof_main
-from abipy.flowtk.pseudos import Pseudo
+#from abipy.flowtk.pseudos import Pseudo
 from pseudo_dojo.core.pseudos import dojopseudo_from_file
 from pseudo_dojo.dojo.works import (DeltaFactory, GbrvFactory, GhostsFactory, GammaPhononFactory,
         RocksaltRelaxationFactory)

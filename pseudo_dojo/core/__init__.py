@@ -1,3 +1,4 @@
+# flake8: noqa
 from .testing import *
 from .atom import *
 

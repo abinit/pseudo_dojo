@@ -217,7 +217,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
         try:
             pawabs_err = a0 - entry.gbrv_paw
             pawrel_err = 100 * (a0 - entry.gbrv_paw) / entry.gbrv_paw
-        except:
+        except Exception:
             # Some paw_abinit entries are not available.
             pawabs_err = np.inf
             pawrel_err = np.inf
@@ -247,7 +247,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
         # Write results in outdir in JSON format.
         with open(self.outdir.path_in("gbrv_results.json"), "wt") as fh:
-             json.dump(results, fh, indent=-1, sort_keys=True)
+            json.dump(results, fh, indent=-1, sort_keys=True)
 
         # Update the database.
         if self.outdb_path is not None:
@@ -316,7 +316,7 @@ class GbrvCompoundsFlow(Flow):
                 dict_list.append(row)
                 all_results.append(results)
 
-	# Build pandas DataFrame and print it
+        # Build pandas DataFrame and print it
         frame = pd.DataFrame(dict_list)
         print(frame)
         #from tabulate import tabulate

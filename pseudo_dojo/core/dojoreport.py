@@ -10,7 +10,7 @@ import pandas as pd
 
 from collections import OrderedDict, defaultdict, Iterable
 from tabulate import tabulate
-from monty.json import MSONable, MontyEncoder
+from monty.json import MontyEncoder
 from monty.string import list_strings, is_string
 from monty.termcolor import cprint
 from monty.bisect import find_le
@@ -473,7 +473,7 @@ class DojoReport(dict):
 
         # This code is compatible with dict: ecut --> entry
         for ecut, data in self[dojo_trial].items():
-            d = dict(ecut=float(ecut), pawecutdg = data.get("pawecutdg", None))
+            d = dict(ecut=float(ecut), pawecutdg=data.get("pawecutdg", None))
             d.update({k: data[k] for k in args})
             dict_list.append(d)
 
@@ -668,7 +668,7 @@ class DojoReport(dict):
     def get_ecut_dfactprime(self):
         """Return numpy arrays wit ecut list and the corresponding dfactprime values."""
         data = self["deltafactor"]
-        ecuts, values= data.keys(), []
+        ecuts, values = data.keys(), []
         values = np.array([data[e]["dfactprime_meV"] for e in ecuts])
         return np.array(ecuts), values
 
@@ -962,7 +962,7 @@ class DojoReport(dict):
             fig = plt.gcf()
 
         if len(keys) != len(ax_list):
-            raise ValueError("len(keys)=%s != len(ax_list)=%s" %  (len(keys), len(ax_list)))
+            raise ValueError("len(keys)=%s != len(ax_list)=%s" % (len(keys), len(ax_list)))
 
         for i, (ax, key) in enumerate(zip(ax_list, keys)):
             values = np.array(frame[key])
@@ -980,7 +980,7 @@ class DojoReport(dict):
                               colors=self.ACC2COLOR[acc], linestyles="dashed")
 
             ax.grid(True)
-            ax.set_ylabel("$\Delta$" + key)
+            ax.set_ylabel(r"$\Delta$" + key)
             if i == len(keys) - 1: ax.set_xlabel("Ecut [Ha]")
 
             xmin, xmax = min(ecuts), max(ecuts)
@@ -1079,7 +1079,7 @@ class DojoReport(dict):
             fig = plt.gcf()
 
         if len(stypes) != len(ax_list):
-            raise ValueError("len(stypes)=%s != len(ax_list)=%s" %  (len(stypes), len(ax_list)))
+            raise ValueError("len(stypes)=%s != len(ax_list)=%s" % (len(stypes), len(ax_list)))
 
         for i, (ax, stype) in enumerate(zip(ax_list, stypes)):
             trial = "gbrv_" + stype
@@ -1091,7 +1091,7 @@ class DojoReport(dict):
             values = np.array(frame["a0_rel_err"])
 
             ax.grid(True)
-            ax.set_ylabel("$\Delta$" + trial + "a0_rel_err")
+            ax.set_ylabel(r"$\Delta$" + trial + "a0_rel_err")
 
             # Plot difference pseudo - ref.
             ax.plot(ecuts, values, "bo-")
@@ -1128,7 +1128,7 @@ class DojoReport(dict):
 
         frame = self.get_pdframe(trial, "asr2_phfreqs_mev", "noasr_phfreqs_mev")
         ecuts = np.array(frame["ecut"])
-        num_modes  = len(frame["asr2_phfreqs_mev"][0])
+        num_modes = len(frame["asr2_phfreqs_mev"][0])
 
         # Build array with frequencies computed at the different ecut.
         asr2_phfreqs = np.empty((num_modes, len(ecuts)))
@@ -1152,10 +1152,10 @@ class DojoReport(dict):
         for mu in range(num_modes):
             phecut = asr2_phfreqs[mu]
             ax_list[0].plot(ecuts, phecut, "o-")
-            ax_list[0].set_ylabel("$\omega$ (asr=2)")
+            ax_list[0].set_ylabel(r"$\omega$ (asr=2)")
             values = phecut - phecut[-1]
             ax_list[1].plot(ecuts, values, "o-")
-            ax_list[1].set_ylabel("$\omega-\omega_{max}$")
+            ax_list[1].set_ylabel(r"$\omega-\omega_{max}$")
 
             # Add vertical lines at hints.
             if self.has_hints:
@@ -1166,9 +1166,9 @@ class DojoReport(dict):
 
             phecut = noasr_phfreqs[mu]
             ax_list[2].plot(ecuts, phecut, "o-")
-            ax_list[2].set_ylabel("$\omega$ (noasr)")
+            ax_list[2].set_ylabel(r"$\omega$ (noasr)")
             ax_list[3].plot(ecuts, phecut - phecut[-1], "o-")
-            ax_list[3].set_ylabel("$\omega-\omega_{max}$")
+            ax_list[3].set_ylabel(r"$\omega-\omega_{max}$")
 
         # Adjust limits.
         fact = 0.05
@@ -1315,9 +1315,9 @@ class DojoDataFrame(pd.DataFrame):
 
     _TRIALS2YLABEL = {
         "ecut": "Ecut [Ha]",
-        "deltafactor": "$\Delta$-factor [meV]",
-        "gbrv_bcc": "BCC $\Delta a_0$ (%)",
-        "gbrv_fcc": "FCC $\Delta a_0$ (%)",
+        "deltafactor": r"$\Delta$-factor [meV]",
+        "gbrv_bcc": r"BCC $\Delta a_0$ (%)",
+        "gbrv_fcc": r"FCC $\Delta a_0$ (%)",
         "phgamma": "asr2_phfreqs_mev"
     }
 
@@ -1393,7 +1393,7 @@ class DojoDataFrame(pd.DataFrame):
                     ecut_acc[acc] = report['hints'][acc]['ecut']
                 except KeyError:
                     # using -1 for non existing values facilitates plotting
-                    d.update({acc + "_ecut_hint": -1.0 })
+                    d.update({acc + "_ecut_hint": -1.0})
                     ecut_acc[acc] = -1
 
             for acc in accuracies:
@@ -1592,7 +1592,7 @@ class DojoDataFrame(pd.DataFrame):
 
             if trial == "deltafactor":
                 #start, end = 0.0, 15
-                start, end  = 0.0, min(15, maxval)
+                start, end = 0.0, min(15, maxval)
                 ax.set_ylim(start, end)
                 #ax.yaxis.set_ticks(np.arange(start, end, 0.1))
 
@@ -1620,8 +1620,8 @@ class DfGbrvDataFrame(pd.DataFrame):
 
         where `gbrv_bcc` and `gbrv_fcc` are the relative errors (in percentage) wrt the AE calculations.
 
-	Args:
-	    raise_if_none_dojoreport: If True, a ValueError is raised if one of the pseudo does not
+        Args:
+            raise_if_none_dojoreport: If True, a ValueError is raised if one of the pseudo does not
                 have the dojo_report else a warning is emitted.
         """
 

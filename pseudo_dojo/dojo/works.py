@@ -6,7 +6,6 @@ import logging
 import numpy as np
 
 from monty.io import FileLock
-from pymatgen.core.units import bohr_to_ang
 from pymatgen.core.xcfunc import XcFunc
 from abipy.core.structure import Structure
 from abipy.abio.factories import ion_ioncell_relax_input
@@ -216,7 +215,7 @@ class GhostsWork(DojoWork):
         # Disable time-reversal if nspinor == 2
         self.kppa = kppa
         ksampling = KSampling.automatic_density(structure, kppa, chksymbreak=chksymbreak,
-                                                use_time_reversal=spin_mode.nspinor==1)
+                                                use_time_reversal=spin_mode.nspinor == 1)
 
         scf_input = abilab.AbinitInput(structure=structure, pseudos=self.dojo_pseudo)
         scf_input.add_abiobjects(ksampling, smearing, spin_mode)
@@ -272,8 +271,8 @@ class GhostsWork(DojoWork):
             nband = nband_old = int(task.input["nband"])
 
             if nband >= nband_sentinel:
-               self.dojo_status = -1
-               task.history.info("Reached maximum number of bands. Setting dojo_status to -1 and exit")
+                self.dojo_status = -1
+                task.history.info("Reached maximum number of bands. Setting dojo_status to -1 and exit")
             else:
                 # Use previous run to compute better estimate of b4ev.
                 nval = task.input.num_valence_electrons
@@ -443,7 +442,7 @@ class DeltaFactorWork(DojoWork):
             new_structure = Structure(new_lattice, structure.species, structure.frac_coords)
 
             ksampling = KSampling.automatic_density(new_structure, kppa, chksymbreak=chksymbreak,
-                                                    use_time_reversal=spin_mode.nspinor==1)
+                                                    use_time_reversal=spin_mode.nspinor == 1)
 
             scf_input = abilab.AbinitInput(structure=new_structure, pseudos=self.dojo_pseudo)
             scf_input.add_abiobjects(ksampling, smearing, spin_mode)
@@ -631,7 +630,7 @@ class GbrvRelaxAndEosWork(DojoWork):
         shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
         self.spin_mode = SpinMode.as_spinmode(spin_mode)
         self.ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk,
-                                            use_time_reversal=self.spin_mode.nspinor==1)
+                                            use_time_reversal=self.spin_mode.nspinor == 1)
         relax_algo = RelaxationMethod.atoms_and_cell()
 
         inp = abilab.AbinitInput(structure, pseudo)
@@ -1116,7 +1115,7 @@ class RelaxWithGbrvParamsWork(Work):
         shiftk = {"fcc": [0, 0, 0], "bcc": [0.5, 0.5, 0.5]}.get(struct_type)
         spin_mode = SpinMode.as_spinmode(spin_mode)
         ksampling = KSampling.monkhorst(ngkpt, chksymbreak=chksymbreak, shiftk=shiftk,
-                                        use_time_reversal=spin_mode.nspinor==1)
+                                        use_time_reversal=spin_mode.nspinor == 1)
         relax_algo = RelaxationMethod.atoms_and_cell()
 
         inp = abilab.AbinitInput(structure, pseudo)

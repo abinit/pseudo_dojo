@@ -174,7 +174,8 @@ fig = report.plot_etotal_vs_ecut()"""),
 
 The Delta-gauge compares the Equation Of State (EOS) of the elemental solid of the element calculated using the pseudo
 potential to reference curves calculated using an all electron method. The Delta-gauge was introduced by K. Lejaeghere,
-V. Van Speybroeck, G. Van Oost, and&S. Cottenier in [Critical Reviews in Solid State and Materials Sciences 39, 1](http://www.tandfonline.com/doi/abs/10.1080/10408436.2013.772503)
+V. Van Speybroeck, G. Van Oost, and&S. Cottenier in
+[Critical Reviews in Solid State and Materials Sciences 39, 1](http://www.tandfonline.com/doi/abs/10.1080/10408436.2013.772503)
 
 A comparison using the Delta-gauge between many codes and many pseudo tables can be found at the
 [center for molecular modeling](http://molmod.ugent.be/deltacodesdft) and in

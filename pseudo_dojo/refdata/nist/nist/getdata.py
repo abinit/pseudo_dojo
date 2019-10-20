@@ -1,4 +1,5 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
+
 
 class AtomicData:
     def __init__(self, name, Z, mass, radius, configuration):

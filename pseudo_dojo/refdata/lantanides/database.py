@@ -17,6 +17,7 @@ from pseudo_dojo.core.pseudos import Pseudo
 
 _ROOT = os.path.dirname(__file__)
 
+
 def _get_database(xc):
     # data_RE_nitrides_PBE.txt
     path = os.path.join(_ROOT, "data", 'data_RE_nitrides_%s.txt' % str(xc))
@@ -74,6 +75,7 @@ class RareEarthNDatabase(object):
 ##########################################################################################
 # Official API to access the database.
 ##########################################################################################
+
 
 # Mapping XC --> Database.
 __RAREN_DATABASE_XC = None
