@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e  # exit on first error
 
-abinit --version
-abinit --build
+#abinit --version
+#abinit --build
 abicheck.py --with-flow
 
 nosetests -v --with-coverage --cover-package=pseudo_dojo --logging-level=INFO
