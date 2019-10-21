@@ -73,8 +73,8 @@ if __name__ == '__main__':
             eps = epsilons[state]
             nloe.append((n, l, occ, eps))
         dftdata[symbol] = (Z, nloe)
-    print '# Computer generated code:'
-    print
-    print 'configurations = ',
+    print('# Computer generated code:')
+    print("")
+    print('configurations = ')
     pprint.pprint(dftdata)
-    print
+    print("")

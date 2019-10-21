@@ -26,12 +26,12 @@ def remove_dojo_report(path):
         if start == -1: return None
         stop = lines.index("</DOJO_REPORT>\n")
 
-	report = json.loads("\n".join(lines[start+1:stop]))
+        report = json.loads("\n".join(lines[start+1:stop]))
         del lines[start:stop+1]
 
     # Write new file.
     with open(path, "w") as fh:
-	fh.writelines(lines)
+        fh.writelines(lines)
 
     return report
 
@@ -54,23 +54,23 @@ def main():
             print(path, exc)
             raise
 
-	if pseudo is None:
+        if pseudo is None:
             print("Parser error in %s" % path)
-	    continue
+            continue
 
         report_file = path.replace(".psp8", ".djrepo")
         if os.path.exists(report_file):
             #print("New DOJO file already exists. Ignoring", pseudo.filepath)
-	    continue
+            continue
 
         print("Moving DOJOREPORT to", report_file)
 
         report = remove_dojo_report(pseudo.filepath)
 
-	# Change md5 and pseudo_type
-	report["md5"] = pseudo.compute_md5()
-	if report["pseudo_type"] == "norm-conserving":
-	    report["pseudo_type"] = "NC"
+        # Change md5 and pseudo_type
+        report["md5"] = pseudo.compute_md5()
+        if report["pseudo_type"] == "norm-conserving":
+            report["pseudo_type"] = "NC"
 
         with open(report_file, "wt") as fh:
             json.dump(report, fh, indent=-1, sort_keys=True)

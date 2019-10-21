@@ -425,7 +425,7 @@ class RadialFunction(object):
         return pad_intg
 
     def get_intr2j0(self, ecut, numq=3001):
-        """
+        r"""
         Compute 4\pi\int[(\frac{\sin(2\pi q r)}{2\pi q r})(r^2 n(r))dr].
         """
         qmax = np.sqrt(ecut / 2) / np.pi

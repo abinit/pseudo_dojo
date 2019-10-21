@@ -159,7 +159,7 @@ def dojo_figures(options):
             return float('NaN')
 
     def high_phon_with(elt):
-        """AC mode [\mu eV]"""
+        r"""AC mode [\mu eV]"""
         try:
             return elt['high_phonon'][0]*1000
         except (KeyError, TypeError):

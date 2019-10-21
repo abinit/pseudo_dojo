@@ -3,11 +3,10 @@ from __future__ import division, print_function, unicode_literals
 
 import sys
 import os
-#import pandas as pd
 
 from tabulate import tabulate
 from pprint import pprint
-from pymatgen.io.abinitio import Pseudo
+from abipy.flowtk import Pseudo
 
 
 def main():

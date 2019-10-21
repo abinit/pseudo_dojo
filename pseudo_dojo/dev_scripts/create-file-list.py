@@ -4,13 +4,16 @@ import os
 import glob
 import json
 
-jsons = glob.glob('*.json')
-tgzs = glob.glob('pseudos/*.tgz')
-pseudos = glob.glob('pseudos/*/*')
 
-files = jsons+tgzs+pseudos
+def main():
+    jsons = glob.glob('*.json')
+    tgzs = glob.glob('pseudos/*.tgz')
+    pseudos = glob.glob('pseudos/*/*')
 
-with open('files.json', 'w') as f:
-    json.dump(files, fp=f)
+    files = jsons+tgzs+pseudos
 
-exit()
+    with open('files.json', 'w') as f:
+        json.dump(files, fp=f)
+
+if __name__ == "__main__":
+    main()
