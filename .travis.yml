@@ -38,25 +38,8 @@ install:
         # Install conda https://conda.io/docs/travis.html
         source dev_scripts/conda_get.sh
         source dev_scripts/conda_install.sh
-        #- conda uninstall -y pymatgen
-        #- conda uninstall -y abipy
+        conda config --add channels abinit
       fi
-
-  # Install abinit from abinit conda channel.
-  - echo "Installing abinit from abinit channel ..."
-  #- conda install -y -c abinit abinit=${ABINIT_VERSION}
-  #- abinit --version
-  #- abinit --build
-
-  # Get pymatgen from matsci
-  #- conda config --add channels matsci
-  # Use my pymatgen fork
-  #- git clone https://github.com/gmatteo/pymatgen.git && cd pymatgen && pip install -q -r requirements.txt && pip install -q -r requirements-optional.txt && python setup.py install && cd ../
-  # pymatgen master
-  #- git clone https://github.com/materialsproject/pymatgen.git && cd pymatgen && pip install -q -r requirements.txt && pip install -q -r requirements-optional.txt && python setup.py install && cd ../
-
-  #- git clone --depth=50 https://github.com/gmatteo/pymatgen.git && cd pymatgen && python setup.py install && cd ../
-  #- git clone --depth=50 https://github.com/abinit/abipy.git && cd abipy && python setup.py install && cd ../
 
   - python setup.py install
   - mkdir -p ${HOME}/.abinit/abipy
