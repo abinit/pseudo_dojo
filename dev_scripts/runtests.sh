@@ -4,7 +4,8 @@ set -e  # exit on first error
 abicheck.py --with-flow
 
 # This is to run the integration tests (slow)
-pytest -v --cov=pseudo_dojo --doctest-modules --ignore=./docs/ --ignore=pseudo_dojo/integration_tests pseudo_dojo
+#pytest -v --cov=pseudo_dojo --doctest-modules --ignore=./docs/ --ignore=pseudo_dojo/integration_tests pseudo_dojo
+pytest 
 
 # Generate documentation
 #if [[ "${ABIPY_SPHINX}" == "yes" ]]; then

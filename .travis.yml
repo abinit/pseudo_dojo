@@ -39,6 +39,8 @@ install:
         source dev_scripts/conda_get.sh
         source dev_scripts/conda_install.sh
         conda config --add channels abinit
+        pip install periodic_table_plotter
+        pip install atomicfile
       fi
 
   - python setup.py install
