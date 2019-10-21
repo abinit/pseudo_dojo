@@ -12,7 +12,6 @@ conda install -y -c anaconda setuptools
 conda install -y --file ./requirements.txt
 conda install -y --file ./requirements-optional.txt
 
-
 #echo "Installing abinit from abinit channel ..."
 #conda install -y -c abinit abinit=${ABINIT_VERSION}
 #abinit --version

@@ -6,7 +6,7 @@ sudo: false
 
 env:
   global:
-    - ABINIT_VERSION=8.8.2
+    - ABINIT_VERSION=8.10.1
     - ABIPY_PYTEST=yes
     - OPENBLAS_NUM_THREADS=1
     - OMP_NUM_THREADS=1
@@ -15,11 +15,11 @@ matrix:
   include:
     - os: linux
       python: 3.6
-      env: 
+      env:
         - ABIPY_INSTALLER=pip ABIPY_COVERALLS=yes
     - os: linux
       python: 3.7
-      env: 
+      env:
         - ABIPY_INSTALLER=conda
 
 install:
@@ -33,7 +33,7 @@ install:
         source dev_scripts/conda_get.sh  # Needed for Abinit
         travis_wait pip install -r requirements.txt
         travis_wait pip install -r requirements-optional.txt
-  
+
       elif [ "${ABIPY_INSTALLER}" == "conda" ]; then
         # Install conda https://conda.io/docs/travis.html
         source dev_scripts/conda_get.sh
@@ -59,7 +59,7 @@ install:
   #- git clone --depth=50 https://github.com/abinit/abipy.git && cd abipy && python setup.py install && cd ../
 
   - python setup.py install
-  - mkdir -p ${HOME}/.abinit/abipy 
+  - mkdir -p ${HOME}/.abinit/abipy
   - cp dev_scripts/travis_scheduler.yml ${HOME}/.abinit/abipy/scheduler.yml
   - cp dev_scripts/travis_manager.yml ${HOME}/.abinit/abipy/manager.yml
     #- ./dev_scripts/pyclean.py .
