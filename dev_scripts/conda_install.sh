@@ -8,6 +8,9 @@ conda config --add channels conda-forge
 conda config --add channels abinit
 
 echo "Installing requirements listed requirements.txt and requirements-optional.txt ..."
+
+pip install periodic_table_plotter
+pip install atomicfile
 # https://github.com/ContinuumIO/anaconda-issues/issues/542
 conda install -y -c anaconda setuptools
 conda install -y --file ./requirements.txt
