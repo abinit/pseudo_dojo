@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# flake8: noqa
 """Setup script for pseudo_dojo."""
 import sys
 import os

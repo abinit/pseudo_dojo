@@ -53,7 +53,7 @@ pytest -n 2 --cov-config=.coveragerc --cov=abipy -v --doctest-modules pseudo_doj
 
 @task
 def style(ctx):
-    with cd(ABIPY_ROOTDIR):
+    with cd(DOJO_ROOTDIR):
         ctx.run("pycodestyle 2>&1 | tee style.log", pty=True)
         ctx.run("flake8 --count --show-source --statistics | tee -a style.log", pty=True)
         ctx.run("pydocstyle abipy | tee -a style.log", pty=True)
@@ -61,13 +61,13 @@ def style(ctx):
 
 #@task
 #def plots(ctx):
-#    with cd(os.path.join(ABIPY_ROOTDIR, "abipy", "examples")):
+#    with cd(os.path.join(DOJO_ROOTDIR, "abipy", "examples")):
 #        ctx.run("_runplots.py", pty=True)
 
 
 #@task
 #def flows(ctx):
-#    with cd(os.path.join(ABIPY_ROOTDIR, "abipy", "examples")):
+#    with cd(os.path.join(DOJO_ROOTDIR, "abipy", "examples")):
 #        ctx.run("_runflows.py", pty=True)
 
 #@task

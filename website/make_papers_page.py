@@ -11,6 +11,7 @@ from betterbib.crossref import Crossref, pybtex_to_dict
 with open('papers_using_pseudodojo.txt', 'r') as ps:
     dois = [doi for doi in set([line.strip() for line in ps.readlines()]) if '#' not in doi]
 
+
 def get_person_str(p):
     out = ' '.join(filter(None, [
         ' '.join(p['first'] + p['middle']),
@@ -58,6 +59,7 @@ def make_tweet(doi):
     tweet = f'New #compchem work using #PseudoDojo pseudopotentials: {entry["title"]} by {entry["author"][0]["last"][0]} et al. https://doi.org/{doi}'
 
     return tweet
+
 
 cr = Crossref()
 sorted_entry_dicts = sorted([pybtex_to_dict(cr.get_by_doi(doi)) for doi in dois], key=itemgetter('year'), reverse=True)
