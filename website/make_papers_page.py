@@ -26,6 +26,7 @@ def get_person_str(p):
 
 
 def make_ref(entry_dict):
+    #print("entry_dict", entry_dict)
     authors = ', '.join([get_person_str(p) for p in entry_dict['author']][:-1])
     if len(entry_dict['author']) > 2:
         authors += ','
