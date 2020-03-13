@@ -1,0 +1,1579 @@
+{
+  "dojo_info": {
+    "pp_type": "NC", 
+    "description": "{u'type': u'string'}", 
+    "xc_name": "PBEsol", 
+    "references": [
+      "pseudo_dojo"
+    ], 
+    "authors": [
+      "Matteo Giantomassi", 
+      "Michiel Van Setten"
+    ], 
+    "dojo_dir": "ONCVPSP-PBEsol-PDv0.3"
+  }, 
+  "pseudos_metadata": {
+    "Ni": {
+      "l_max": 2, 
+      "Z_val": 18.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Ni-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "877b30bf94d499287e35b3a6a8972b00", 
+      "hints": {
+        "high": {
+          "ecut": 57.0
+        }, 
+        "low": {
+          "ecut": 47.0
+        }, 
+        "normal": {
+          "ecut": 49.0
+        }
+      }
+    }, 
+    "Pd": {
+      "l_max": 2, 
+      "Z_val": 18.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Pd-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "7d28547bd9c49c1c5ba1900bef1ae82a", 
+      "hints": {
+        "high": {
+          "ecut": 47.0
+        }, 
+        "low": {
+          "ecut": 37.0
+        }, 
+        "normal": {
+          "ecut": 41.0
+        }
+      }
+    }, 
+    "Pt": {
+      "l_max": 3, 
+      "Z_val": 18.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "Pt-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "fb8b06b2bb363abad1b216d665855b5f", 
+      "hints": {
+        "high": {
+          "ecut": 48.0
+        }, 
+        "low": {
+          "ecut": 36.0
+        }, 
+        "normal": {
+          "ecut": 42.0
+        }
+      }
+    }, 
+    "Ru": {
+      "l_max": 2, 
+      "Z_val": 16.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Ru-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "4cd529a4433d25f799141ccee5bb351b", 
+      "hints": {
+        "high": {
+          "ecut": 50.0
+        }, 
+        "low": {
+          "ecut": 40.0
+        }, 
+        "normal": {
+          "ecut": 44.0
+        }
+      }
+    }, 
+    "Na": {
+      "l_max": 1, 
+      "Z_val": 9.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Na-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "7100cc42c392a5c8b2a081e1d8220917", 
+      "hints": {
+        "high": {
+          "ecut": 48.0
+        }, 
+        "low": {
+          "ecut": 38.0
+        }, 
+        "normal": {
+          "ecut": 44.0
+        }
+      }
+    }, 
+    "Nb": {
+      "l_max": 2, 
+      "Z_val": 13.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " GW"
+      ], 
+      "basename": "Nb-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "b4b3a685328d3d68912ecfba4b2b7692", 
+      "hints": {
+        "high": {
+          "ecut": 49.0
+        }, 
+        "low": {
+          "ecut": 37.0
+        }, 
+        "normal": {
+          "ecut": 41.0
+        }
+      }
+    }, 
+    "Mg": {
+      "l_max": 1, 
+      "Z_val": 10.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Mg-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "7a8774dad7866185494e9a8229a6432c", 
+      "hints": {
+        "high": {
+          "ecut": 48.0
+        }, 
+        "low": {
+          "ecut": 38.0
+        }, 
+        "normal": {
+          "ecut": 42.0
+        }
+      }
+    }, 
+    "Li": {
+      "l_max": 1, 
+      "Z_val": 3.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Li-s.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "6bf0031f9d71eafcc7fdf03b40dec8e3", 
+      "hints": {
+        "high": {
+          "ecut": 41.0
+        }, 
+        "low": {
+          "ecut": 33.0
+        }, 
+        "normal": {
+          "ecut": 37.0
+        }
+      }
+    }, 
+    "Pb": {
+      "l_max": 2, 
+      "Z_val": 14.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "Pb-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "33307bef2b63f88f72b24858df431977", 
+      "hints": {
+        "high": {
+          "ecut": 34.0
+        }, 
+        "low": {
+          "ecut": 24.0
+        }, 
+        "normal": {
+          "ecut": 28.0
+        }
+      }
+    }, 
+    "Y": {
+      "l_max": 2, 
+      "Z_val": 11.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Y-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "a71b161a1bb8b24865df936f21dbca5f", 
+      "hints": {
+        "high": {
+          "ecut": 42.0
+        }, 
+        "low": {
+          "ecut": 30.0
+        }, 
+        "normal": {
+          "ecut": 36.0
+        }
+      }
+    }, 
+    "Tl": {
+      "l_max": 2, 
+      "Z_val": 13.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Tl-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "958ff553fc45c5d02ce552f116ce1867", 
+      "hints": {
+        "high": {
+          "ecut": 37.0
+        }, 
+        "low": {
+          "ecut": 27.0
+        }, 
+        "normal": {
+          "ecut": 31.0
+        }
+      }
+    }, 
+    "Rb": {
+      "l_max": 2, 
+      "Z_val": 9.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " GW"
+      ], 
+      "basename": "Rb-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "00d790476505523f56f50c8dc049ef17", 
+      "hints": {
+        "high": {
+          "ecut": 30.0
+        }, 
+        "low": {
+          "ecut": 20.0
+        }, 
+        "normal": {
+          "ecut": 26.0
+        }
+      }
+    }, 
+    "Ti": {
+      "l_max": 2, 
+      "Z_val": 12.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Ti-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "618925afabe5616c934c3cb5329b567f", 
+      "hints": {
+        "high": {
+          "ecut": 48.0
+        }, 
+        "low": {
+          "ecut": 38.0
+        }, 
+        "normal": {
+          "ecut": 42.0
+        }
+      }
+    }, 
+    "Rn": {
+      "l_max": 2, 
+      "Z_val": 18.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "Rn-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "07b289c582f2b2d5b83cff96c2c61c2d", 
+      "hints": {
+        "high": {
+          "ecut": 42.0
+        }, 
+        "low": {
+          "ecut": 32.0
+        }, 
+        "normal": {
+          "ecut": 36.0
+        }
+      }
+    }, 
+    "Te": {
+      "l_max": 2, 
+      "Z_val": 16.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Te-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "23e1179a058e51dfeea48c007a667437", 
+      "hints": {
+        "high": {
+          "ecut": 46.0
+        }, 
+        "low": {
+          "ecut": 34.0
+        }, 
+        "normal": {
+          "ecut": 40.0
+        }
+      }
+    }, 
+    "Rh": {
+      "l_max": 2, 
+      "Z_val": 17.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " GW"
+      ], 
+      "basename": "Rh-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "45c08089b2bbc5d962ccc9f15091d2c2", 
+      "hints": {
+        "high": {
+          "ecut": 50.0
+        }, 
+        "low": {
+          "ecut": 40.0
+        }, 
+        "normal": {
+          "ecut": 44.0
+        }
+      }
+    }, 
+    "Tc": {
+      "l_max": 2, 
+      "Z_val": 15.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Tc-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "7fc59df906f5aaee9cc64e607a0e7e9c", 
+      "hints": {
+        "high": {
+          "ecut": 50.0
+        }, 
+        "low": {
+          "ecut": 38.0
+        }, 
+        "normal": {
+          "ecut": 44.0
+        }
+      }
+    }, 
+    "Ta": {
+      "l_max": 3, 
+      "Z_val": 13.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Ta-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "3dc5c6e56db1f7c129cb276d81a0ee37", 
+      "hints": {
+        "high": {
+          "ecut": 35.0
+        }, 
+        "low": {
+          "ecut": 25.0
+        }, 
+        "normal": {
+          "ecut": 29.0
+        }
+      }
+    }, 
+    "Be": {
+      "l_max": 1, 
+      "Z_val": 4.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Be-s.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "36c93f4035bb728f11e97d0ae19e27e1", 
+      "hints": {
+        "high": {
+          "ecut": 50.0
+        }, 
+        "low": {
+          "ecut": 38.0
+        }, 
+        "normal": {
+          "ecut": 44.0
+        }
+      }
+    }, 
+    "Xe": {
+      "l_max": 2, 
+      "Z_val": 8.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Xe.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "9441487366aee89b29d3c54f10e7de2f", 
+      "hints": {
+        "high": {
+          "ecut": 43.0
+        }, 
+        "low": {
+          "ecut": 29.0
+        }, 
+        "normal": {
+          "ecut": 35.0
+        }
+      }
+    }, 
+    "Ba": {
+      "l_max": 2, 
+      "Z_val": 10.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "Ba-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "15d64cdf2206a9eb7657e460cd017436", 
+      "hints": {
+        "high": {
+          "ecut": 28.0
+        }, 
+        "low": {
+          "ecut": 18.0
+        }, 
+        "normal": {
+          "ecut": 22.0
+        }
+      }
+    }, 
+    "Bi": {
+      "l_max": 2, 
+      "Z_val": 15.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "Bi-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "4b1e047e39773aa0e87eee1e4781bcfa", 
+      "hints": {
+        "high": {
+          "ecut": 41.0
+        }, 
+        "low": {
+          "ecut": 31.0
+        }, 
+        "normal": {
+          "ecut": 35.0
+        }
+      }
+    }, 
+    "Si": {
+      "l_max": 2, 
+      "Z_val": 4.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "Si.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "22b3666f3017eed402f5aba8a2a13393", 
+      "hints": {
+        "high": {
+          "ecut": 25.0
+        }, 
+        "low": {
+          "ecut": 15.0
+        }, 
+        "normal": {
+          "ecut": 19.0
+        }
+      }
+    }, 
+    "As": {
+      "l_max": 2, 
+      "Z_val": 15.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "As-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "9d7611a8dafcc8fe76097762e1cca19b", 
+      "hints": {
+        "high": {
+          "ecut": 48.0
+        }, 
+        "low": {
+          "ecut": 38.0
+        }, 
+        "normal": {
+          "ecut": 42.0
+        }
+      }
+    }, 
+    "Po": {
+      "l_max": 2, 
+      "Z_val": 16.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Po-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "601b3d7fd089605627c0c41fd222c346", 
+      "hints": {
+        "high": {
+          "ecut": 38.0
+        }, 
+        "low": {
+          "ecut": 28.0
+        }, 
+        "normal": {
+          "ecut": 32.0
+        }
+      }
+    }, 
+    "Fe": {
+      "l_max": 2, 
+      "Z_val": 16.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " GW"
+      ], 
+      "basename": "Fe-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "9762a9a45a4df1e2da274455c2ff443a", 
+      "hints": {
+        "high": {
+          "ecut": 55.0
+        }, 
+        "low": {
+          "ecut": 43.0
+        }, 
+        "normal": {
+          "ecut": 47.0
+        }
+      }
+    }, 
+    "Br": {
+      "l_max": 2, 
+      "Z_val": 7.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Br.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "3d7ad3443d035851a83cc0fa126bb017", 
+      "hints": {
+        "high": {
+          "ecut": 28.0
+        }, 
+        "low": {
+          "ecut": 18.0
+        }, 
+        "normal": {
+          "ecut": 22.0
+        }
+      }
+    }, 
+    "Sr": {
+      "l_max": 2, 
+      "Z_val": 10.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Sr-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "bc5e47edfb192260f9fb20652b6a990a", 
+      "hints": {
+        "high": {
+          "ecut": 40.0
+        }, 
+        "low": {
+          "ecut": 28.0
+        }, 
+        "normal": {
+          "ecut": 34.0
+        }
+      }
+    }, 
+    "Hf": {
+      "l_max": 3, 
+      "Z_val": 12.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Hf-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "5364454f634882be39206da34c89e2a5", 
+      "hints": {
+        "high": {
+          "ecut": 35.0
+        }, 
+        "low": {
+          "ecut": 25.0
+        }, 
+        "normal": {
+          "ecut": 29.0
+        }
+      }
+    }, 
+    "Mo": {
+      "l_max": 2, 
+      "Z_val": 14.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Mo-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "ce8a837c81507077a120191e011effbe", 
+      "hints": {
+        "high": {
+          "ecut": 46.0
+        }, 
+        "low": {
+          "ecut": 36.0
+        }, 
+        "normal": {
+          "ecut": 40.0
+        }
+      }
+    }, 
+    "He": {
+      "l_max": 1, 
+      "Z_val": 2.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " GW"
+      ], 
+      "basename": "He.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "93d47ed03865dae198ddcbef8bd8908c", 
+      "hints": {
+        "high": {
+          "ecut": 50.0
+        }, 
+        "low": {
+          "ecut": 39.0
+        }, 
+        "normal": {
+          "ecut": 45.0
+        }
+      }
+    }, 
+    "C": {
+      "l_max": 1, 
+      "Z_val": 4.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "C.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "92ec24e1d52e2760c33506ef1ef4e7cd", 
+      "hints": {
+        "high": {
+          "ecut": 45.0
+        }, 
+        "low": {
+          "ecut": 37.0
+        }, 
+        "normal": {
+          "ecut": 41.0
+        }
+      }
+    }, 
+    "B": {
+      "l_max": 1, 
+      "Z_val": 3.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "B.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "1ab3114e4dce0d0c57a200b2705046ef", 
+      "hints": {
+        "high": {
+          "ecut": 44.0
+        }, 
+        "low": {
+          "ecut": 34.0
+        }, 
+        "normal": {
+          "ecut": 38.0
+        }
+      }
+    }, 
+    "F": {
+      "l_max": 2, 
+      "Z_val": 7.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "F.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "ed5167e88939c53c4d7eacd77a750c00", 
+      "hints": {
+        "high": {
+          "ecut": 48.0
+        }, 
+        "low": {
+          "ecut": 36.0
+        }, 
+        "normal": {
+          "ecut": 42.0
+        }
+      }
+    }, 
+    "I": {
+      "l_max": 2, 
+      "Z_val": 7.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "I.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "35ad8fadc854e2125cf232d51e7c332d", 
+      "hints": {
+        "high": {
+          "ecut": 41.0
+        }, 
+        "low": {
+          "ecut": 31.0
+        }, 
+        "normal": {
+          "ecut": 35.0
+        }
+      }
+    }, 
+    "H": {
+      "l_max": 1, 
+      "Z_val": 1.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " GW"
+      ], 
+      "basename": "H.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "389f896cf5afff38ce450b08e5245003", 
+      "hints": {
+        "high": {
+          "ecut": 45.0
+        }, 
+        "low": {
+          "ecut": 33.0
+        }, 
+        "normal": {
+          "ecut": 39.0
+        }
+      }
+    }, 
+    "K": {
+      "l_max": 2, 
+      "Z_val": 9.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "K-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "2d4b4e39d863b168976afdba58c629a6", 
+      "hints": {
+        "high": {
+          "ecut": 42.0
+        }, 
+        "low": {
+          "ecut": 32.0
+        }, 
+        "normal": {
+          "ecut": 36.0
+        }
+      }
+    }, 
+    "Mn": {
+      "l_max": 2, 
+      "Z_val": 15.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " GW"
+      ], 
+      "basename": "Mn-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "475c345d846e1b20a8b6f7e10c63467e", 
+      "hints": {
+        "high": {
+          "ecut": 54.0
+        }, 
+        "low": {
+          "ecut": 42.0
+        }, 
+        "normal": {
+          "ecut": 48.0
+        }
+      }
+    }, 
+    "O": {
+      "l_max": 2, 
+      "Z_val": 6.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "O.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "47a5cdd9929873d7baaee7b2f03ab270", 
+      "hints": {
+        "high": {
+          "ecut": 50.0
+        }, 
+        "low": {
+          "ecut": 38.0
+        }, 
+        "normal": {
+          "ecut": 44.0
+        }
+      }
+    }, 
+    "Ne": {
+      "l_max": 1, 
+      "Z_val": 8.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "Ne.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "2c3d5a32c1b51028dd5e8c0c34f616c5", 
+      "hints": {
+        "high": {
+          "ecut": 40.0
+        }, 
+        "low": {
+          "ecut": 30.0
+        }, 
+        "normal": {
+          "ecut": 34.0
+        }
+      }
+    }, 
+    "P": {
+      "l_max": 2, 
+      "Z_val": 5.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "P.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "cc6553c44849c86dfc0613256c2a1fae", 
+      "hints": {
+        "high": {
+          "ecut": 30.0
+        }, 
+        "low": {
+          "ecut": 18.0
+        }, 
+        "normal": {
+          "ecut": 24.0
+        }
+      }
+    }, 
+    "S": {
+      "l_max": 2, 
+      "Z_val": 6.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "S.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "69e26db7209c71a17b3fbeda4fc75ac4", 
+      "hints": {
+        "high": {
+          "ecut": 33.0
+        }, 
+        "low": {
+          "ecut": 21.0
+        }, 
+        "normal": {
+          "ecut": 27.0
+        }
+      }
+    }, 
+    "Re": {
+      "l_max": 3, 
+      "Z_val": 15.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Re-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "ab48bdfde586978d6526291ff4c38175", 
+      "hints": {
+        "high": {
+          "ecut": 42.0
+        }, 
+        "low": {
+          "ecut": 30.0
+        }, 
+        "normal": {
+          "ecut": 36.0
+        }
+      }
+    }, 
+    "Kr": {
+      "l_max": 2, 
+      "Z_val": 8.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Kr.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "f39d58e18a8b3cb0a455acf1eefc376d", 
+      "hints": {
+        "high": {
+          "ecut": 36.0
+        }, 
+        "low": {
+          "ecut": 22.0
+        }, 
+        "normal": {
+          "ecut": 26.0
+        }
+      }
+    }, 
+    "W": {
+      "l_max": 3, 
+      "Z_val": 14.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "W-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "4e11c172209b0505861e8f580de2df87", 
+      "hints": {
+        "high": {
+          "ecut": 41.0
+        }, 
+        "low": {
+          "ecut": 29.0
+        }, 
+        "normal": {
+          "ecut": 35.0
+        }
+      }
+    }, 
+    "V": {
+      "l_max": 2, 
+      "Z_val": 13.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "V-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "2fe5117b217c1ffa12392920a57e23c1", 
+      "hints": {
+        "high": {
+          "ecut": 48.0
+        }, 
+        "low": {
+          "ecut": 38.0
+        }, 
+        "normal": {
+          "ecut": 42.0
+        }
+      }
+    }, 
+    "Sc": {
+      "l_max": 2, 
+      "Z_val": 11.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Sc-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "2c01b758945469e38009e542c69da442", 
+      "hints": {
+        "high": {
+          "ecut": 45.0
+        }, 
+        "low": {
+          "ecut": 35.0
+        }, 
+        "normal": {
+          "ecut": 39.0
+        }
+      }
+    }, 
+    "Sb": {
+      "l_max": 2, 
+      "Z_val": 15.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Sb-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "f1f19c3cd0d1da325dd419de1ac76e88", 
+      "hints": {
+        "high": {
+          "ecut": 48.0
+        }, 
+        "low": {
+          "ecut": 36.0
+        }, 
+        "normal": {
+          "ecut": 42.0
+        }
+      }
+    }, 
+    "N": {
+      "l_max": 1, 
+      "Z_val": 5.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "N.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "9d30b0e36a9f91474371f0138ba9416b", 
+      "hints": {
+        "high": {
+          "ecut": 48.0
+        }, 
+        "low": {
+          "ecut": 36.0
+        }, 
+        "normal": {
+          "ecut": 42.0
+        }
+      }
+    }, 
+    "Os": {
+      "l_max": 3, 
+      "Z_val": 16.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Os-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "a5315d639b67d5eecafc3811e8542e15", 
+      "hints": {
+        "high": {
+          "ecut": 43.0
+        }, 
+        "low": {
+          "ecut": 33.0
+        }, 
+        "normal": {
+          "ecut": 37.0
+        }
+      }
+    }, 
+    "Se": {
+      "l_max": 2, 
+      "Z_val": 16.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Se-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "e8bdc02239b2188774a06cfbd1e8a87a", 
+      "hints": {
+        "high": {
+          "ecut": 49.0
+        }, 
+        "low": {
+          "ecut": 39.0
+        }, 
+        "normal": {
+          "ecut": 43.0
+        }
+      }
+    }, 
+    "Hg": {
+      "l_max": 3, 
+      "Z_val": 20.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " GW"
+      ], 
+      "basename": "Hg-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "f1289fde04caa9d3e4a92c772a68066d", 
+      "hints": {
+        "high": {
+          "ecut": 39.0
+        }, 
+        "low": {
+          "ecut": 29.0
+        }, 
+        "normal": {
+          "ecut": 33.0
+        }
+      }
+    }, 
+    "Zn": {
+      "l_max": 2, 
+      "Z_val": 20.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " GW"
+      ], 
+      "basename": "Zn-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "b133d1ca60efec457c7ac69c1cd4f327", 
+      "hints": {
+        "high": {
+          "ecut": 48.0
+        }, 
+        "low": {
+          "ecut": 38.0
+        }, 
+        "normal": {
+          "ecut": 42.0
+        }
+      }
+    }, 
+    "Co": {
+      "l_max": 2, 
+      "Z_val": 17.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Co-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "968de01b757033942a0c18b740b84ce6", 
+      "hints": {
+        "high": {
+          "ecut": 54.0
+        }, 
+        "low": {
+          "ecut": 42.0
+        }, 
+        "normal": {
+          "ecut": 48.0
+        }
+      }
+    }, 
+    "Ag": {
+      "l_max": 2, 
+      "Z_val": 19.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Ag-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "b23c5583c4868d3fd68bd6e934c8443b", 
+      "hints": {
+        "high": {
+          "ecut": 49.0
+        }, 
+        "low": {
+          "ecut": 39.0
+        }, 
+        "normal": {
+          "ecut": 43.0
+        }
+      }
+    }, 
+    "Cl": {
+      "l_max": 2, 
+      "Z_val": 7.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "Cl.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "1e051963245aa2e7b1f32958318192dc", 
+      "hints": {
+        "high": {
+          "ecut": 34.0
+        }, 
+        "low": {
+          "ecut": 24.0
+        }, 
+        "normal": {
+          "ecut": 28.0
+        }
+      }
+    }, 
+    "Ca": {
+      "l_max": 2, 
+      "Z_val": 10.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Ca-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "37bdde6099799316b7cceee14d8d7168", 
+      "hints": {
+        "high": {
+          "ecut": 42.0
+        }, 
+        "low": {
+          "ecut": 30.0
+        }, 
+        "normal": {
+          "ecut": 36.0
+        }
+      }
+    }, 
+    "Ir": {
+      "l_max": 3, 
+      "Z_val": 17.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Ir-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "bd5ddf8eca5eb9fca48101d30c81b773", 
+      "hints": {
+        "high": {
+          "ecut": 40.0
+        }, 
+        "low": {
+          "ecut": 30.0
+        }, 
+        "normal": {
+          "ecut": 34.0
+        }
+      }
+    }, 
+    "Al": {
+      "l_max": 2, 
+      "Z_val": 3.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Al.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "d17350b9f5fb44e581e6cb70fe6a7a14", 
+      "hints": {
+        "high": {
+          "ecut": 28.0
+        }, 
+        "low": {
+          "ecut": 16.0
+        }, 
+        "normal": {
+          "ecut": 22.0
+        }
+      }
+    }, 
+    "Cd": {
+      "l_max": 2, 
+      "Z_val": 20.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Cd-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "05dddd21cb6867280602de568f0e3fe1", 
+      "hints": {
+        "high": {
+          "ecut": 59.0
+        }, 
+        "low": {
+          "ecut": 47.0
+        }, 
+        "normal": {
+          "ecut": 51.0
+        }
+      }
+    }, 
+    "Ge": {
+      "l_max": 2, 
+      "Z_val": 14.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Ge-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "10727f589295371f46187dcd6192a286", 
+      "hints": {
+        "high": {
+          "ecut": 47.0
+        }, 
+        "low": {
+          "ecut": 35.0
+        }, 
+        "normal": {
+          "ecut": 41.0
+        }
+      }
+    }, 
+    "Ar": {
+      "l_max": 2, 
+      "Z_val": 8.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Ar.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "a1982c11eda3f9066c4c6a57b678b220", 
+      "hints": {
+        "high": {
+          "ecut": 37.0
+        }, 
+        "low": {
+          "ecut": 29.0
+        }, 
+        "normal": {
+          "ecut": 33.0
+        }
+      }
+    }, 
+    "Au": {
+      "l_max": 3, 
+      "Z_val": 19.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "Au-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "f8527a3685679ae0e90366bed269118b", 
+      "hints": {
+        "high": {
+          "ecut": 44.0
+        }, 
+        "low": {
+          "ecut": 32.0
+        }, 
+        "normal": {
+          "ecut": 38.0
+        }
+      }
+    }, 
+    "Zr": {
+      "l_max": 2, 
+      "Z_val": 12.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Zr-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "49f1d3c085f18a92ecdaa0d95583c9ac", 
+      "hints": {
+        "high": {
+          "ecut": 41.0
+        }, 
+        "low": {
+          "ecut": 29.0
+        }, 
+        "normal": {
+          "ecut": 35.0
+        }
+      }
+    }, 
+    "Ga": {
+      "l_max": 2, 
+      "Z_val": 13.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Ga-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "ac0f0e2e7d82e8cc76f170c3c2747ee6", 
+      "hints": {
+        "high": {
+          "ecut": 46.0
+        }, 
+        "low": {
+          "ecut": 36.0
+        }, 
+        "normal": {
+          "ecut": 40.0
+        }
+      }
+    }, 
+    "In": {
+      "l_max": 2, 
+      "Z_val": 13.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "In-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "6df51c891bce9eb935f8a7041d3ea57f", 
+      "hints": {
+        "high": {
+          "ecut": 41.0
+        }, 
+        "low": {
+          "ecut": 31.0
+        }, 
+        "normal": {
+          "ecut": 35.0
+        }
+      }
+    }, 
+    "Cs": {
+      "l_max": 3, 
+      "Z_val": 9.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " "
+      ], 
+      "basename": "Cs-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "897f1a6acca146fd6ef74c31987421be", 
+      "hints": {
+        "high": {
+          "ecut": 30.0
+        }, 
+        "low": {
+          "ecut": 18.0
+        }, 
+        "normal": {
+          "ecut": 24.0
+        }
+      }
+    }, 
+    "Cr": {
+      "l_max": 2, 
+      "Z_val": 14.0, 
+      "dfact_meV": null, 
+      "tags": [
+        "GW"
+      ], 
+      "basename": "Cr-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "763d5aaea1c8ca9514aabb19f482b955", 
+      "hints": {
+        "high": {
+          "ecut": 55.0
+        }, 
+        "low": {
+          "ecut": 43.0
+        }, 
+        "normal": {
+          "ecut": 47.0
+        }
+      }
+    }, 
+    "Cu": {
+      "l_max": 2, 
+      "Z_val": 19.0, 
+      "dfact_meV": null, 
+      "tags": [
+        " GW"
+      ], 
+      "basename": "Cu-sp.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "51f799c0068cf1f6dff0ea0bad79f131", 
+      "hints": {
+        "high": {
+          "ecut": 52.0
+        }, 
+        "low": {
+          "ecut": 42.0
+        }, 
+        "normal": {
+          "ecut": 46.0
+        }
+      }
+    }, 
+    "Sn": {
+      "l_max": 2, 
+      "Z_val": 14.0, 
+      "dfact_meV": null, 
+      "tags": [
+        ""
+      ], 
+      "basename": "Sn-d.psp8", 
+      "dfactprime_meV": null, 
+      "md5": "acdc85599ce11ac769fe09e224fa3a65", 
+      "hints": {
+        "high": {
+          "ecut": 42.0
+        }, 
+        "low": {
+          "ecut": 32.0
+        }, 
+        "normal": {
+          "ecut": 36.0
+        }
+      }
+    },
+    "La": {
+      "l_max": 3,
+      "Z_val": 11.0,
+      "dfact_meV": null,
+      "tags": [
+        ""
+      ],
+      "basename": "La-sp.psp8",
+      "dfactprime_meV": null,
+      "md5": "6d5653779599d43a2deb8eba1719dd6a",
+      "hints": {
+        "high": {
+          "ecut": 65.0
+        },
+        "low": {
+          "ecut": 50.0
+        },
+        "normal": {
+          "ecut": 55.0
+        }
+}
+    }
+  }
+}
