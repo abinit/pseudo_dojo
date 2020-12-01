@@ -778,6 +778,16 @@ class DojoReport(dict):
         #        if ecut not in global_ecuts:
         #            app("%s: ecut %s is not in the global list" % (trial, ecut))
 
+        if "hints" not in self:
+            app("hints are missing")
+        else:
+            for acc in ["low", "normal", "high"]:
+                assert self["hints"][acc]["ecut"] > 0
+
+        for k in ("md5", "md5_upf", "md5_psml"):
+            if k not in self:
+                app("%s not djrepo" % k)
+
         return "\n".join(errors)
 
     ##################

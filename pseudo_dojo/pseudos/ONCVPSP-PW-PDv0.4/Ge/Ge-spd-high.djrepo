@@ -111065,6 +111065,8 @@ null
 }
 },
 "md5": "d93ae05a44288b05a83dd176f2b53003",
+"md5_psml": "cc31c36d7a61b2c0bf56bf106d574447",
+"md5_upf": "4ad11d719c8308c3f7a0f5e22876b14f",
 "phgamma": {
 "48.0": {
 "asr2_phfreqs_mev": [
