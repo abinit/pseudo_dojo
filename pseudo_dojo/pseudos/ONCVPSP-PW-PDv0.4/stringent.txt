@@ -32,7 +32,7 @@ Ga/Ga-spd-high.psp8
 Ge/Ge-spd-high.psp8
 As/As-spd-high.psp8
 Se/Se-spd-high.psp8
-#Br/Br-spd-high.psp8
+Br/Br-d.psp8
 Kr/Kr.psp8
 Rb/Rb-sp.psp8
 Sr/Sr-sp.psp8
@@ -50,9 +50,9 @@ In/In-spd-high.psp8
 Sn/Sn-spd-high.psp8
 Sb/Sb-spd-high.psp8
 Te/Te-spd-high.psp8
-#I/I-spd-high.psp8
+I/I-d.psp8
 Xe/Xe.psp8
-#Cs/Cs-sp.psp8
+Cs/Cs-sp.psp8
 Ba/Ba-sp.psp8
 Hf/Hf-fsp.psp8
 Ta/Ta-fsp.psp8
