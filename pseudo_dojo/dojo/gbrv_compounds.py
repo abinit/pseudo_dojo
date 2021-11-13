@@ -20,11 +20,12 @@ logger = logging.getLogger(__name__)
 
 class GbrvCompoundsFactory(object):
     """Factory class producing :class:`Work` objects for GBRV calculations."""
+
     def __init__(self, xc):
         """xc: Exchange-correlation functional."""
         self.db = gbrv_database(xc)
 
-    def make_ref_structure(self, formula, struct_type, ref="ae"):
+    def make_ref_structure(self, formula: str, struct_type: str, ref: str = "ae"):
         """
         Return the structure used in the GBRV tests given the chemical formula,
         the structure type and the reference code.
@@ -100,7 +101,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
         self.pseudos = pseudos
         self.xc = xc
-        if (any(xc != p.xc for p in pseudos)):
+        if any(xc != p.xc for p in pseudos):
             raise ValueError("Input XC does not agree with XC from pseudos.")
 
         self.formula = formula
@@ -274,7 +275,7 @@ class GbrvCompoundRelaxAndEosWork(Work):
 
         return super(GbrvCompoundRelaxAndEosWork, self).on_all_ok()
 
-    def set_outdb(self, path):
+    def set_outdb(self, path: str):
         """
         This function set the outdb property (a database with the Gbrv results for the compounds)
         Use this function when you want the work to write the results of the

@@ -69,7 +69,7 @@ class RadialFunctionTest(PseudoDojoTest):
         rf_der = RadialFunction.from_filename(filename, cols=(0,2))
 
         repr(rf); str(rf)
-        assert isinstance(rf, collections.Iterable)
+        assert isinstance(rf, collections.abc.Iterable)
 
         # Integral in 3D
         self.assert_almost_equal(rf.integral3d(), 1.0)

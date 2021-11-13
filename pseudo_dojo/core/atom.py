@@ -42,7 +42,7 @@ def _asl(obj):
         return int(obj)
 
 
-def states_from_string(confstr):
+def states_from_string(confstr: str):
     """
     Parse a string with an atomic configuration and build a list of `QState` instance.
     """
@@ -57,7 +57,7 @@ def states_from_string(confstr):
     return states
 
 
-def parse_orbtoken(orbtoken):
+def parse_orbtoken(orbtoken: str):
     import re
     m = re.match(r"(\d+)([spdfghi]+)(\d+)", orbtoken.strip())
     if m:
@@ -77,7 +77,7 @@ class NlkState(collections.namedtuple("NlkState", "n, l, k")):
             return "n=%i, l=%i, k=%i" % self
 
     @property
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {"n": self.n, "l": self.l, "k": self.k}
 
 
@@ -97,6 +97,7 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
     """
     # TODO
     # Spin +1, -1 or 1,2 or 0,1?
+
     def __new__(cls, n, l, occ, eig=None, j=None, s=None):
         """Intercepts super.__new__ adding type conversion and default values."""
         eig = float(eig) if eig is not None else eig
@@ -119,11 +120,11 @@ class QState(collections.namedtuple("QState", "n, l, occ, eig, j, s")):
     #def __lt__(self, other):
 
     @property
-    def has_j(self):
+    def has_j(self) -> bool:
         return self.j is not None
 
     @property
-    def has_s(self):
+    def has_s(self) -> bool:
         return self.s is not None
 
 
@@ -234,7 +235,7 @@ class AtomicConfiguration(object):
 class RadialFunction(object):
     """A RadialFunction has a name, a radial mesh and values defined on this mesh."""
 
-    def __init__(self, name, rmesh, values):
+    def __init__(self, name: str, rmesh, values):
         """
         Args:
             name: Name of the function (string).
@@ -247,7 +248,7 @@ class RadialFunction(object):
         assert len(self.rmesh) == len(self.values)
 
     @classmethod
-    def from_filename(cls, filename, rfunc_name=None, cols=(0, 1)):
+    def from_filename(cls, filename: str, rfunc_name=None, cols=(0, 1)):
         """
         Initialize the object reading data from filename (txt format).
 
@@ -287,14 +288,14 @@ class RadialFunction(object):
         return self.__class__(self.rmesh, np.abs(self.values))
 
     @property
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return dict(
             name=str(self.name),
             rmesh=list(self.rmesh),
             values=list(self.values),
         )
 
-    def pprint(self, what="rmesh+values", stream=None):
+    def pprint(self, what: str = "rmesh+values", stream=None):
         """pprint method (useful for debugging)"""
         from pprint import pprint
         if "rmesh" in what:
@@ -458,13 +459,13 @@ class RadialWaveFunction(RadialFunction):
         self.state = state
 
     @property
-    def isbound(self):
+    def isbound(self) -> bool:
         """True if self is a bound state."""
         back = min(10, len(self))
         return np.all(np.abs(self.values[-back:]) < self.TOL_BOUND)
 
     @property
-    def to_dict(self):
+    def to_dict(self) -> dict:
         d = super(RadialWaveFunction, self).to_dict
         d.update(self.state.to_dict)
         return d

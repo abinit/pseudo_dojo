@@ -1,14 +1,17 @@
 """
 """
+from __future__ import annotations
+
 import sys
 import os
 import json
-import logging
 import copy
 import numpy as np
 import pandas as pd
 
-from collections import OrderedDict, defaultdict, Iterable
+from typing import List, Set, Optional
+from collections import OrderedDict, defaultdict
+from collections.abc import Iterable
 from tabulate import tabulate
 from monty.json import MontyEncoder
 from monty.string import list_strings, is_string
@@ -20,9 +23,6 @@ from pseudo_dojo.refdata.deltafactor import df_database, df_compute
 from pseudo_dojo.refdata.gbrv import gbrv_database
 from pseudo_dojo.refdata.lantanides.database import raren_database
 from pseudo_dojo.util.dojo_eos import EOS
-
-
-logger = logging.getLogger(__name__)
 
 
 def dojo_dfact_results(pseudo, num_sites, volumes, etotals):
@@ -246,7 +246,7 @@ class DojoReport(dict):
     Error = DojoReportError
 
     @classmethod
-    def from_file(cls, filepath):
+    def from_file(cls, filepath: str):
         """Read the DojoReport from file."""
         filepath = os.path.abspath(filepath)
         with open(filepath, "rt") as fh:
@@ -358,10 +358,10 @@ class DojoReport(dict):
 
     def __str__(self):
         """String representation."""
-        return(json.dumps(self, indent=4))
+        return json.dumps(self, indent=4)
 
     @property
-    def symbol(self):
+    def symbol(self) -> str:
         """Chemical symbol."""
         return self["symbol"]
 
@@ -371,27 +371,27 @@ class DojoReport(dict):
         return Element(self.symbol)
 
     @property
-    def ecuts(self):
+    def ecuts(self) -> List[float]:
         """list of ecuts that should be present in the dojo_trial sub-dicts"""
         return self["ecuts"]
 
     @property
-    def trials(self):
+    def trials(self) -> Set[str]:
         """Set of strings with the trials present in the report."""
         return set(list(self.keys())).intersection(self.ALL_TRIALS)
 
     @property
-    def exceptions(self):
+    def exceptions(self) -> List[str]:
         """List of exceptions."""
         return self.get("_exceptions", [])
 
-    def push_exception(self, string):
+    def push_exception(self, string: str) -> None:
         """Register an exception."""
         if "_exceptions" not in self:
             self["_exceptions"] = []
         self["_exceptions"].append(string)
 
-    def remove_exceptions(self):
+    def remove_exceptions(self) -> str:
         """Remove the exception entry from the dictionary."""
         return self["_exceptions"].pop()
 
@@ -399,17 +399,16 @@ class DojoReport(dict):
         """Deepcopy of the object."""
         return copy.deepcopy(self)
 
-    def json_write(self, filepath=None):
+    def json_write(self, filepath: Optional[str] = None):
         """
         Write data to file in JSON format.
         If filepath is None, self.path is used.
         """
         filepath = self.path if filepath is None else filepath
         with open(filepath, "wt") as fh:
-            #json.dump(self, fh, indent=-1, sort_keys=True)
             json.dump(self, fh, indent=-1, sort_keys=True, cls=MontyEncoder)
 
-    def has_trial(self, dojo_trial, ecut=None):
+    def has_trial(self, dojo_trial: str, ecut: Optional[float] = None) -> bool:
         """
         True if the dojo_report contains dojo_trial with the given ecut.
         If ecut is None, we test if dojo_trial is present.
@@ -423,7 +422,7 @@ class DojoReport(dict):
         if ecut_str in self[dojo_trial]: return True
         return False
 
-    def remove_trial(self, dojo_trial, ecut=None, write=False):
+    def remove_trial(self, dojo_trial: str, ecut: Optional[float] = None, write: bool = False):
         """
         Remove the entry associated to `dojo_trial` and write new JSON file.
         If ecut is None, the entire `dojo_trial` is removed.
@@ -438,7 +437,7 @@ class DojoReport(dict):
         if write: self.json_write()
         return res
 
-    def get_pdframe(self, dojo_trial, *args):
+    def get_pdframe(self, dojo_trial: str, *args) -> pd.DataFrame:
         """
         Return a pandas `DataFrame` with the results for this particular dojo_trial.
         The frame is sorted according to the value of ecut.
@@ -493,7 +492,8 @@ class DojoReport(dict):
         Add a list of new set of ecuts to the global list
         If write is True, the JSON file is immediately updated with the new data.
         """
-        if not isinstance(new_ecuts, Iterable): new_ecuts = [new_ecuts]
+        if not isinstance(new_ecuts, Iterable):
+            new_ecuts = [new_ecuts]
 
         # Be careful with the format here! it should be %.1f
         # Select the list of ecuts reported in the DOJO section.
@@ -541,7 +541,7 @@ class DojoReport(dict):
         if write: self.json_write()
 
     @property
-    def isvalidated(self):
+    def isvalidated(self) -> bool:
         """True if the dojoreport has been validated."""
         return "validation" in self and self.has_hints
 
@@ -913,8 +913,8 @@ class DojoReport(dict):
             ecut_frame = frame.loc[frame["ecut"] == ecut]
             assert ecut_frame.shape[0] == 1
             # Extract volumes and energies for this ecut.
-            volumes = (np.array(list(ecut_frame["volumes"].values), dtype=np.float)).flatten()
-            etotals = (np.array(list(ecut_frame["etotals"].values), dtype=np.float)).flatten()
+            volumes = (np.array(list(ecut_frame["volumes"].values), dtype=float)).flatten()
+            etotals = (np.array(list(ecut_frame["etotals"].values), dtype=float)).flatten()
 
             # Use same fit as the one employed for the deltafactor.
             eos_fit = EOS.DeltaFactor().fit(volumes/num_sites, etotals/num_sites)
@@ -1048,8 +1048,8 @@ class DojoReport(dict):
             ecut_frame = frame.loc[frame["ecut"] == ecut]
             assert ecut_frame.shape[0] == 1
             # Extract volumes and energies for this ecut.
-            volumes = (np.array(list(ecut_frame["volumes"].values), dtype=np.float)).flatten()
-            etotals = (np.array(list(ecut_frame["etotals"].values), dtype=np.float)).flatten()
+            volumes = (np.array(list(ecut_frame["volumes"].values), dtype=float)).flatten()
+            etotals = (np.array(list(ecut_frame["etotals"].values), dtype=float)).flatten()
 
             eos_fit = EOS.Quadratic().fit(volumes, etotals)
             label = "ecut %.1f" % ecut if i % 2 == 0 else ""

@@ -3,7 +3,6 @@
 import os
 import json
 import tempfile
-import logging
 import numpy as np
 
 from collections import OrderedDict
@@ -19,10 +18,7 @@ from abipy.flowtk.pseudos import Pseudo, PseudoTable
 from pseudo_dojo.core.dojoreport import DojoReport
 
 
-logger = logging.getLogger(__name__)
-
-
-def dojopseudo_from_file(filepath):
+def dojopseudo_from_file(filepath: str):
     """
     Factory function used to construct a :class:`Pseudo` object from file.
     A DojoPseudo has a DojoReport section and this function adds the report
@@ -106,17 +102,17 @@ class DojoInfo(AttrDict):
         validate(self, self.JSON_SCHEMA)
 
     @classmethod
-    def get_template_dict(cls):
+    def get_template_dict(cls) -> dict:
         """Return a dictionary with the keys that must be filled by the user."""
         return {k: str(v) for k, v in cls.JSON_SCHEMA["properties"].items()}
 
     @property
-    def isnc(self):
+    def isnc(self) -> bool:
         """True if norm-conserving pseudopotential."""
         return self.pp_type == "NC"
 
     @property
-    def ispaw(self):
+    def ispaw(self) -> bool:
         """True if PAW pseudopotential."""
         return self.pp_type == "PAW"
 
@@ -194,7 +190,7 @@ class DojoTable(PseudoTable):
         return cls(pseudos).sort_by_z()
 
     @classmethod
-    def from_txtfile(cls, path):
+    def from_txtfile(cls, path: str):
         """
         Initialize the table from a text file containing the relative path
         of the pseudopotential (one name per line).
@@ -710,7 +706,7 @@ class OfficialDojoTable(DojoTable):
         XC functional
     """
     @classmethod
-    def from_dojodir(cls,dojodir,accuracy='standard'):
+    def from_dojodir(cls, dojodir: str, accuracy: str = 'standard'):
         """Use a dojodir string to get a djson file and initialize the class"""
         import glob
         from pseudo_dojo.pseudos import dojotable_absdir
@@ -724,7 +720,7 @@ class OfficialDojoTable(DojoTable):
         return cls.from_djson_file(djson_path)
 
     @classmethod
-    def from_djson_file(cls, json_path):
+    def from_djson_file(cls, json_path: str):
         """
         Initialize the pseudopotential table from one of **official** djson files
         located in one of the subdirectories inside pseudo_dojo.pseudos.
@@ -811,6 +807,5 @@ class OfficialDojoTable(DojoTable):
         except AttributeError:
             return {}
 
-    #@dojo_info.setter
     def set_dojo_info(self, dojo_info):
         self._dojo_info = dojo_info

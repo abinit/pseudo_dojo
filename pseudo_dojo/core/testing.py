@@ -9,7 +9,8 @@ in a single location, so that test scripts can just import it and work right awa
 from monty.os.path import which
 from pymatgen.util.testing import PymatgenTest
 
-import numpy.testing.utils as nptu
+import numpy.testing as nptu
+#import numpy.testing.utils as nptu
 import subprocess
 import tempfile
 

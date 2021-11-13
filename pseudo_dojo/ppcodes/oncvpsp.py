@@ -804,6 +804,11 @@ class OncvOutputParser(PseudoGenOutputParser):
             beg = g.stop + 1
 
             header = self.lines[g.start-2]
+            #print(header)
+            if header.startswith("scattering"):
+                print(f"ignoring header {header}")
+                continue
+
             if not self.fully_relativistic:
                 #n= 1,  l= 0, all-electron wave function, pseudo w-f
                 n, l = header.split(",")[0:2]

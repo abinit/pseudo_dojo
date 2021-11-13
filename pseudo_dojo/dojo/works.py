@@ -1,10 +1,13 @@
 # coding: utf-8
 """Base class for Dojo Workkflows."""
+from __future__ import annotations
+
 import abc
 import os
 import logging
 import numpy as np
 
+#from typing import
 from monty.io import FileLock
 from pymatgen.core.xcfunc import XcFunc
 from abipy.core.structure import Structure
@@ -41,7 +44,7 @@ class DojoWork(Work):
     def add_entry_to_dojoreport(self, entry, overwrite_data=False, pop_trial=False):
         """
         Write/update the DOJO_REPORT section of the pseudopotential.
-        Important paramenters such as the name of the dojo_trial and the energy cutoff
+        Important parameters such as the name of the dojo_trial and the energy cutoff
         are provided by the sub-class.
         Client code is responsible for preparing the dictionary with the data.
 
@@ -51,8 +54,6 @@ class DojoWork(Work):
                 already filled.
             pop_trial: True if the trial should be removed before adding the new entry.
         """
-        #root, ext = os.path.splitext(self.dojo_pseudo.filepath)
-        #djrepo = root + ".djrepo"
         djrepo = self.djrepo_path
         self.history.info("Writing dojreport data to %s" % djrepo)
 
@@ -104,7 +105,7 @@ class GhostsFactory(object):
         # Get a reference to the deltafactor database. Used to get a structure
         self._dfdb = df_database(xc)
 
-    def get_cif_path(self, symbol):
+    def get_cif_path(self, symbol: str):
         """Returns the path to the CIF file associated to the given symbol."""
         try:
             return self._dfdb.get_cif_path(symbol)
@@ -152,7 +153,9 @@ class GhostsFactory(object):
 
 
 class GhostsWork(DojoWork):
-    """Work for the calculation of the deltafactor."""
+    """
+    Work for the calculation of the deltafactor.
+    """
 
     def __init__(self, structure, pseudo, kppa, maxene,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
@@ -313,7 +316,7 @@ class DeltaFactory(object):
         # Get a reference to the deltafactor database
         self._dfdb = df_database(xc)
 
-    def get_cif_path(self, symbol):
+    def get_cif_path(self, symbol: str):
         """Returns the path to the CIF file associated to the given symbol."""
         try:
             return self._dfdb.get_cif_path(symbol)
@@ -380,7 +383,9 @@ class DeltaFactory(object):
 
 
 class DeltaFactorWork(DojoWork):
-    """Work for the calculation of the deltafactor."""
+    """
+    Work for the calculation of the deltafactor.
+    """
 
     def __init__(self, structure, pseudo, kppa, connect,
                  ecut=None, pawecutdg=None, ecutsm=0.5,
@@ -503,7 +508,7 @@ class GbrvFactory(object):
         """xc: exchange-correlation functional e.g. PBE or PW."""
         self.db = gbrv_database(xc)
 
-    def make_ref_structure(self, symbol, struct_type, ref):
+    def make_ref_structure(self, symbol: str, struct_type: str, ref: str):
         """
         Return the structure used in the GBRV tests given the chemical symbol,
         the structure type and the reference code.
@@ -653,7 +658,7 @@ class GbrvRelaxAndEosWork(DojoWork):
 
     def add_eos_tasks(self):
         """
-        Read the optimized structure from the netcdf file and add to self a new
+        Read the optimized structure from the netcdf file and add to self
         a new list of ScfTask for the computation of the EOS with the GBRV parameters.
         """
         self.history.info("Building EOS tasks")
@@ -742,7 +747,7 @@ class GammaPhononFactory(object):
         # Get reference to the deltafactor database
         self._dfdb = df_database(xc)
 
-    def get_cif_path(self, symbol):
+    def get_cif_path(self, symbol: str):
         """Returns the path to the CIF file associated to the given symbol."""
         try:
             return self._dfdb.get_cif_path(symbol)
@@ -1149,6 +1154,6 @@ class RelaxWithGbrvParamsWork(Work):
 
         import json
         with open(self.outdir.path_in("a0.json"), "wt") as fh:
-            json.dump(results, fh, indent=4) #, sort_keys=True, cls=MontyEncoder)
+            json.dump(results, fh, indent=4)  #, sort_keys=True, cls=MontyEncoder)
 
         return super(RelaxWithGbrvParamsWork, self).on_all_ok()
