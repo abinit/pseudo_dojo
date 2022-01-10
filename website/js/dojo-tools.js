@@ -82,7 +82,7 @@ function set_info(info, animate) {
             if (val === 'na' || val === 'nan'){
                 var xx = 1;
             }
-            else{
+            else {
                 averages[key] += parseFloat(val);
                 sums[key] += 1;
             }
@@ -101,10 +101,10 @@ function set_info(info, animate) {
     summary += "delta\t\t\t\t\t: " + averages[4] + " meV\n"
     summary += "normalized delta\t\t: " + averages[5] + " \n"
     summary += "gbrv\t\t\t\t\t: " + averages[6] + " %\n"
-    if (sums[0] > 0){
-            set_av(averages);
-            reset_X()
-            }
+    if (sums[0] > 0) {
+        set_av(averages);
+        reset_X()
+    }
 }
 
 function loadJSON(file, callback) {
@@ -125,7 +125,6 @@ function store_available_files() {
     var info = JSON.parse(response);
     localStorage.setItem('files', info);
     });
-
 }
 
 function load_set_info(animate) {
@@ -141,7 +140,7 @@ function load_set_info(animate) {
 }
 
 function set_X(elm, color, n){
-    if (els.indexOf(elm)>=0){
+    if (els.indexOf(elm) >= 0){
         document.getElementById('N').innerHTML = n;
         var x = document.getElementById('X_n');
         x.style.backgroundColor = color;
@@ -152,7 +151,7 @@ function set_X(elm, color, n){
             var id_key_in = elm + '_' + keys[key];
             var x = document.getElementById(id_key_in);
             var y = document.getElementById(id_key);
-            var val = x.innerHTML
+            var val = x.innerHTML;
             y.innerHTML = val;
         }
     }
@@ -175,11 +174,11 @@ function set_av(val){
 }
 
 function show_X(){
-    document.getElementById('X_n').style.visibility="visible";
+    document.getElementById('X_n').style.visibility = "visible";
 }
 
 function hide_X(){
-    document.getElementById('X_n').style.visibility="hidden";
+    document.getElementById('X_n').style.visibility = "hidden";
 }
 
 function humanize(size) {
@@ -262,7 +261,7 @@ function dojoTour_guidedtour() {
         },
         {
           element: "#papers",
-          intro:  "A list of papers usging PseudoDojo pseudopotentials. Did you use them? Send us the DOI and we'll add yours as well."
+          intro:  "A list of papers using PseudoDojo pseudopotentials. Did you use them? Send us the DOI and we'll add yours as well."
         },
         {
           element: ".logo",
@@ -284,10 +283,12 @@ function dojoTour_guidedtour() {
 }
 
 function dynamicdropdown(listindex){
+  // Set the values of the XC/Accuracy/Format widgets given the value of Type.
   console.log('dynamic dropdown: setting', listindex)
   document.getElementById("ACC").length = 0;
   document.getElementById("XCF").length = 0;
   document.getElementById("FMT").length = 0;
+
   switch (listindex)
   {
     case "paw" :
@@ -331,7 +332,7 @@ function dynamicdropdown(listindex){
       document.getElementById('warning_box').innerHTML = "";
       document.getElementById("ACC").options[0]=new Option("standard","standard");
       document.getElementById("ACC").options[1]=new Option("stringent","stringent");
-//      document.getElementById("XCF").options[2]=new Option("LDA","pw");
+      //document.getElementById("XCF").options[2]=new Option("LDA","pw");
       document.getElementById("XCF").options[0]=new Option("PBE","pbe");
       document.getElementById("XCF").options[1]=new Option("PBEsol","pbesol");
       document.getElementById("FMT").options[0]=new Option("psp8","psp8");
@@ -356,6 +357,7 @@ function dynamicdropdown(listindex){
       break;
 
     case "core" :
+      // TODO or perhaps add new format and handle file download.
       document.getElementById('warning_box').innerHTML = "";
       document.getElementById("ACC").options[0]=new Option("","standard");
       document.getElementById("ACC").options[0]=new Option("standard","standard");
@@ -379,8 +381,6 @@ function chaos() {
     function animatePlugin(plugin) {
       var xMax = 500;
       var yMax = 500;
-
-
       var x1 = Math.random() - 0.5;
       x1 = x1 * xMax;
       var x2 = Math.random() - 0.5;

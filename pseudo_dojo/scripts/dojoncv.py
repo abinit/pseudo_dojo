@@ -31,7 +31,8 @@ def find_oncv_output(path):
 def oncv_nbplot(options):
     """Generate jupyter notebook to plot data. Requires oncvpsp output file."""
     out_path = find_oncv_output(options.filename)
-    return oncv_make_open_notebook(out_path)
+    return oncv_make_open_notebook(out_path, foreground=options.foreground, classic_notebook=options.classic_notebook,
+                                   no_browser=options.no_browser)
 
 
 def oncv_gnuplot(options):
@@ -63,37 +64,53 @@ def oncv_plot(options):
     # Build the plotter
     plotter = onc_parser.make_plotter()
 
+    if options.mpl_backend is not None:
+        # Set matplotlib backend
+        import matplotlib
+        matplotlib.use(options.mpl_backend)
+
+    if options.seaborn:
+        # Use seaborn settings.
+        import seaborn as sns
+        sns.set(context=options.seaborn, style='darkgrid', palette='deep',
+                font='sans-serif', font_scale=1, color_codes=False, rc=None)
+
     # Plot data
-    plotter.plot_radial_wfs()
-    plotter.plot_atanlogder_econv()
-    plotter.plot_projectors()
-    plotter.plot_potentials()
-    #plotter.plot_der_potentials()
-    #for order in [1,2,3,4]:
-    #    plotter.plot_der_densities(order=order)
-    plotter.plot_densities()
-    #plotter.plot_densities(timesr2=True)
-    plotter.plot_den_formfact()
+    #from abipy.tools.plotting import MplExpose, PanelExpose
+    e = MplExpose(slide_mode=options.slide_mode, slide_timeout=options.slide_timeout)
+    #e = PanelExpose(title="")
+    with e:
+        e(plotter.plot_radial_wfs(show=False))
+        e(plotter.plot_atanlogder_econv(show=False))
+        e(plotter.plot_projectors(show=False))
+        e(plotter.plot_potentials(show=False))
+        #plotter.plot_der_potentials(show=False)
+        #for order in [1,2,3,4]:
+        #    e(plotter.plot_der_densities(order=order, show=False))
+        e(plotter.plot_densities(show=False))
+        #e(#plotter.plot_densities(timesr2=True, show=False))
+        e(plotter.plot_den_formfact(show=False))
+
     return 0
 
     # Table of methods
-    callables = collections.OrderedDict([
-        ("wp", plotter.plot_waves_and_projs),
-        ("dp", plotter.plot_dens_and_pots),
-        ("lc", plotter.plot_atanlogder_econv),
-        ("df", plotter.plot_den_formfact),
-    ])
+    #callables = collections.OrderedDict([
+    #    ("wp", plotter.plot_waves_and_projs),
+    #    ("dp", plotter.plot_dens_and_pots),
+    #    ("lc", plotter.plot_atanlogder_econv),
+    #    ("df", plotter.plot_den_formfact),
+    #])
 
     # Call function depending on options.plot_mode
-    if options.plot_mode == "slide":
-        for func in callables.values():
-            func()
-    else:
-        func = callables.get(options.plot_mode, None)
-        if func is not None:
-            func()
-        else:
-            plotter.plot_key(key=options.plot_mode)
+    #if options.plot_mode == "slide":
+    #    for func in callables.values():
+    #        func()
+    #else:
+    #    func = callables.get(options.plot_mode, None)
+    #    if func is not None:
+    #        func()
+    #    else:
+    #        plotter.plot_key(key=options.plot_mode)
 
 
 def oncv_json(options):
@@ -187,6 +204,25 @@ def oncv_run(options):
     report = DojoReport.empty_from_pseudo(pseudo, onc_parser.hints, devel=False)
     report.json_write()
 
+    # Build the plotter
+    plotter = onc_parser.make_plotter()
+
+    # Plot data
+    #from abipy.tools.plotting import MplExpose, PanelExpose
+    e = MplExpose() #slide_mode=options.slide_mode, slide_timeout=options.slide_timeout)
+    #e = PanelExpose(title="")
+    with e:
+        e(plotter.plot_radial_wfs(show=False))
+        e(plotter.plot_atanlogder_econv(show=False))
+        e(plotter.plot_projectors(show=False))
+        e(plotter.plot_potentials(show=False))
+        #plotter.plot_der_potentials(show=False)
+        #for order in [1,2,3,4]:
+        #    e(plotter.plot_der_densities(order=order, show=False))
+        e(plotter.plot_densities(show=False))
+        #e(#plotter.plot_densities(timesr2=True, show=False))
+        e(plotter.plot_den_formfact(show=False))
+
     return 0
 
 
@@ -218,6 +254,9 @@ Usage example:
 
     copts_parser.add_argument('filename', default="", help="Path to the output file")
 
+    # Parent parser for commands supporting MplExpose.
+    plot_parser = argparse.ArgumentParser(add_help=False)
+
     # Build the main parser.
     parser = argparse.ArgumentParser(epilog=str_examples(), formatter_class=argparse.RawDescriptionHelpFormatter)
 
@@ -233,15 +272,37 @@ Usage example:
 
     # Create the parsers for the sub-commands
     p_plot = subparsers.add_parser('plot', parents=[copts_parser], help=oncv_plot.__doc__)
-    p_plot.add_argument("-p", "--plot-mode", default="slide",
-                        help=("Quantity to plot. Possible values: %s" %
-                              str(["slide", "wp, dp, lc"] + PseudoGenDataPlotter.all_keys) + "\n"
-                              "wp --> wavefunctions and projectors\n" +
-                              "dp --> densities and potentials\n" +
-                              "lc --> atan(logder) and convergence wrt ecut\n" +
-                              "df --> density form factor"))
+    p_plot.add_argument("-s", "--slide-mode", default=False, action="store_true",
+            help="Iterate over figures. Expose all figures at once if not given on the CLI.")
+    p_plot.add_argument("-t", "--slide-timeout", type=int, default=None,
+            help="Close figure after slide-timeout seconds (only if slide-mode). Block if not specified.")
+    p_plot.add_argument('-sns', "--seaborn", const="paper", default=None, action='store', nargs='?', type=str,
+        help='Use seaborn settings. Accept value defining context in ("paper", "notebook", "talk", "poster"). Default: paper')
+    p_plot.add_argument('-mpl', "--mpl-backend", default=None,
+        help=("Set matplotlib interactive backend. "
+              "Possible values: GTKAgg, GTK3Agg, GTK, GTKCairo, GTK3Cairo, WXAgg, WX, TkAgg, Qt4Agg, Qt5Agg, macosx."
+              "See also: https://matplotlib.org/faq/usage_faq.html#what-is-a-backend."))
+
+    #p_plot.add_argument("-p", "--plot-mode", default="slide",
+    #                    help=("Quantity to plot. Possible values: %s" %
+    #                          str(["slide", "wp, dp, lc"] + PseudoGenDataPlotter.all_keys) + "\n"
+    #                          "wp --> wavefunctions and projectors\n" +
+    #                          "dp --> densities and potentials\n" +
+    #                          "lc --> atan(logder) and convergence wrt ecut\n" +
+    #                          "df --> density form factor"))
 
     p_nbplot = subparsers.add_parser('nbplot', parents=[copts_parser], help=oncv_nbplot.__doc__)
+    # notebook options.
+    p_nbplot.add_argument('-nb', '--notebook', action='store_true', default=False, help="Open file in jupyter notebook")
+    p_nbplot.add_argument('--classic-notebook', "-cnb", action='store_true', default=False,
+                        help="Use classic jupyter notebook instead of jupyterlab.")
+    p_nbplot.add_argument('--no-browser', action='store_true', default=False,
+                        help=("Start the jupyter server to serve the notebook "
+                              "but don't open the notebook in the browser.\n"
+                              "Use this option to connect remotely from localhost to the machine running the kernel"))
+    p_nbplot.add_argument('--foreground', action='store_true', default=False,
+                        help="Run jupyter notebook in the foreground.")
+
 
     p_gnuplot = subparsers.add_parser('gnuplot', parents=[copts_parser], help=oncv_gnuplot.__doc__)
 
@@ -263,6 +324,95 @@ Usage example:
 
     # Dispatch
     return globals()["oncv_" + options.command](options)
+
+
+
+# Taken from AbiPy.
+import time
+
+class MplExpose: # pragma: no cover
+    """
+    Context manager used to produce several matplotlib figures and then show
+    all them at the end so that the user does not need to close the window to
+    visualize to the next one.
+
+    Example:
+
+        with MplExpose() as e:
+            e(obj.plot1(show=False))
+            e(obj.plot2(show=False))
+    """
+    def __init__(self, slide_mode=False, slide_timeout=None, verbose=1):
+        """
+        Args:
+            slide_mode: If Rrue, iterate over figures. Default: Expose all figures at once.
+            slide_timeout: Close figure after slide-timeout seconds. Block if None.
+            verbose: verbosity level
+        """
+        self.figures = []
+        self.slide_mode = bool(slide_mode)
+        self.timeout_ms = slide_timeout
+        self.verbose = verbose
+        if self.timeout_ms is not None:
+            self.timeout_ms = int(self.timeout_ms * 1000)
+            assert self.timeout_ms >= 0
+
+        if self.verbose:
+            if self.slide_mode:
+                print("\nSliding matplotlib figures with slide timeout: %s [s]" % slide_timeout)
+            else:
+                print("\nLoading all matplotlib figures before showing them. It may take some time...")
+
+
+        self.start_time = time.time()
+
+    def __call__(self, obj):
+        """
+        Add an object to MplExpose.
+        Support mpl figure, list of figures or generator yielding figures.
+        """
+        import types
+        if isinstance(obj, (types.GeneratorType, list, tuple)):
+            for fig in obj:
+                self.add_fig(fig)
+        else:
+            self.add_fig(obj)
+
+    def add_fig(self, fig):
+        """Add a matplotlib figure."""
+        if fig is None: return
+
+        if not self.slide_mode:
+            self.figures.append(fig)
+        else:
+            #print("Printing and closing", fig)
+            import matplotlib.pyplot as plt
+            if self.timeout_ms is not None:
+                # Creating a timer object
+                # timer calls plt.close after interval milliseconds to close the window.
+                timer = fig.canvas.new_timer(interval=self.timeout_ms)
+                timer.add_callback(plt.close, fig)
+                timer.start()
+
+            plt.show()
+            fig.clear()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Activated at the end of the with statement. """
+        if exc_type is not None: return
+        self.expose()
+
+    def expose(self):
+        """Show all figures. Clear figures if needed."""
+        if not self.slide_mode:
+            print("All figures in memory, elapsed time: %.3f s" % (time.time() - self.start_time))
+            import matplotlib.pyplot as plt
+            plt.show()
+            for fig in self.figures:
+                fig.clear()
 
 
 if __name__ == "__main__":

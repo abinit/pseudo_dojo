@@ -1,5 +1,9 @@
 # coding: utf-8
-"""Classes and functions for post-processing the results produced by ONCVPSP."""
+"""
+Classes and functions for post-processing the results produced by ONCVPSP.
+"""
+from __future__ import annotations
+
 import io
 import os
 import abc
@@ -7,8 +11,10 @@ import tempfile
 import numpy as np
 
 from collections import namedtuple, OrderedDict
+from typing import Any, Union
 from monty.functools import lazy_property
 from monty.collections import AttrDict, dict2namedtuple
+from monty.os.path import which
 from monty.termcolor import cprint
 from abipy.tools.plotting import add_fig_kwargs, get_ax_fig_plt
 from abipy.tools.derivatives import finite_diff
@@ -29,8 +35,8 @@ _l2char = {
 }
 
 
-def is_integer(s):
-    """True if s in an integer."""
+def is_integer(s: Any) -> bool:
+    """True if object `s` in an integer."""
     try:
         c = float(s)
         return int(c) == c
@@ -39,7 +45,9 @@ def is_integer(s):
 
 
 def decorate_ax(ax, xlabel, ylabel, title, lines, legends):
-    """Decorate a `matplotlib` Axis adding xlabel, ylabel, title, grid and legend"""
+    """
+    Decorate a `matplotlib` Axis adding xlabel, ylabel, title, grid and legend
+    """
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
@@ -47,7 +55,7 @@ def decorate_ax(ax, xlabel, ylabel, title, lines, legends):
     ax.legend(lines, legends, loc="best", shadow=True)
 
 
-class PseudoGenDataPlotter(object):
+class PseudoGenDataPlotter:
     """
     Plots the results produced by a pseudopotential generator.
     """
@@ -169,7 +177,7 @@ class PseudoGenDataPlotter(object):
 
         lselect = kwargs.get("lselect", [])
 
-        linestyle = {1: "solid", 2: "dashed"}
+        linestyle = {1: "solid", 2: "dashed", 3: "dotted", 4: "dashdot"}
         lines, legends = [], []
         for nlk, proj in self.projectors.items():
             #print(nlk)
@@ -359,7 +367,7 @@ class PseudoGenDataPlotter(object):
         return fig
 
 
-class MultiPseudoGenDataPlotter(object):
+class MultiPseudoGenDataPlotter:
     """
     Class for plotting data produced by multiple pp generators on separated plots.
 
@@ -379,7 +387,7 @@ class MultiPseudoGenDataPlotter(object):
     def __init__(self):
         self._plotters_odict = OrderedDict()
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._plotters_odict)
 
     @property
@@ -388,11 +396,11 @@ class MultiPseudoGenDataPlotter(object):
         return list(self._plotters_odict.values())
 
     @property
-    def labels(self):
+    def labels(self) -> list:
         """List of labels."""
         return list(self._plotters_odict.keys())
 
-    def keys(self):
+    def keys(self) -> list:
         """List of strings with the quantities that can be plotted."""
         keys_set = set()
         for plotter in self.plotters:
@@ -407,12 +415,12 @@ class MultiPseudoGenDataPlotter(object):
         for o in itertools.product(self._LINE_WIDTHS,  self._LINE_STYLES, self._LINE_COLORS):
             yield {"linewidth": o[0], "linestyle": o[1], "color": o[2]}
 
-    def add_psgen(self, label, psgen):
+    def add_psgen(self, label: str, psgen) -> None:
         """Add a plotter of class plotter_class from a `PseudoGenerator` instance."""
         oparser = psgen.parse_output()
         self.add_plotter(label, oparser.make_plotter())
 
-    def add_plotter(self, label, plotter):
+    def add_plotter(self, label: str, plotter) -> None:
         """
         Adds a plotter.
 
@@ -465,6 +473,7 @@ class MultiPseudoGenDataPlotter(object):
 
 
 class PseudoGenResults(AttrDict):
+
     _KEYS = [
         "max_ecut",
         "max_atan_logder_l1err",
@@ -480,7 +489,7 @@ class PseudoGenResults(AttrDict):
 class AtanLogDer(namedtuple("AtanLogDer", "l, energies, values")):
 
     @property
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return dict(
             l=self.l,
             energies=list(self.energies),
@@ -491,7 +500,7 @@ class PseudoGenOutputParserError(Exception):
     """Exceptions raised by OuptputParser."""
 
 
-class PseudoGenOutputParser(object):
+class PseudoGenOutputParser:
     """
     Abstract class defining the interface that must be provided
     by the parsers used to extract results from the output file of
@@ -507,7 +516,7 @@ class PseudoGenOutputParser(object):
 
     Error = PseudoGenOutputParserError
 
-    def __init__(self, filepath):
+    def __init__(self, filepath: str) -> None:
         self.filepath = os.path.abspath(filepath)
         self.run_completed = False
         self._errors = []
@@ -515,12 +524,12 @@ class PseudoGenOutputParser(object):
         self._results = None
 
     @property
-    def errors(self):
+    def errors(self) -> List[str]:
         """List of strings with possible errors reported by the generator at run-time."""
         return self._errors
 
     @property
-    def warnings(self):
+    def warnings(self) -> List[str]:
         """List of strings with possible errors reported by the generator at run-time."""
         return self._warnings
 
@@ -536,11 +545,11 @@ class PseudoGenOutputParser(object):
         """
 
     @abc.abstractmethod
-    def get_input_str(self):
+    def get_input_str(self) -> str:
         """Returns a string with the input file."""
 
     @abc.abstractmethod
-    def get_pseudo_str(self):
+    def get_pseudo_str(self) -> str:
         """Returns a string with the pseudopotential file."""
 
 
@@ -580,9 +589,9 @@ class OncvOutputParser(PseudoGenOutputParser):
     # Class used to instantiate the plotter.
     Plotter = PseudoGenDataPlotter
 
-    def scan(self, verbose=0):
+    def scan(self, verbose: int = 0) -> None:
         """
-        Scan the output, set `run_completed` attribute.
+        Scan the output file, set `run_completed` attribute.
 
         Raises:
             self.Error if invalid file.
@@ -592,12 +601,17 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         # Read data and store it in lines
         self.lines = []
-        with open(self.filepath) as fh:
+        import io
+        #with io.open(self.filepath, mode="rt", encoding="utf-8") as fh:
+        #with io.open(self.filepath, mode="rt", encoding="latin") as fh:
+        with io.open(self.filepath, "rt") as fh:
             for i, line in enumerate(fh):
+                #print(line)
                 line = line.strip()
                 self.lines.append(line)
 
-                if verbose and line.startswith("fcfact*="): print(line)
+                if verbose and line.startswith("fcfact*="):
+                    print(line)
 
                 if line.startswith("DATA FOR PLOTTING"):
                     self.run_completed = True
@@ -621,13 +635,15 @@ class OncvOutputParser(PseudoGenOutputParser):
         #if self.errors:
         #    return 1
 
-        #scalar-relativistic version 2.1.1, 03/26/2014
-        #scalar-relativistic version 3.0.0 10/10/2014
-        #toks, self.gendate = self.lines[1].split(",")
-        #toks = toks.split()
+        # scalar-relativistic version 2.1.1, 03/26/2014
+        # scalar-relativistic version 3.0.0 10/10/2014
+        # toks, self.gendate = self.lines[1].split(",")
+        # toks = toks.split()
         toks = self.lines[1].replace(",", " ").split()
         self.gendate = toks.pop(-1)
         self.calc_type, self.version = toks[0], toks[-1]
+
+        self.major_version, self.minor_version, self.patch_level = tuple(map(int, self.version.split(".")))
 
         fullr = self.calc_type not in ["scalar-relativistic", "non-relativistic"]
         if fullr:
@@ -656,15 +672,17 @@ class OncvOutputParser(PseudoGenOutputParser):
             3    0    2.00    -3.9736459D-01
             3    1    2.00    -1.4998149D-01
 
-        full rel:
+        full rel
+        in version 4, there no difference between FR and SR
+        in version 3, the FR version has:
+
         #   n    l    f              energy (Ha)
         #   n    l    f        l+1/2             l-1/2
             1    0    2.00    -2.4703720D+03
             2    0    2.00    -4.2419865D+02
 
         """
-        #header = "#   n    l    f        energy (Ha)"
-        if fullr:
+        if fullr and self.major_version <= 3:
             header = "#   n    l    f        l+1/2             l-1/2"
         else:
             header = "#   n    l    f        energy (Ha)"
@@ -687,18 +705,20 @@ class OncvOutputParser(PseudoGenOutputParser):
 
                 beg, valence = i + nc + 1, []
                 for v in range(nv):
+                    #print("lines[beg+v]", self.lines[beg+v])
                     n, l, f = self.lines[beg+v].split()[:3]
                     if is_integer(f):
                         f = str(int(float(f)))
                     else:
-                        f = "%.1f" % f
+                        #print(f)
+                        f = "%.1f" % float(f)
 
                     valence.append(n + _l2char[l] + "^{%s}" % f)
                 self.valence = "$" + " ".join(valence) + "$"
                 #print("core", self.core, "valence",self.valence)
                 break
         else:
-            raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
+            raise self.Error(f"Cannot find header:\n`{header}`\nin output file {self.filepath}")
 
         # Read lmax (not very robust because we assume the user didn't change the template but oh well)
         header = "# lmax"
@@ -707,26 +727,26 @@ class OncvOutputParser(PseudoGenOutputParser):
                 self.lmax = int(self.lines[i+1])
                 break
         else:
-            raise self.Error("Cannot find #lmax line in output file %s" % self.filepath)
+            raise self.Error("Cannot find line with `#lmax` in output file %s" % self.filepath)
 
         # Compute the minimun rc(l)
         header = "#   l,   rc,     ep,   ncon, nbas, qcut"
         for i, line in enumerate(self.lines):
             if line.startswith(header):
                 beg = i + 1
-                next, rcs = 0, []
+                nxt, rcs = 0, []
                 while True:
-                    l = self.lines[beg + next]
+                    l = self.lines[beg + nxt]
                     if l.startswith("#"): break
                     token = l.split()[1]
                     #print("token", token)
                     rcs.append(float(token))
                     #print(l)
-                    next += 1
+                    nxt += 1
 
                 self.rc_min, self.rc_max = min(rcs), max(rcs)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation."""
         lines = []
         app = lines.append
@@ -741,12 +761,12 @@ class OncvOutputParser(PseudoGenOutputParser):
         return "\n".join(lines)
 
     @property
-    def fully_relativistic(self):
+    def fully_relativistic(self) -> bool:
         """True if fully-relativistic calculation."""
         return self.calc_type == "fully-relativistic"
 
     @lazy_property
-    def potentials(self):
+    def potentials(self) -> dict:
         """Radial functions with the non-local and local potentials."""
         #radii, charge, pseudopotentials (ll=0, 1, lmax)
         #!p   0.0099448   4.7237412  -7.4449470 -14.6551019
@@ -756,7 +776,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         # From 0 up to lmax
         ionpots_l = {}
-        for l in range(lmax+1):
+        for l in range(lmax + 1):
             ionpots_l[l] = RadialFunction("Ion Pseudopotential, l=%d" % l, vl_data[:, 0], vl_data[:, 2+l])
 
         # Local part is stored with l == -1 if lloc=4, not present if lloc=l
@@ -767,7 +787,7 @@ class OncvOutputParser(PseudoGenOutputParser):
         return ionpots_l
 
     @lazy_property
-    def densities(self):
+    def densities(self) -> dict:
         """
         Dictionary with charge densities on the radial mesh.
         """
@@ -844,8 +864,10 @@ class OncvOutputParser(PseudoGenOutputParser):
         #@     0    0.009945    0.015274   -0.009284
         projectors_nlk = OrderedDict()
         beg = 0
+        magic = "@"
+        if self.major_version > 3: magic = "!J"
         while True:
-            g = self._grep("@", beg=beg)
+            g = self._grep(magic, beg=beg)
             if g.data is None: break
             beg = g.stop + 1
             # TODO: Get n, l, k from header.
@@ -878,7 +900,11 @@ class OncvOutputParser(PseudoGenOutputParser):
         #!      0    2.000000    0.706765    0.703758
         ae_atan_logder_l, ps_atan_logder_l = OrderedDict(), OrderedDict()
 
-        for l in range(self.lmax+1):
+        lstop = self.lmax + 1
+        if self.major_version > 3:
+            lstop = min(self.lmax + 2, 4)
+
+        for l in range(lstop):
             data = self._grep(tag="!      %d" % l).data
             assert l == int(data[0, 0])
             ae_atan_logder_l[l] = AtanLogDer(l=l, energies=data[:, 1], values=data[:, 2])
@@ -887,7 +913,7 @@ class OncvOutputParser(PseudoGenOutputParser):
         return self.AePsNamedTuple(ae=ae_atan_logder_l, ps=ps_atan_logder_l)
 
     @lazy_property
-    def ene_vs_ecut(self):
+    def ene_vs_ecut(self) -> dict:
         """Convergence of energy versus ecut for different l-values."""
         #convergence profiles, (ll=0,lmax)
         #!C     0    5.019345    0.010000
@@ -975,7 +1001,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         return self._results
 
-    def find_string(self, s):
+    def find_string(self, s: str) -> int:
         """
         Returns the index of the first line containing string s.
         Raise self.Error if s cannot be found.
@@ -986,7 +1012,7 @@ class OncvOutputParser(PseudoGenOutputParser):
         else:
             raise self.Error("Cannot find %s in lines" % s)
 
-    def get_input_str(self):
+    def get_input_str(self) -> str:
         """String with the input file."""
         try:
             # oncvpsp 3.2.3
@@ -998,7 +1024,7 @@ class OncvOutputParser(PseudoGenOutputParser):
             i = self.find_string("Reference configufation results")
             return "\n".join(self.lines[:i])
 
-    def get_psp8_str(self):
+    def get_psp8_str(self) -> Union[str, None]:
         """
         Return string with the pseudopotential data in psp8 format.
         None if field is not present.
@@ -1019,7 +1045,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         return ps_data
 
-    def get_upf_str(self):
+    def get_upf_str(self) -> Union[str, None]:
         """
         Return string with the pseudopotential data in upf format.
         None if field is not present.
@@ -1045,31 +1071,13 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         raise ValueError("Cannot find neither PSPCODE8 not PSP_UPF tag in output file")
 
-        # Extract the pseudo in Abinit format.
-        try:
-            i = self.find_string('Begin PSPCODE8')
-        except self.Error:
-            try:
-                i = self.find_string('Begin PSP_UPF')
-            except self.Error:
-                raise ValueError("Cannot find neither PSPCODE8 not PSP_UPF tag in output file")
-
-        ps_data = "\n".join(self.lines[i+1:])
-
-        if "<INPUT>" not in ps_data:
-            # oncvpsp <= 3.2.2 --> Append the input to ps_data (note XML markers)
-            # oncvpsp >= 3.2.3 --> Input is already there
-            ps_data += "\n\n<INPUT>\n" + self.get_input_str() + "</INPUT>\n"
-
-        return ps_data
-
     def make_plotter(self):
         """Builds an instance of :class:`PseudoGenDataPlotter`."""
         kwargs = {k: getattr(self, k) for k in self.Plotter.all_keys}
         return self.Plotter(**kwargs)
 
     @property
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """
         Returns a dictionary with the radial functions and the other
         important results produced by ONCVPSP in JSON format.
@@ -1105,7 +1113,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         return jdict
 
-    def _grep(self, tag, beg=0):
+    def _grep(self, tag: str, beg: int = 0):
         """
         Finds the first field in the file with the specified tag.
         beg gives the initial position in the file.
@@ -1134,7 +1142,7 @@ class OncvOutputParser(PseudoGenOutputParser):
         else:
             return self.GrepResults(data=np.array(data), start=intag, stop=stop)
 
-    def gnuplot(self):
+    def gnuplot(self) -> None:
         """
         Plot the results with gnuplot.
         Based on the `replot.sh` script provided by the oncvpsp code.
@@ -1167,41 +1175,119 @@ class OncvOutputParser(PseudoGenOutputParser):
         os.rmdir(workdir)
 
 
-def oncv_make_open_notebook(outpath, foreground=False):
+def oncv_make_open_notebook(outpath: str,
+                            foreground: bool = False,
+                            classic_notebook: bool = False,
+                            no_browser: bool = False) -> int:  # pragma: no cover
     """
     Generate an ipython notebook and open it in the browser.
 
     Args:
         foreground: By default, jupyter is executed in background and stdout, stderr are redirected
-        to devnull. Use foreground to run the process in foreground
+            to devnull. Use foreground to run the process in foreground
+        classic_notebook: True to use the classic notebook instead of jupyter-lab (default)
+        no_browser: Start the jupyter server to serve the notebook but don't open the notebook in the browser.
+            Use this option to connect remotely from localhost to the machine running the kernel
 
-    Return:
-        system exit code.
+    Return: system exit code.
 
-    Raise:
-        RuntimeError if jupyter is not in $PATH
+    Raise: `RuntimeError` if jupyter executable is not in $PATH
     """
     nbpath = oncv_write_notebook(outpath, nbpath=None)
 
-    if foreground:
-        cmd = "jupyter notebook %s" % nbpath
-        return os.system(cmd)
+    if not classic_notebook:
+        # Use jupyter-lab.
+        app_path = which("jupyter-lab")
+        if app_path is None:
+            raise RuntimeError("""
+Cannot find jupyter-lab application in $PATH. Install it with:
+
+    conda install -c conda-forge jupyterlab
+
+or:
+
+    pip install jupyterlab
+
+See also https://jupyterlab.readthedocs.io/
+""")
 
     else:
-        cmd = "jupyter notebook %s &> /dev/null &" % nbpath
+        # Use classic notebook
+        app_path = which("jupyter")
+        if app_path is None:
+            raise RuntimeError("""
+Cannot find jupyter application in $PATH. Install it with:
+
+    conda install -c conda-forge jupyter
+
+or:
+
+    pip install jupyterlab
+
+See also https://jupyter.readthedocs.io/en/latest/install.html
+""")
+        app_path = app_path + " notebook "
+
+    if not no_browser:
+        if foreground:
+            return os.system("%s %s" % (app_path, nbpath))
+        else:
+            fd, tmpname = tempfile.mkstemp(text=True)
+            print(tmpname)
+            cmd = "%s %s" % (app_path, nbpath)
+            print("Executing:", cmd, "\nstdout and stderr redirected to %s" % tmpname)
+            import subprocess
+            process = subprocess.Popen(cmd.split(), shell=False, stdout=fd, stderr=fd)
+            cprint("pid: %s" % str(process.pid), "yellow")
+            return 0
+
+    else:
+        # Based on https://github.com/arose/nglview/blob/master/nglview/scripts/nglview.py
+        notebook_name = os.path.basename(nbpath)
+        dirname = os.path.dirname(nbpath)
+        print("nbpath:", nbpath)
+
+        import socket
+
+        def find_free_port():
+            """https://stackoverflow.com/questions/1365265/on-localhost-how-do-i-pick-a-free-port-number"""
+            from contextlib import closing
+            with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+                s.bind(('', 0))
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                return s.getsockname()[1]
+
+        username = os.getlogin()
+        hostname = socket.gethostname()
+        port = find_free_port()
+
+        client_cmd = "ssh -NL localhost:{port}:localhost:{port} {username}@{hostname}".format(
+            username=username, hostname=hostname, port=port)
+
+        print(f"""
+Using port: {port}
+
+\033[32m In your local machine, run: \033[0m
+
+                {client_cmd}
+
+\033[32m NOTE: you might want to replace {hostname} by full hostname with domain name \033[0m
+\033[32m Then open your web browser, copy and paste the URL: \033[0m
+
+http://localhost:{port}/notebooks/{notebook_name}
+""")
+        if not classic_notebook:
+            cmd = f'{app_path} {notebook_name} --no-browser --port {port} --notebook-dir {dirname}'
+        else:
+            cmd = f'{app_path} notebook {notebook_name} --no-browser --port {port} --notebook-dir {dirname}'
+
         print("Executing:", cmd)
+        print('NOTE: make sure to open `{}` in your local machine\n'.format(notebook_name))
 
-        import subprocess
-        try:
-            from subprocess import DEVNULL # py3k
-        except ImportError:
-            DEVNULL = open(os.devnull, "wb")
-
-        process = subprocess.Popen(cmd.split(), shell=False, stdout=DEVNULL) #, stderr=DEVNULL)
-        cprint("pid: %s" % str(process.pid), "yellow")
+        return os.system(cmd)
 
 
-def oncv_write_notebook(outpath, nbpath=None):
+def oncv_write_notebook(outpath: str, nbpath: Optional[str] = None) -> str:
     """
     Write an ipython notebook to nbpath
     If nbpath is None, a temporay file is created.
@@ -1216,8 +1302,13 @@ def oncv_write_notebook(outpath, nbpath=None):
     nb.cells.extend([
         nbf.new_markdown_cell("## This is an auto-generated notebook for %s" % os.path.basename(outpath)),
         nbf.new_code_cell("""\
-from __future__ import print_function, division, unicode_literals
-%matplotlib notebook"""),
+%matplotlib notebook
+
+# Use this magic for jupyterlab.
+# For installation instructions, see https://github.com/matplotlib/jupyter-matplotlib
+#%matplotlib widget
+
+"""),
 
         nbf.new_code_cell("""\
 # Parse output file
@@ -1462,10 +1553,10 @@ def psp8_get_densities(path, fc_file=None, ae_file=None, plot=False):
 
         if ae_file is not None:
             # Write results to file in "AE" format
-            # The files contain
-            # header with number of points and unknown parameter (not used)
-            # then 2 columns with the radial r coordinate and the AE density at r
-            # See http://www.abinit.org/downloads/all_core_electron
+            # The files contains:
+            #   header with number of points and unknown parameter (not used)
+            #   then 2 columns with the radial r coordinate and the AE density at r
+            #   See http://www.abinit.org/downloads/all_core_electron
             header = "%d 0.0 %s %s %s # nr, dummy, symbol, Z, Z_val" % (
                 mmax, pseudo.symbol, pseudo.Z, pseudo.Z_val)
             print(header, file=ae_file)

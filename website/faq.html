@@ -56,88 +56,89 @@
       <div class="r_follow" id="X_gb" title="gbrv fcc bcc average (%):&#013;Relative error in the lattice parameter with respect to reference&#013;all electron results for elemental fcc and bcc structures.">gbrv</div>
 </div>
 The number in the upper right corner of the element boxes (nv) give how many valence shells are includes in this pseudopotential.
-For instance a 4 for Copper means that 1s, 2s, and 2p are frozen in the core but 3s, 3p, 3d, and 4s are treated as valence.<BR />
-<BR />
+For instance a 4 for Copper means that 1s, 2s, and 2p are frozen in the core but 3s, 3p, 3d, and 4s are treated as valence.<BR>
+<BR>
 The numbers in lower left corner (hints) represent the cutoff hints in Hartree.
-  The exact meaning of the hints can be found in the corresponding <a href="https://doi.org/10.1016/j.cpc.2018.01.012">paper</a> suggested below.
-  In general, low is a good starting point for you own convergence studies.
-  Normal should be a safe guess for just a quick calculation or for automated high-throughput calculations.
-  High is for testing convergence.<BR />
-<BR />
-The numbers in the lower right corner are the results of various tests performed on this pseudo potential.<BR />
-  <Table cellpadding="4">
+The exact meaning of the hints can be found in the corresponding <a href="https://doi.org/10.1016/j.cpc.2018.01.012">paper</a> suggested below.
+In general, low is a good starting point for you own convergence studies.
+Normal should be a safe guess for just a quick calculation or for automated high-throughput calculations.
+High is for testing convergence.<BR>
+<BR>
+The numbers in the lower right corner are the results of various tests performed on this pseudo potential.<BR>
+
+<Table cellpadding="4">
  <tr><td valign="top">delta</td><td valign="top">Delta gauge (meV)</td><td valign="top">Measures the agreement of the equation of state for an elemental solid in the ground state with respect to all electron reference calculations. <a target="blank" href='https://dx.doi.org/10.1126/science.aad3000'>full description</a></td></tr>
  <tr><td valign="top">delta1</td><td valign="top">Renormalized Delta gauge</td><td valign="top">Renormalized version of the Delta gauge, especially usefull for very soft materials. <a target="blank" href="https://doi.org/10.1016/j.cpc.2013.12.023">full description</a></td></tr>
  <tr><td valign="top">gbrv</td><td valign="top">Average FCC BCC GBRV test (%)</td><td valign="top">Measures the agreement of the lattice parameter for an elemental FCC and BCC solid with respect to all electron reference calculations. <a target="blank" href="https://doi.org/10.1016/j.commatsci.2013.08.053">full description</a></td></tr>
- </Table>
+</Table>
 
 <h2>&#9670; How do I cite the PseudoDojo?</h2>
-A detailed paper on the PseudoDojo and the NC pseudopotentials has been published in Computer Physics Communications:<BR />
+A detailed paper on the PseudoDojo and the NC pseudopotentials has been published in Computer Physics Communications:<BR>
 
 <table><tr><td width="100" align="center">
 <div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1016/j.cpc.2018.01.012" />
 </td><td>
-    The PseudoDojo: Training and grading a 85 element optimized norm-conserving pseudopotential table<BR />
-    M. J. van Setten, M. Giantomassi, E. Bousquet, M. J. Verstraete, D. R. Hamann, X. Gonze, G.-M. Rignanese<BR />
-    Computer Physics Communications 226, 39-54 (2018)<BR />
+    The PseudoDojo: Training and grading a 85 element optimized norm-conserving pseudopotential table<BR>
+    M. J. van Setten, M. Giantomassi, E. Bousquet, M. J. Verstraete, D. R. Hamann, X. Gonze, G.-M. Rignanese<BR>
+    Computer Physics Communications 226, 39-54 (2018)<BR>
 <a href="https://doi.org/10.1016/j.cpc.2018.01.012">10.1016/j.cpc.2018.01.012</a>
 <a href="https://arxiv.org/abs/1710.10138">arxiv preprint</a>
-</td></tr></table><BR />
+</td></tr></table><BR>
 
 An important paper concerning the delta gauge is:
 
 <table><tr><td width="100" align="center">
 <div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1126/science.aad3000" />
 </td><td>
-Reproducibility in density functional theory calculations of solids<BR />
-K. Lejaeghere et. all<BR />
-Science  25 Mar 2016, Vol. 351, Issue 6280<BR />
+Reproducibility in density functional theory calculations of solids<BR>
+K. Lejaeghere et. all<BR>
+Science  25 Mar 2016, Vol. 351, Issue 6280<BR>
 <a href='https://dx.doi.org/10.1126/science.aad3000'>10.1126/science.aad3000</a>
-</td></tr></table><BR />
+</td></tr></table><BR>
 
 The GBRV tests used in the PseudoDojo are introduced in:
 
 <table><tr><td width="100" align="center">
 <div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1016/j.commatsci.2013.08.053" />
 </td><td>
-Pseudopotentials for high-throughput DFT calculations<BR />
-K. F. Garrity, J. W. Bennett, K. M. Rabe, D. Vanderbilt<BR />
-Computational Materials Science 81, 446-452 (2013)<BR />
+Pseudopotentials for high-throughput DFT calculations<BR>
+K. F. Garrity, J. W. Bennett, K. M. Rabe, D. Vanderbilt<BR>
+Computational Materials Science 81, 446-452 (2013)<BR>
 <a href='https://dx.doi.org/10.1016/j.commatsci.2013.08.053'>10.1016/j.commatsci.2013.08.053</a>
-</td></tr></table><BR />
+</td></tr></table><BR>
 
-When using ONCVPSP type pseudopotentials please cite:<BR />
+When using ONCVPSP type pseudopotentials please cite:<BR>
 
 <table><tr><td width="100" align="center">
 <div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1103/PhysRevB.88.085117" />
 </td><td>
-Optimized norm-conserving Vanderbilt pseudopotentials<BR />
-D. R. Hamann<BR />
-Phys. Rev. B 88, 085117 (2013)<BR />
+Optimized norm-conserving Vanderbilt pseudopotentials<BR>
+D. R. Hamann<BR>
+Phys. Rev. B 88, 085117 (2013)<BR>
 <a href='https://doi.org/10.1103/PhysRevB.88.085117'>10.1103/PhysRevB.88.085117</a>
-</td></tr></table><BR />
+</td></tr></table><BR>
 
-When using the PSML format pseudopotentials please cite:<BR />
+When using the PSML format pseudopotentials please cite:<BR>
 
-    <table><tr><td width="100" align="center">
+<table><tr><td width="100" align="center">
 <div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1016/j.cpc.2018.02.011" />
 </td><td>
-The PSML format and library for norm-conserving pseudopotential data curation and interoperability<BR />
-A. García, M. Verstraete, Y. Pouillon, J. Junquera<BR />
-Computer Physics Communications 227, 51-71 (2018)<BR />
+The PSML format and library for norm-conserving pseudopotential data curation and interoperability<BR>
+A. García, M. Verstraete, Y. Pouillon, J. Junquera<BR>
+Computer Physics Communications 227, 51-71 (2018)<BR>
 <a href='https://doi.org/10.1016/j.cpc.2018.02.011'>10.1016/j.cpc.2018.02.011</a>
-</td></tr></table><BR />
+</td></tr></table><BR>
 
-When using the PAW type 'pseudopotentials' please cite:<BR />
+When using the PAW type 'pseudopotentials' please cite:<BR>
 
 <table><tr><td width="100" align="center">
 <div data-badge-popover="right" class="altmetric-embed" data-badge-type="donut" data-doi="10.1016/j.cpc.2013.12.023" />
 </td><td>
-Generation of Projector Augmented-Wave atomic data: A 71 element validated table in the XML format.<BR />
-F. Jollet, M. Torrent, Holzwarth<BR />
-Computer Physics Communications 185, 1246 (2013)<BR />
+Generation of Projector Augmented-Wave atomic data: A 71 element validated table in the XML format.<BR>
+F. Jollet, M. Torrent, Holzwarth<BR>
+Computer Physics Communications 185, 1246 (2013)<BR>
 <a href="https://doi.org/10.1016/j.cpc.2013.12.023">10.1016/j.cpc.2013.12.023</a>
-</td></tr></table><BR />
+</td></tr></table><BR>
 
 <a href="pseudo-dojo.bib">bibtex entries</a>
 
@@ -150,36 +151,34 @@ Yes, please feel free to do so, you can download it here:
 
 <H1>Concerning the ONCVPSP pseudopotentials</H1>
 
-In general, the pseudo's you find here are ready to use.
-If you have special needs you are also free to use the inputs we provide as a staring point to generate your own
-      pseudopotentials.
-
-
+In general, the pseudos you find here are ready to use.
+If you have special needs you are also free to use the inputs we provide as a staring point
+to generate your own pseudopotentials.
 
 <h2>&#9670; Do you also have the pseudo for my favorite GGA or LDA functional?</h2>
-We provide PBE, PBEsol, and one LDA set of pseudo potentials.<BR />
-The input files can be obtained from the dojo reports in the HTML files.<BR />
-Using these you can generate potentials for most LDA and GGA functionals using <a href="http://www.mat-simresearch.com/">ONCVPSP</a>.<BR />
-We could reuse most of out PBE inputs to generate the PBEsol potentials.<BR />
+We provide PBE, PBEsol, and one LDA set of pseudo potentials.<BR>
+The input files can be obtained from the dojo reports in the HTML files.<BR>
+Using these you can generate potentials for most LDA and GGA functionals using <a href="http://www.mat-simresearch.com/">ONCVPSP</a>.<BR>
+We could reuse most of out PBE inputs to generate the PBEsol potentials.<BR>
 Using <a href="http://octopus-code.org/wiki/Libxc_functionals">LibXC</a>, which is linked to ONCVPSP, almost all functionals can be used.
 
-    <h2>&#9670; All the ONCVPSP potentials are with non-linear core correction, I need some without.</h2>
-We usually observe better convergence with so, indeed, all are generated with nlcc.<BR />
-If you really need one without take the input from the HTML page on the pseudo (select format : html and click the element).<BR />
+<h2>&#9670; All the ONCVPSP potentials are with non-linear core correction, I need some without.</h2>
+We usually observe better convergence with so, indeed, all are generated with nlcc.<BR>
+If you really need one without take the input from the HTML page on the pseudo (select format : html and click the element).<BR>
 Install <a href="http://www.mat-simresearch.com/">ONCVPSP</a>.
 Turn icmod to 0 in the input and generate the pseudopotential.
 
 <h2>&#9670; What about hybrids and meta functionals?</h2>
-These are currently under development.<BR />
+These are currently under development.<BR>
 
 <h2>&#9670; Do you also have the other elements?</h2>
-We are currently working on the Lanthanides.<BR />
+We are currently working on the Lanthanides.<BR>
 
 <h2>&#9670; Is it also possible to get the pseudos in other formats?</h2>
-ONCVPSP currently supports psp8 and upf natively.<BR />
+ONCVPSP currently supports psp8 and upf natively.<BR>
 Using the <a href="https://launchpad.net/pspgenpatch">psml patch</a> we also generated psml files
-      for use with <a href="https://launchpad.net/siesta/psml-support">Siesta</a><BR />
-The psml format is available from version 0.4.<BR />
+for use with <a href="https://launchpad.net/siesta/psml-support">Siesta</a><BR>
+The psml format is available from version 0.4.<BR>
 
 </lu>
 </aside>

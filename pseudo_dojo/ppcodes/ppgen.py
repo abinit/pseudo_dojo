@@ -1,5 +1,7 @@
 # coding: utf-8
 """Pseudopotential Generators."""
+from __future__ import annotations
+
 import abc
 import os
 import tempfile
@@ -7,6 +9,7 @@ import collections
 import shutil
 import time
 
+from typing import Any, Union, Optional
 from itertools import product
 from monty.os.path import which
 from abipy.flowtk.pseudos import Pseudo
@@ -27,16 +30,18 @@ _STATUS2STR = collections.OrderedDict([
 
 
 class Status(int):
-    """An integer representing the status of the 'PseudoGenearator`."""
-    def __repr__(self):
+    """
+    An integer representing the status of the 'PseudoGenerator`.
+    """
+    def __repr__(self) -> str:
         return "<%s: %s, at %s>" % (self.__class__.__name__, str(self), id(self))
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation."""
         return _STATUS2STR[self]
 
     @classmethod
-    def as_status(cls, obj):
+    def as_status(cls, obj: Union[Status, str]) -> Status:
         """Convert obj into Status."""
         if isinstance(obj, cls):
             return obj
@@ -54,7 +59,7 @@ class Status(int):
             raise ValueError("Wrong string %s" % s)
 
 
-class PseudoGenerator(object):
+class PseudoGenerator:
     """
     This object receives a string with the input file and generates a pseudopotential.
     It calls the pp generator in a subprocess to produce the results in a temporary directory.
@@ -98,7 +103,7 @@ class PseudoGenerator(object):
     stdout_basename = "run.out"
     stderr_basename = "run.err"
 
-    def __init__(self, workdir=None):
+    def __init__(self, workdir: Optional[str] = None) -> None:
         # Set the initial status.
         self.set_status(self.S_INIT)
         self.errors, self.warnings = [], []
@@ -113,27 +118,27 @@ class PseudoGenerator(object):
             self.workdir = tempfile.mkdtemp(prefix=self.__class__.__name__)
 
     @property
-    def stdin_path(self):
+    def stdin_path(self) -> str:
         """Absolute path of the standard input."""
         return os.path.join(self.workdir, self.stdin_basename)
 
     @property
-    def stdout_path(self):
+    def stdout_path(self) -> str:
         """Absolute path of the standard output."""
         return os.path.join(self.workdir, self.stdout_basename)
 
     @property
-    def stderr_path(self):
+    def stderr_path(self) -> str:
         """Absolute path of the standard error."""
         return os.path.join(self.workdir, self.stderr_basename)
 
     @property
-    def status(self):
+    def status(self) -> Status:
         """The status of the job."""
         return self._status
 
     @property
-    def retcode(self):
+    def retcode(self) -> Union[int, None]:
         """
         Return code of the subprocess. None if not available because e.g. the job
         has not been started yet.
@@ -152,19 +157,19 @@ class PseudoGenerator(object):
             return None
 
     @property
-    def executable(self):
+    def executable(self) -> str:
         """Name of the executable."""
         return self._executable
 
     @property
-    def input_str(self):
+    def input_str(self) -> str:
         """String with the input file."""
         return self._input_str
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<%s at %s>" % (self.__class__.__name__, os.path.basename(self.workdir))
 
-    def __str__(self):
+    def __str__(self) -> str:
         #return "<%s at %s, status=%s>" % (self.__class__.__name__, os.path.basename(self.workdir), self.status)
         return "<%s at %s, status=%s>" % (self.__class__.__name__, self.workdir, self.status)
 
@@ -175,10 +180,10 @@ class PseudoGenerator(object):
     #def __ne__(self, other):
     #    return not self == other
 
-    def start(self):
+    def start(self) -> int:
         """"
         Run the calculation in a sub-process (non-blocking interface)
-        Return 1 if calculations started, 0 otherwise.
+        Return 1 if calculation started, 0 otherwise.
         """
         print(self.executable)
         if self.status >= self.S_RUN:
@@ -255,7 +260,7 @@ class PseudoGenerator(object):
     def get_stdin(self):
         return self.input_str
 
-    def get_stdout(self):
+    def get_stdout(self) -> str:
         """Returns a string with the stdout of the calculation."""
         if not os.path.exists(self.stdout_path):
             return "Stdout file does not exist"
@@ -263,7 +268,7 @@ class PseudoGenerator(object):
         with open(self.stdout_path) as out:
             return out.read()
 
-    def get_stderr(self):
+    def get_stderr(self) -> str:
         """Returns a string with the stderr of the calculation."""
         if not os.path.exists(self.stdout_path):
             return "Stderr file does not exist"
@@ -271,7 +276,7 @@ class PseudoGenerator(object):
         with open(self.stderr_path) as err:
             return err.read()
 
-    def rmtree(self):
+    def rmtree(self) -> int:
         """Remove the temporary directory. Return exit status"""
         try:
             shutil.rmtree(self.workdir)
@@ -333,7 +338,9 @@ class OncvGenerator(PseudoGenerator):
 
     @classmethod
     def from_file(cls, path, calc_type, workdir=None):
-        """Build the object from a file containing input parameters."""
+        """
+        Build the object from a file containing input parameters.
+        """
         with open(path, "rt") as fh:
             input_str = fh.read()
             return cls(input_str, calc_type, workdir=workdir)
@@ -352,6 +359,7 @@ class OncvGenerator(PseudoGenerator):
         if self.executable is None:
             msg = "Cannot find executable for oncvpsp is PATH. Use `export PATH=dir_with_executable:$PATH`"
             raise RuntimeError(msg)
+
         self.format = 'psp8'
 
     def check_status(self):
@@ -444,12 +452,12 @@ class OncvGenerator(PseudoGenerator):
         plotter.plot_atanlogder_econv()
 
 
-class OncvMultiGenerator(object):
+class OncvMultiGenerator:
     """
     This object receives a template input file and generates multi
-    pseudos by changing paricular parameters
+    pseudos by changing particular parameters.
     """
-    def __init__(self, filepath, calc_type="scalar-relativistic"):
+    def __init__(self, filepath: str, calc_type: str = "scalar-relativistic") -> None:
         """
         Args:
             filepath: File with the input file
@@ -463,10 +471,9 @@ class OncvMultiGenerator(object):
     def change_icmod3(self, fcfact_list=(3, 4, 5), rcfact_list=(1.3, 1.35, 1.4, 1.45, 1.5, 1.55)):
         """
         Change the value of fcfact and rcfact in the template. Generate the new pseudos
-        and create new directories with the pseudopotentials in the current workding directory.
+        and create new directories with the pseudopotentials in the current working directory.
 
-        Return:
-            List of `Pseudo` objects
+        Return: List of `Pseudo` objects
 
         Old version with icmod == 1.
 

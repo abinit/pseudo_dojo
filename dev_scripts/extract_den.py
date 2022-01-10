@@ -27,8 +27,9 @@ def main():
         if os.path.isfile(ae_path):
             print("Warning: Cannot overwrite existent file:", ae_path)
             return 1
-        #fc_file, ae_file = open(fc_path, "wt"), open(ae_path, "wt")
-        fc_file, ae_file = sys.stdout, sys.stdout
+
+        fc_file, ae_file = open(fc_path, "wt"), open(ae_path, "wt")
+        #fc_file, ae_file = sys.stdout, sys.stdout
         psp8_get_densities(path, fc_file=fc_file, ae_file=ae_file)
         #fc_file.close()
         #ae_file.close()
