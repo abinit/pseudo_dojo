@@ -117,7 +117,7 @@ Format
 <tr>
 <td>
 <div class="styled-longselect" onchange="load_set_info();">
-  <select id="TYP" onchange="dynamicdropdown(this.options[this.selectedIndex].value);";>
+  <select id="TYP" onchange="dynamicdropdown(this.options[this.selectedIndex].value);">
     <!--  <option value="name">this is were you add a new table, also add the option to the dynamicdropdown funtion in dojo-tools.js</option> -->
     <option value="nc-sr-04" selected>NC SR (ONCVPSP v0.4)</option>
     <option value="nc-fr-04" >NC FR (ONCVPSP v0.4)</option>
@@ -158,7 +158,7 @@ Format
   if (typ === null){
     typ = document.getElementById('TYP').value;
   }
-  var options = document.getElementById('TYP').options
+  var options = document.getElementById('TYP').options;
   for (i in options){
     if (options[i].value == typ){
          options[i].selected = true;
@@ -166,8 +166,7 @@ Format
   }
   dynamicdropdown(typ);
 
-  <!-- if  XCF ACC and FMT have been changed previously set them back to those selections-->
-
+  // if  XCF ACC and FMT have been changed previously set them back to those selections 
 
   if (localStorage.getItem('selectedXCF')) {
     var options = document.getElementById('XCF').options
@@ -1587,6 +1586,7 @@ Format
     $(".plugin:nth-of-type(5), .plugin:nth-of-type(13)").addClass('nth-of-type-margin');
     $(".plugin:nth-of-type(1), .plugin:nth-of-type(3), .plugin:nth-of-type(11), .plugin:nth-of-type(19), .plugin:nth-of-type(37), .plugin:nth-of-type(55)").addClass('nth-of-type-clear');
 
+    // .hover( handlerIn, handlerOut)
     $('.plugin').hover(function(){
       var str = $(this).attr("class");
       var res = str.split(" ");
@@ -1594,14 +1594,15 @@ Format
       var n = parseInt(dum.split("_")[0]);
       var color = colors[res[1]];
       var res = dum.split("_");
-      var trunk = "pseudos/"
+      var trunk = "pseudos/";
       var elm = res[1];
+      // update the X_n box.
       set_X(elm, color, n);
       var typ = $("#TYP").val();
       var xcf = $("#XCF").val();
       var acc = $("#ACC").val();
       var fmt = $("#FMT").val();
-      var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt)
+      var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt);
       var mythis = $(this);
       if (localStorage.getItem('files').indexOf(url) >= 0) {
           bgcheck="#44AA44";
@@ -1614,7 +1615,7 @@ Format
           mythis.css("color", "#FFFFFF");
       }
       }, function(){
-      reset_X()
+      reset_X();
       var str = $(this).attr("class");
       var res = str.split(" ");
       var bgori = "";
@@ -1627,9 +1628,9 @@ Format
     $('.plugin').on('click', function() {
       var str = $(this).attr("class");
       var res = str.split(" ");
-      var dum = res[2]
+      var dum = res[2];
       var res = dum.split("_");
-      var trunk = "pseudos/"
+      var trunk = "pseudos/";
       var elm = res[1];
       var typ = $("#TYP").val();
       var xcf = $("#XCF").val();
@@ -1640,12 +1641,12 @@ Format
         $.get(url)
           .done(function() {
             // exists code
-            window.location.href = url
+            window.location.href = url;
           }).fail(function() {
             // not exists code
           })}
       else {
-        var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt,'.gz')
+        var url = trunk.concat(typ,"_",xcf,"_",acc,"/",elm,".",fmt,'.gz');
         $.get(url)
           .done(function() {
             // exists code
@@ -1655,13 +1656,15 @@ Format
           })}
     });
 
+    // .hover( handlerIn, handlerOut)
     $('.download_button').hover(function(){
-      var trunk = "pseudos/"
+      // Download the targz file with the full table.
+      var trunk = "pseudos/";
       var typ = $("#TYP").val();
       var xcf = $("#XCF").val();
       var acc = $("#ACC").val();
       var fmt = $("#FMT").val();
-      var url = trunk.concat(typ,"_",xcf,"_",acc,"_",fmt,".tgz")
+      var url = trunk.concat(typ,"_",xcf,"_",acc,"_",fmt,".tgz");
       var mythis = $(this);
       if (localStorage.getItem('files').indexOf(url) >= 0) {
           bgcheck="#44AA44";
@@ -1669,6 +1672,7 @@ Format
           mythis.css("color", "#FFFFFF");
       }
       else {
+          // tgz not available.
           bgcheck="#CC4444";
           mythis.css("background-color", bgcheck);
           mythis.css("color", "#FFFFFF");
@@ -1684,12 +1688,13 @@ Format
     });
 
     $('.download_button').on('click', function(e) {
-      var trunk = "pseudos/"
+      // Download the targz file with the full table.
+      var trunk = "pseudos/";
       var typ = $("#TYP").val();
       var xcf = $("#XCF").val();
       var acc = $("#ACC").val();
       var fmt = $("#FMT").val();
-      var url = trunk.concat(typ,"_",xcf,"_",acc,"_",fmt,".tgz")
+      var url = trunk.concat(typ,"_",xcf,"_",acc,"_",fmt,".tgz");
       $.get(url)
         .done(function() {
             // exists code
@@ -1739,6 +1744,7 @@ Format
 
   });
 </script>
+
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

@@ -6,7 +6,16 @@ function.prototype.method = function (name func) {
 */
 
 var keys = ['hh', 'hl', 'hn', 'nv', 'd', 'dp', 'gb'];
-var els = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne','Na', 'Mg', "Al", "Si", 'P', 'S', 'Cl', 'Ar','K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe','Co','Ni','Cu','Zn','Ga','Ge','As','Se','Br','Kr','Rb','Sr','Y','Zr','Nb','Mo','Tc','Ru','Rh','Pd','Ag','Cd','In','Sn','Sb','Te','I','Xe','Cs','Ba','La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu','Hf','Ta','W','Re','Os','Ir','Pt','Au','Hg','Tl','Pb','Bi','Po','At','Rn'];
+
+var els = [
+  'H', 'He', 
+  'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne','Na', 'Mg', "Al", "Si", 'P', 'S', 'Cl', 'Ar', 
+  'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe','Co','Ni','Cu','Zn','Ga','Ge','As','Se','Br','Kr',
+  'Rb','Sr','Y','Zr','Nb','Mo','Tc','Ru','Rh','Pd','Ag','Cd','In','Sn','Sb','Te','I','Xe',
+  'Cs','Ba',
+  'La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu',
+  'Hf','Ta','W','Re','Os','Ir','Pt','Au','Hg','Tl','Pb','Bi','Po','At','Rn'
+];
 
 function getParameterByName(name) {
     var url = window.location.href;
@@ -20,6 +29,7 @@ function getParameterByName(name) {
 }
 
 function set_warning(txt) {
+  // Set the text in the warning box
   var warningbox = document.getElementById('warning_box');
   warningbox.innerHTML = "<div class='alert warning'><span id='cbn' class='closebtn'>&times;</span><strong>Warning!</strong> ".concat(txt, "</div>");
   var close = document.getElementById("cbn");
@@ -61,7 +71,7 @@ function make_light() {
 function set_info(info, animate) {
     var averages = [0,0,0,0,0,0,0];
     var sums = [0,0,0,0,0,0,0];
-    if (animate*localStorage.getItem('animate') === 1){
+    if (animate * localStorage.getItem('animate') === 1){
         console.log('added animating');
         $('.plugin').removeClass('anim');
         $('.plugin').removeClass('chaos');
@@ -108,11 +118,12 @@ function set_info(info, animate) {
 }
 
 function loadJSON(file, callback) {
+    // Helper function to load a json file.
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
     xobj.open('GET', file, true);
     xobj.onreadystatechange = function () {
-          if (xobj.readyState == 4 && xobj.status == 200) {
+        if (xobj.readyState == 4 && xobj.status == 200) {
             // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
             callback(xobj.responseText);
           }
@@ -121,9 +132,10 @@ function loadJSON(file, callback) {
  }
 
 function store_available_files() {
+    // Get list of files from files.json and store it in the localStorage.
     loadJSON('files.json', function(response) {
-    var info = JSON.parse(response);
-    localStorage.setItem('files', info);
+        var info = JSON.parse(response);
+        localStorage.setItem('files', info);
     });
 }
 
@@ -134,12 +146,13 @@ function load_set_info(animate) {
     set_info({}, 0);
     var file = type + '_' + xcf + '_' + acc + '.json';
     loadJSON(file, function(response) {
-    var info = JSON.parse(response);
-    set_info(info, animate);
+        var info = JSON.parse(response);
+        set_info(info, animate);
     });
 }
 
 function set_X(elm, color, n){
+    // Update params shown in the X_n box.
     if (els.indexOf(elm) >= 0){
         document.getElementById('N').innerHTML = n;
         var x = document.getElementById('X_n');
@@ -149,6 +162,7 @@ function set_X(elm, color, n){
         for (key in keys){
             var id_key = 'X_' + keys[key];
             var id_key_in = elm + '_' + keys[key];
+            // Get the params from the pseudo associated to this element and copy to the X box.
             var x = document.getElementById(id_key_in);
             var y = document.getElementById(id_key);
             var val = x.innerHTML;
@@ -158,6 +172,7 @@ function set_X(elm, color, n){
 }
 
 function reset_X(){
+    // Reset the params shown in the X_n box.
     document.getElementById('X_el').innerHTML = 'Mean'
     document.getElementById('N').innerHTML = '';
     document.getElementById('X_n').style.backgroundColor = "#ffffff";
@@ -174,10 +189,12 @@ function set_av(val){
 }
 
 function show_X(){
+    // Show the X_n box.
     document.getElementById('X_n').style.visibility = "visible";
 }
 
 function hide_X(){
+    // Hide the X_n box.
     document.getElementById('X_n').style.visibility = "hidden";
 }
 
@@ -283,7 +300,7 @@ function dojoTour_guidedtour() {
 }
 
 function dynamicdropdown(listindex){
-  // Set the values of the XC/Accuracy/Format widgets given the value of Type.
+  // Set the values of the XC/Accuracy/Format widgets given the pseudo type.
   console.log('dynamic dropdown: setting', listindex)
   document.getElementById("ACC").length = 0;
   document.getElementById("XCF").length = 0;
