@@ -641,9 +641,10 @@ class OncvOutputParser(PseudoGenOutputParser):
         # toks = toks.split()
         toks = self.lines[1].replace(",", " ").split()
         self.gendate = toks.pop(-1)
-        self.calc_type, self.version = toks[0], toks[-1]
+        self.calc_type, self.version = toks[0], toks[2]
 
-        self.major_version, self.minor_version, self.patch_level = tuple(map(int, self.version.split(".")))
+        #print("version", self.version)
+        self.major_version, self.minor_version, self.patch_level = tuple(map(int, self.version.split(".")))[:3]
 
         fullr = self.calc_type not in ["scalar-relativistic", "non-relativistic"]
         if fullr:

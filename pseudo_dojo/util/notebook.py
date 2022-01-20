@@ -1,4 +1,4 @@
-"""Tools to produce jupyter notebooks """
+"""Tools to generate jupyter notebooks for the PseudoDojo project."""
 import os
 import io
 
@@ -8,7 +8,7 @@ from monty.termcolor import cprint
 
 def write_notebook(pseudopath, with_validation=False, with_eos=False, tmpfile=True, hide_code=False, inline=False):
     """
-    Read a pseudopotential file and write an ipython notebook.
+    Read a pseudopotential file and write a jupyter notebook.
     By default, the notebook is created in the same directory
     as pseudopath but with the extension `ipynb` unless `tmpfile` is set to True.
     In the later case, a temporay file is created.
@@ -51,6 +51,9 @@ from __future__ import print_function, division, unicode_literals
     if hide_code:
         nb.cells.extend([
             nbf.new_code_cell("""\
+import warnings
+warnings.filterwarnings("ignore")
+
 from IPython.display import HTML
 HTML('''
 <style>
@@ -102,14 +105,17 @@ plotter = onc_parser.make_plotter()"""),
 
         nbf.new_markdown_cell(r"""## Arctan of the logarithmic derivatives
 
-From the oncvpsp documentation:
-The plots show $\phi(E) = \\arctan(R * d \psi(r)/dr |_R)$ for some $R$
-greater than the core radius, where $\psi$ is the solution of the non-local
+The plots show
+
+    $$ \phi(E) = \\arctan(R * d \psi(r)/dr |_R) $$
+
+for some $R$ greater than the core radius, where $\psi$ is the solution of the non-local
 radial equation regular at the origin (i.e., the outward-integrated solution).
+
 For a well-designed pseudopotential, $\phi(E)$ will closely track that of the all-electron potential
 over a wide range of energies from well-below to well-above the valence semi-core states of interest.
 The steps of $\pi$ indicate localized pseudo wave functions.
-Spurious steps of $\pi$ indicate "ghost" states, which are localized states than on investigation
+Spurious steps of $\pi$ indicate **ghost states**, which are localized states than on investigation
 turn out to have more nodes than appropriate for their energies.
 
 For $GW$ pseudos, no significant deviation should be present up to 8 Hartree."""),
@@ -120,18 +126,9 @@ These results are obtained in the atomic configuration and should give a reasona
 of the convergence behaviour wrt to `ecut` in crystalline systems."""),
         nbf.new_code_cell("fig = plotter.plot_ene_vs_ecut()"),
 
-        nbf.new_markdown_cell("""## Projectors
-
-In general the second projector in any channel should have one node more that the first one.
-Pushing the energy of the second projector too high may cause an additional node.
-This will most likely introduce ghosts."""),
+        nbf.new_markdown_cell("""## Projectors"""),
         nbf.new_code_cell("fig = plotter.plot_projectors()"),
-
-        nbf.new_markdown_cell("""## Core-Valence-Model charge densities
-
-Much better convergence properties can been achieved with `icmod 3`.
-In this case, `fcfact` mainly determines the height of the model core charge while
-`rcfact` mainly determines the width of the model core charge."""),
+        nbf.new_markdown_cell("""## Core-Valence-Model charge densities"""),
         nbf.new_code_cell("fig = plotter.plot_densities()"),
 
         nbf.new_markdown_cell("## Local potential and $l$-dependent potentials"),
@@ -159,7 +156,7 @@ except AttributeError:
 
 Self-consistent band structure calculation performed on a regular mesh.
 The algorithm to detect ghosts is just an indication usually on the side of false positives.
-Zoom in on the band plot to see if an actual ghost is there."""),
+"""),
 
         nbf.new_code_cell("fig = report.plot_ebands(with_soc=False)"),
 
@@ -289,10 +286,12 @@ def make_open_notebook(pseudopath, with_validation=False, with_eos=True,
         cprint("pid: %s" % str(process.pid), "yellow")
 
 
-def write_notebook_html(pseudopath, with_validation=False, with_eos=True, hide_code=True, tmpfile=True, mock=False):
+def write_notebook_html(pseudopath, with_validation=False, with_eos=True, hide_code=True,
+                        tmpfile=True, mock=False, kernel_name=None):
     """
     Generate a jupyter notebook from the pseudopotential path and
-    write the static html version of the executed notebook. Return system exit code.
+    write the static HTML version of the executed notebook.
+    Return system exit code.
 
     Args:
         with_validation: If True an ipython widget is added at the end of the notebook to validate the pseudopotential.
@@ -300,9 +299,14 @@ def write_notebook_html(pseudopath, with_validation=False, with_eos=True, hide_c
         hide_code: True to hide python code in notebook.
         tmpfile: True if notebook should be written to temp location else build ipynb name from pseudo file.
         mock: for testing purposes, creating actual html takes much time
+        kernel_name: Name of the jupyter kernel. Use:
 
-    Raise:
-        RuntimeError if nbconvert is not in $PATH
+            python -m ipykernel install --name <envname>
+
+            to install a new kernel.
+
+
+    Raise: RuntimeError if jupyter is not in $PATH
     """
 
     if mock:
@@ -314,9 +318,15 @@ def write_notebook_html(pseudopath, with_validation=False, with_eos=True, hide_c
     path = write_notebook(pseudopath, with_validation=with_validation,
                           with_eos=with_eos, tmpfile=tmpfile, hide_code=hide_code, inline=True)
 
-    if which("jupyter") is None:
+    if which("jupyter-nbconvert") is None:
         raise RuntimeError("Cannot find jupyter in PATH. This is needed to save the static HTML version of "
                            "a notebook. Install it with `pip install`")
 
-    return os.system("jupyter nbconvert --to html --execute %s" % path)
-    #return os.system("jupyter nbconvert --to html --ExecutePreprocessor.enabled=True %s" % path)
+    if kernel_name is None:
+        cmd = f"jupyter-nbconvert --to html --execute {path}"
+    else:
+        cmd = f"jupyter-nbconvert --to html --execute --ExecutePreprocessor.kernel_name={kernel_name} {path}"
+
+    #print("About to execute: ", cmd)
+    return os.system(cmd)
+
