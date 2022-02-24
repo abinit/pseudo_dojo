@@ -173,13 +173,6 @@ class PseudoGenerator:
         #return "<%s at %s, status=%s>" % (self.__class__.__name__, os.path.basename(self.workdir), self.status)
         return "<%s at %s, status=%s>" % (self.__class__.__name__, self.workdir, self.status)
 
-    #def __hash__(self):
-    #    return hash(self.input_str)
-    #def __eq__(self, other):
-    #    return self.input_str == other.input_str
-    #def __ne__(self, other):
-    #    return not self == other
-
     def start(self) -> int:
         """"
         Run the calculation in a sub-process (non-blocking interface)
@@ -345,7 +338,7 @@ class OncvGenerator(PseudoGenerator):
             input_str = fh.read()
             return cls(input_str, calc_type, workdir=workdir)
 
-    def __init__(self, input_str, calc_type, workdir=None):
+    def __init__(self, input_str: str, calc_type: str, workdir: Optional[str] = None):
         super(OncvGenerator, self).__init__(workdir=workdir)
         self._input_str = input_str
         self.calc_type = calc_type

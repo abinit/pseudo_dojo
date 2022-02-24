@@ -29,6 +29,7 @@ _build
 *.swp
 *.swn
 *.swo
+#*~
 
 # Pycharm
 *.idea

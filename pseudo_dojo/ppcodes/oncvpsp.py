@@ -11,7 +11,7 @@ import tempfile
 import numpy as np
 
 from collections import namedtuple, OrderedDict
-from typing import Any, Union
+from typing import Any, Union, List, Optional
 from monty.functools import lazy_property
 from monty.collections import AttrDict, dict2namedtuple
 from monty.os.path import which
@@ -63,6 +63,7 @@ class PseudoGenDataPlotter:
     # List of results supported by the plotter (initialized via __init__)
     all_keys = [
         "radial_wfs",
+        "scattering_wfs",
         "projectors",
         "densities",
         "potentials",
@@ -75,8 +76,8 @@ class PseudoGenDataPlotter:
 
     linestyle_aeps = dict(ae="solid", ps="dashed")
     markers_aeps = dict(ae=".", ps="o")
-    #color_l = {-1: "black", 0: "red", 1: "blue", 2: "green", 3: "orange"}
-    color_l = {0: "black", -1: "magenta", 1: "red", -2: "cyan", 2: "blue", -3: "yellow", 3: "orange"}
+    color_l = {0: "black", -1: "magenta", 1: "red", -2: "cyan",
+               2: "blue", -3: "yellow", 3: "orange"}
 
     def __init__(self, **kwargs):
         """Store kwargs in self if k is in self.all_keys."""
@@ -109,19 +110,23 @@ class PseudoGenDataPlotter:
             linestyle=self.linestyle_aeps[aeps], #marker=self.markers_aeps[aeps],
             linewidth=self.linewidth, markersize=self.markersize)
 
-    @add_fig_kwargs
-    def plot_atan_logders(self, ax=None, **kwargs):
-        """Plot arctan of logder on axis ax."""
-        ae, ps = self.atan_logders.ae, self.atan_logders.ps
+    #@property
+    #def has_scattering_states(self):
 
+    @add_fig_kwargs
+    def plot_atan_logders(self, ax=None, with_xlabel=True, **kwargs):
+        """
+        Plot arctan of logder on axis ax.
+        """
+        ae, ps = self.atan_logders.ae, self.atan_logders.ps
         ax, fig, plt = get_ax_fig_plt(ax)
 
         lines, legends = [], []
         for l, ae_alog in ae.items():
             ps_alog = ps[l]
 
-            # Add padd to avoid overlapping curves.
-            pad = (l+1) * 1.0
+            # Add pad  to avoid overlapping curves.
+            pad = (l + 1) * 1.0
 
             ae_line, = ax.plot(ae_alog.energies, ae_alog.values + pad, **self._wf_pltopts(l, "ae"))
             ps_line, = ax.plot(ps_alog.energies, ps_alog.values + pad, **self._wf_pltopts(l, "ps"))
@@ -129,21 +134,27 @@ class PseudoGenDataPlotter:
             lines.extend([ae_line, ps_line])
             legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
 
-        decorate_ax(ax, xlabel="Energy [Ha]", ylabel="ATAN(LogDer)", title="ATAN(Log Derivative)",
+        xlabel = "Energy [Ha]" if with_xlabel else ""
+        decorate_ax(ax, xlabel=xlabel, ylabel="ATAN(LogDer)", title="ATAN(Log Derivative)",
                     lines=lines, legends=legends)
 
         return fig
 
     @add_fig_kwargs
-    def plot_radial_wfs(self, ax=None, **kwargs):
+    def plot_radial_wfs(self, ax=None, what="bound_states", **kwargs):
         """
         Plot ae and ps radial wavefunctions on axis ax.
 
-        lselect: List to select l channels.
+            what: "bound_states" or "scattering_states".
+            lselect: List to select l channels.
         """
         ax, fig, plt = get_ax_fig_plt(ax)
 
-        ae_wfs, ps_wfs = self.radial_wfs.ae, self.radial_wfs.ps
+        if what == "bound_states":
+            ae_wfs, ps_wfs = self.radial_wfs.ae, self.radial_wfs.ps
+        elif what == "scattering_states":
+            ae_wfs, ps_wfs = self.scattering_wfs.ae, self.scattering_wfs.ps
+
         lselect = kwargs.get("lselect", [])
 
         lines, legends = [], []
@@ -161,7 +172,8 @@ class PseudoGenDataPlotter:
             else:
                 legends.extend(["AE l=%s, k=%s" % (l, k), "PS l=%s, k=%s" % (l, k)])
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel=r"$\phi(r)$", title="Wave Functions",
+        decorate_ax(ax, xlabel="r [Bohr]", ylabel=r"$\phi(r)$",
+                    title="Wave Functions" if what == "bound_states" else "Scattering States",
                     lines=lines, legends=legends)
 
         return fig
@@ -304,11 +316,14 @@ class PseudoGenDataPlotter:
 
     @add_fig_kwargs
     def plot_atanlogder_econv(self, **kwargs):
-        """Plot atan(logder) and ecut converge on the same figure. Returns matplotlib Figure"""
+        """
+        Plot atan(logder) and ecut converge on the same figure.
+        Returns matplotlib Figure
+        """
         fig, ax_list = self._mplt.subplots(nrows=2, ncols=1, sharex=False, squeeze=False)
         ax_list = ax_list.ravel()
 
-        self.plot_atan_logders(ax=ax_list[0], show=False)
+        self.plot_atan_logders(ax=ax_list[0], with_xlabel=False, show=False)
         self.plot_ene_vs_ecut(ax=ax_list[1], show=False)
 
         return fig
@@ -328,9 +343,9 @@ class PseudoGenDataPlotter:
     def plot_waves_and_projs(self, **kwargs):
         """Plot ae-ps wavefunctions and projectors on the same figure. Returns matplotlib Figure"""
         lmax = max(nlk.l for nlk in self.radial_wfs.ae.keys())
-        fig, ax_list = self._mplt.subplots(nrows=lmax+1, ncols=2, sharex=True, squeeze=False)
+        fig, ax_list = self._mplt.subplots(nrows=lmax + 1, ncols=2, sharex=True, squeeze=False)
 
-        for l in range(lmax+1):
+        for l in range(lmax + 1):
             ax_idx = lmax - l
             self.plot_radial_wfs(ax=ax_list[ax_idx][0], lselect=[l], show=False)
             self.plot_projectors(ax=ax_list[ax_idx][1], lselect=[l], show=False)
@@ -338,9 +353,10 @@ class PseudoGenDataPlotter:
         return fig
 
     @add_fig_kwargs
-    def plot_den_formfact(self, ecut=60, ax=None, **kwargs):
+    def plot_den_formfact(self, ecut=120, ax=None, **kwargs):
         """
-        Plot the density form factor as function of ecut (Ha units). Return matplotlib Figure.
+        Plot the density form factor as function of ecut (Ha units).
+        Return matplotlib Figure.
         """
         ax, fig, plt = get_ax_fig_plt(ax)
 
@@ -352,8 +368,8 @@ class PseudoGenDataPlotter:
             lines.append(line); legends.append(name)
 
             intg = rho.r2f_integral()[-1]
-            print("r2 f integral: ", intg)
-            print("form_factor(0): ", name, form.values[0])
+            #print("r2 f integral: ", intg)
+            #print("form_factor(0): ", name, form.values[0])
 
         # Plot vloc(q)
         #for l, pot in self.potentials.items():
@@ -593,17 +609,22 @@ class OncvOutputParser(PseudoGenOutputParser):
         """
         Scan the output file, set `run_completed` attribute.
 
-        Raises:
-            self.Error if invalid file.
+        Raises: self.Error if invalid file.
         """
+        try:
+            return self._scan(verbose=verbose)
+        except Exception as exc:
+            print(f"Exception while parsing output file: {self.filepath}")
+            #print(self.lines)
+            raise exc
+
+    def _scan(self, verbose: int = 0) -> None:
         if not os.path.exists(self.filepath):
             raise self.Error("File %s does not exist" % self.filepath)
 
         # Read data and store it in lines
         self.lines = []
         import io
-        #with io.open(self.filepath, mode="rt", encoding="utf-8") as fh:
-        #with io.open(self.filepath, mode="rt", encoding="latin") as fh:
         with io.open(self.filepath, "rt") as fh:
             for i, line in enumerate(fh):
                 #print(line)
@@ -618,7 +639,8 @@ class OncvOutputParser(PseudoGenOutputParser):
 
                 # lines that contain the word ERROR but do not seem to indicate an actual teminating error
                 acceptable_error_markers = [
-                  'run_config: ERROR for fully non-local  PS atom,']
+                  'run_config: ERROR for fully non-local  PS atom,'
+                ]
 
                 if "ERROR" in line:
                     # Example:
@@ -631,6 +653,11 @@ class OncvOutputParser(PseudoGenOutputParser):
 
                 if "WARNING" in line:
                     self._warnings.append("\n".join(self.lines[i:i+2]))
+
+                if "GHOST(+)" in line:
+                    self._warnings.append(line)
+                if "GHOST(-)" in line:
+                    self._errors.append(line)
 
         #if self.errors:
         #    return 1
@@ -715,6 +742,7 @@ class OncvOutputParser(PseudoGenOutputParser):
                         f = "%.1f" % float(f)
 
                     valence.append(n + _l2char[l] + "^{%s}" % f)
+
                 self.valence = "$" + " ".join(valence) + "$"
                 #print("core", self.core, "valence",self.valence)
                 break
@@ -732,6 +760,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         # Compute the minimun rc(l)
         header = "#   l,   rc,     ep,   ncon, nbas, qcut"
+        self.rc_l = {}
         for i, line in enumerate(self.lines):
             if line.startswith(header):
                 beg = i + 1
@@ -741,7 +770,9 @@ class OncvOutputParser(PseudoGenOutputParser):
                     if l.startswith("#"): break
                     token = l.split()[1]
                     #print("token", token)
-                    rcs.append(float(token))
+                    rc = float(token)
+                    self.rc_l[l] = rc
+                    rcs.append(rc)
                     #print(l)
                     nxt += 1
 
@@ -806,6 +837,16 @@ class OncvOutputParser(PseudoGenOutputParser):
         """
         Read and set the radial wavefunctions.
         """
+        return self._get_radial_wavefunctions(what="bound_states")
+
+    @lazy_property
+    def scattering_wfs(self):
+        """
+        Read and set the scattering wavefunctions.
+        """
+        return self._get_radial_wavefunctions(what="scattering_states")
+
+    def _get_radial_wavefunctions(self, what: str):
         # scalar-relativistic
         #n= 1,  l= 0, all-electron wave function, pseudo w-f
         #
@@ -815,6 +856,9 @@ class OncvOutputParser(PseudoGenOutputParser):
         #n= 1,  l= 0  kap=-1, all-electron wave function, pseudo w-f
         #
         #&     0    0.009955    0.066338    0.000979
+
+        # scalar-relativistic
+        #scattering, iprj= 2,  l= 1, all-electron wave function, pseudo w-f
 
         ae_waves, ps_waves = OrderedDict(), OrderedDict()
 
@@ -826,12 +870,22 @@ class OncvOutputParser(PseudoGenOutputParser):
 
             header = self.lines[g.start-2]
             #print(header)
-            if header.startswith("scattering"):
-                print(f"ignoring header {header}")
-                continue
+
+            if what == "bound_states":
+                if header.startswith("scattering,"):
+                    continue
+                    print(f"ignoring header {header}")
+
+            elif what == "scattering_states":
+                if not header.startswith("scattering,"):
+                    continue
+                header = header.replace("scattering,", "")
+                print(header)
+            else:
+                raise ValueError(f"Invalid value of what: `{what}`")
 
             if not self.fully_relativistic:
-                #n= 1,  l= 0, all-electron wave function, pseudo w-f
+                # n= 1,  l= 0, all-electron wave function, pseudo w-f
                 n, l = header.split(",")[0:2]
                 n = int(n.split("=")[1])
                 l = int(l.split("=")[1])
@@ -930,7 +984,7 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         conv_l = OrderedDict()
 
-        for l in range(self.lmax+1):
+        for l in range(self.lmax + 1):
             data = self._grep(tag="!C     %d" % l).data
             conv_l[l] = ConvData(l=l, energies=data[:, 1], values=data[:, 2])
 
@@ -943,7 +997,7 @@ class OncvOutputParser(PseudoGenOutputParser):
         hints = 3 * [-np.inf]
         ene_vs_ecut = self.ene_vs_ecut
         for i in range(3):
-            for l in range(self.lmax+1):
+            for l in range(self.lmax + 1):
                 hints[i] = max(hints[i], ene_vs_ecut[l].energies[-i-1])
         hints.reverse()
 
@@ -968,13 +1022,13 @@ class OncvOutputParser(PseudoGenOutputParser):
 
         # Get the ecut needed to converge within ... TODO
         max_ecut = 0.0
-        for l in range(self.lmax+1):
+        for l in range(self.lmax + 1):
             max_ecut = max(max_ecut, self.ene_vs_ecut[l].energies[-1])
 
         # Compute the l1 error in atag(logder)
         from scipy.integrate import cumtrapz
         max_l1err = 0.0
-        for l in range(self.lmax+1):
+        for l in range(self.lmax + 1):
             f1, f2 = self.atan_logders.ae[l], self.atan_logders.ps[l]
 
             adiff = np.abs(f1.values - f2.values)
@@ -1088,7 +1142,8 @@ class OncvOutputParser(PseudoGenOutputParser):
             lmax=self.lmax,
             ncore=self.nc,
             nvalence=self.nv,
-            calc_type=self.calc_type)
+            calc_type=self.calc_type
+        )
 
         # List of radial wavefunctions (AE and PS)
         jdict["radial_wfs"] = d = {}

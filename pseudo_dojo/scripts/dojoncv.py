@@ -81,6 +81,7 @@ def oncv_plot(options):
     #e = PanelExpose(title="")
     with e:
         e(plotter.plot_radial_wfs(show=False))
+        e(plotter.plot_radial_wfs(what="scattering_states", show=False))
         e(plotter.plot_atanlogder_econv(show=False))
         e(plotter.plot_projectors(show=False))
         e(plotter.plot_potentials(show=False))
@@ -163,19 +164,19 @@ def oncv_run(options):
         cprint("%s already exists and will be overwritten" % os.path.relpath(out_path), "yellow")
 
     # Build Generator and start generation.
-    oncv_ppgen = OncvGenerator.from_file(in_path, calc_type, workdir=None)
-    print(oncv_ppgen)
-    print(oncv_ppgen.input_str)
+    psgen = OncvGenerator.from_file(in_path, calc_type, workdir=None)
+    print(psgen)
+    print(psgen.input_str)
 
-    oncv_ppgen.start()
-    retcode = oncv_ppgen.wait()
+    psgen.start()
+    retcode = psgen.wait()
 
-    if oncv_ppgen.status != oncv_ppgen.S_OK:
+    if psgen.status != psgen.S_OK:
         cprint("oncvpsp returned %s. Exiting" % retcode, "red")
         return 1
 
     # Tranfer final output file.
-    shutil.copy(oncv_ppgen.stdout_path, out_path)
+    shutil.copy(psgen.stdout_path, out_path)
 
     # Parse the output file
     onc_parser = OncvOutputParser(out_path)
@@ -185,9 +186,9 @@ def oncv_run(options):
         return 1
 
     # Extract psp8 files from the oncvpsp output and write it to file.
-    s = onc_parser.get_psp8_str()
+    psp8_str = onc_parser.get_psp8_str()
     with open(psp8_path, "wt") as fh:
-        fh.write(s)
+        fh.write(psp8_str)
 
     # Write upf if available.
     upf_str = onc_parser.get_upf_str()
@@ -213,6 +214,7 @@ def oncv_run(options):
     #e = PanelExpose(title="")
     with e:
         e(plotter.plot_radial_wfs(show=False))
+        e(plotter.plot_radial_wfs(what="scattering_states", show=False))
         e(plotter.plot_atanlogder_econv(show=False))
         e(plotter.plot_projectors(show=False))
         e(plotter.plot_potentials(show=False))
