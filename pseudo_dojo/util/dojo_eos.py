@@ -354,9 +354,11 @@ class EOS_Fit(object):
 
         color = kwargs.pop("color", "r")
         label = kwargs.pop("label", None)
+        marker = kwargs.pop("marker", "o")
+        #linestyle = kwargs.pop("linestyle", "None")
 
         # Plot input data.
-        ax.plot(self.volumes, self.energies, linestyle="None", marker="o", color=color) #, label="Input Data")
+        ax.plot(self.volumes, self.energies, linestyle="None", marker=marker, color=color) #, label="Input Data")
 
         # Plot EOS.
         vfit = np.linspace(vmin, vmax, 100)

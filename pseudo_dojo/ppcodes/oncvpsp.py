@@ -7,6 +7,7 @@ from __future__ import annotations
 import io
 import os
 import abc
+import re
 import tempfile
 import numpy as np
 
@@ -44,15 +45,15 @@ def is_integer(s: Any) -> bool:
         return False
 
 
-def decorate_ax(ax, xlabel, ylabel, title, lines, legends):
+def decorate_ax(ax, xlabel, ylabel, title, lines, legends, fontsize=8):
     """
     Decorate a `matplotlib` Axis adding xlabel, ylabel, title, grid and legend
     """
-    ax.set_title(title)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
+    if title: ax.set_title(title, fontsize=fontsize)
+    if xlabel: ax.set_xlabel(xlabel)
+    if ylabel: ax.set_ylabel(ylabel)
     ax.grid(True)
-    ax.legend(lines, legends, loc="best", shadow=True)
+    ax.legend(lines, legends, loc="best", fontsize=fontsize, shadow=True)
 
 
 class PseudoGenDataPlotter:
@@ -69,15 +70,27 @@ class PseudoGenDataPlotter:
         "potentials",
         "atan_logders",
         "ene_vs_ecut",
+        "kinerr_nlk",
+        "rc_l",
+        "rc5",
+        "lloc",
     ]
 
     # matplotlib options.
     linewidth, markersize = 2, 2
 
     linestyle_aeps = dict(ae="solid", ps="dashed")
+
     markers_aeps = dict(ae=".", ps="o")
-    color_l = {0: "black", -1: "magenta", 1: "red", -2: "cyan",
-               2: "blue", -3: "yellow", 3: "orange"}
+
+    color_l = { 0: "black",
+                1: "red",
+               -1: "magenta",
+                2: "blue",
+               -2: "cyan",
+                3: "orange",
+               -3: "yellow",
+              }
 
     def __init__(self, **kwargs):
         """Store kwargs in self if k is in self.all_keys."""
@@ -95,7 +108,12 @@ class PseudoGenDataPlotter:
         return (k for k in self.all_keys if getattr(self, k))
 
     def plot_key(self, key, ax=None, show=True, **kwargs):
-        """Plot a singol quantity specified by key."""
+        """
+        Plot quantity specified by key.
+
+        Args:
+            ax: |matplotlib-Axes| or None if a new figure should be created.
+        """
         ax, fig, plt = get_ax_fig_plt(ax)
 
         # key --> self.plot_key()
@@ -107,16 +125,27 @@ class PseudoGenDataPlotter:
         """Plot options for wavefunctions."""
         return dict(
             color=self.color_l[l],
-            linestyle=self.linestyle_aeps[aeps], #marker=self.markers_aeps[aeps],
+            linestyle=self.linestyle_aeps[aeps],
+            # marker=self.markers_aeps[aeps],
             linewidth=self.linewidth, markersize=self.markersize)
 
     #@property
     #def has_scattering_states(self):
 
+    def _add_rc_vlines(self, ax):
+        """
+        Add vertical lines to axis `ax` showing the core radii.
+        """
+        for l, rc in self.rc_l.items():
+            ax.axvline(rc, lw=1, color=self.color_l[l], ls="--") # ls=(0, (1, 10)))
+
     @add_fig_kwargs
     def plot_atan_logders(self, ax=None, with_xlabel=True, **kwargs):
         """
         Plot arctan of logder on axis ax.
+
+        Args:
+            ax: |matplotlib-Axes| or None if a new figure should be created.
         """
         ae, ps = self.atan_logders.ae, self.atan_logders.ps
         ax, fig, plt = get_ax_fig_plt(ax)
@@ -134,8 +163,9 @@ class PseudoGenDataPlotter:
             lines.extend([ae_line, ps_line])
             legends.extend(["AE l=%s" % str(l), "PS l=%s" % str(l)])
 
-        xlabel = "Energy [Ha]" if with_xlabel else ""
-        decorate_ax(ax, xlabel=xlabel, ylabel="ATAN(LogDer)", title="ATAN(Log Derivative)",
+        xlabel = "Energy (Ha)" if with_xlabel else ""
+        decorate_ax(ax, xlabel=xlabel, ylabel="ATAN(LogDer)", title="",
+                    #title="ATAN(Log Derivative)",
                     lines=lines, legends=legends)
 
         return fig
@@ -143,8 +173,10 @@ class PseudoGenDataPlotter:
     @add_fig_kwargs
     def plot_radial_wfs(self, ax=None, what="bound_states", **kwargs):
         """
-        Plot ae and ps radial wavefunctions on axis ax.
+        Plot AE and PS radial wavefunctions on axis ax.
 
+        Args:
+            ax: |matplotlib-Axes| or None if a new figure should be created.
             what: "bound_states" or "scattering_states".
             lselect: List to select l channels.
         """
@@ -154,6 +186,8 @@ class PseudoGenDataPlotter:
             ae_wfs, ps_wfs = self.radial_wfs.ae, self.radial_wfs.ps
         elif what == "scattering_states":
             ae_wfs, ps_wfs = self.scattering_wfs.ae, self.scattering_wfs.ps
+        else:
+            raise ValueError(f"Invalid value for what: {what}")
 
         lselect = kwargs.get("lselect", [])
 
@@ -172,9 +206,11 @@ class PseudoGenDataPlotter:
             else:
                 legends.extend(["AE l=%s, k=%s" % (l, k), "PS l=%s, k=%s" % (l, k)])
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel=r"$\phi(r)$",
+        decorate_ax(ax, xlabel="r (Bohr)", ylabel=r"$\phi(r)$",
                     title="Wave Functions" if what == "bound_states" else "Scattering States",
                     lines=lines, legends=legends)
+
+        self._add_rc_vlines(ax)
 
         return fig
 
@@ -183,7 +219,9 @@ class PseudoGenDataPlotter:
         """
         Plot oncvpsp projectors on axis ax.
 
-        lselect: List to select l channels
+        Args:
+            ax: |matplotlib-Axes| or None if a new figure should be created.
+            lselect: List to select l channels
         """
         ax, fig, plt = get_ax_fig_plt(ax)
 
@@ -199,14 +237,20 @@ class PseudoGenDataPlotter:
                             linewidth=self.linewidth, markersize=self.markersize)
             lines.append(line); legends.append("Proj %s" % str(nlk))
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$p(r)$", title="Projector Wave Functions",
+        decorate_ax(ax, xlabel="r (Bohr)", ylabel="$p(r)$", title="Projector Wave Functions",
                     lines=lines, legends=legends)
+
+        self._add_rc_vlines(ax)
+
         return fig
 
     @add_fig_kwargs
     def plot_densities(self, ax=None, timesr2=False, **kwargs):
         """
-        Plot ae, ps and model densities on axis ax.
+        Plot AE, PS and model densities on axis ax.
+
+        Args:
+            ax: |matplotlib-Axes| or None if a new figure should be created.
         """
         ax, fig, plt = get_ax_fig_plt(ax)
 
@@ -217,7 +261,7 @@ class PseudoGenDataPlotter:
             lines.append(line); legends.append(name)
 
         ylabel = "$n(r)$" if not timesr2 else "$r^2 n(r)$"
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel=ylabel, title="Charge densities",
+        decorate_ax(ax, xlabel="r (Bohr)", ylabel=ylabel, title="Charge densities",
                     lines=lines, legends=legends)
 
         return fig
@@ -227,6 +271,9 @@ class PseudoGenDataPlotter:
         """
         Plot the derivatives of the densitiers on axis ax.
         Used to analyze possible derivative discontinuities
+
+        Args:
+            ax: |matplotlib-Axes| or None if a new figure should be created.
         """
         ax, fig, plt = get_ax_fig_plt(ax)
 
@@ -245,13 +292,18 @@ class PseudoGenDataPlotter:
 
             legends.append("%s-order derivative of %s" % (order, name))
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$D^%s \n(r)$" % order, title="Derivative of the charge densities",
+        decorate_ax(ax, xlabel="r (Bohr)", ylabel="$D^%s \n(r)$" % order, title="Derivative of the charge densities",
                     lines=lines, legends=legends)
         return fig
 
     @add_fig_kwargs
     def plot_potentials(self, ax=None, **kwargs):
-        """Plot vl and vloc potentials on axis ax"""
+        """
+        Plot v_l and v_loc potentials on axis ax
+
+        Args:
+            ax: |matplotlib-Axes| or None if a new figure should be created.
+        """
         ax, fig, plt = get_ax_fig_plt(ax)
 
         lines, legends = [], []
@@ -264,8 +316,16 @@ class PseudoGenDataPlotter:
             else:
                 legends.append("PS l=%s" % str(l))
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel="$v_l(r)$", title="Ion Pseudopotentials",
+        decorate_ax(ax, xlabel="r (Bohr)", ylabel="$v_l(r)$", title="Ion Pseudopotentials",
                     lines=lines, legends=legends)
+
+
+        color = "k"
+        if self.lloc == 4: color = "magenta"
+        ax.axvline(self.rc5, lw=1, color=color, ls="--")
+
+        self._add_rc_vlines(ax)
+
         return fig
 
     @add_fig_kwargs
@@ -273,11 +333,15 @@ class PseudoGenDataPlotter:
         """
         Plot the derivatives of vl and vloc potentials on axis ax.
         Used to analyze the derivative discontinuity introduced by the RRKJ method at rc.
+
+        Args:
+            ax: |matplotlib-Axes| or None if a new figure should be created.
         """
         ax, fig, plt = get_ax_fig_plt(ax)
         from abipy.tools.derivatives import finite_diff
         from scipy.interpolate import UnivariateSpline
         lines, legends = [], []
+
         for l, pot in self.potentials.items():
             # Need linear mesh for finite_difference --> Spline input potentials on lin_rmesh
             lin_rmesh, h = np.linspace(pot.rmesh[0], pot.rmesh[-1], num=len(pot.rmesh) * 4, retstep=True)
@@ -292,23 +356,31 @@ class PseudoGenDataPlotter:
             else:
                 legends.append("$s-order derivative PS l=%s" % str(l))
 
-        decorate_ax(ax, xlabel="r [Bohr]", ylabel=r"$D^%s \phi(r)$" % order,
+        decorate_ax(ax, xlabel="r (Bohr)", ylabel=r"$D^%s \phi(r)$" % order,
                     title="Derivative of the ion Pseudopotentials",
                     lines=lines, legends=legends)
         return fig
 
     @add_fig_kwargs
     def plot_ene_vs_ecut(self, ax=None, **kwargs):
-        """Plot the converge of ene wrt ecut on axis ax."""
+        """
+        Plot the converge of ene wrt ecut on axis ax.
+
+        Args:
+            ax: |matplotlib-Axes| or None if a new figure should be created.
+        """
         ax, fig, plt = get_ax_fig_plt(ax)
         lines, legends = [], []
         for l, data in self.ene_vs_ecut.items():
             line, = ax.plot(data.energies, data.values, **self._wf_pltopts(l, "ae"))
-
             lines.append(line)
             legends.append("Conv l=%s" % str(l))
 
-        decorate_ax(ax, xlabel="Ecut [Ha]", ylabel=r"$\Delta E$", title="Energy error per electron [Ha]",
+        for nlk, data in self.kinerr_nlk.items():
+            line, = ax.plot(data.ecuts, data.values_ha, **self._wf_pltopts(nlk.l, "ps"))
+
+        decorate_ax(ax, xlabel="Ecut (Ha)", ylabel=r"$\Delta E_{kin}$ (Ha)", title="",
+                    #, title="Energy error per electron (Ha)",
                     lines=lines, legends=legends)
 
         ax.set_yscale("log")
@@ -323,7 +395,7 @@ class PseudoGenDataPlotter:
         fig, ax_list = self._mplt.subplots(nrows=2, ncols=1, sharex=False, squeeze=False)
         ax_list = ax_list.ravel()
 
-        self.plot_atan_logders(ax=ax_list[0], with_xlabel=False, show=False)
+        self.plot_atan_logders(ax=ax_list[0], show=False)
         self.plot_ene_vs_ecut(ax=ax_list[1], show=False)
 
         return fig
@@ -355,8 +427,12 @@ class PseudoGenDataPlotter:
     @add_fig_kwargs
     def plot_den_formfact(self, ecut=120, ax=None, **kwargs):
         """
-        Plot the density form factor as function of ecut (Ha units).
-        Return matplotlib Figure.
+        Plot the density form factor as a function of ecut in Ha.
+
+        Args:
+            ax: |matplotlib-Axes| or None if a new figure should be created.
+
+        Return: matplotlib Figure.
         """
         ax, fig, plt = get_ax_fig_plt(ax)
 
@@ -379,7 +455,7 @@ class PseudoGenDataPlotter:
         #    line, = ax.plot(form.mesh, form.values, linewidth=self.linewidth, markersize=self.markersize)
         #    lines.append(line); legends.append("Vloc(q)")
 
-        decorate_ax(ax, xlabel="Ecut [Ha]", ylabel="$n(q)$", title="Form factor, l=0 ", lines=lines, legends=legends)
+        decorate_ax(ax, xlabel="Ecut (Ha)", ylabel="$n(q)$", title="Form factor, l=0 ", lines=lines, legends=legends)
         return fig
 
 
@@ -690,7 +766,7 @@ class OncvOutputParser(PseudoGenOutputParser):
                 break
 
         # Parse ATOM and Reference configuration
-        # Example::
+        # Example:
         """
         #
         #   n    l    f        energy (Ha)
@@ -756,27 +832,100 @@ class OncvOutputParser(PseudoGenOutputParser):
                 self.lmax = int(self.lines[i+1])
                 break
         else:
-            raise self.Error("Cannot find line with `#lmax` in output file %s" % self.filepath)
+            raise self.Error(f"Cannot find line with `#lmax` in: {self.filepath}")
 
-        # Compute the minimun rc(l)
-        header = "#   l,   rc,     ep,   ncon, nbas, qcut"
+        # Get core radii as a function of l from the output file
         self.rc_l = {}
+        header = "#   l,   rc,"
         for i, line in enumerate(self.lines):
             if line.startswith(header):
                 beg = i + 1
-                nxt, rcs = 0, []
+                nxt = 0
                 while True:
-                    l = self.lines[beg + nxt]
-                    if l.startswith("#"): break
-                    token = l.split()[1]
-                    #print("token", token)
-                    rc = float(token)
+                    ln = self.lines[beg + nxt]
+                    if ln.startswith("#"): break
+                    tokens = ln.split()
+                    #print("line:", ln, "\ntokens", tokens)
+                    l, rc = int(tokens[0]), float(tokens[1])
                     self.rc_l[l] = rc
-                    rcs.append(rc)
-                    #print(l)
                     nxt += 1
 
-                self.rc_min, self.rc_max = min(rcs), max(rcs)
+        #print("rc_l", self.rc_l)
+        if not self.rc_l:
+            raise self.Error(f"Cannot find magic line starting with `{header}` in: {self.filepath}")
+
+
+        # Get pseudization radius for the local part
+        header = "# lloc, lpopt,  rc(5),   dvloc0"
+        self.rc5 = None
+        for i, line in enumerate(self.lines):
+            if line.startswith(header):
+                ln = self.lines[i + 1]
+                print("line: ", line, "\nrc line: ", ln)
+                tokens = ln.split()
+                self.lloc = int(tokens[0])
+                self.rc5 = float(tokens[2])
+                break
+
+        if self.rc5 is None:
+            raise self.Error(f"Cannot find magic line starting with `{header}` in: {self.filepath}")
+
+        self.kinerr_nlk = {}
+        if self.major_version > 3:
+            # Calculating optimized projector #   1
+            #
+            #  for l=   0
+
+            re_start = re.compile(r"^Calculating optimized projector #\s+(?P<iproj>\d+)")
+            #header = "Calculating optimized projector #"
+            # FIXME: In FR mode, we have
+            #Calculating first optimized projector for l=   0
+            #Calculating second optimized projector for l=   0
+        else:
+            # Calculating first optimized projector for l=   0
+            re_start = re.compile(r"^Calculating (?P<iproj>(first|second)) optimized projector for l=\s+(?P<l>\d+)")
+
+        for i, line in enumerate(self.lines):
+            m = re_start.match(line)
+            #if line.startswith(header):
+            #iproj = int(line.replace(header, "").strip())
+            if m:
+                if self.major_version > 3:
+                    # for l=   0
+                    iproj = int(m.group("iproj"))
+                    l = int(self.lines[i+2].split("=")[-1].strip())
+                    k = None
+                else:
+                    iproj = m.group("iproj")
+                    iproj = {"first": 0, "second": 1}[iproj]
+                    l = int(m.group("l"))
+                    k = None
+
+                nlk = NlkState(n=iproj, l=l, k=k)
+                continue
+
+            #Energy error per electron        Cutoff
+            #     Ha          eV             Ha
+            #     0.01000     0.27211       27.01
+            #     0.00100     0.02721       52.82
+            #     0.00010     0.00272       66.22
+            #     0.00001     0.00027       75.37
+            if line.startswith("Energy error per electron        Cutoff"):
+                values_ha, ecuts = [], []
+                for j in range(4):
+                    tokens = self.lines[i+2+j].split()
+                    if not tokens: break
+                    #print("tokens:", tokens)
+                    err_ha, err_ev, ecut = map(float, tokens)
+                    #print(err_ha, ecut)
+                    values_ha.append(err_ha)
+                    ecuts.append(ecut)
+
+                self.kinerr_nlk[nlk] = dict2namedtuple(ecuts=ecuts, values_ha=values_ha)
+
+        if not self.kinerr_nlk:
+            raise self.Error(f"Cannot parse convergence profile from: {self.filepath}")
+
 
     def __str__(self) -> str:
         """String representation."""
@@ -1511,7 +1660,7 @@ def psp8_get_densities(path, fc_file=None, ae_file=None, plot=False):
             # Start at l=1
             nproj_soc = [int(t) for t in line.split()[:4]]
             nproj_soc.insert(0, 0)
-            print("nproj_soc", nproj_soc)
+            #print("nproj_soc", nproj_soc)
             raise NotImplementedError("SOC not tested")
 
         lmax = int(header["lmax"])
