@@ -10,7 +10,7 @@ from monty.collections import AttrDict
 from monty.string import list_strings
 from monty.fnmatch import WildCard
 from monty.termcolor import cprint
-from monty.os.path import which
+from shutil import which
 from pymatgen.core.periodic_table import Element
 from pymatgen.core.xcfunc import XcFunc
 from abipy.tools.plotting import add_fig_kwargs, get_ax_fig_plt
