@@ -6,7 +6,7 @@ Common test support for pseudo_dojo.
 This single module should provide all the common functionality for tests
 in a single location, so that test scripts can just import it and work right away.
 """
-from monty.os.path import which
+from shutil import which
 from pymatgen.util.testing import PymatgenTest
 
 import numpy.testing as nptu
